@@ -3,19 +3,19 @@ package envision.lang.packages.env.debug;
 import envision.EnvisionCodeFile;
 import envision.exceptions.errors.ArgLengthError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.ExpressionStatement;
+import envision.parser.statements.statements.ExpressionStatement;
 
-public class DebugParsed extends EnvisionMethod {
+public class DebugParsed extends EnvisionFunction {
 		
 	public DebugParsed() {
-		super(EnvisionDataType.VOID, "parsed");
+		super(Primitives.VOID, "parsed");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		if (args.length > 0) throw new ArgLengthError(this, args.length, 0);
 		
 		System.out.println("DEBUG: -- Printing Parsed Statements --");

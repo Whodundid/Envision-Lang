@@ -6,8 +6,8 @@ import envision.bytecode.vm.EnvisionVM;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArithmeticError;
 import envision.lang.EnvisionObject;
+import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.objects.EnvisionList;
-import envision.lang.variables.EnvisionNumber;
 import eutil.math.NumberUtil;
 
 public class IBC_math {

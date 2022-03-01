@@ -1,7 +1,12 @@
 package envision.tokenizer;
 
+import static envision.tokenizer.ReservedWord.*;
+import static envision.tokenizer.Operator.*;
+
 import envision.EnvisionCodeFile;
+import envision.exceptions.EnvisionError;
 import eutil.datatypes.EArrayList;
+import eutil.strings.EStringBuilder;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -23,35 +28,293 @@ public class Tokenizer {
 	private final EArrayList<Token> commentTokens = new EArrayList();
 	/** Used to keep track of multi-line comments. */
 	private boolean inComment = false;
-	/** Used to keep track of when in a descriptor comment. */
-	private boolean inDescriptor = false;
+	/** Used to keep track of multi-line comments. */
+	private boolean inString = false;
+	
 	/** Used to keep track of the current line internally. */
 	private int lineNum = 1;
+	private String source;
+	private int start = 0;
+	private int cur = 0;
 	
 	private EArrayList<Token> createdTokens;
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	public Tokenizer() {}
-	
 	public Tokenizer(EnvisionCodeFile codeFileIn) {
 		theFile = codeFileIn;
 	}
-	
 	public Tokenizer(String line) {
 		theFile = null;
 		tokenizeLine(line);
+		if (inString) throw new EnvisionError("Envision: Tokenization failed -> incomplete string!");
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public void setCodeFile(EnvisionCodeFile codeFileIn) {
-		theFile = codeFileIn;
+	/** Separates a single input line's characters into valid Envision tokens. */
+	private EArrayList<Token> tokenizeLine(String line, int lineNum) {
+		createdTokens = new EArrayList();
+		source = line.trim();
+		cur = 0;
+		
+		//check for basic comment
+		if (source.startsWith(COMMENT_SINGLE.chars)) return createdTokens;
+		
+		while (!atEnd()) {
+			start = cur;
+			scanToken();
+		}
+		
+		return createdTokens;
 	}
 	
-	public boolean hasFile() {
-		return theFile != null;
+	//--------------------------------------------------------------------------------------------------------------------
+	// Inspired from Lox by Bob Nystrom -> https://github.com/munificent/craftinginterpreters -- Lox.Scanner.java
+	//--------------------------------------------------------------------------------------------------------------------
+	
+	private void scanToken() {
+		//attempt to find the end of the multi-line comment
+		if (inComment) {// '*/' 
+			while (!atEnd()) {
+				if (match('*')) inComment = !match('/');
+				if (!atEnd()) advance();
+			}
+		}
+		
+		//don't continue if still in multi-line comment or if at end of line
+		if (inComment || atEnd()) return;
+		
+		//match char to token
+		char c = advance();
+		switch (c) {
+		case '{': addToken(CURLY_L); break;										// '{'
+		case '}': addToken(CURLY_R); break;										// '}'
+		case '(': addToken(PAREN_L); break;										// '('
+		case ')': addToken(PAREN_R); break;										// ')'
+		case '[': addToken(BRACKET_L); break;									// '['
+		case ']': addToken(BRACKET_R); break;									// ']'
+		case ';': addToken(SEMICOLON); break;										// ';'
+		case ',': addToken(COMMA); break;											// ','
+		case ':': addToken(COLON); break;											// ':'
+		case '?': addToken(TERNARY); break;											// '?'
+		
+		case '.': addToken((matchInOrder('.', '.') ? VARARGS : PERIOD)); break;		// '...', '.'
+		case '=': addToken((match('=') ? COMPARE : ASSIGN)); break;					// '==', '='
+		case '!': addToken((match('=') ? NOT_EQUALS : NEGATE)); break;				// '!=', '!'
+		case '&':
+			if (match('&')) addToken(AND);											// '&&'
+			else if (match('=')) addToken(BW_AND_ASSIGN);							// '&='
+			else addToken(BW_AND);													// '&'
+			break;
+		case '|':
+			if (match('|')) addToken(OR);											// '||'
+			else if (match('=')) addToken(BW_OR_ASSIGN);							// '|='
+			else addToken(BW_OR);													// '|'
+			break;
+		case '^': addToken((match('=')) ? BW_XOR_ASSIGN : BW_XOR); break;			// '^=', '^'
+		case '<':
+			if (match('<')) addToken((match('=')) ? SHL_ASSIGN : SHL);				// '<<=', '<<'
+			else addToken((match('=')) ? LTE : LT);									// '<=', '<'
+			break;
+		case '>':
+			if (match('>'))
+				if (match('>')) addToken(match('=') ? SHR_AR_ASSIGN : SHR_AR);		// '>>>=', '>>>'
+				else addToken((match('=') ? SHR_ASSIGN : SHR));						// '>>=', '>>'
+			else addToken((match('=')) ? GTE : GT);									// '>=', '>'
+			break;
+		case '+':
+			if (match('+')) addToken(INC);											// '++'
+			else if (match('=')) addToken(ADD_ASSIGN);								// '+='
+			else addToken(ADD);														// '+'
+			break;
+		case '-':
+			if (match('-')) addToken(DEC); 											// '--'
+			else if (match('>')) addToken(LAMBDA); 									// '->'
+			else if (match('=')) addToken(SUB_ASSIGN); 								// '-='
+			else addToken(SUB); 													// '-'
+			break;
+		case '*': addToken((match('=')) ? MUL_ASSIGN : MUL); break;					// '*=', '*'
+		case '/':
+			if (match('/')) break;													// '//'
+			else if (match('*')) inComment = true;									// '/*'
+			else if (match('=')) addToken(DIV_ASSIGN);								// '/='
+			else addToken(DIV);														// '/'
+			break; 
+		case '%': addToken((match('=')) ? MOD_ASSIGN : MOD); break;					// '%=', '%'
+		
+		case ' ':
+		case '\r':
+		case '\t': break; //ignore whitespace
+		
+		case '"': string(); break;
+		case '\'': parse_char(); break;
+		
+		default:
+			if (isDigit(c)) number();
+			else if (isLetter(c)) identifier();
+			else throw new EnvisionError("Envision: Tokenization failed -> unexpected character! -> Line: "
+										 + lineNum + " + '" + c + "'");
+		}
 	}
+	
+	/**
+	 * Parses an identifier from tokens.
+	 * <p>
+	 * Identifiers are used as names for variables, objects, etc. within Envision.
+	 */
+	private void identifier() {
+		while (isLetterOrNum(peek())) advance();
+		String text = source.substring(start, cur);
+		ReservedWord k = ReservedWord.getKeyword(text);
+		if (k == null) k = IDENTIFIER;
+		addToken(k);
+	}
+	
+	/**
+	 * Parses a single number from tokens.
+	 * <p>
+	 * This can either parse a decimal value if a '.' is detected,
+	 * or it will simply prase a standard integer value.
+	 */
+	private void number() {
+		while (isDigit(peek())) advance();
+		
+		boolean decimal = false;
+		
+		if (peek() == '.' && isDigit(peekNext())) {
+			advance();
+			while (isDigit(peek())) advance();
+			decimal = true;
+		}
+		
+		if (decimal) addToken(ReservedWord.NUMBER_LITERAL, Double.parseDouble(source.substring(start, cur)));
+		else addToken(ReservedWord.NUMBER_LITERAL, Long.parseLong(source.substring(start, cur)));
+	}
+	
+	/**
+	 * Parses a string from tokens.
+	 */
+	private void string() {
+		inString = true;
+		while (peek() != '"' && !atEnd()) {
+			//if (peek() == '\n') line++;
+			advance();
+		}
+		
+		//consume the '"'
+		if (!atEnd()) {
+			inString = false;
+			advance();
+		}
+		
+		//IF NOT HANDLED BY INTERPRETER -- USE 'start + 1, cur - 1' FOR BOUNDARY
+		String value = source.substring(start + 1, cur - 1);
+		addToken(ReservedWord.STRING_LITERAL, value);
+	}
+	
+	/**
+	 * Parses a single char from tokens.
+	 */
+	private void parse_char() {
+		//error if at end
+		if (atEnd()) throw new EnvisionError("Incomplete char tokenization!");
+		//get char
+		advance();
+		//consume the 2nd '
+		if (peek() != '\'' || atEnd()) throw new EnvisionError("Incomplete char tokenization!");
+		else advance();
+		
+		addToken(ReservedWord.CHAR_LITERAL, source.substring(start + 1, cur - 1).charAt(0));
+	}
+	
+	/**
+	 * Returns true if the 'expected' char is at the current token position.
+	 * Returns false if at the end.
+	 * 
+	 * @param expected The char to check
+	 * @return true if the same
+	 */
+	private boolean check(char expected) {
+		return (!atEnd() && source.charAt(cur) == expected);
+	}
+	
+	/**
+	 * Performs the same 'check' operation as check(char expected), but requires
+	 * that the given string of chars is present exactly as given.
+	 * Similarly, if the end is reached during the char maching, false is
+	 * returned instead.
+	 * 
+	 * @param expectedString A list of chars to check in order
+	 * @return true if all chars match in order
+	 */
+	private boolean checkInOrder(char... expectedString) {
+		int prev_cur = getCurrent();
+		boolean r = true;
+		for (char c : expectedString) {
+			//break at end regardless
+			if (atEnd() || !check(c)) {
+				r = false;
+				break;
+			}
+		}
+		setCurrent(prev_cur);
+		return r;
+	}
+	
+	/**
+	 * If the expected is the current char, then advance the current position
+	 * and return true.
+	 * 
+	 * @param expected The char to be checked
+	 * @return true if the char matches
+	 */
+	private boolean match(char expected) {
+		if (atEnd() || source.charAt(cur) != expected) return false;
+		cur++;
+		return true;
+	}
+	
+	/**
+	 * Similar to checkInOrder except performs matching instead of checking.
+	 * This means that if the expectedString is matched, the current token
+	 * position will be advanced each time.
+	 * 
+	 * @param expectedString A list of chars to check in order
+	 * @return true if all chars match in order
+	 */
+	private boolean matchInOrder(char... expectedString) {
+		int prev_cur = getCurrent();
+		boolean r = true;
+		for (char c : expectedString) {
+			//break at end regardless
+			if (atEnd() || !match(c)) {
+				r = false;
+				break;
+			}
+		}
+		setCurrent(prev_cur);
+		return r;
+	}
+	
+	private boolean check(ReservedWord k) { return checkInOrder(k.chars.toCharArray()); }
+	private boolean match(ReservedWord k) { return matchInOrder(k.chars.toCharArray()); }
+	
+	private char peek() { return (atEnd()) ? '\0' : source.charAt(cur); }
+	private char peekNext() { return (cur + 1 >= source.length()) ? '\0' : source.charAt(cur + 1); }
+	private char advance() { return source.charAt(cur++); }
+	private boolean isLetter(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
+	private boolean isDigit(char c) { return c >= '0' && c <= '9'; }
+	private boolean isLetterOrNum(char c) { return isLetter(c) || isDigit(c); }
+	private boolean atEnd() { return cur >= source.length(); }
+	private int getCurrent() { return cur; }
+	private void setCurrent(int in) { cur = in; }
+	
+	//--------------------------------------------------------------------------------------------------------------------
+	
+	public void setCodeFile(EnvisionCodeFile codeFileIn) { theFile = codeFileIn; }
+	public boolean hasFile() { return theFile != null; }
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
@@ -68,7 +331,7 @@ public class Tokenizer {
 				String l = reader.readLine();
 				while (l != null) {
 					l = l.replace("\t", "");
-					boolean empty = l.trim().isEmpty();
+					boolean empty = l.isBlank();
 					
 					if (!empty) {
 						EArrayList<Token> list = tokenizeLine(l, lineNum);
@@ -93,12 +356,15 @@ public class Tokenizer {
 							//lines.add(stripComments(l));
 						}
 					}
+					else {
+						Token EOF = Token.EOF(lineNum);
+						lineTokens.getLast().add(EOF);
+						tokens.add(EOF);
+						lines.add("EOF");
+					}
 				}
 				
-				Token EOF = Token.EOF(lineNum);
-				lineTokens.add(new EArrayList<Token>(EOF));
-				tokens.add(EOF);
-				lines.add("EOF");
+				if (inString) throw new EnvisionError("Envision: Tokenization failed -> incomplete string!");
 				
 				return true;
 			}
@@ -110,252 +376,13 @@ public class Tokenizer {
 	public boolean tokenizeLine(String lineIn) {
 		lineIn = lineIn.replace("\t", "");
 		EArrayList<Token> list = tokenizeLine(lineIn, 0);
+		if (inString) throw new EnvisionError("Envision: Tokenization failed -> incomplete string!");
 		lineTokens.add(list);
 		tokens.addAll(list);
 		tokens.add(Token.newLine(0));
 		lines.add(stripComments(lineIn));
 		lines.add("EOF");
 		return true;
-	}
-	
-	/** Separates a single input line's characters into valid Envision tokens. */
-	private EArrayList<Token> tokenizeLine(String line, int lineNum) {
-		createdTokens = new EArrayList();
-		
-		//the character position the line should start at
-		int lineStart = 0;
-		
-		//check for basic comment
-		if (line.startsWith(Keyword.COMMENT.chars)) { return createdTokens; }
-		
-		//check for multi-line comment start
-		if (line.startsWith(Keyword.COMMENT_START.chars)) {
-			lineStart = Keyword.COMMENT_START.chars.length();
-			inComment = true;
-		}
-		else if (line.startsWith(Keyword.COMMENT_DESCRIPTOR.chars)) {
-			lineStart = Keyword.COMMENT_DESCRIPTOR.chars.length();
-			inComment = true;
-			inDescriptor = true;
-		}
-		
-		//check for multi-line comment end
-		if (inComment && line.startsWith(Keyword.COMMENT_END.chars)) {
-			lineStart = Keyword.COMMENT_END.chars.length();
-			inComment = false;
-			inDescriptor = false;
-		}
-		
-		String cur = ""; //the current partial token being isolated
-		String op = ""; //the current operator token being isolated
-		char c = '\u0000'; //the current char that the tokenizer is on
-		boolean inStr = false; //flag to indicate if the current token is a string or not
-		boolean inNumber = false; //flag to indicate if the current token is a number
-		boolean append = true; //flag to indicate if the current character should be appended to the current token in progress
-		boolean atStart = true; //flag to indicate if there was a space
-		boolean operatorCheck = false; //flag for when there is currently an operator being parsed
-		boolean endComment = false; //flag for when a comment is declared somewhere at the end of a line statement
-		boolean multiFirst = false; //flag when the first char of the end multi-line comment operater is found 
-		
-		for (int i = lineStart; i < line.length(); i++) {
-			c = line.charAt(i);
-			
-			//System.out.println("the char: '" + c + "'  cur: '" + cur + "'  op: '" + op + "'  str: " + inStr + "  num: " + inNumber);
-			
-			if (inComment) {
-				if (multiFirst) {
-					if (Keyword.COMMENT_END.chars.charAt(1) == c) {
-						inComment = false;
-					}
-					else { multiFirst = Keyword.COMMENT_END.chars.charAt(0) == c; }
-				}
-				else { multiFirst = Keyword.COMMENT_END.chars.charAt(0) == c; }
-			}
-			else {
-				append = true;
-				
-				//first check to see if this is the start of a new token
-				if (atStart) {
-					atStart = false;
-					//check if the first character of this partial token is a number
-					if (Character.isDigit(c) || (c == '-' && i + 1 < line.length() - 1) && Character.isDigit(line.charAt(i + 1))) {
-						inNumber = true;
-						cur += c;
-						continue;
-					}
-				}
-				
-				//next check if there are strings to deal with
-				if (c == '"') {
-					if (inStr) {
-						inStr = false;
-						addToken(!cur.trim().isEmpty(), cur + c, lineNum);
-						cur = "";
-						op = "";
-						inNumber = false;
-						atStart = true;
-						operatorCheck = false;
-						continue;
-					}
-					else {
-						inStr = true;
-						addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-						cur = "" + c;
-						op = "";
-						inNumber = false;
-						atStart = true;
-						operatorCheck = false;
-						continue;
-					}
-				}
-				
-				if (!inStr) {
-					/*
-					if (inNumber) {
-						if (!Character.isDigit(c)) {
-							addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-							cur = "" + c;
-							inNumber = false;
-							continue;
-						}
-						
-						cur += c;
-						continue;
-					}
-					*/
-					
-					//check for continuing operators
-					if (operatorCheck) {
-						Keyword operator = Keyword.isStillOperator(cur);
-						
-						//check if the operator is a basic comment start
-						if (Keyword.getOperator(cur + c) == Keyword.COMMENT) {
-							//System.out.println("CUR: " + cur + c);
-							endComment = true;
-							break;
-						}
-						
-						//check if a multi comment is starting
-						if (Keyword.getOperator(cur + c) == Keyword.COMMENT_START) {
-							cur = "";
-							op = "";
-							inComment = true;
-							continue;
-						}
-						
-						//check for periods when dealing with numbers
-						if (operator == Keyword.PERIOD) {
-							if (inNumber) {
-								cur += c;
-								op = "";
-								operatorCheck = false;
-								continue;
-							}
-						}
-						
-						//if the operator is now null, the end of an operator has been found
-						if (operator == null) {
-							cur = cur.substring(0, cur.length() - op.length());
-							addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-							addToken(!op.trim().isEmpty(), op.trim(), lineNum);
-							
-							//System.out.println("CUR: " + c);
-							//System.out.println("CUR CUR: " + cur);
-							//System.out.println("CUR OP: " + op);
-							
-							cur = "" + c;
-							op = "";
-							append = false;
-							atStart = true;
-							operatorCheck = Keyword.isOperatorStart(c);
-						}
-						else {
-							operator = Keyword.isStillOperator(op + c);
-							
-							//System.out.println("not null: " + cur);
-							
-							if (operator == null) {
-								addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-								inNumber = Character.isDigit(c);
-								cur = (c == ' ') ? "" : c + "";
-								op = "";
-								operatorCheck = Keyword.isOperatorStart(c);
-								atStart = true;
-								append = false;
-								continue;
-							}
-							
-							op += c;
-						}
-					}
-					//check if operator start
-					else if (Keyword.isOperatorStart(c)) {
-						operatorCheck = true;
-						
-						if (inNumber && Keyword.PERIOD.chars.equals("" + c)) {
-							cur += c;
-							operatorCheck = false;
-							continue;
-						}
-						
-						//add the current string as a token
-						addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-						cur = c + "";
-						op = c + "";
-						continue;
-					}
-					
-					//check for spaces
-					if (c == ' ') {
-						addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-						cur = "";
-						op = "";
-						append = false;
-						atStart = true;
-						operatorCheck = false;
-					}
-				}
-				
-				if (append) { cur += c; }
-			}
-
-		}
-		
-		if (!inComment && !endComment && !cur.isEmpty()) {
-			//first check if cur is an operator all by itself
-			Keyword operator = Keyword.getOperator(cur);
-			
-			if (operator != null) {
-				addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-				cur = "";
-			}
-			//if cur wasn't an operator, check to see if the very last character is an operator instead
-			else {
-				operator = Keyword.getOperator(c + "");
-				
-				//if there was actually an operator, isolate cur from the operator and add both if they aren't empty
-				if (operator != null) {
-					
-					//remove the operator from the current string
-					cur = cur.substring(0, cur.length() - 1);
-					
-					//add the current string as a token
-					addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-					
-					String opStr = c + "";
-					
-					//now add the operator
-					addToken(!opStr.trim().isEmpty(), opStr.trim(), lineNum);
-				}
-			}
-			
-			//no operator was found, add the current string if it's not empty
-			if (operator == null) {
-				addToken(!cur.trim().isEmpty(), cur.trim(), lineNum);
-			}
-		}
-		
-		return createdTokens;
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
@@ -370,10 +397,10 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	private void addToken(boolean cond, String tokenIn, int line) {
-		if (cond) {
-			createdTokens.addIf(cond, new Token(tokenIn, line));
-		}
+	private void addToken(IKeyword keyword) { addToken(keyword, null); }
+	private void addToken(IKeyword keyword, Object literal) {
+		String text = source.substring(start, cur);
+		createdTokens.add(new Token(keyword, text, literal, lineNum));
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
@@ -381,8 +408,8 @@ public class Tokenizer {
 	
 	/** Removes both single line and multiline comments from strings. */
 	public static String stripComments(String in) {
-		if (in.startsWith("//")) { return ""; }
-		String cur = "";
+		if (in.startsWith("//")) return "";
+		EStringBuilder cur = new EStringBuilder();
 		
 		boolean start = false;
 		boolean multistart = false;
@@ -400,25 +427,25 @@ public class Tokenizer {
 							continue;
 						}
 					}
-					else { start = false; }
+					else start = false;
 				}
-				else if (c == '*') { multistart = true; }
+				else if (c == '*') multistart = true;
 			}
 			else {
 				if (start) {
-					if (c == '/') { break; }
+					if (c == '/') break;
 					if (c == '*') {
 						inMultiComment = true;
-						cur = cur.substring(0, cur.length() - 1);
+						cur.setSubstring(0, cur.length() - 1);
 					}
 				}
-				else if (c == '/') { start = true; }
+				else if (c == '/') start = true;
 			}
 			
-			if (!inMultiComment) { cur += c; }
+			if (!inMultiComment) cur.append(c);
 		}
 		
-		return cur;
+		return cur.toString();
 	}
 	
 }

@@ -1,32 +1,27 @@
 package envision.interpreter.statements;
 
-import envision.exceptions.errors.UndefinedTypeError;
 import envision.exceptions.errors.classErrors.InvalidClassStatement;
-import envision.exceptions.errors.objects.FinalExtensionError;
-import envision.exceptions.errors.objects.NotAClassError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.Scope;
-import envision.interpreter.util.TypeManager;
-import envision.interpreter.util.creationUtil.MethodCreator;
+import envision.interpreter.util.creationUtil.FunctionCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.optimizations.ClassConstruct;
-import envision.lang.EnvisionObject;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 import envision.lang.util.data.DataModifier;
 import envision.lang.util.structureTypes.InheritableObject;
-import envision.parser.expressions.types.VarExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.types.BlockStatement;
-import envision.parser.statements.types.ClassStatement;
-import envision.parser.statements.types.EnumStatement;
-import envision.parser.statements.types.ExpressionStatement;
-import envision.parser.statements.types.GetSetStatement;
-import envision.parser.statements.types.MethodDeclarationStatement;
-import envision.parser.statements.types.ModularMethodStatement;
-import envision.parser.statements.types.VariableStatement;
+import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statements.ClassStatement;
+import envision.parser.statements.statements.EnumStatement;
+import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statements.GetSetStatement;
+import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statements.ModularMethodStatement;
+import envision.parser.statements.statements.VariableStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_Class extends StatementExecutor<ClassStatement> {
@@ -39,14 +34,14 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 	public void run(ClassStatement statement) {
 		ParserDeclaration dec = statement.declaration;
 		
-		String name = statement.name.lexeme;
-		EArrayList<VarExpression> supers = statement.superclasses;
+		EnvisionDatatype name = new EnvisionDatatype(statement.name.lexeme);
+		//EArrayList<VarExpression> supers = statement.parentclasses;
 		EArrayList<Statement> body = statement.body;
 		EArrayList<Statement> staticMembers = statement.staticMembers;
-		EArrayList<MethodDeclarationStatement> constructors = statement.constructors;
+		EArrayList<MethodDeclarationStatement> constructors = statement.initializers;
 		
 		//create the class framework
-		EnvisionClass theClass = new EnvisionClass(name);
+		EnvisionClass theClass = new EnvisionClass(name.getType());
 		Scope classScope = new Scope(scope());
 		
 		//set body and scope
@@ -56,17 +51,17 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		theClass.setConstructors(constructors);
 		
 		//check that each stated super class is valid
-		for (VarExpression s : supers) {
-			EnvisionClass superClass = getSuper(s.getName());
-			theClass.addParent(superClass);
-		}
+		//for (VarExpression s : supers) {
+			//EnvisionClass superClass = getSuper(new EnvisionDatatype(s.getName()));
+			//theClass.addParent(superClass);
+		//}
 		
 		//set modifiers
 		theClass.setVisibility(dec.getVisibility());
 		for (DataModifier d : dec.getMods()) { theClass.setModifier(d, true); }
 		
 		//go through statements and process valid ones (Variable declarations, Method declarations, Objects)
-		for (Statement s : body) { checkValid(s); }
+		for (Statement s : body) checkValid(s);
 		//for (Statement s : staticMembers) { checkValid(s); }
 		
 		//gather visible parent members
@@ -90,10 +85,12 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		//execute the static members against the class's scope
 		executeBlock(staticMembers, classScope);
 		
-		//build constructor methods
+		//build constructor methods -- inherently static
 		for (MethodDeclarationStatement constructor : constructors) {
-			EnvisionMethod con = MethodCreator.buildMethod(interpreter, constructor, classScope);
+			EnvisionFunction con = FunctionCreator.buildMethod(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
+			//define the constructor as a static member on the class scope
+			classScope.define("init", Primitives.FUNCTION, con);
 		}
 		
 		//System.out.println("the body: " + body);
@@ -102,21 +99,22 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		//System.out.println();
 		
 		//define it
-		scope().define(name, name, theClass);
+		scope().define(name.getType(), name, theClass);
 		interpreter.getTypeManager().defineType(name, theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));
 	}
 	
-	private EnvisionClass getSuper(String name) {
+	/*
+	private EnvisionClass getSuper(EnvisionDatatype name) {
 		if (name == null) return null;
 		
-		EnvisionDataType type = EnvisionDataType.getDataType(name);
-		boolean primitive = type != null && type != EnvisionDataType.NULL;
+		PrimitiveDatatypes type = PrimitiveDatatypes.getDataType(name);
+		boolean primitive = type != null && type != PrimitiveDatatypes.NULL;
 		TypeManager man = interpreter.getTypeManager();
 		EnvisionObject obj = (primitive) ? man.getPrimitiveType(type) : man.getTypeClass(name);
 		
 		//check not null
-		if (obj == null) throw new UndefinedTypeError(name);
+		if (obj == null) throw new UndefinedTypeError(name.getType());
 		//check that it's actually a class
 		if (!(obj instanceof EnvisionClass)) throw new NotAClassError(obj);
 		
@@ -126,16 +124,17 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		if (superClass.isFinal()) throw new FinalExtensionError(superClass);
 		return superClass;
 	}
+	*/
 	
 	private void checkValid(Statement s) {
-		if (s instanceof ClassStatement) { return; }
-		if (s instanceof BlockStatement) { return; }
-		if (s instanceof EnumStatement) { return; }
-		if (s instanceof MethodDeclarationStatement) { return; }
+		if (s instanceof ClassStatement) return;
+		if (s instanceof BlockStatement) return;
+		if (s instanceof EnumStatement) return;
+		if (s instanceof MethodDeclarationStatement) return;
 		if (s instanceof ModularMethodStatement) return;
-		if (s instanceof VariableStatement) { return; }
-		if (s instanceof ExpressionStatement) { return; }
-		if (s instanceof GetSetStatement) { return; }
+		if (s instanceof VariableStatement) return;
+		if (s instanceof ExpressionStatement) return;
+		if (s instanceof GetSetStatement) return;
 		throw new InvalidClassStatement(s);
 	}
 	

@@ -3,9 +3,9 @@ package envision.interpreter.expressions;
 import envision.exceptions.errors.NotABooleanError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.lang.variables.EnvisionBoolean;
+import envision.lang.datatypes.EnvisionBoolean;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.TernaryExpression;
+import envision.parser.expressions.expressions.TernaryExpression;
 
 public class IE_Ternary extends ExpressionExecutor<TernaryExpression> {
 

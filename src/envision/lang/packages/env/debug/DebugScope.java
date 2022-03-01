@@ -2,20 +2,20 @@ package envision.lang.packages.env.debug;
 
 import envision.EnvisionCodeFile;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.Scope;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
-public class DebugScope extends EnvisionMethod {
+public class DebugScope extends EnvisionFunction {
 	
 	public DebugScope() {
-		super(EnvisionDataType.VOID, "scope");
+		super(Primitives.VOID, "scope");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		if (args.length == 0) {
 			Scope s = interpreter.scope();
 			Scope p = s.getParentScope();

@@ -1,6 +1,8 @@
 package envision.lang.util.data;
 
-import envision.tokenizer.Keyword;
+import envision.parser.statements.statementUtil.ParserDeclaration;
+import envision.tokenizer.IKeyword;
+import envision.tokenizer.ReservedWord;
 import java.util.List;
 
 public enum DataModifier {
@@ -17,7 +19,12 @@ public enum DataModifier {
 		byteVal = byteValIn;
 	}
 	
-	public static DataModifier of(Keyword k) {
+	public static DataModifier of(IKeyword k) {
+		if (k.isReservedWord()) return of(k.asReservedWord());
+		return null;
+	}
+	
+	public static DataModifier of(ReservedWord k) {
 		switch (k) {
 		case STATIC: return STATIC;
 		case FINAL: return FINAL;
@@ -31,7 +38,12 @@ public enum DataModifier {
 	//--------------------------------------
 	
 	/** Returns true if all of the modifiers are valid for a variable. */
-	public static boolean checkVariable(List<DataModifier> mods) {
+	public static boolean isValid_varDec(ParserDeclaration dec) {
+		return isValid_varDec(dec.getMods());
+	}
+	
+	/** Returns true if all of the modifiers are valid for a variable. */
+	public static boolean isValid_varDec(List<DataModifier> mods) {
 		for (DataModifier m : mods) {
 			if (!checkVariable(m)) { return false; }
 		}

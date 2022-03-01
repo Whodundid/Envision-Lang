@@ -2,7 +2,7 @@ package envision.parser.statements.statementUtil;
 
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
-import envision.parser.expressions.types.GenericExpression;
+import envision.parser.expressions.expressions.GenericExpression;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -12,6 +12,7 @@ public class ParserDeclaration {
 	
 	public int id;
 	public DeclarationStage stage = DeclarationStage.VISIBILITY;
+	private DeclarationType declarationType = null;
 	private VisibilityType vis = VisibilityType.SCOPE;
 	private EArrayList<Token> parameters = new EArrayList();
 	private EArrayList<DataModifier> modifiers = new EArrayList();
@@ -40,9 +41,9 @@ public class ParserDeclaration {
 	
 	@Override
 	public String toString() {
-		String m = (modifiers.isEmpty()) ? "" : "" + modifiers.toString() + " ";
-		String g = (generics.isEmpty()) ? "" : "<" + generics.toString() + "> ";
-		String r = (returnType != null) ? returnType.lexeme : "";
+		String m = (modifiers.isEmpty()) ? "" : " " + modifiers.toString();
+		String g = (generics.isEmpty()) ? "" : " <" + generics.toString() + ">";
+		String r = (returnType != null) ? " " + returnType.lexeme : "";
 		String p = "";
 		if (parameters.isNotEmpty()) {
 			p += "<";
@@ -53,24 +54,25 @@ public class ParserDeclaration {
 			parm = parm.substring(0, parm.length() - 2);
 			p += parm + ">";
 		}
-		String out = vis + " " + m + g + r + p;
+		String out = vis + "" + declarationType + m + g + r + p + " ";
 		//out = "{[" + stage + "] " + out + "}";
 		return out;
 	}
 	
-	public ParserDeclaration setVisibility(VisibilityType visIn) { vis = visIn; return this; }
+	public ParserDeclaration applyVisibility(VisibilityType visIn) { vis = visIn; return this; }
 	public ParserDeclaration applyParams(EArrayList<Token> paramsIn) { parameters.addAll(paramsIn); return this; }
 	public ParserDeclaration applyDataMods(EArrayList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
 	public ParserDeclaration applyGenerics(EArrayList<GenericExpression> genericsIn) { generics.addAll(genericsIn); return this; }
-	public ParserDeclaration setReturnType(Token returnTypeIn) { returnType = returnTypeIn; return this; }
+	public ParserDeclaration applyReturnType(Token returnTypeIn) { returnType = returnTypeIn; return this; }
+	public ParserDeclaration applyDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
 	
 	public ParserDeclaration setValues(ParserDeclaration in) {
 		DeclarationStage s = in.getStage();
 		switch (s) {
-		case TYPE: setReturnType(in.returnType);
+		case TYPE: applyReturnType(in.returnType);
 		case GENERICS: applyGenerics(in.generics);
 		case DATAMODS: applyDataMods(in.modifiers);
-		case VISIBILITY: setVisibility(in.vis);
+		case VISIBILITY: applyVisibility(in.vis);
 		default: break;
 		}
 		//setStage(s);
@@ -84,6 +86,7 @@ public class ParserDeclaration {
 	public ParserDeclaration advanceStage() { stage = stage.next(); return this; }
 	public ParserDeclaration setStage(DeclarationStage in) { stage = in; return this; }
 	
+	public boolean hasDataMods() { return modifiers.isNotEmpty(); }
 	public boolean hasParams() { return parameters.isNotEmpty(); }
 	public boolean hasGenerics() { return generics.isNotEmpty(); }
 	
@@ -97,10 +100,16 @@ public class ParserDeclaration {
 	public boolean isProtected() { return vis == VisibilityType.PROTECTED; }
 	
 	public DeclarationStage getStage() { return stage; }
+	public DeclarationType getDeclarationType() { return declarationType; }
 	public VisibilityType getVisibility() { return vis; }
 	public EArrayList<Token> getParams() { return parameters; }
 	public EArrayList<DataModifier> getMods() { return modifiers; }
 	public EArrayList<GenericExpression> getGenerics() { return generics; }
 	public Token getReturnType() { return returnType; }
+	
+	public static ParserDeclaration createIfNull() { return createIfNull(DeclarationStage.VISIBILITY); }
+	public static ParserDeclaration createIfNull(DeclarationStage stageIn) {
+		return new ParserDeclaration().setStage(stageIn);
+	}
 	
 }

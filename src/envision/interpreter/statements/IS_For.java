@@ -4,7 +4,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.ForStatement;
+import envision.parser.statements.statements.ForStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_For extends StatementExecutor<ForStatement> {
@@ -22,15 +22,17 @@ public class IS_For extends StatementExecutor<ForStatement> {
 		
 		pushScope();
 		
-		//init
+		//inits
 		execute(init);
-			
+		
 		//body
 		while (isTruthy(evaluate(cond))) {
 			pushScope();
 			execute(body);
 			//post
-			for (Expression postExp : post) evaluate(postExp);
+			for (Expression postExp : post) {
+				evaluate(postExp);
+			}
 			popScope();
 		}
 				

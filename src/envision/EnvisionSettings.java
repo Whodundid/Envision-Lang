@@ -55,12 +55,13 @@ public class EnvisionSettings {
 	public static enum LaunchArgs {
 		CLASS_FILE_STATEMENTS("allowClassFileStatements"),
 		CLASS_BODY_STATEMENTS("allowClassBodyStatements"),
-		PRELOAD_LANGUAGE("preloadLang"),
-		DEBUG_MODE("enableDebugMode"),
-		LIVE_MODE("enableLiveMode"),
-		TOKENIZE("tokenize"),
-		PARSE_STATEMENTS("parse_statements"),
-		DONT_EXECUTE("dont_execute"),
+		PRELOAD_LANGUAGE("preloadLang"), /* Loads primary Envision system classes upfront before executing Envision code. */
+		DEBUG_MODE("enableDebugMode"), /* Displays various debug outputs from the language. 'Very poorly defined!' */
+		LIVE_MODE("enableLiveMode"), /* Talk directly to the interpreter. VERY BUGGY! */
+		TOKENIZE("tokenize"), /** Prints out tokenized values, File by File. */
+		PARSE_STATEMENTS("parse_statements"), /* Prints out parsed statements, File by File. */
+		DONT_EXECUTE("dont_execute"), /* Does not allow Envision code execution to commence. */
+		//PRINTLN_AS_KEYWORD("println_as_keyword"),
 		;
 		
 		public final String name;

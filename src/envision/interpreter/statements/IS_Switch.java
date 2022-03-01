@@ -9,8 +9,8 @@ import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.CaseStatement;
-import envision.parser.statements.types.SwitchStatement;
+import envision.parser.statements.statements.CaseStatement;
+import envision.parser.statements.statements.SwitchStatement;
 import envision.tokenizer.Token;
 
 public class IS_Switch extends StatementExecutor<SwitchStatement> {
@@ -30,7 +30,7 @@ public class IS_Switch extends StatementExecutor<SwitchStatement> {
 		
 		//ensure the value being switched upon is not null
 		//(NOT SURE IF ACTUALLY DESIRED)
-		assertNull(exprObj);
+		assertNotNull(exprObj);
 		
 		//grab the default case (handy)
 		CaseStatement defaultCase = s.defaultCase;

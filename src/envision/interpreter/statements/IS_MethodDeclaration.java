@@ -1,10 +1,10 @@
 package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.MethodCreator;
+import envision.interpreter.util.creationUtil.FunctionCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.lang.objects.EnvisionMethod;
-import envision.parser.statements.types.MethodDeclarationStatement;
+import envision.lang.objects.EnvisionFunction;
+import envision.parser.statements.statements.MethodDeclarationStatement;
 
 public class IS_MethodDeclaration extends StatementExecutor<MethodDeclarationStatement> {
 
@@ -21,9 +21,9 @@ public class IS_MethodDeclaration extends StatementExecutor<MethodDeclarationSta
 	@Override
 	public void run(MethodDeclarationStatement s) {
 		//build the method against the current scope from the given declaration
-		EnvisionMethod m = MethodCreator.buildMethod(interpreter, s, scope());
+		EnvisionFunction m = FunctionCreator.buildMethod(interpreter, s, scope());
 		//attempt to find any already existing base method within the given scope
-		EnvisionMethod base = MethodCreator.getBaseMethod(s.name, s.operator, scope());
+		EnvisionFunction base = FunctionCreator.getBaseMethod(s.name, s.operator, scope());
 		
 		//if there is a base method, try to add the newly built method as an overload
 		if (base != null) { base.addOverload(m.getParams(), s.body); }

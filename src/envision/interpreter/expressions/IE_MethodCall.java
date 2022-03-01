@@ -9,7 +9,7 @@ import envision.exceptions.errors.VoidMethodError;
 import envision.exceptions.errors.objects.AbstractInstantiationError;
 import envision.exceptions.errors.objects.UnsupportedInstantiationError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.CastingUtil;
+import envision.interpreter.util.CastingUtil;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.interpreter.util.optimizations.ClassConstruct;
@@ -17,11 +17,13 @@ import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionMethod;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.objects.EnvisionFunction;
 import envision.lang.objects.EnvisionVoidObject;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.InternalMethod;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.MethodCallExpression;
+import envision.parser.expressions.expressions.MethodCallExpression;
 
 public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 
@@ -33,14 +35,26 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 		super(in);
 	}
 	
+	public static Object run(EnvisionInterpreter in, MethodCallExpression e) {
+		return new IE_MethodCall(in).run(e);
+	}
+	
 	//-------------------------------------------------------------------------
 
 	@Override
 	public Object run(MethodCallExpression expression) {
-		//System.out.println(expression + " : " + expression.callee);
-		Object o = (expression.callee instanceof Expression) ? evaluate((Expression) expression.callee) : expression.callee;
+		//System.out.println("IE_METHODCALL RUN: " + expression + " : " + expression.callee);
+		Object o = (expression.callee instanceof Expression expr) ? evaluate(expr) : expression.callee;
 		e = expression;
 		name = (e.name != null) ? e.name.lexeme : null;
+		
+		//System.out.println("IE_METHODCALL: THE OBJECT: " + o);
+		//if (o != null) System.out.println("\tThe object being called: " + o.getClass());
+		
+		if (o != null && !(o instanceof EnvisionObject)) {
+			EnvisionDatatype o_type = EnvisionDatatype.dynamicallyDetermineType(o);
+			o = ObjectCreator.createObject(EnvisionObject.DEFAULT_NAME, o_type, o, false);
+		}
 		
 		//determine what type of object is being called
 		if (o instanceof EnvisionObject) {
@@ -48,19 +62,21 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 			
 			//parse the args
 			for (int i = 0; i < args.length; i++) {
-				args[i] = evaluate(e.args.get(i));
+				var arg = e.args.get(i);
+				//System.out.println(arg + " : " + arg.getClass());
+				args[i] = evaluate(arg);
 			}
 			
 			//determine the type
-			if (o instanceof EnvisionCodeFile) return importCall((EnvisionCodeFile) o);
-			//if (o instanceof EnvisionLangPackage)  return packageCall((EnvisionLangPackage) o);
-			if (o instanceof ClassInstance) return instanceCall((ClassInstance) o);
-			if (o instanceof EnvisionClass) return classCall((EnvisionClass) o);
-			if (o instanceof EnvisionMethod) return methodCall((EnvisionMethod) o);
-			if (o instanceof EnvisionObject) return objectMethodCall((EnvisionObject) o);
+			if (o instanceof EnvisionCodeFile env_code) return importCall(env_code);
+			//if (o instanceof EnvisionLangPackage env_pkg)  return packageCall(env_pkg);
+			if (o instanceof ClassInstance env_inst) return instanceCall(env_inst);
+			if (o instanceof EnvisionClass env_class) return classCall(env_class);
+			if (o instanceof EnvisionFunction env_func) return methodCall(env_func);
+			if (o instanceof EnvisionObject env_obj) return objectMethodCall(env_obj);
 		}
 		else if (o != null) {
-			return run(expression.setCallee(ObjectCreator.createObject(o)));
+			//return run(expression.setCallee(ObjectCreator.createObject(o)));
 		}
 		
 		throw new EnvisionError("TEMP: Invalid method call expression! " + e + " : " + o);
@@ -68,23 +84,15 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 	
 	//-------------------------------------------------------------------------
 	
-	public static Object run(EnvisionInterpreter in, MethodCallExpression e) {
-		return new IE_MethodCall(in).run(e);
-	}
-	
-	//-------------------------------------------------------------------------
-	
 	private Object importCall(EnvisionCodeFile code) {
-		EnvisionObject obj = code.getValue(name);
+		EnvisionObject env_obj = code.getValue(name);
 		
-		if (obj == null) throw new UndefinedValueError(name);
-		if (!obj.isPublic()) throw new NotVisibleError(obj);
+		if (env_obj == null) throw new UndefinedValueError(name);
+		if (!env_obj.isPublic()) throw new NotVisibleError(env_obj);
 		
-		if (obj instanceof EnvisionClass) return classCall((EnvisionClass) obj);
-		if (obj instanceof EnvisionMethod) return methodCall((EnvisionMethod) obj);
-		if (obj instanceof EnvisionObject) return objectMethodCall(obj);
-		
-		throw new InvalidTargetError(name);
+		if (env_obj instanceof EnvisionClass env_class) return classCall(env_class);
+		if (env_obj instanceof EnvisionFunction env_func) return methodCall(env_func);
+		return objectMethodCall(env_obj);
 	}
 	
 	/*
@@ -111,16 +119,18 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 			InternalMethod im = ci.theClass.getInternalMethod(name, args);
 			if (im != null) {
 				try {
-					im.call(interpreter, args);
+					im.invoke(interpreter, args);
 				}
 				catch (ReturnValue r) {
-					if (e.next != null) { return run(e.applyNext(r.object)); }
+					if (e.next != null) return run(e.applyNext(r.object));
 					else {
 						//make sure this method isn't supposed to return void
-						if (im.isVoid()) { throw new VoidMethodError(im); }
+						if (im.isVoid()) throw new VoidMethodError(im);
 						//check type
 						if (e.name == null) {
-							CastingUtil.checkType(im.getReturnType(), r.object);
+							EnvisionDatatype im_type = im.getReturnType();
+							EnvisionDatatype r_type = EnvisionDatatype.dynamicallyDetermineType(r.object);
+							CastingUtil.assert_expected_datatype(im_type, r_type);
 						}
 						return r.object;
 					}
@@ -128,9 +138,9 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 			}
 		}
 		
-		if (obj instanceof EnvisionClass) { return classCall((EnvisionClass) obj); }
-		if (obj instanceof EnvisionMethod) { return methodCall((EnvisionMethod) obj); }
-		if (obj instanceof EnvisionObject) { return objectMethodCall(obj); }
+		if (obj instanceof EnvisionClass) return classCall((EnvisionClass) obj);
+		if (obj instanceof EnvisionFunction) return methodCall((EnvisionFunction) obj);
+		if (obj instanceof EnvisionObject) return objectMethodCall(obj);
 		
 		throw new InvalidTargetError(name + " is not a method! Instead is: '" + obj + "'!");
 	}
@@ -143,11 +153,24 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 			}
 			else if (c.isAbstract()) throw new AbstractInstantiationError(c);
 			else if (c.isInstantiable()) {
-				//utilize construct optimization
-				ClassConstruct con = c.getClassConstruct();
-				if (con != null) con.call(interpreter, args);
-				//otherwise default to basic creation
-				else c.call(interpreter, args);
+				//first check if it is actually 
+				if (c.isPrimitive()) {
+					//I don't like this code having to be evaluated here similar to a normal
+					//assignment path. It feels like it should be calling one of the more
+					//hard defined pathways instead.
+					
+					var value = (args.length == 1) ? args[0] : null;
+					if (value instanceof EnvisionVariable env_var) value = env_var.get();
+					return ObjectCreator.createObject(name, c.getDatatype(), value, false);
+				}
+				else {
+					//System.out.println("\tthe instantiable object: " + c.getClass());
+					//utilize construct optimization
+					ClassConstruct con = c.getClassConstruct();
+					if (con != null) con.call(interpreter, args);
+					//otherwise default to basic creation
+					else c.invoke_I(null, interpreter, args);
+				}
 			}
 			else throw new UnsupportedInstantiationError(c);
 		}
@@ -159,16 +182,12 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 	}
 	
 	//handle methods
-	private Object methodCall(EnvisionMethod m) {
+	private Object methodCall(EnvisionFunction m) {
 		try {
-			//System.out.println(name + " : " + m);
 			try {
-				m.call_I(interpreter, args);
+				m.invoke_I(name, interpreter, args);
 			}
 			catch (ReturnValue r) { throw r; }
-			
-			if (name != null) m.runInternalMethod(name, interpreter, args);
-			//else m.call_I(interpreter, args);
 		}
 		catch (ReturnValue r) {
 			if (e.next != null) {
@@ -177,9 +196,13 @@ public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 			else {
 				//make sure this method isn't supposed to return void
 				if (m.isVoid()) throw new VoidMethodError(m);
+				//if it's a construtor return the created object
+				if (m.isConstructor()) return r.object;
 				//check type
 				if (e.name == null) {
-					CastingUtil.checkType(m.getReturnType(), r.object);
+					EnvisionDatatype im_type = m.getReturnType();
+					EnvisionDatatype r_type = EnvisionDatatype.dynamicallyDetermineType(r.object);
+					CastingUtil.assert_expected_datatype(im_type, r_type);
 				}
 				return r.object;
 			}

@@ -6,7 +6,7 @@ import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.TryStatement;
+import envision.parser.statements.statements.TryStatement;
 
 public class IS_Try extends StatementExecutor<TryStatement> {
 

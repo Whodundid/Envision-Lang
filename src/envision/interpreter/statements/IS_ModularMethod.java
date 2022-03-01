@@ -3,21 +3,19 @@ package envision.interpreter.statements;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.DuplicateObjectError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.MethodCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.lang.objects.EnvisionMethod;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.AssignExpression;
-import envision.parser.expressions.types.BinaryExpression;
+import envision.parser.expressions.expressions.AssignExpression;
+import envision.parser.expressions.expressions.BinaryExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.BlockStatement;
-import envision.parser.statements.types.ExpressionStatement;
-import envision.parser.statements.types.ModularMethodStatement;
-import envision.parser.statements.types.ReturnStatement;
+import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statements.ModularMethodStatement;
+import envision.parser.statements.statements.ReturnStatement;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxHolder;
+import eutil.datatypes.util.BoxList;
 import main.Experimental_Envision;
 
 @Experimental_Envision
@@ -35,11 +33,12 @@ public class IS_ModularMethod extends StatementExecutor<ModularMethodStatement> 
 	
 	@Override
 	public void run(ModularMethodStatement s) {
-		BoxHolder<Token, Token> associations = s.associations;
+		BoxList<Token, Token> associations = s.associations;
 		
 		for (Box2<Token, Token> modAssociation : associations) {
-			Token refName = s.name;
-			String methName = ((refName.isModular()) ? "" : refName.lexeme) + modAssociation.getA().lexeme;
+			//Token refName = s.name;
+			//String methName = ((refName.isModular()) ? "" : refName.lexeme) + modAssociation.getA().lexeme;
+			//String methName = refName.lexeme;
 			
 			//attempt to find any already existing base method within the given scope
 			Object base = scope().get(s.name.lexeme);
@@ -93,8 +92,8 @@ public class IS_ModularMethod extends StatementExecutor<ModularMethodStatement> 
 				}
 				
 				//build the method against the current scope from the given declaration
-				EnvisionMethod m = MethodCreator.buildMethod(interpreter, s, methName, newStatements, scope());
-				scope().define(methName, m);
+				//EnvisionFunction m = FunctionCreator.buildMethod(interpreter, s, methName, newStatements, scope());
+				//scope().define(methName, m);
 			}
 		}
 	}
@@ -113,16 +112,16 @@ public class IS_ModularMethod extends StatementExecutor<ModularMethodStatement> 
 	
 	private void replaceExpression(Expression e, Token ass) {
 		if (e instanceof AssignExpression) {
-			AssignExpression c = (AssignExpression) e;
-			if (c.name.isModular()) c.name = ass;
-			if (c.operator.isModular()) c.operator = ass;
-			replaceExpression(c.value, ass);
+			//AssignExpression c = (AssignExpression) e;
+			//if (c.name.isModular()) c.name = ass;
+			//if (c.operator.isModular()) c.operator = ass;
+			//replaceExpression(c.value, ass);
 		}
 		else if (e instanceof BinaryExpression) {
-			BinaryExpression c = (BinaryExpression) e;
-			if (c.operator.isModular()) { c.operator = ass; c.modular = false; }
-			replaceExpression(c.left, ass);
-			replaceExpression(c.right, ass);
+			//BinaryExpression c = (BinaryExpression) e;
+			//if (c.operator.isModular()) { c.operator = ass; c.modular = false; }
+			//replaceExpression(c.left, ass);
+			//replaceExpression(c.right, ass);
 		}
 	}
 	

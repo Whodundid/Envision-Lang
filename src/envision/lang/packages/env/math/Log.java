@@ -2,18 +2,18 @@ package envision.lang.packages.env.math;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
-public class Log extends EnvisionMethod {
+public class Log extends EnvisionFunction {
 	
 	public Log() {
-		super(EnvisionDataType.DOUBLE, "log");
+		super(Primitives.DOUBLE, "log");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		switch (args.length) {
 		case 0:
 		case 1:

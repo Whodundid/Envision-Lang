@@ -1,5 +1,6 @@
 package envision;
 
+import envision.bytecode.translator.BytecodeTranslator;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.BadDirError;
 import envision.exceptions.errors.workingDirectory.InterpreterCreationError;
@@ -110,8 +111,10 @@ public class Envision {
 	//--------------
 	
 	/** Creates a new Envision workspace. */
-	public Envision() {
-		this(null);
+	public Envision() {}
+	
+	public Envision(String... args) {
+		launchSettings = new EnvisionSettings(args);
 	}
 	
 	/** Creates a new Envision workspace. */
@@ -168,6 +171,8 @@ public class Envision {
 	
 	/** Internal run program call. */
 	private void runProgramI() throws Exception {
+		final long start_time = System.currentTimeMillis();
+		
 		//check main
 		EnvisionCodeFile main = dir.getMain();
 		
@@ -200,6 +205,8 @@ public class Envision {
 			//actually execute the built program
 			main.execute(programArgs);
 			
+			new BytecodeTranslator(main).translate();
+			
 			if (liveMode) {
 				Scanner reader = new Scanner(System.in);
 				while (liveMode) {
@@ -211,11 +218,15 @@ public class Envision {
 			}
 		}
 		catch (EnvisionError e) {
+			System.out.println("error");
 			if (callback != null) callback.handleError(e);
 		}
 		catch (Exception e) {
-			//handle interpreting error --
+			System.out.println("exception");
 			if (callback != null) callback.handleException(e);
+		}
+		finally {
+			System.out.println("END: " + (System.currentTimeMillis() - start_time) + " ms");
 		}
 	}
 	

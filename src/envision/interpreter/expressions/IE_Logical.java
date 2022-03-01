@@ -2,7 +2,8 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.LogicalExpression;
+import envision.parser.expressions.expressions.LogicalExpression;
+import envision.tokenizer.Operator;
 
 public class IE_Logical extends ExpressionExecutor<LogicalExpression> {
 
@@ -13,13 +14,14 @@ public class IE_Logical extends ExpressionExecutor<LogicalExpression> {
 	@Override
 	public Object run(LogicalExpression expression) {
 		Object left = evaluate(expression.left);
+		Operator op = expression.operator;
 		
-		switch (expression.operator.keyword) {
+		switch (op) {
 		case AND: return (!isTruthy(left)) ? false : isTruthy(evaluate(expression.right));
 		case OR: return (isTruthy(left)) ? true : isTruthy(evaluate(expression.right));
-		case BITWISE_AND:
-		case BITWISE_OR:
-		case BITWISE_XOR:
+		case BW_AND:
+		case BW_OR:
+		case BW_XOR:
 		//case BITWISE_NOT:
 		default: //ERROR
 		}

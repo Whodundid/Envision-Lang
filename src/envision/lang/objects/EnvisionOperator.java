@@ -1,21 +1,23 @@
 package envision.lang.objects;
 
-import envision.exceptions.errors.InvalidTargetError;
 import envision.exceptions.errors.classErrors.UndefinedConstructorError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
-import envision.tokenizer.Keyword;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.util.Primitives;
 
 public class EnvisionOperator extends EnvisionVariable {
 	
-	public EnvisionOperator(String nameIn) { this(nameIn, false); }
-	public EnvisionOperator(String nameIn, boolean val) { super(EnvisionDataType.OPERATOR, nameIn, val); }
-	public EnvisionOperator(Keyword opIn) { this("noname", opIn); }
-	public EnvisionOperator(String nameIn, Keyword opIn) { super(EnvisionDataType.OPERATOR, nameIn, Operator.of(opIn)); }
-	public EnvisionOperator(EnvisionOperator in) { this((Operator) in.get()); }
-	public EnvisionOperator(Operator in) { super(EnvisionDataType.OPERATOR, "noname", in); }
+	public EnvisionOperator(String nameIn) {
+		super(Primitives.OPERATOR.toDatatype(), nameIn);
+	}
+	
+	//public EnvisionOperator(String nameIn) { this(nameIn, false); }
+	//public EnvisionOperator(String nameIn, boolean val) { super(new EnvisionDatatype(PrimitiveDatatypes.OPERATOR), nameIn, val); }
+	//public EnvisionOperator(Keyword opIn) { this("noname", opIn); }
+	//public EnvisionOperator(String nameIn, Keyword opIn) { super(PrimitiveDatatypes.OPERATOR, nameIn, Operator.of(opIn)); }
+	//public EnvisionOperator(EnvisionOperator in) { this((Operator) in.get()); }
+	//public EnvisionOperator(Operator in) { super(PrimitiveDatatypes.OPERATOR, "noname", in); }
 	
 	@Override
 	protected void registerInternalMethods() {
@@ -35,35 +37,7 @@ public class EnvisionOperator extends EnvisionVariable {
 		return null;
 	}
 	
-	public static EnvisionOperator of(Operator val) { return new EnvisionOperator(val); }
-	public static EnvisionOperator of(String val) { return new EnvisionOperator(Operator.of(val)); }
-	
-	/**
-	 * Used to store an 'operator' as a value.
-	 */
-	public static class Operator {
-		public final Keyword op;
-		
-		public Operator(Keyword in) {
-			assert in.isOperator;
-			op = in;
-		}
-		
-		@Override
-		public String toString() {
-			return op.toString();
-		}
-		
-		public static Operator of(String in) {
-			Keyword k = Keyword.getKeyword(in);
-			if (k != null && k.isOperator) return new Operator(k);
-			throw new InvalidTargetError("Expected an operator, but got: '" + in + "' instead!");
-		}
-		
-		public static Operator of(Keyword k) {
-			if (k != null && k.isOperator) return new Operator(k);
-			throw new InvalidTargetError("Expected an operator, but got: '" + k + "' instead!");
-		}
-	}
+	//public static EnvisionOperator of(Operator val) { return new EnvisionOperator(val); }
+	//public static EnvisionOperator of(String val) { return new EnvisionOperator(Operator.of(val)); }
 	
 }

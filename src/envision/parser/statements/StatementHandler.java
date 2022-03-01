@@ -1,29 +1,29 @@
 package envision.parser.statements;
 
-import envision.parser.statements.types.BlockStatement;
-import envision.parser.statements.types.CaseStatement;
-import envision.parser.statements.types.CatchStatement;
-import envision.parser.statements.types.ClassStatement;
-import envision.parser.statements.types.EnumStatement;
-import envision.parser.statements.types.ExceptionStatement;
-import envision.parser.statements.types.ExpressionStatement;
-import envision.parser.statements.types.ForStatement;
-import envision.parser.statements.types.GenericStatement;
-import envision.parser.statements.types.GetSetStatement;
-import envision.parser.statements.types.IfStatement;
-import envision.parser.statements.types.ImportStatement;
-import envision.parser.statements.types.InterfaceStatement;
-import envision.parser.statements.types.LambdaForStatement;
-import envision.parser.statements.types.LoopControlStatement;
-import envision.parser.statements.types.MethodDeclarationStatement;
-import envision.parser.statements.types.ModularMethodStatement;
-import envision.parser.statements.types.PackageStatement;
-import envision.parser.statements.types.RangeForStatement;
-import envision.parser.statements.types.ReturnStatement;
-import envision.parser.statements.types.SwitchStatement;
-import envision.parser.statements.types.TryStatement;
-import envision.parser.statements.types.VariableStatement;
-import envision.parser.statements.types.WhileStatement;
+import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statements.CaseStatement;
+import envision.parser.statements.statements.CatchStatement;
+import envision.parser.statements.statements.ClassStatement;
+import envision.parser.statements.statements.EnumStatement;
+import envision.parser.statements.statements.ExceptionStatement;
+import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statements.ForStatement;
+import envision.parser.statements.statements.GenericStatement;
+import envision.parser.statements.statements.GetSetStatement;
+import envision.parser.statements.statements.IfStatement;
+import envision.parser.statements.statements.ImportStatement;
+import envision.parser.statements.statements.InterfaceStatement;
+import envision.parser.statements.statements.LambdaForStatement;
+import envision.parser.statements.statements.LoopControlStatement;
+import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statements.ModularMethodStatement;
+import envision.parser.statements.statements.PackageStatement;
+import envision.parser.statements.statements.RangeForStatement;
+import envision.parser.statements.statements.ReturnStatement;
+import envision.parser.statements.statements.SwitchStatement;
+import envision.parser.statements.statements.TryStatement;
+import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statements.WhileStatement;
 
 public interface StatementHandler {
 	

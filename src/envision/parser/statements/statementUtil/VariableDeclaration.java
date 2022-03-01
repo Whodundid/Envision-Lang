@@ -6,18 +6,20 @@ import envision.tokenizer.Token;
 public class VariableDeclaration {
 	
 	public final Token name;
-	public final Expression value;
+	public final Expression assignment_value;
 	
 	public VariableDeclaration(Token nameIn, Expression valueIn) {
 		name = nameIn;
-		value = valueIn;
+		assignment_value = valueIn;
 	}
 	
-	public String getName() { return name.lexeme; }
+	public String getName() {
+		return name.lexeme;
+	}
 	
 	@Override
 	public String toString() {
-		String v = (value != null) ? " = " + value.toString() : "";
+		String v = (assignment_value != null) ? " = " + assignment_value.toString() : "";
 		return name.lexeme + v;
 	}
 	

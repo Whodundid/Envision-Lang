@@ -1,7 +1,7 @@
 package envision.parser.statements.statementUtil;
 
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.AssignExpression;
+import envision.parser.expressions.expressions.AssignExpression;
 import envision.tokenizer.Token;
 
 public class StatementParameter {

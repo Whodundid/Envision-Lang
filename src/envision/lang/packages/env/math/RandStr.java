@@ -1,18 +1,18 @@
 package envision.lang.packages.env.math;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 import eutil.random.RandomUtil;
 
-public class RandStr extends EnvisionMethod {
+public class RandStr extends EnvisionFunction {
 	
 	public RandStr() {
-		super(EnvisionDataType.STRING, "randStr");
+		super(Primitives.STRING, "randStr");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		ret(RandomUtil.randomString());
 	}
 	

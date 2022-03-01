@@ -2,8 +2,8 @@ package envision.lang.util.data;
 
 import envision.interpreter.util.creationUtil.VariableUtil;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.util.Primitives;
 
 public class DataValue {
 	
@@ -11,12 +11,12 @@ public class DataValue {
 	public final Object object;
 	
 	public DataValue() {
-		type = EnvisionDataType.NULL.type;
+		type = Primitives.NULL.string_type;
 		object = null;
 	}
 	
 	public DataValue(Object objectIn) {
-		type = EnvisionDataType.getTypeName(objectIn);
+		type = Primitives.getTypeString(objectIn);
 		object = objectIn;
 	}
 	
@@ -30,8 +30,20 @@ public class DataValue {
 		return type + ":" + object;
 	}
 	
-	public static DataValue nil() { return new DataValue(EnvisionDataType.NULL.type, null); }
-	public static DataValue of(EnvisionVariable var) { return new DataValue(var.getInternalType().type, var.get()); }
-	public static DataValue of(EnvisionObject obj) { return new DataValue(VariableUtil.getTypeString(obj), obj); }
+	//--------
+	// Static
+	//--------
+	
+	public static DataValue nil() {
+		return new DataValue(Primitives.NULL.string_type, null);
+	}
+	
+	public static DataValue of(EnvisionVariable var) {
+		return new DataValue(var.getDatatype().getType(), var.get());
+	}
+	
+	public static DataValue of(EnvisionObject obj) {
+		return new DataValue(VariableUtil.getTypeString(obj), obj);
+	}
 	
 }

@@ -1,6 +1,8 @@
 package envision.lang.util;
 
-import envision.tokenizer.Keyword;
+import envision.tokenizer.IKeyword;
+import envision.tokenizer.Operator;
+import envision.tokenizer.Token;
 
 public enum VisibilityType {
 	
@@ -11,22 +13,42 @@ public enum VisibilityType {
 	/** Permitted to for special cases. IE: a field wrapping a Java object. */
 	RESTRICTED;
 	
-	public static VisibilityType parse(Keyword k) {
+	public static VisibilityType parse(Token t) {
+		return parse(t.keyword);
+	}
+	
+	public static VisibilityType parse(IKeyword k) {
+		if (k.isOperator()) return parse(k.asOperator());
+		return null;
+	}
+	
+	public static VisibilityType parse(Operator k) {
 		switch (k) {
 		case ADD: return PUBLIC;
 		case PROTECTED: return PROTECTED;
-		case SUBTRACT: return PRIVATE;
+		case SUB: return PRIVATE;
 		default: return null;
 		}
 	}
 	
 	public static VisibilityType parse(String s) {
 		switch (s.toLowerCase()) {
-		case "public": return PUBLIC;
-		case "protected": return PROTECTED;
-		case "private": return PRIVATE;
+		case "+": return PUBLIC;
+		case "_": return PROTECTED;
+		case "-": return PRIVATE;
 		default: return null;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return switch (this) {
+		case PUBLIC -> "+";
+		case PROTECTED -> "_";
+		case PRIVATE -> "-";
+		case SCOPE -> "";
+		default -> "";
+		};
 	}
 	
 }

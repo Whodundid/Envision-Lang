@@ -1,20 +1,20 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.Primitives;
 import envision.lang.util.data.Parameter;
 
-public class InvalidDataTypeError extends EnvisionError {
+public class InvalidDatatypeError extends EnvisionError {
 
-	public InvalidDataTypeError(EnvisionDataType dataType) {
+	public InvalidDatatypeError(Primitives dataType) {
 		super(dataType + " is an invalid dataType!");
 	}
 	
-	public InvalidDataTypeError(Parameter got, Parameter expected) {
+	public InvalidDatatypeError(Parameter got, Parameter expected) {
 		super("Invalid type: '" + got.datatype + "' but expected '" + expected.datatype + "' !");
 	}
 	
-	public InvalidDataTypeError(String in) {
+	public InvalidDatatypeError(String in) {
 		super(in);
 	}
 	

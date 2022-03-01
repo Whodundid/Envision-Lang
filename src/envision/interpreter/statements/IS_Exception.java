@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.types.ExceptionStatement;
+import envision.parser.statements.statements.ExceptionStatement;
 
 public class IS_Exception extends StatementExecutor<ExceptionStatement> {
 

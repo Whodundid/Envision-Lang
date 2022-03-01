@@ -3,7 +3,7 @@ package envision.interpreter.expressions;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.objects.EnvisionList;
-import envision.parser.expressions.types.ListInitializerExpression;
+import envision.parser.expressions.expressions.ListInitializerExpression;
 
 public class IE_ListInitializer extends ExpressionExecutor<ListInitializerExpression> {
 

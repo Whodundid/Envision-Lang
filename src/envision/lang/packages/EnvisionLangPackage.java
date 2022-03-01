@@ -2,7 +2,8 @@ package envision.lang.packages;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 import eutil.datatypes.EArrayList;
 
 /** A special type of package that is natively imported at program start. */
@@ -11,7 +12,7 @@ public abstract class EnvisionLangPackage extends EnvisionObject {
 	EArrayList<EnvisionObject> objects = new EArrayList();
 	
 	public EnvisionLangPackage(String nameIn) {
-		super(nameIn, EnvisionDataType.PACKAGE);
+		super(new EnvisionDatatype(Primitives.PACKAGE), nameIn);
 	}
 	
 	protected void build(EnvisionInterpreter interpreter) {
@@ -50,10 +51,8 @@ public abstract class EnvisionLangPackage extends EnvisionObject {
 	
 	public void defineOn(EnvisionInterpreter interpreter) {
 		build(interpreter);
-		
-		for (EnvisionObject o : objects) {
-			interpreter.scope().define(o.getName(), o);
-		}
+		var scope = interpreter.scope();
+		objects.forEach(scope::defineImportVal);
 	}
 	
 }

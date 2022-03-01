@@ -1,18 +1,18 @@
 package envision.lang.packages.env.math;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
-public class Pow extends EnvisionMethod {
+public class Pow extends EnvisionFunction {
 	
 	public Pow() {
-		super(EnvisionDataType.INT, "pow");
+		super(Primitives.INT, "pow");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		Object a = args[0];
 		Object b = args[1];
 		

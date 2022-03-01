@@ -2,6 +2,7 @@ package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
+import envision.lang.util.EnvisionDatatype;
 
 public class UndefinedTypeError extends EnvisionError {
 	
@@ -15,6 +16,14 @@ public class UndefinedTypeError extends EnvisionError {
 	
 	public UndefinedTypeError(EnvisionObject type) {
 		this((type != null) ? type.getName() : "(null)");
+	}
+	
+	public static UndefinedTypeError badType(String typeIn) {
+		return new UndefinedTypeError("The type '" + typeIn + "' is not defined within the current scope!");
+	}
+	
+	public static UndefinedTypeError badType(EnvisionDatatype typeIn) {
+		return new UndefinedTypeError("The type '" + typeIn + "' is not defined within the current scope!");
 	}
 	
 }

@@ -1,36 +1,82 @@
 package envision.interpreter.util;
 
-import envision.interpreter.util.creationUtil.ObjectCreator;
-import envision.lang.EnvisionObject;
+import envision.exceptions.EnvisionError;
+import envision.exceptions.EnvisionWarning;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
-/** Keeps track of user defined types. */
+/**
+ * Interpreter Utility to help keep track of user-defined types.
+ * 
+ * @author Hunter Bragg
+ */
 public class TypeManager {
 	
+	/**
+	 * A collection of all user defined datatypes along with
+	 * the EnvisionClass associated with them.
+	 */
 	private HashMap<String, EnvisionClass> types = new HashMap();
 	
-	public void defineType(String typeIn, EnvisionClass objectType) {
-		if (!types.containsKey(typeIn)) {
-			types.put(typeIn, objectType);
+	public TypeManager() {
+		//load primitive types
+		//types.put(Primitives.INT.string_type, new EnvisionInt());
+	}
+	
+	/**
+	 * Defines a new user-defined datatype within this TypeManager.
+	 * The user-defined type must include the EnvisionClass to
+	 * associate with the type.
+	 * 
+	 * @param typeIn
+	 * @param objectType
+	 */
+	public void defineType(EnvisionDatatype typeIn, EnvisionClass objectType) {
+		if (objectType == null) throw new EnvisionError("TypeManager: Null user defined type!");
+		
+		if (types.containsKey(typeIn.getType())) {
+			throw new EnvisionWarning("TypeManager: Potentially unwanted type reassignment. '" + typeIn + "'");
 		}
+			
+		types.put(typeIn.getType(), objectType);
 	}
 	
-	public boolean isTypeDefined(String typeIn) {
-		return types.containsKey(typeIn);
+	/**
+	 * Returns true if the given type is currently defined within
+	 * this TypeManager.
+	 * 
+	 * @param typeIn the type to check for
+	 * @return true if defined
+	 */
+	public boolean isTypeDefined(EnvisionDatatype typeIn) {
+		return types.containsKey(typeIn.getType());
 	}
 	
-	public EnvisionClass getTypeClass(String typeIn) {
-		return types.get(typeIn);
+	/**
+	 * Retured the associated EnvisionClass for the given
+	 * user-defined type.
+	 * If the type is not defined, null is returned instead.
+	 * 
+	 * @param typeIn the type to grab
+	 * @return the EnvisionClass of the user-defined type
+	 */
+	public EnvisionClass getTypeClass(EnvisionDatatype typeIn) {
+		return types.get(typeIn.getType());
 	}
 	
-	public HashSet getTypes() { return new HashSet(types.keySet()); }
-	
-	public EnvisionObject getPrimitiveType(EnvisionDataType typeIn) {
-		return ObjectCreator.createDefault(typeIn.type + "_primitive", typeIn);
+	/**
+	 * Returns a hashset of all user defined datatypes within this
+	 * TypeManager.
+	 * 
+	 * @return a set of all types
+	 */
+	public HashSet<EnvisionDatatype> getTypes() {
+		var mapped_types = types.keySet().stream().map(t -> new EnvisionDatatype(t)).collect(Collectors.toList());
+		return new HashSet<EnvisionDatatype>(mapped_types);
 	}
 	
 }

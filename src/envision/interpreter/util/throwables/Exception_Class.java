@@ -1,13 +1,13 @@
 package envision.interpreter.util.throwables;
 
-import static envision.lang.util.EnvisionDataType.*;
+import static envision.lang.util.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.Scope;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionMethod;
+import envision.lang.objects.EnvisionFunction;
 import envision.lang.util.data.ParameterData;
 import eutil.strings.StringUtil;
 
@@ -16,7 +16,7 @@ public class Exception_Class extends EnvisionClass {
 	public Exception_Class(EnvisionInterpreter interpreter) {
 		super("Exception");
 		classScope = new Scope(interpreter.scope());
-		addConstructor(new EnvisionMethod(new ParameterData(STRING)));
+		addConstructor(new EnvisionFunction(new ParameterData(STRING)));
 	}
 	
 	public ClassInstance buildException(EnvisionInterpreter interpreter, Exception e) {
@@ -31,7 +31,7 @@ public class Exception_Class extends EnvisionClass {
 		};
 		instanceScope.define("this", inst);
 		
-		EnvisionObject wrappedException = new EnvisionObject("_iException_", e);
+		EnvisionObject wrappedException = EnvisionObject.javaObjectWrapper("_iException_", e);
 		wrappedException.setRestricted();
 		wrappedException.setFinal();
 		instanceScope.define("_iException_", wrappedException);
@@ -53,7 +53,7 @@ public class Exception_Class extends EnvisionClass {
 		instanceScope.define("this", inst);
 		
 		Exception e = createWrapException(interpreter, args[0]);
-		EnvisionObject wrappedException = new EnvisionObject("_iException_", e);
+		EnvisionObject wrappedException = EnvisionObject.javaObjectWrapper("_iException_", e);
 		wrappedException.setRestricted();
 		wrappedException.setFinal();
 		instanceScope.define("_iException_", wrappedException);

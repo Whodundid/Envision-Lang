@@ -1,18 +1,18 @@
 package envision.lang.packages.env.math;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 import eutil.random.RandomUtil;
 
-public class RandInt extends EnvisionMethod {
+public class RandInt extends EnvisionFunction {
 	
 	public RandInt() {
-		super(EnvisionDataType.INT, "randInt");
+		super(Primitives.INT, "randInt");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		//no bounds -- literally any long value from Long.min - Long.max
 		if (args.length == 0) {
 			ret(RandomUtil.getRoll(Long.MIN_VALUE, Long.MAX_VALUE));

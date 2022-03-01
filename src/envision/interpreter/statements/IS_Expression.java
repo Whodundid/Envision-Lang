@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.types.ExpressionStatement;
+import envision.parser.statements.statements.ExpressionStatement;
 
 public class IS_Expression extends StatementExecutor<ExpressionStatement> {
 

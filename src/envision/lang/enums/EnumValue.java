@@ -1,7 +1,8 @@
 package envision.lang.enums;
 
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 import eutil.datatypes.EArrayList;
 
 public class EnumValue extends EnvisionObject {
@@ -12,7 +13,7 @@ public class EnumValue extends EnvisionObject {
 	
 	public EnumValue(EnvisionEnum enumIn, String nameIn) { this(enumIn, nameIn, null); }
 	public EnumValue(EnvisionEnum enumIn, String nameIn, EArrayList<EnvisionObject> argsIn) {
-		super(EnvisionDataType.ENUM_TYPE, nameIn);
+		super(new EnvisionDatatype(Primitives.ENUM_TYPE), nameIn);
 		theEnum = enumIn;
 		name = nameIn;
 		args = (argsIn != null) ? new EArrayList(argsIn) : new EArrayList();

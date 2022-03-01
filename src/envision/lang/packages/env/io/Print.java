@@ -2,17 +2,17 @@ package envision.lang.packages.env.io;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.EnvisionStringFormatter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
-public class Print extends EnvisionMethod {
+public class Print extends EnvisionFunction {
 	
 	public Print() {
-		super(EnvisionDataType.VOID, "print");
+		super(Primitives.VOID, "print");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		System.out.print(EnvisionStringFormatter.formatPrint(interpreter, args));
 	}
 	

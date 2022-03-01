@@ -2,7 +2,6 @@ package envision.bytecode.util;
 
 import envision.bytecode.BC_Type;
 import envision.exceptions.EnvisionError;
-import envision.lang.util.EnvisionDataType;
 
 /** Extrats name, return type and parameters from bytecode arguments. */
 public class BC_ArgParser {
@@ -44,12 +43,12 @@ public class BC_ArgParser {
 			}
 		}
 		
-		return new String[] { name, BC_Type.getType(type.charAt(0)).getDataType().type };
+		return new String[] { name, BC_Type.getType(type.charAt(0)).getDataType().string_type };
 	}
 	
 	public static String[] parseMeth(String in) {
 		String name = null, rtype = null;
-		String[] params;
+		//String[] params;
 		StringBuilder builder = new StringBuilder();
 		
 		for (int i = 0; i < in.length(); i++) {

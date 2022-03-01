@@ -1,24 +1,26 @@
 package envision.lang.objects;
 
-import static envision.lang.util.EnvisionDataType.*;
+import static envision.lang.util.Primitives.*;
 
 import envision.exceptions.errors.listErrors.EmptyListError;
 import envision.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision.exceptions.errors.listErrors.LockedListError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.datatypes.EnvisionInt;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.InternalMethod;
-import envision.lang.variables.EnvisionInt;
+import envision.lang.util.Primitives;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
+
 import java.util.Collections;
 import java.util.List;
 
 public class EnvisionList extends EnvisionObject {
 
 	private final EArrayList list = new EArrayList();
-	private final String type;
+	private final EnvisionDatatype type;
 	private boolean sizeLocked = false;
 	private EnvisionList l;
 	
@@ -26,33 +28,36 @@ public class EnvisionList extends EnvisionObject {
 	// Constructors
 	//--------------
 	
-	public EnvisionList() { this(OBJECT, "noname"); }
-	public EnvisionList(String nameIn) { this(OBJECT, nameIn); }
-	public EnvisionList(EnvisionDataType typeIn) { this(typeIn.type, "noname"); }
-	public EnvisionList(EnvisionDataType typeIn, String nameIn) { this(typeIn.type, nameIn); }
-	public EnvisionList(String typeIn, String nameIn) {
-		super(LIST, nameIn);
+	public EnvisionList() { this(EnvisionDatatype.prim_var(), DEFAULT_NAME); }
+	public EnvisionList(String nameIn) { this(EnvisionDatatype.prim_var(), nameIn); }
+	public EnvisionList(Primitives typeIn) { this(new EnvisionDatatype(typeIn), DEFAULT_NAME); }
+	public EnvisionList(EnvisionDatatype typeIn) { this(typeIn, DEFAULT_NAME); }
+	public EnvisionList(EnvisionDatatype typeIn, String nameIn) {
+		super(new EnvisionDatatype(LIST), nameIn);
 		type = typeIn;
 		l = this;
 	}
 	
-	public EnvisionList(EnvisionDataType typeIn, EArrayList listIn) { this(typeIn.type, listIn); }
-	public EnvisionList(String typeIn, EArrayList listIn) {
-		super(LIST);
+	public EnvisionList(Primitives typeIn, EArrayList listIn) {
+		this(new EnvisionDatatype(typeIn), listIn);
+	}
+	
+	public EnvisionList(EnvisionDatatype typeIn, EArrayList listIn) {
+		super(new EnvisionDatatype(LIST));
 		type = typeIn;
 		list.addAll(listIn);
 		l = this;
 	}
 	
 	public EnvisionList(EnvisionList in) {
-		super(LIST);
+		super(new EnvisionDatatype(LIST));
 		type = in.type;
 		list.addAll(in.list);
 		l = this;
 	}
 	
 	public EnvisionList(EnvisionList in, EArrayList listIn) {
-		super(LIST);
+		super(new EnvisionDatatype(LIST));
 		type = in.type;
 		list.addAll(listIn);
 		l = this;
@@ -69,34 +74,34 @@ public class EnvisionList extends EnvisionObject {
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
-		im(new InternalMethod(BOOLEAN, "add", OBJECT) { protected void body(Object[] a) { ret(l.add(cv(a[0]))); }});
-		im(new InternalMethod(OBJECT, "addR", OBJECT) { protected void body(Object[] a) { ret(l.addR(cv(a[0]))); }});
-		im(new InternalMethod(LIST, "addRT", OBJECT) { protected void body(Object[] a) { ret(l.addRT(cv(a[0]))); }});
+		im(new InternalMethod(BOOLEAN, "add", VAR) { protected void body(Object[] a) { ret(l.add(cv(a[0]))); }});
+		im(new InternalMethod(VAR, "addR", VAR) { protected void body(Object[] a) { ret(l.addR(cv(a[0]))); }});
+		im(new InternalMethod(LIST, "addRT", VAR) { protected void body(Object[] a) { ret(l.addRT(cv(a[0]))); }});
 		im(new InternalMethod(LIST, "clear") { protected void body(Object[] a) { ret(l.clear()); }});
-		im(new InternalMethod(BOOLEAN, "contains", OBJECT) { protected void body(Object[] a) { ret(l.list.contains(cv(a[0]))); }});
+		im(new InternalMethod(BOOLEAN, "contains", VAR) { protected void body(Object[] a) { ret(l.list.contains(cv(a[0]))); }});
 		im(new InternalMethod(LIST, "copy") { protected void body(Object[] a) { ret(new EnvisionList(l)); }});
-		im(new InternalMethod(LIST, "fill", OBJECT) { protected void body(Object[] a) { ret(l.fill(a)); }});
+		im(new InternalMethod(LIST, "fill", VAR) { protected void body(Object[] a) { ret(l.fill(a)); }});
 		im(new InternalMethod(LIST, "flip") { protected void body(Object[] a) { ret(l.flip()); }});
-		im(new InternalMethod(OBJECT, "get", INT) { protected void body(Object[] a) { ret(l.get((long) cv(a[0]))); }});
-		im(new InternalMethod(OBJECT, "getFirst") { protected void body(Object[] a) { ret(l.get(0)); }});
-		im(new InternalMethod(OBJECT, "getLast") { protected void body(Object[] a) { ret(l.getLast()); }});
+		im(new InternalMethod(VAR, "get", INT) { protected void body(Object[] a) { ret(l.get((long) cv(a[0]))); }});
+		im(new InternalMethod(VAR, "getFirst") { protected void body(Object[] a) { ret(l.get(0)); }});
+		im(new InternalMethod(VAR, "getLast") { protected void body(Object[] a) { ret(l.getLast()); }});
 		im(new InternalMethod(STRING, "getListType") { protected void body(Object[] a) { ret(l.getListType()); }});
 		im(new InternalMethod(BOOLEAN, "hasOne") { protected void body(Object[] a) { ret(l.size() == 1); }});
 		im(new InternalMethod(BOOLEAN, "isEmpty") { protected void body(Object[] a) { ret(l.isEmpty()); }});
 		im(new InternalMethod(BOOLEAN, "isNotEmpty") { protected void body(Object[] a) { ret(l.isNotEmpty()); }});
 		im(new InternalMethod(BOOLEAN, "isSizeLocked") { protected void body(Object[] a) { ret(l.isSizeLocked()); }});
 		im(new InternalMethod(LIST, "lockSize") { protected void body(Object[] a) { ret(l.setSizeLocked(true)); }});
-		im(new InternalMethod(BOOLEAN, "notContains", OBJECT) { protected void body(Object[] a) { ret(l.list.notContains(cv(a[0]))); }});
-		im(new InternalMethod(LIST, "push", OBJECT) { protected void body(Object[] a) { ret(l.push(cv(a[0]))); }});
-		im(new InternalMethod(OBJECT, "pop") { protected void body(Object[] a) { ret(l.pop()); }});
-		im(new InternalMethod(OBJECT, "remove", INT) { protected void body(Object[] a) { ret(l.remove((long) cv(a[0]))); }});
-		im(new InternalMethod(OBJECT, "removeFirst") { protected void body(Object[] a) { ret(l.removeFirst()); }});
-		im(new InternalMethod(OBJECT, "removeLast") { protected void body(Object[] a) { ret(l.removeLast()); }});
-		im(new InternalMethod(OBJECT, "set", INT, OBJECT) { protected void body(Object[] a) { ret(l.set((long) cv(a[0]), cv(a[1]))); }});
-		im(new InternalMethod(OBJECT, "setFirst", OBJECT) { protected void body(Object[] a) { ret(l.setFirst(cv(a[0]))); }});
-		im(new InternalMethod(OBJECT, "setLast", OBJECT) { protected void body(Object[] a) { ret(l.setLast(cv(a[0]))); }});
+		im(new InternalMethod(BOOLEAN, "notContains", VAR) { protected void body(Object[] a) { ret(l.list.notContains(cv(a[0]))); }});
+		im(new InternalMethod(LIST, "push", VAR) { protected void body(Object[] a) { ret(l.push(cv(a[0]))); }});
+		im(new InternalMethod(VAR, "pop") { protected void body(Object[] a) { ret(l.pop()); }});
+		im(new InternalMethod(VAR, "remove", INT) { protected void body(Object[] a) { ret(l.remove((long) cv(a[0]))); }});
+		im(new InternalMethod(VAR, "removeFirst") { protected void body(Object[] a) { ret(l.removeFirst()); }});
+		im(new InternalMethod(VAR, "removeLast") { protected void body(Object[] a) { ret(l.removeLast()); }});
+		im(new InternalMethod(VAR, "set", INT, VAR) { protected void body(Object[] a) { ret(l.set((long) cv(a[0]), cv(a[1]))); }});
+		im(new InternalMethod(VAR, "setFirst", VAR) { protected void body(Object[] a) { ret(l.setFirst(cv(a[0]))); }});
+		im(new InternalMethod(VAR, "setLast", VAR) { protected void body(Object[] a) { ret(l.setLast(cv(a[0]))); }});
 		im(new InternalMethod(LIST, "setSize", INT) { protected void body(Object[] a) { ret(l.setSize(a)); }});
-		im(new InternalMethod(LIST, "setSize", INT, OBJECT) { protected void body(Object[] a) { ret(l.setSize(a)); }});
+		im(new InternalMethod(LIST, "setSize", INT, VAR) { protected void body(Object[] a) { ret(l.setSize(a)); }});
 		im(new InternalMethod(LIST, "shiftLeft", INT) { protected void body(Object[] a) { ret(l.shiftLeft(a)); }});
 		im(new InternalMethod(LIST, "shiftRight", INT) { protected void body(Object[] a) { ret(l.shiftRight(a)); }});
 		im(new InternalMethod(LIST, "shuffle") { protected void body(Object[] a) { ret(l.shuffle()); }});
@@ -104,7 +109,7 @@ public class EnvisionList extends EnvisionObject {
 		im(new InternalMethod(LIST, "swap", INT, INT) { protected void body(Object[] a) { ret(l.swap((long) cv(a[0]), (long) cv(a[1]))); }});
 		im(new InternalMethod(LIST, "unlockSize") { protected void body(Object[] a) { ret(l.setSizeLocked(false)); }});
 		
-		im(new InternalMethod(LIST, "concat", OBJECT_A) {
+		im(new InternalMethod(LIST, "concat", VAR_A) {
 			protected void body(Object[] a) {
 				for (Object obj : a) {
 					if (obj instanceof EnvisionList) l.addAll((EnvisionList) obj);
@@ -222,10 +227,20 @@ public class EnvisionList extends EnvisionObject {
 		return this;
 	}
 	
-	public Object pop() { if (!sizeLocked) { return list.pop(); } else throw lockedError(); }
-	public Object push(Object o) { if (!sizeLocked) { list.push(o); return this; } else throw lockedError(); }
+	public Object pop() {
+		if (!sizeLocked) return list.pop();
+		else throw lockedError();
+	}
 	
-	public String getListType() { return type; }
+	public Object push(Object o) {
+		if (!sizeLocked) {
+			list.push(o);
+			return this;
+		}
+		else throw lockedError();
+	}
+	
+	public EnvisionDatatype getListType() { return type; }
 	public EArrayList getEArrayList() { return list; }
 	public boolean isSizeLocked() { return sizeLocked; }
 	

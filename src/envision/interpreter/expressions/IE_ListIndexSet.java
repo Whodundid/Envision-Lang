@@ -3,11 +3,11 @@ package envision.interpreter.expressions;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
+import envision.lang.datatypes.EnvisionInt;
 import envision.lang.objects.EnvisionList;
-import envision.lang.variables.EnvisionInt;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.ListIndexExpression;
-import envision.parser.expressions.types.ListIndexSetExpression;
+import envision.parser.expressions.expressions.ListIndexExpression;
+import envision.parser.expressions.expressions.ListIndexSetExpression;
 
 public class IE_ListIndexSet extends ExpressionExecutor<ListIndexSetExpression> {
 

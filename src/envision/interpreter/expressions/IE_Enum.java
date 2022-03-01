@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.EnumExpression;
+import envision.parser.expressions.expressions.EnumExpression;
 
 public class IE_Enum extends ExpressionExecutor<EnumExpression> {
 

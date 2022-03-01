@@ -1,278 +1,302 @@
 package envision.lang.util;
 
-import envision.tokenizer.Keyword;
 import envision.tokenizer.Token;
-import eutil.datatypes.util.EDataType;
 
-public enum EnvisionDataType {
-	BOOLEAN("boolean"),
-	BOOLEAN_A("[boolean"),
-	CHAR("char"),
-	CHAR_A("[char"),
-	INT("int"),
-	INT_A("[int"),
-	DOUBLE("double"),
-	DOUBLE_A("[double"),
-	STRING("string"),
-	STRING_A("[string"),
-	NUMBER("number"),
-	NUMBER_A("[number"),
-	LIST("list"),
-	LIST_A("[list"),
-	VOID("void"),
-	NULL("_null_"),
-	ENUM("enum"),
-	ENUM_TYPE("//enum_type"),
-	OBJECT("object"),
-	OBJECT_A("[object"),
-	CLASS("//class"),
-	CLASS_INSTANCE("//instance"),
-	METHOD("//function"),
-	OPERATOR("operator"),
-	//EXCEPTION("exception"),
-	PACKAGE("package"),
-	CODE_FILE("code_file");
+/**
+ * The underlying datatype class to be used within the Envision:Java
+ * scripting language.
+ * <p>
+ * All datatypes are encapsulated by a String to represent the exact
+ * type. Furthermore, If a given type is the same as a basic Envision
+ * Primitive datatype, then the primitive type will also be grabbed
+ * for simplifying future type casts or conversions.
+ * 
+ * @see Primitives
+ * @author Hunter Bragg
+ */
+public class EnvisionDatatype {
 	
-	public final String type;
+	//--------
+	// Fields
+	//--------
 	
-	private EnvisionDataType(String typeIn) {
-		type = typeIn;
+	/**
+	 * The underlying string type.
+	 */
+	private final String type;
+	
+	/**
+	 * The underlying primitive type. Could be null if not primitve.
+	 */
+	private final Primitives primitive_type;
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	public EnvisionDatatype(Token in) {
+		type = in.lexeme;
+		primitive_type = Primitives.getDataType(in.lexeme);
 	}
 	
-	//---------------------------------------
-	
-	public String type() { return type; }
-	
-	public boolean canBeParameterized() { return canBeParameterized(this); }
-	
-	public static boolean isArrayType(String in) {
-		EnvisionDataType t = getDataType(in);
-		return (t != null) ? t.isArrayType() : false;
+	public EnvisionDatatype(String in) {
+		type = in;
+		primitive_type = Primitives.getDataType(in);
 	}
 	
-	/** Returns true if this datatype is a varaible argument type. */
+	public EnvisionDatatype(Primitives in) {
+		type = in.string_type;
+		primitive_type = in;
+	}
+	
+	//-----------
+	// Overrides
+	//-----------
+	
+	@Override
+	public String toString() {
+		return type;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof EnvisionDatatype t) return type.equals(t.type);
+		return false;
+	}
+	
+	//---------
+	// Methods
+	//---------
+	
+	/**
+	 * Returns true if this dataType is also a primitive datatype.
+	 * 
+	 * @see Primitives
+	 * @return true if primitive
+	 */
+	public boolean isPrimitiveType() {
+		return primitive_type != null;
+	}
+	
+	/**
+	 * Returns true if this datatype is specifically a primitive
+	 * variable datatype.
+	 * 
+	 * I.E. int, double, string, char, etc.
+	 * 
+	 * @see Primitives
+	 * @return true if primitive variable type
+	 */
+	public boolean isPrimitiveVariableType() {
+		return (primitive_type != null) ? primitive_type.isVariableType() : false;
+	}
+	
+	/**
+	 * Returns true if this datatype matches the given datatype.
+	 * 
+	 * @param typeIn The type to be compared
+	 * @return true if the types match
+	 */
+	public boolean compareType(EnvisionDatatype typeIn) {
+		//null always is false
+		if (typeIn == null) return false;
+		
+		//check primitives
+		if (typeIn != null && typeIn.isPrimitiveType() && this.isPrimitiveType()) {
+			return typeIn.primitive_type == this.primitive_type;
+		}
+		
+		//check string type
+		return typeIn.type.equals(type);
+	}
+	
+	/**
+	 * Returns true if this type is an array type.
+	 * 
+	 * Most primitive Envision types have a varargs version
+	 * of the same type to allow for an unspecified number
+	 * of arguments of the same type to be passed to a function
+	 * at once.
+	 * 
+	 * @return true if varargs type
+	 */
 	public boolean isArrayType() {
-		switch (this) {
-		case OBJECT_A:
-		case BOOLEAN_A:
-		case CHAR_A:
-		case INT_A:
-		case DOUBLE_A:
-		case STRING_A:
-		case NUMBER_A:
-		case LIST_A: return true;
-		default: return false;
-		}
+		return Primitives.isArrayType(primitive_type);
 	}
 	
-	/** If this type is a varags type, return the non varags type. */
-	public EnvisionDataType getNonArrayType() {
-		switch (this) {
-		case OBJECT_A: return OBJECT;
-		case BOOLEAN_A: return BOOLEAN;
-		case CHAR_A: return CHAR;
-		case INT_A: return INT;
-		case DOUBLE_A: return DOUBLE;
-		case STRING_A: return STRING;
-		case NUMBER_A: return NUMBER;
-		case LIST_A: return LIST;
-		default: return this;
-		}
+	/**
+	 * Returns true if this type is a var.
+	 * 
+	 * The 'var' datatype effectively represents a slot that can hold any
+	 * value regardless of the datatype given to it. Furthermore, unless
+	 * the 'var' variable is declared to be strong, the value stored could
+	 * change to any other datatype at any time.
+	 * 
+	 * @return true if var type
+	 */
+	public boolean isVar() {
+		return primitive_type == Primitives.VAR;
 	}
 	
-	public boolean isNumber() {
-		switch (this) {
-		case INT: case DOUBLE: case NUMBER: return true;
-		default: return false;
-		}
+	/**
+	 * Returns true if this type is null.
+	 * <p>
+	 * Note: Null in Envision:Java IS NOT directly equivalent to Java's
+	 * Null and should not be interpreted as such. For example, an Object
+	 * may be 'null' in Java which would result in this method returning
+	 * 'false' due to the fact that Envision:Null and Java:Null are not
+	 * the same thing. Envision:Null is essentially a 'placeholder' object
+	 * used to convey the fact that something is 'null'.
+	 * 
+	 * @return true if this object is equivalent to Envision:Null
+	 */
+	public boolean isNull() {
+		return primitive_type == Primitives.NULL;
 	}
 	
-	public static boolean isNumber(EnvisionDataType typeIn) { return typeIn.isNumber(); }
-	public static boolean isNumber(String typeIn) { return isNumber(getDataType(typeIn.toLowerCase())); }
+	/**
+	 * Returns true if this type is a function.
+	 * 
+	 * @return true if a function
+	 */
+	public boolean isFunction() {
+		return primitive_type == Primitives.FUNCTION;
+	}
 	
+	/**
+	 * Returns true if this type is a field.
+	 * 
+	 * @return true if a field
+	 */
 	public boolean isField() {
-		switch (this) {
-		case BOOLEAN:
-		case CHAR:
-		case INT:
-		case DOUBLE:
-		case STRING:
-		case NUMBER:
-		case LIST:
-		case OBJECT:
-		case CLASS_INSTANCE: return true;
-		default: return false;
-		}
+		return (primitive_type != null) ? primitive_type.isField() : false;
 	}
 	
-	public boolean isMethod() {
-		switch (this) {
-		case METHOD: return true;
-		default: return false;
-		}
+	/**
+	 * Returns true if this type is either a class or a class instance.
+	 * <p>
+	 * Effectively, any non-primitive type 'could' be a user-defined
+	 * class type. As such, this method will also check if this type is
+	 * the primitive types of either 'CLASS' or 'CLASS_INSTANCE'.
+	 * 
+	 * @return true if a class or class instance
+	 */
+	public boolean isClass() {
+		return (primitive_type == null) ? true : switch (primitive_type) {
+		case CLASS, CLASS_INSTANCE -> true;
+		default -> false;
+		};
 	}
 	
-	public static boolean canBeParameterized(EnvisionDataType typeIn) {
-		switch (typeIn) {
-		case LIST:
-		case METHOD:
-		case CLASS:
-		case OBJECT: return true;
-		//case EXCEPTION: return true;
-		default: return false;
-		}
+	/**
+	 * Returns true if this type is a number.
+	 * 
+	 * @return true if a number
+	 */
+	public boolean isNumber() {
+		return (primitive_type == null) ? false : switch (primitive_type) {
+		case INT, DOUBLE, NUMBER -> true;
+		default -> false;
+		};
 	}
 	
-	public static boolean canHaveGenerics(EnvisionDataType typeIn) {
-		switch (typeIn) {
-		case METHOD:
-		case CLASS: return true;
-		default: return false;
-		}
+	/**
+	 * Returns true if this type is a string.
+	 * 
+	 * @return true if a string
+	 */
+	public boolean isString() {
+		return primitive_type == Primitives.STRING;
 	}
 	
-	public static EnvisionDataType getDataType(Token token) {
-		return getDataType(token.getKeyword());
+	/**
+	 * Returns true if this type is void.
+	 * 
+	 * @return true if void
+	 */
+	public boolean isVoid() {
+		return (primitive_type == null) ? false : primitive_type == Primitives.VOID;
 	}
 	
-	public static EnvisionDataType getDataType(String typeIn) {
-		if (typeIn == null) return null;
-		switch (typeIn) {
-		case "object": return OBJECT;
-		case "[object": return OBJECT_A;
-		case "boolean": return BOOLEAN;
-		case "[boolean": return BOOLEAN_A;
-		case "char": return CHAR;
-		case "[char": return CHAR_A;
-		case "int": return INT;
-		case "[int": return INT_A;
-		case "double": return DOUBLE;
-		case "[double": return DOUBLE_A;
-		case "number": return NUMBER;
-		case "[number": return NUMBER_A;
-		case "string": return STRING;
-		case "[string": return STRING_A;
-		case "list": return LIST;
-		case "[list": return LIST_A;
-		case "package": return PACKAGE;
-		default: return null;
-		}
+	/**
+	 * Returns true if this type is a package.
+	 * 
+	 * @return true if package
+	 */
+	public boolean isPackage() {
+		return (primitive_type == null) ? false : primitive_type == Primitives.PACKAGE;
 	}
 	
-	public static EnvisionDataType getDataType(Keyword keyIn) {
-		if (keyIn == null) return null;
-		switch (keyIn) {
-		case OBJECT: return OBJECT;
-		case BOOLEAN: return BOOLEAN;
-		case CHAR: return CHAR;
-		case INT: return INT;
-		case DOUBLE: return DOUBLE;
-		case STRING: return STRING;
-		case NUMBER: return NUMBER;
-		//case LIST: return LIST;
-		case VOID: return VOID;
-		case NULL: return NULL;
-		case ENUM: return ENUM;
-		//case FUNCTION: return METHOD;
-		case CLASS: return CLASS;
-		//case EXCEPTION: return EXCEPTION;
-		case PACKAGE: return PACKAGE;
-		default: return null;
-		}
+	//---------
+	// Getters
+	//---------
+	
+	/**
+	 * Returns the underlying String type of this datatype.
+	 * 
+	 * @return The underlying type String
+	 */
+	public String getType() {
+		return type;
 	}
 	
-	public static EnvisionDataType getDataType(EDataType typeIn) {
-		if (typeIn == null) return null;
-		switch (typeIn) {
-		case VOID: return VOID;
-		case OBJECT: return OBJECT;
-		case BOOLEAN: return BOOLEAN;
-		case CHAR: return CHAR;
-		case BYTE:
-		case SHORT:
-		case INT:
-		case LONG: return INT;
-		case FLOAT:
-		case DOUBLE: return DOUBLE;
-		case STRING: return STRING;
-		case NUMBER: return NUMBER;
-		case CONSTRUCTOR:
-		case METHOD: return METHOD;
-		case ARRAY: return LIST;
-		case CLASS: return CLASS;
-		case ENUM: return ENUM;
-		case NULL: return NULL;
-		default: return null;
-		}
+	/**
+	 * Returns the underlying primitive type of this datatype.
+	 * <p>
+	 * Note: If this datatype is not a primitive, null is returned
+	 * instead.
+	 * 
+	 * @return the underlying primitive type
+	 */
+	public Primitives getPrimitiveType() {
+		return primitive_type;
 	}
 	
-	public static EnvisionDataType getDataType(Object in) {
-		if (in instanceof Keyword && ((Keyword) in).isOperator) return OPERATOR;
-		return getDataType(EDataType.getDataType(in));
+	//--------
+	// Static
+	//--------
+	
+	public static boolean isNumber(EnvisionDatatype type) { 
+		return (type != null) ? type.isNumber() : false;
 	}
 	
-	public static EnvisionDataType getNumberType(String in) {
-		return getDataType(EDataType.getNumberType(in));
+	/**
+	 * Handy helper method used to quickly encapsulate the generic 'var'
+	 * type into an EnvisionDataType.
+	 */
+	public static EnvisionDatatype prim_var() {
+		return new EnvisionDatatype(Primitives.VAR);
 	}
 	
-	public static EnvisionDataType getNumberType(Number in) {
-		return getDataType(EDataType.getNumberType(in));
+	/**
+	 * Handy helper method used to quickly encapsulate the 'null'
+	 * type into an EnvisionDataType.
+	 */
+	public static EnvisionDatatype prim_null() {
+		return new EnvisionDatatype(Primitives.NULL);
 	}
 	
-	public static String getTypeName(Object in) {
-		EnvisionDataType t = getDataType(in);
-		return (t != null) ? t.type : NULL.type;
+	/**
+	 * Handy helper method used to quickly encapsulate the 'void'
+	 * type into an EnvisionDataType.
+	 */
+	public static EnvisionDatatype prim_void() {
+		return new EnvisionDatatype(Primitives.VOID);
 	}
 	
-	/** Returns true if this datatype can be assigned from the specified type. */
-	public boolean canBeAssignedFrom(EnvisionDataType type) {
-		switch (this) {
-		//these are wildcard values so they should be able to take on any type and any value
-		case OBJECT:
-		//these types can only ever be assigned by their respective type
-		case ENUM: return this == ENUM;
-		case METHOD: return this == METHOD;
-		case CLASS: return this == CLASS;
-		//case EXCEPTION: return this == EXCEPTION;
-		//these can never be assigned
-		case VOID:
-		case NULL: return false;
-		//variable types
-		case BOOLEAN:
-			switch (type) {
-			case BOOLEAN: return true;
-			default: return false;
-			}
-		case CHAR:
-			switch (type) {
-			case CHAR: return true;
-			default: return false;
-			}
-		case INT:
-			switch (type) {
-			case NUMBER: case INT: return true;
-			default: return false;
-			}
-		case DOUBLE:
-			switch (type) {
-			case NUMBER: case INT: case DOUBLE: return true;
-			default: return false;
-			}
-		case STRING:
-			switch (type) {
-			case CHAR: case STRING: return true;
-			default: return false;
-			}
-		case NUMBER:
-			switch (type) {
-			case NUMBER: case INT: case DOUBLE: case CHAR: return true;
-			default: return false;
-			}
-		//assume false by default
-		default: return false;
-		}
+	/**
+	 * Uses instanceof checking to dynamically determine the specific
+	 * datatype of the given object.
+	 * <p>
+	 * Note: This method is generally slow as it has to potentially
+	 * check for every single type equivalence in both Envision and Java.
+	 * 
+	 * @param obj The object to be checked
+	 * @return The dynamically determined datatype of the given object
+	 */
+	public static EnvisionDatatype dynamicallyDetermineType(Object obj) {
+		Primitives type = Primitives.getDataType(obj);
+		return new EnvisionDatatype(type);
 	}
-
-	public boolean isObject() { return this == OBJECT; }
 	
 }

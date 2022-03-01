@@ -22,13 +22,13 @@ public class EnvisionLoader {
 			//Object base
 			loader.loadClass("envision.lang.EnvisionObject");
 			//Variables
-			loader.loadClass("envision.lang.variables.EnvisionVariable");
-			loader.loadClass("envision.lang.variables.EnvisionNumber");
-			loader.loadClass("envision.lang.variables.EnvisionDouble");
-			loader.loadClass("envision.lang.variables.EnvisionInt");
-			loader.loadClass("envision.lang.variables.EnvisionBoolean");
-			loader.loadClass("envision.lang.variables.EnvisionChar");
-			loader.loadClass("envision.lang.variables.EnvisionString");
+			loader.loadClass("envision.lang.datatypes.EnvisionVariable");
+			loader.loadClass("envision.lang.datatypes.EnvisionNumber");
+			loader.loadClass("envision.lang.datatypes.EnvisionDouble");
+			loader.loadClass("envision.lang.datatypes.EnvisionInt");
+			loader.loadClass("envision.lang.datatypes.EnvisionBoolean");
+			loader.loadClass("envision.lang.datatypes.EnvisionChar");
+			loader.loadClass("envision.lang.datatypes.EnvisionString");
 			//Classes
 			loader.loadClass("envision.lang.classes.EnvisionClass");
 			loader.loadClass("envision.lang.classes.ClassInstance");
@@ -37,7 +37,7 @@ public class EnvisionLoader {
 			loader.loadClass("envision.lang.enums.EnumValue");
 			loader.loadClass("envision.lang.enums.EnvisionEnumConstructor");
 			//objects
-			loader.loadClass("envision.lang.objects.EnvisionMethod");
+			loader.loadClass("envision.lang.objects.EnvisionFunction");
 			loader.loadClass("envision.lang.objects.EnvisionNullObject");
 			loader.loadClass("envision.lang.objects.EnvisionVoidObject");
 			loader.loadClass("envision.lang.objects.EnvisionOperator");
@@ -73,12 +73,12 @@ public class EnvisionLoader {
 			loader.loadClass("envision.lang.packages.env.math.Sqrt");
 			loader.loadClass("envision.lang.packages.env.math.MathPackage");
 			//Interpreter - creation
-			loader.loadClass("envision.interpreter.util.Scope");
+			loader.loadClass("envision.interpreter.util.scope.Scope");
 			loader.loadClass("envision.interpreter.util.TypeManager");
 			loader.loadClass("envision.interpreter.util.EnvisionStringFormatter");
 			loader.loadClass("envision.interpreter.util.creationUtil.ObjectCreator");
 			loader.loadClass("envision.interpreter.util.creationUtil.VariableCreator");
-			loader.loadClass("envision.interpreter.util.creationUtil.CastingUtil");
+			loader.loadClass("envision.interpreter.util.CastingUtil");
 			loader.loadClass("envision.interpreter.util.creationUtil.MethodCreator");
 			loader.loadClass("envision.interpreter.util.creationUtil.VariableUtil");
 			loader.loadClass("envision.interpreter.util.creationUtil.OperatorOverloadHandler");
@@ -153,16 +153,13 @@ public class EnvisionLoader {
 			loader.loadClass("envision.parser.expressions.ExpressionHandler");
 			//Parser - Expressions - Stages
 			loader.loadClass("envision.parser.expressions.stages.PE_0_Assignment");
-			loader.loadClass("envision.parser.expressions.stages.PE_1_Or");
-			loader.loadClass("envision.parser.expressions.stages.PE_2_And");
-			loader.loadClass("envision.parser.expressions.stages.PE_3_Equality");
-			loader.loadClass("envision.parser.expressions.stages.PE_4_Lambda");
-			loader.loadClass("envision.parser.expressions.stages.PE_5_Term");
-			loader.loadClass("envision.parser.expressions.stages.PE_6_Factor");
-			loader.loadClass("envision.parser.expressions.stages.PE_7_Unary");
-			loader.loadClass("envision.parser.expressions.stages.PE_8_Range");
-			loader.loadClass("envision.parser.expressions.stages.PE_9_MethodCall");
-			loader.loadClass("envision.parser.expressions.stages.PE_A_Primary");
+			loader.loadClass("envision.parser.expressions.stages.PE_1_Logic");
+			loader.loadClass("envision.parser.expressions.stages.PE_2_Arithmetic");
+			loader.loadClass("envision.parser.expressions.stages.PE_3_Lambda");
+			loader.loadClass("envision.parser.expressions.stages.PE_4_Unary");
+			loader.loadClass("envision.parser.expressions.stages.PE_5_Range");
+			loader.loadClass("envision.parser.expressions.stages.PE_6_MethodCall");
+			loader.loadClass("envision.parser.expressions.stages.PE_7_Primary");
 			//Parser - Expressions - Types
 			loader.loadClass("envision.parser.expressions.types.AssignExpression");
 			loader.loadClass("envision.parser.expressions.types.BinaryExpression");
@@ -206,10 +203,8 @@ public class EnvisionLoader {
 			//Parser - Statements - Stages
 			loader.loadClass("envision.parser.statements.stages.PS_Block");
 			loader.loadClass("envision.parser.statements.stages.PS_Class");
-			loader.loadClass("envision.parser.statements.stages.PS_DataModifiers");
 			loader.loadClass("envision.parser.statements.stages.PS_Enum");
 			loader.loadClass("envision.parser.statements.stages.PS_For");
-			loader.loadClass("envision.parser.statements.stages.PS_Generics");
 			loader.loadClass("envision.parser.statements.stages.PS_GetSet");
 			loader.loadClass("envision.parser.statements.stages.PS_If");
 			loader.loadClass("envision.parser.statements.stages.PS_Import");
@@ -217,12 +212,11 @@ public class EnvisionLoader {
 			loader.loadClass("envision.parser.statements.stages.PS_LoopControl");
 			loader.loadClass("envision.parser.statements.stages.PS_Method");
 			loader.loadClass("envision.parser.statements.stages.PS_Package");
+			loader.loadClass("envision.parser.statements.stages.PS_ParseDeclaration");
 			loader.loadClass("envision.parser.statements.stages.PS_Return");
 			loader.loadClass("envision.parser.statements.stages.PS_Switch");
 			loader.loadClass("envision.parser.statements.stages.PS_Try");
-			loader.loadClass("envision.parser.statements.stages.PS_Type");
-			loader.loadClass("envision.parser.statements.stages.PS_Var");
-			loader.loadClass("envision.parser.statements.stages.PS_Visibility");
+			loader.loadClass("envision.parser.statements.stages.PS_VarDec");
 			loader.loadClass("envision.parser.statements.stages.PS_While");
 			//Parser - Statements - Types
 			loader.loadClass("envision.parser.statements.types.BlockStatement");

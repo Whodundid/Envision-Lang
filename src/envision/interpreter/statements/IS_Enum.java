@@ -6,10 +6,11 @@ import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.enums.EnvisionEnum;
+import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.EnumExpression;
+import envision.parser.expressions.expressions.EnumExpression;
 import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.types.EnumStatement;
+import envision.parser.statements.statements.EnumStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_Enum extends StatementExecutor<EnumStatement> {
@@ -18,6 +19,8 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 		super(in);
 	}
 
+	// this needs a lot of work..
+	
 	@Override
 	public void run(EnumStatement s) {
 		ParserDeclaration dec = s.declaration;
@@ -25,7 +28,7 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 		EArrayList<EnumExpression> values = s.values;
 		
 		//check if already defined
-		if (scope().get(name) != null) { throw new DuplicateObjectError(name); }
+		if (scope().get(name) != null) throw new DuplicateObjectError(name);
 		
 		//create the enum instance
 		EnvisionEnum en = new EnvisionEnum(dec.getVisibility(), name);
@@ -40,8 +43,10 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 			//evaluate the given args
 			EArrayList<EnvisionObject> parsedArgs = new EArrayList();
 			for (Expression e : args) {
-				Object o = evaluate(e);
-				parsedArgs.add(ObjectCreator.createObject(o));
+				Object arg_value = evaluate(e);
+				EnvisionDatatype arg_type = EnvisionDatatype.dynamicallyDetermineType(arg_value);
+				EnvisionObject arg_obj = ObjectCreator.createObject(valueName + "_" + arg_type, arg_type, valueName, true);
+				parsedArgs.add(arg_obj);
 			}
 			
 			en.addValue(valueName, parsedArgs);

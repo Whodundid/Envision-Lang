@@ -2,16 +2,16 @@ package envision.exceptions.errors.objects;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
-import envision.tokenizer.Keyword;
+import envision.tokenizer.IKeyword;
 
 public class UnsupportedOverloadError extends EnvisionError {
 	
-	public UnsupportedOverloadError(EnvisionObject in, Keyword operator) {
-		super("Unsupported Operator: [" + in + "': '" + operator.chars + "']!");
+	public UnsupportedOverloadError(EnvisionObject in, IKeyword operator) {
+		super("Unsupported Operator: [" + in + "': '" + operator.chars() + "']!");
 	}
 
-	public UnsupportedOverloadError(EnvisionObject in, Keyword operator, Object other) {
-		super("Unsupported Operator! [" + in + ": '" + operator.chars + "' and '" + other + "']!");
+	public UnsupportedOverloadError(EnvisionObject in, IKeyword operator, Object other) {
+		super("Unsupported Operator! [" + in + ": '" + operator.chars() + "' and '" + other + "']!");
 	}
 	
 }

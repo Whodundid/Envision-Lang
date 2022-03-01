@@ -13,4 +13,8 @@ public class NullVariableError extends EnvisionError {
 		super("Variable '" + varName + "' has not been declared within this scope!");
 	}
 	
+	public NullVariableError(Object obj) {
+		super("The given object '" + obj + "' is null!");
+	}
+	
 }

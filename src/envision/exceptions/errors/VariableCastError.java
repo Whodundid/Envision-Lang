@@ -1,8 +1,9 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 
 /** Error thrown when attempting to cast a variable to an incompatible datatype. */
 public class VariableCastError extends EnvisionError {
@@ -11,11 +12,11 @@ public class VariableCastError extends EnvisionError {
 		super(message);
 	}
 	
-	public VariableCastError(EnvisionVariable var, EnvisionDataType castType) {
-		this(var, castType.type);
+	public VariableCastError(EnvisionVariable var, Primitives castType) {
+		this(var, new EnvisionDatatype(castType));
 	}
 	
-	public VariableCastError(EnvisionVariable var, String castType) {
+	public VariableCastError(EnvisionVariable var, EnvisionDatatype castType) {
 		super("Variable '" + ((var != null) ? var.getName() : "null") + "' cannot be cast as type " + castType + "!");
 	}
 

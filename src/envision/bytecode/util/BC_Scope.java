@@ -1,6 +1,6 @@
 package envision.bytecode.util;
 
-import envision.exceptions.errors.InvalidDataTypeError;
+import envision.exceptions.errors.InvalidDatatypeError;
 import envision.lang.EnvisionObject;
 import envision.lang.util.VisibilityType;
 import eutil.datatypes.Box4;
@@ -53,9 +53,9 @@ public class BC_Scope {
 	
 	private void checkType(Box4[] arr, int i, EnvisionObject o) {
 		String expected = (String) arr[i].getB();
-		String got = o.getInternalType().type;
+		String got = o.getDatatype().getType();
 		if (!got.equals(expected))
-			throw new InvalidDataTypeError("Expected type '" + expected + "' but got '" + got + "'!");
+			throw new InvalidDatatypeError("Expected type '" + expected + "' but got '" + got + "'!");
 	}
 	
 }

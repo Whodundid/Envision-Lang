@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.GroupingExpression;
+import envision.parser.expressions.expressions.GroupingExpression;
 
 public class IE_Grouping extends ExpressionExecutor<GroupingExpression> {
 

@@ -1,7 +1,9 @@
 package envision.exceptions;
 
-/** A ScriptWarning is an problem that does not halt script execution and is reported to the user. */
-public class EnvisionWarning extends Exception {
+/**
+ * An EnvisionWarning is an problem that does not halt program execution and is reported to the user.
+ */
+public class EnvisionWarning extends RuntimeException {
 
 	public EnvisionWarning(String message) {
 		super(message);

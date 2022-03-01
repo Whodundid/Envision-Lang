@@ -1,13 +1,14 @@
 package envision.interpreter.util.optimizations;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.Scope;
+import envision.interpreter.util.scope.Scope;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
 
@@ -35,23 +36,23 @@ public class ClassConstruct {
 	private final String constructName;
 	
 	/** The class for which instances of this construct are based on. */
-	private EnvisionClass staticClass;
+	private EnvisionClass theClass;
 	/** The scope for which base instance members are interpreted into. */
 	private Scope internalScope;
 	
-	private EnvisionMethod constructor;
+	private EnvisionFunction constructor;
 	private EArrayList<EnvisionObject> fields;
-	private EArrayList<EnvisionMethod> methods;
+	private EArrayList<EnvisionFunction> methods;
 	
 	/** Pulling scope map out for fast reference. */
-	private Map<String, Box2<String, EnvisionObject>> internal_scope_values;
+	private Map<String, Box2<EnvisionDatatype, EnvisionObject>> internal_scope_values;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
 	public ClassConstruct(EnvisionInterpreter interpreter, EnvisionClass c) {
-		staticClass = c;
+		theClass = c;
 		constructName = c.getTypeString();
 		internalScope = new Scope(c.getScope());
 		internal_scope_values = internalScope.values;
@@ -65,7 +66,7 @@ public class ClassConstruct {
 	 * This scope will be given to all created instances.
 	 */
 	private void buildInstanceScope(EnvisionInterpreter interpreter) {
-		interpreter.executeBlock(staticClass.getBody(), internalScope);
+		interpreter.executeBlock(theClass.getBody(), internalScope);
 		
 		//extract members from scope
 		fields = internalScope.fields();
@@ -89,37 +90,39 @@ public class ClassConstruct {
 	 * @return
 	 */
 	public ClassInstance buildInstance(EnvisionInterpreter interpreter, Object[] args) {
-		Scope buildScope = new Scope(staticClass.getScope());
-		ClassInstance inst = new ClassInstance(staticClass, buildScope);
+		Scope buildScope = new Scope(theClass.getScope());
+		ClassInstance inst = new ClassInstance(theClass, buildScope);
 		
 		//create copies of fields
 		buildScope.define("this", inst);
 		for (EnvisionObject f : fields) {
-			buildScope.define(f.getName(), f.getInternalType(), f.copy());
+			buildScope.define(f.getName(), f.getDatatype(), f.copy());
 		}
 		
 		//create copies of methods
-		for (EnvisionMethod m : methods) {
-			EnvisionMethod copy = m.copy().setScope(buildScope);
+		for (EnvisionFunction m : methods) {
+			EnvisionFunction copy = m.copy().setScope(buildScope);
 			
 			//extract operators
 			if (m.isOperator()) inst.addOperator(m.getOperator(), copy);
 			
 			//copy the method
-			buildScope.define(m.getName(), EnvisionDataType.METHOD, copy);
+			buildScope.define(m.getName(), Primitives.FUNCTION, copy);
 		}
 		
 		//init constructor
 		if (constructor != null) {
-			EnvisionMethod copyConstructor = constructor.copy();
+			EnvisionFunction copyConstructor = constructor.copy();
 			copyConstructor.setScope(buildScope);
 			copyConstructor.invoke(interpreter, args);
 		}
+		
+		System.out.println("construct: " + inst.getDatatype());
 		
 		return inst;
 	}
 
 	public String getName() { return constructName; }
-	public EnvisionClass getStaticClass() { return staticClass; }
+	public EnvisionClass getStaticClass() { return theClass; }
 	
 }

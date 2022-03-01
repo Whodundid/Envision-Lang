@@ -12,7 +12,7 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
 import envision.lang.util.structureTypes.InheritableObject;
-import envision.parser.expressions.types.GetExpression;
+import envision.parser.expressions.expressions.GetExpression;
 
 public class IE_Get extends ExpressionExecutor<GetExpression> {
 

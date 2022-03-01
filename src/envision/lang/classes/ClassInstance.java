@@ -1,12 +1,14 @@
 package envision.lang.classes;
 
-import envision.interpreter.util.Scope;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
-import envision.tokenizer.Keyword;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
+import envision.lang.util.data.ParameterData;
+import envision.tokenizer.IKeyword;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxHolder;
+import eutil.datatypes.util.BoxList;
 
 /** An instantiated version of an EnvisionClass. */
 public class ClassInstance extends EnvisionObject {
@@ -16,14 +18,14 @@ public class ClassInstance extends EnvisionObject {
 	/** The scope of this instance. Directly inherited from the calling scope. */
 	protected final Scope instanceScope;
 	/** Used for operator overloading. */
-	protected BoxHolder<Keyword, EArrayList<EnvisionMethod>> operators = new BoxHolder();
+	protected BoxList<IKeyword, EArrayList<EnvisionFunction>> operators = new BoxList();
 	
 	//--------------
 	// Constructors
 	//--------------
 	
 	public ClassInstance(EnvisionClass classIn, Scope in) {
-		super(EnvisionDataType.CLASS_INSTANCE);
+		super(Primitives.CLASS_INSTANCE);
 		setName(classIn.getName());
 		theClass = classIn;
 		instanceScope = in;
@@ -41,12 +43,12 @@ public class ClassInstance extends EnvisionObject {
 	//---------
 	
 	/** Returns the first class level method matching the given name. If no method with that name exists, null is returned instead. */
-	public EnvisionMethod getMethod(String methodName) {
+	public EnvisionFunction getMethod(String methodName) {
 		return instanceScope.methods().getFirst(m -> m.getName().equals(methodName));
 	}
 	
 	/** Returns a class level method matching the given name and parameters (if it exists. */
-	public EnvisionMethod getMethod(String methodName, EArrayList<String> params) {
+	public EnvisionFunction getMethod(String methodName, ParameterData params) {
 		return instanceScope.methods().getFirst(m -> m.getName().equals(methodName) && m.getParams().compare(params));
 	}
 	
@@ -57,15 +59,15 @@ public class ClassInstance extends EnvisionObject {
 	 * @param meth The method which defines the operator overload behavior
 	 * @return this (the instance)
 	 */
-	public ClassInstance addOperator(Keyword opIn, EnvisionMethod meth) {
-		EArrayList<EnvisionMethod> list = operators.get(opIn);
+	public ClassInstance addOperator(IKeyword opIn, EnvisionFunction meth) {
+		EArrayList<EnvisionFunction> list = operators.get(opIn);
 		if (list == null) operators.add(opIn, new EArrayList().addRT(meth));
 		else list.add(meth);
 		return this;
 	}
 	
 	/** Returns true if this class instance (and more specifically the class for which this was derived from) supports the given operator overload. */
-	public boolean hasOperator(Keyword op) {
+	public boolean hasOperator(IKeyword op) {
 		return (op != null) ? operators.contains(op) : false;
 	}
 	
@@ -80,15 +82,24 @@ public class ClassInstance extends EnvisionObject {
 	/** Returns the class for which this instance is derived from. */
 	public EnvisionClass getEClass() { return theClass; }
 	/** Returns the operator overload method corresponding to the given operator. Returns null if there is no overload. */
-	public EArrayList<EnvisionMethod> getOperator(Keyword op) { return operators.get(op); }
+	public EArrayList<EnvisionFunction> getOperator(IKeyword op) { return operators.get(op); }
 	/** Returns the list of all operators being overloaded with their corresponding overload method. */
-	public BoxHolder<Keyword, EArrayList<EnvisionMethod>> getOperators() { return operators; }
+	public BoxList<IKeyword, EArrayList<EnvisionFunction>> getOperators() { return operators; }
 	
 	//---------
 	// Setters
 	//---------
 	
 	/** Assigns a field value within this instance's scope. */
-	public EnvisionObject set(String name, EnvisionObject in) { instanceScope.set(name, in); return in; }
+	public EnvisionObject set(String name, EnvisionObject in) {
+		instanceScope.set(name, in);
+		return in;
+	}
+	
+	/** Assigns a field value within this instance's scope. */
+	public EnvisionObject set(String name, EnvisionDatatype type, EnvisionObject in) {
+		instanceScope.set(name, type, in);
+		return in;
+	}
 	
 }

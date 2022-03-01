@@ -18,9 +18,7 @@ import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
 import envision.lang.util.VisibilityType;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EStack;
 import eutil.strings.StringUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

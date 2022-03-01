@@ -1,26 +1,39 @@
 package envision.interpreter.expressions;
 
+import envision.EnvisionCodeFile;
+import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArithmeticError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidTargetError;
+import envision.exceptions.errors.NotANumberError;
 import envision.exceptions.errors.NotAVariableError;
 import envision.exceptions.errors.NullVariableError;
+import envision.exceptions.errors.StrongVarReassignmentError;
 import envision.exceptions.errors.listErrors.SelfAdditionError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.Scope;
-import envision.interpreter.util.creationUtil.CastingUtil;
+import envision.interpreter.util.CastingUtil;
+import envision.interpreter.util.EnvisionStringFormatter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.creationUtil.OperatorOverloadHandler;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
+import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionNumber;
+import envision.lang.datatypes.EnvisionString;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.enums.EnumValue;
+import envision.lang.enums.EnvisionEnum;
+import envision.lang.objects.EnvisionFunction;
 import envision.lang.objects.EnvisionList;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
-import envision.parser.expressions.types.AssignExpression;
-import envision.parser.expressions.types.BinaryExpression;
-import envision.parser.expressions.types.VarExpression;
-import envision.tokenizer.Keyword;
+import envision.lang.packages.EnvisionPackage;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
+import envision.parser.expressions.expressions.AssignExpression;
+import envision.parser.expressions.expressions.BinaryExpression;
+import envision.parser.expressions.expressions.VarExpression;
+import envision.tokenizer.Operator;
 import eutil.strings.StringUtil;
 
 public class IE_Assign extends ExpressionExecutor<AssignExpression> {
@@ -28,20 +41,22 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 	private String name;
 	private Object value;
 	private Integer dist;
-	private Keyword op;
+	private Operator op;
 	private EnvisionObject obj;
+	
+	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	protected IE_Assign(EnvisionInterpreter in) {
 		super(in);
 	}
 
-	public static Object handleAssign(EnvisionInterpreter in, BinaryExpression e, Keyword opIn) {
-		if (e.left instanceof VarExpression) {
+	public static Object handleAssign(EnvisionInterpreter in, BinaryExpression e, Operator opIn) {
+		if (e.left instanceof VarExpression v) {
 			IE_Assign inst = new IE_Assign(in);
 			
-			String name = ((VarExpression) e.left).getName();
+			String name = v.getName();
 			Object value = in.evaluate(e.right);
-			Keyword op = opIn;
+			Operator op = opIn;
 			
 			return inst.execute(name, value, op);
 		}
@@ -49,412 +64,658 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 		throw new InvalidTargetError("Expected a valid BinaryExpression with a left-handed var assignment model! Got: '" + e + "' instead!");
 	}
 	
+	public static Object run(EnvisionInterpreter in, AssignExpression e) {
+		return new IE_Assign(in).run(e);
+	}
+	
+	//--------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	@Override
 	public Object run(AssignExpression expression) {
 		String name = expression.name.lexeme;
 		Object value = evaluate(expression.value);
-		dist = locals().get(expression);
-		Keyword op = expression.operator.keyword;
+		Operator op = expression.operator;
 		
 		return execute(name, value, op);
 	}
 	
-	private Object execute(String nameIn, Object valueIn, Keyword opIn) {
+	//--------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	private Object execute(String nameIn, Object valueIn, Operator opIn) {
 		name = nameIn;
 		value = EnvisionObject.convert(valueIn);
 		op = opIn;
 		obj = scope().get(name);
 		
-		if (obj instanceof ClassInstance) {
-			return OperatorOverloadHandler.handleOverload(interpreter, op, (ClassInstance) obj, value);
+		if (obj instanceof ClassInstance env_class) {
+			return OperatorOverloadHandler.handleOverload(interpreter, op, env_class, value);
 		}
-		else {
-			switch (op) {
-			case ASSIGN: value = assign(); break;
-			case ADD_ASSIGN: value = add(); break;
-			case SUBTRACT_ASSIGN: value = sub(); break;
-			case MULTIPLY_ASSIGN: value = mul(); break;
-			case DIVIDE_ASSIGN: value = div(); break;
-			case MODULUS_ASSIGN: value = mod(); break;
-			case BITWISE_AND_ASSIGN: value = and(); break;
-			case BITWISE_OR_ASSIGN: value = or(); break;
-			case BITWISE_XOR_ASSIGN: value = xor(); break;
-			case SHIFT_LEFT_ASSIGN: value = shiftL(); break;
-			case SHIFT_RIGHT_ASSIGN: value = shiftR(); break;
-			case SHIFT_RIGHT_ARITHMETIC_ASSIGN: value = arithShiftR(); break;
-			default: // error -- need to implement still
-			}
-		}
-		
-		return value;
+		else return switch (op) {
+		case ASSIGN -> assign();
+		case ADD_ASSIGN -> add();
+		case SUB_ASSIGN -> sub();
+		case MUL_ASSIGN -> mul();
+		case DIV_ASSIGN -> div();
+		case MOD_ASSIGN -> mod();
+		case BW_AND_ASSIGN -> and();
+		case BW_OR_ASSIGN -> or();
+		case BW_XOR_ASSIGN -> xor();
+		case SHL_ASSIGN -> shiftL();
+		case SHR_ASSIGN -> shiftR();
+		case SHR_AR_ASSIGN -> arithShiftR();
+		default -> throw new EnvisionError("Invalid assignment operator! " + op);
+		};
 	}
-	
-	/*
-	if (dist != null) {
-		if (value instanceof EnvisionObject) { scope().setAt(dist, name, (EnvisionObject) value); }
-		else { scope().setAt(dist, name, ObjectCreator.createObject(name, value)); }
-	}
-	else {
-
-	}
-	*/
 
 	private Object assign() {
 		return assign(interpreter, name, obj, value);
 	}
 	
+	/**
+	 * Direct variable value assignment.
+	 * <p>
+	 * This method will attempt assign the given 'value' to the given 'obj'.
+	 * If the given 'obj' does not exist, then a new variable under the given
+	 * 'name' will be created instead.
+	 * 
+	 * @param interpreter
+	 * @param name the name of the variable
+	 * @param obj the object being assigned (if present)
+	 * @param value the new value to be assigned
+	 * @return the new value
+	 */
 	public static Object assign(EnvisionInterpreter interpreter, String name, EnvisionObject obj, Object value) {
 		Scope s = interpreter.scope();
 		//System.out.println(name + " -- " + obj + " -- " + value);
 		
-		//Attempt to define on the spot
-		if (obj == null) {
-			if (value instanceof EnvisionVariable) {
-				s.define(name, EnvisionDataType.OBJECT, ObjectCreator.createObject(EnvisionObject.convert(value)));
-			}
-			else if (value instanceof EnvisionObject) {
-				s.define(name, EnvisionDataType.OBJECT, (EnvisionObject) value);
-			}
-			else {
-				s.define(name, EnvisionDataType.OBJECT, ObjectCreator.createObject(value));
-			}
+		//---------------------------------------------------------
+		
+		//the name of the variable
+		String var_name = name;
+		//the new value to be assigned the the variable
+		Object assignment_value = value;
+		//the datatype of the new assignment value
+		EnvisionDatatype var_datatype = null;
+		//the existing variable -- if present
+		EnvisionObject var_obj = obj;
+		
+		//---------------------------------------------------------
+		
+		//handle specific assignment_value types
+		if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
+		else if (assignment_value instanceof EnvisionObject env_obj) assignment_value = env_obj;
+		
+		//dynamically determine assignment value type
+		var_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
+		
+		//in the event that the incomming value is a string, format the input
+		if (var_datatype.isString()) {
+			assignment_value = EnvisionStringFormatter.formatPrint(interpreter, assignment_value);
 		}
-		//otherwise attempt to reassign the existing value
+		
+		//---------------------------------------------------------
+		
+		//if obj is null, attempt to define variable on the spot
+		if (var_obj == null) {
+			//if the assignment_value is a reference object (function, class, list, etc.)
+			//create a reference to the same object instead of creating a new object instance
+			var_obj = checkObjectConversion(assignment_value);
+			
+			//if the assignment_value was not an object conversion - create new object
+			if (var_obj == null) {
+				var_obj = ObjectCreator.createObject(var_name, var_datatype, assignment_value, false);
+			}
+			
+			//define as 'var' type variable
+			s.define(var_name, EnvisionDatatype.prim_var(), var_obj);
+		}
+		//if the object does exist, attemt to assign the new value to it
 		else {
-			if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+			//don't allow final values to be reassigned
+			if (var_obj.isFinal()) throw new FinalVarReassignmentError(var_obj, assignment_value);
 			
-			//check type -- only if strong
-			if (obj.isStrong()) {
-				CastingUtil.checkType(obj, value);
-			}
+			//only allow the same type assignment for strong variables
+			if (var_obj.isStrong()) CastingUtil.assert_expected_datatype(var_datatype, var_obj.getDatatype());
 			
-			if (obj instanceof EnvisionVariable) {
-				if (obj.isStrong()) {
-					EnvisionVariable var = (EnvisionVariable) obj;
-					var.set(EnvisionObject.convert(value));
-				}
-				else {
-					s.set(name, ObjectCreator.wrap(value));
-				}
-			}
-			else if (value instanceof EnvisionObject) {
-				EnvisionObject valObj = (EnvisionObject) value;
-				//if (valObj instanceof ClassInstance) { ((ClassInstance) valObj).setName(name); }
-				s.set(name, valObj);
-			}
-			else {
-				s.set(name, ObjectCreator.createObject(name, value));
-			}
+			//assign new value to existing variable
+			s.set(var_name, ObjectCreator.wrap(assignment_value));
 		}
 		
-		//System.out.println("THE VALUE: " + value);
-		
-		return value;
+		return assignment_value;
 	}
 	
+	private static EnvisionObject checkObjectConversion(Object in) {
+		if (in instanceof EnvisionFunction env_func) return env_func;
+		if (in instanceof EnvisionList env_list) return env_list;
+		if (in instanceof EnvisionClass env_class) return env_class;
+		if (in instanceof ClassInstance env_inst) return env_inst;
+		if (in instanceof EnvisionEnum env_enum) return env_enum;
+		if (in instanceof EnumValue env_enum_value) return env_enum_value;
+		if (in instanceof EnvisionCodeFile env_code) return env_code;
+		if (in instanceof EnvisionPackage env_pkg) return env_pkg;
+		return null;
+	}
+	
+	/**
+	 * This method specifically relates to the '+=' operation and
+	 * can only be applied to EnvisionVariables and EnvisionLists.
+	 * 
+	 * @return the new value
+	 */
 	private Object add() {
-		//check if null or final
+		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
-		if (obj instanceof EnvisionList) {
-			EnvisionList l = (EnvisionList) obj;
-			if (value == l) throw new SelfAdditionError((EnvisionList) value);
-			l.add(value);
-			return l;
-		}
-		if (!(obj instanceof EnvisionVariable)) throw new NotAVariableError(obj);
+		//don't allow final reassignment
 		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		
+		//check for list additions
+		if (obj instanceof EnvisionList env_list) {
+			if (value == env_list) throw new SelfAdditionError((EnvisionList) value);
+			env_list.add(value);
+			return env_list;
+		}
+		
+		//don't allow forward if not a variable
+		if (!(obj instanceof EnvisionVariable)) throw new NotAVariableError(obj);
+		
+		//---------------------------------------------------------
 	
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
 		
-		//determine variable type
-		switch (obj.getInternalType()) {
-		//trying to figure out how to properly handle -- If it's a char then it needs to be converted to a string -- this can mess things up..
-		case CHAR: oVal = ((String) oVal) + value; break; 
-		case DOUBLE: checkNumber(valueType); oVal = ((Double) oVal) + ((Number) value).doubleValue(); break;
-		case INT: checkNumber(valueType); oVal = ((Long) oVal) + ((Number) value).longValue(); break;
-		case STRING: oVal = ((String) oVal) + value; break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		//switch on 'Left' object's datatype
+		switch (var_ptype) {
+		case CHAR:
+		{
+			//due to the fact that char additions require the datatype being
+			//upgraded to a string, check for strong char and error if true
+			if (var.isStrong()) throw new StrongVarReassignmentError(var, "");
+			
+			//char additions require the char to be upgraded to a string
+			var new_val = new StringBuilder(String.valueOf((char) var_val));
+			new_val.append(value);
+			
+			//to upgrade the datatype from char -> string requires creating new string object
+			EnvisionString new_obj = new EnvisionString(name, new_val.toString());
+			
+			//assign new value to vars and immediately return to stop double assignment
+			scope().set(name, new_obj.getDatatype(), new_obj);
+			return new_val;
 		}
+		case DOUBLE:
+		{
+			assert_number(value_type);
+			var_val = ((Double) var_val) + ((Number) value).doubleValue();
+			var.set(var_val);
+			break;
+		}
+		case INT:
+		{
+			assert_number(value_type);
+			var_val = ((Long) var_val) + ((Number) value).longValue();
+			var.set(var_val);
+			break;
+		}
+		case STRING:
+		{
+			var_val = ((String) var_val) + value;
+			var_val = EnvisionStringFormatter.formatPrint(interpreter, var_val);
+			break;
+		}
+		default:
+			throw new ArithmeticError("The operation: '+=' is invalid for the given object: '" +
+									  obj + "' (" + var_ptype + ")!");
+		};
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '-=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object sub() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//dont allow non-numbers
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
+		
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
-		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		//get incomming value type
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: checkNumber(valueType); oVal = ((Double) oVal) - ((Number) value).doubleValue(); break;
-		case INT: checkNumber(valueType); oVal = ((Long) oVal) - ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE: var_val = ((Double) var_val) - ((Number) value).doubleValue(); break;
+		case INT: var_val = ((Long) var_val) - ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '-=' is invalid for the given object: '" +
+									  obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '*=' operation and
+	 * can only be applied to the following types:
+	 * 		EnvisionChar,
+	 * 		EnvisionInt,
+	 * 		EnvisionDouble,
+	 * 		EnvisionString.
+	 * 
+	 * @return the new value
+	 */
 	private Object mul() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-variables to advance
+		if (!(obj instanceof EnvisionVariable)) throw new NotAVariableError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case CHAR: break;
-		case DOUBLE: checkNumber(valueType); oVal = ((Double) oVal) * ((Number) value).doubleValue(); break;
-		case INT: checkNumber(valueType); oVal = ((Long) oVal) * ((Number) value).longValue(); break;
-		case STRING: checkNumber(valueType); oVal = StringUtil.repeatString((String) oVal, ((Number) value).intValue()); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case CHAR:
+		{
+			//due to the fact that char mul_additions require the datatype being
+			//upgraded to a string, check for strong char and error if true
+			if (var.isStrong()) throw new StrongVarReassignmentError(var, "");
+			
+			//char mul_additions require the char to be upgraded to a string
+			var old_val = (char) var_val;
+			var new_val = new StringBuilder(String.valueOf(old_val));
+			for (int i = 0; i < ((Number) value).longValue(); i++)
+				new_val.append(old_val);
+			
+			//to upgrade the datatype from char -> string requires creating new string object
+			EnvisionString new_obj = new EnvisionString(name, new_val.toString());
+			
+			//assign new value to vars and immediately return to stop double assignment
+			scope().set(name, new_obj.getDatatype(), new_obj);
+			return new_val;
+		}
+		case DOUBLE:
+		{
+			var_val = ((Double) var_val) * ((Number) value).doubleValue();
+			break;
+		}
+		case INT:
+		{
+			var_val = ((Long) var_val) * ((Number) value).longValue();
+			break;
+		}
+		case STRING:
+		{
+			var_val = StringUtil.repeatString((String) var_val, ((Number) value).intValue());
+			break;
+		}
+		default:
+			throw new ArithmeticError("The operation: '*=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '/=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object div() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: checkNumber(valueType); oVal = ((Double) oVal) / ((Number) value).doubleValue(); break;
-		case INT: checkNumber(valueType); oVal = ((Long) oVal) / ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE: var_val = ((Double) var_val) / ((Number) value).doubleValue(); break;
+		case INT: var_val = ((Long) var_val) / ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '/=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '%=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object mod() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: checkNumber(valueType); oVal = ((Double) oVal) % ((Number) value).doubleValue(); break;
-		case INT: checkNumber(valueType); oVal = ((Long) oVal) % ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE: var_val = ((Double) var_val) % ((Number) value).doubleValue(); break;
+		case INT: var_val = ((Long) var_val) % ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '%=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '&=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object and() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() & ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() & ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '&=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '|=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object or() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() | ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() | ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '|=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '^=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object xor() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() ^ ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() ^ ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '^=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '<<=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object shiftL() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() << ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() << ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '<<=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '>>=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object shiftR() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() >> ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() >> ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '>>=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
+	/**
+	 * This method specifically relates to the '>>>=' operation and
+	 * can only be applied to EnvisionInt and EnvisionDouble.
+	 * 
+	 * @return the new value
+	 */
 	private Object arithShiftR() {
-		//check if null or final
-		if (obj == null) { throw new NullVariableError(name); }
-		if (!(obj instanceof EnvisionVariable)) { throw new NotAVariableError(obj); }
-		if (obj.isFinal()) { throw new FinalVarReassignmentError(obj, value); }
+		//don't allow null vars
+		if (obj == null) throw new NullVariableError(name);
+		//don't allow final reassignment
+		if (obj.isFinal()) throw new FinalVarReassignmentError(obj, value);
+		//don't allow non-numbers to advance
+		if (!(obj instanceof EnvisionNumber)) throw new NotANumberError(obj);
 		
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
-		Object oVal = var.get();
+		EnvisionDatatype var_type = var.getDatatype();
+		var var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get();
 		
 		//get datatype of incoming value
-		EnvisionDataType valueType = EnvisionDataType.getDataType(value);
+		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
+		assert_number(value_type);
 		
 		//determine variable type
-		switch (obj.getInternalType()) {
-		case DOUBLE: case INT: checkNumber(valueType); oVal = ((Number) oVal).longValue() >>> ((Number) value).longValue(); break;
-		default: throw new ArithmeticError("The operation: '" + obj + "' is invalid for the given object: '" + obj + "' (" + obj.getInternalType() + ")!");
+		switch (var_ptype) {
+		case DOUBLE:
+		case INT: var_val = ((Number) var_val).longValue() >>> ((Number) value).longValue(); break;
+		default:
+			throw new ArithmeticError("The operation: '>>>=' is invalid for the given object: '"
+									  + obj + "' (" + var_type + ")!");
 		}
 		
 		//assign the new value
-		var.set(oVal);
+		var.set(var_val);
 		
-		return oVal;
+		return var_val;
 	}
 	
 	//---------------------------------------------------------------------------
 	
-	private void checkNumber(EnvisionDataType type) {
+	private void assert_number(EnvisionDatatype type) {
+		assert_number(type.getPrimitiveType());
+	}
+	
+	private void assert_number(Primitives type) {
 		if (!type.isNumber()) {
 			throw new ArithmeticError("Invalid operation: '" + type + "'! Can only operate on numbers!'");
 		}
-	}
-	
-	//---------------------------------------------------------------------------
-	
-	public static Object run(EnvisionInterpreter in, AssignExpression e) {
-		return new IE_Assign(in).run(e);
 	}
 	
 }	

@@ -1,21 +1,21 @@
 package envision.lang.packages.env.base;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
 /**
  * Returns true if the given class instance supports the given operator overload.
  * Takes in an instance of an EnvisionClass and an operator.
  */
-public class SupportsOP extends EnvisionMethod {
+public class SupportsOP extends EnvisionFunction {
 	
 	public SupportsOP() {
-		super(EnvisionDataType.BOOLEAN, "supportsOP");
+		super(Primitives.BOOLEAN, "supportsOP");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		System.out.println(args);
 	}
 	

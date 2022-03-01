@@ -1,16 +1,15 @@
 package envision.interpreter.expressions;
 
 import envision.exceptions.errors.ArithmeticError;
-import envision.exceptions.errors.InvalidOperationError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.OperatorOverloadHandler;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.objects.EnvisionList;
-import envision.lang.objects.EnvisionOperator;
-import envision.parser.expressions.types.BinaryExpression;
-import envision.tokenizer.Keyword;
+import envision.parser.expressions.expressions.BinaryExpression;
+import envision.tokenizer.KeywordType;
+import envision.tokenizer.Operator;
 import eutil.math.NumberUtil;
 import eutil.strings.StringUtil;
 
@@ -26,163 +25,216 @@ public class IE_Binary extends ExpressionExecutor<BinaryExpression> {
 	
 	@Override
 	public Object run(BinaryExpression expression) {
-		Object left = evaluate(expression.left);
-		Object right = evaluate(expression.right);
+		Object a = evaluate(expression.left);
+		Object b = evaluate(expression.right);
 		
-		//check if either value is a variable -- if so compare the variable's value
-		left = EnvisionObject.convert(left);
-		right = EnvisionObject.convert(right);
+		//convert wrapped objects to their primitive forms
+		a = EnvisionObject.convert(a);
+		b = EnvisionObject.convert(b);
 		
 		//TEMPORARY FIX -- SHOULD NOT BE PERMANENT
 		//check if either vlaue is a String -- if so remove "
-		left = (left instanceof String) ? ((String) left).replace("\"", "") : left;
-		right = (right instanceof String) ? ((String) right).replace("\"", "") : right;
+		//a = (a instanceof String s) ? s.replace("\"", "") : a;
+		//b = (b instanceof String s) ? s.replace("\"", "") : b;
 		
 		//determine operation being made
-		Keyword op = null;
+		Operator op = expression.operator;
+		/*
 		if (expression.modular) {
 			EnvisionObject opObj = scope().get(expression.operator.lexeme);
-			if (opObj != null && opObj instanceof EnvisionOperator) {
-				op = (Keyword) ((EnvisionOperator.Operator) ((EnvisionOperator) opObj).get()).op;
+			if (opObj != null && opObj instanceof EnvisionOperator env_op) {
+				op = ((EnvisionOperator.Operator) env_op.get()).op;
 			}
 			else throw new InvalidOperationError("Expected a valid modular operator but got: '" + opObj + "' instead!");
 		}
 		else {
 			op = expression.operator.keyword;
 		}
+		*/
 		
 		//error if the operator is null
 		if (op == null) throw new ArithmeticError("Null operator in arithmetic expression! '" + expression + "'!");
 		
 		//check if the operator is an assignment -- if so send to assign handler
-		if (op.isAssignment()) return IE_Assign.handleAssign(interpreter, expression, op);
-		
-		//System.out.println(expression + " : [" + left + " " + left.getClass() + "] " + op + " [" + right + " " + right.getClass() + "]");
+		if (op.hasType(KeywordType.ASSIGNMENT)) return IE_Assign.handleAssign(interpreter, expression, op);
 		
 		//determine if the first object is a classInstance so that opeartor overloading can be handled
-		if (left instanceof ClassInstance) {
-			return OperatorOverloadHandler.handleOverload(interpreter, op, (ClassInstance) left, right);
-		}
-		else if (right instanceof ClassInstance) {
-			return OperatorOverloadHandler.handleOverload(interpreter, op, (ClassInstance) right, left);
+		if (a instanceof ClassInstance inst) {
+			return OperatorOverloadHandler.handleOverload(interpreter, op, inst, b);
 		}
 		
 		//otherwise, handle the basic datatype interactions
-		if (op == Keyword.COMPARE) { return isEqual(left, right); }
-		if (op == Keyword.NOT_EQUALS) { return !isEqual(left, right); }
-		if (op == Keyword.ADD) {
-			if (bothStrings(left, right)) { return (String) left + (String) right; }
-			if (bothNumbers(left, right)) {
-				if (isIntegers(left, right)) { return ((Number) left).longValue() + ((Number) right).longValue(); }
-				else { return ((Number) left).doubleValue() + ((Number) right).doubleValue(); }
+		if (op == Operator.COMPARE) return isEqual(a, b);
+		else if (op == Operator.NOT_EQUALS) return !isEqual(a, b);
+		else if (op == Operator.ADD) {
+			//check for string concatenations
+			if (a instanceof String a_str && b instanceof String b_str) return a_str + b_str;
+			else if (a instanceof String a_str) return a_str + b;
+			else if (a instanceof String b_str) return a + b_str;
+			else if (a instanceof Number a_num && b instanceof Number b_num) {
+				//check if operation should be integer or double based
+				if (isIntegers(a, b)) return a_num.longValue() + b_num.longValue();
+				else return a_num.doubleValue() + b_num.doubleValue();
 			}
-			if (isString(left)) { return (String) left + right; }
-			if (isString(right)) { return left + (String) right; }
+			
 			throw new ArithmeticError("'" + expression + "' : Operands must be two numbers or two strings.");
 		}
 		
-		boolean isNum = false;
-		boolean strFirst = (left instanceof String);
-		
-		if (strFirst && op == Keyword.MULTIPLY) {
-			String l = (String) left;
-			return StringUtil.repeatString(l, ((Number) right).intValue());
+		//handle special string and char multiply cases
+		else if (op == Operator.MUL) {
+			//handle (char * #) case
+			if (a instanceof Character l) return StringUtil.repeatString(String.valueOf(l), ((Number) b).intValue());
+			//handle (string * #) case
+			else if (a instanceof String l) return StringUtil.repeatString(l, ((Number) b).intValue());
 		}
 		
+		//flag that is true if the resulting output will be a number
+		//boolean isNum = false;
+		
+		//switch on op to determine what kind of operation to perform
 		switch (op) {
-		case LESS_THAN: case LESS_THAN_EQUALS:
-		case GREATER_THAN: case GREATER_THAN_EQUALS:
+		case LT:
+		case GT:
+		case LTE:
+		case GTE:
 			//convert lists to their length
-			if (isList(left)) left = ((EnvisionList) left).size();
-			if (isList(right)) right = ((EnvisionList) right).size();
-		case SUBTRACT: case MULTIPLY: case DIVIDE: case MODULUS:
-		case SHIFT_LEFT: case SHIFT_RIGHT: case SHIFT_RIGHT_ARITHMETIC:
-			if ((isList(left) && isNumber(right)) || isNumber(left) && isList(right)) { isNum = true; break; }
-			checkNumberOperands(expression.operator, left, right);
-			isNum = true;
+			if (a instanceof EnvisionList env_list) a = env_list.size();
+			if (b instanceof EnvisionList env_list) b = env_list.size();
+			//isNum = true;
+			break;
+		case SUB:
+		case MUL:
+		case DIV:
+		case MOD:
+		case SHL:
+		case SHR:
+		case SHR_AR:
+			if ((isList(a) && isNumber(b)) || isNumber(a) && isList(b)) {
+				//isNum = true;
+				break;
+			}
+			checkNumberOperands(expression.operator, a, b);
+			//isNum = true;
+			break;
 		default: break;
 		}
 		
-		if (isNum) {
-			if (isList(left) && isNumber(right)) return handleList(op, (EnvisionList) left, (Number) right, true);
-			if (isNumber(left) && isList(right)) return handleList(op, (EnvisionList) right, (Number) left, false);
-			else if (isIntegers(left, right)) return handleOpInt(op, (Number) left, (Number) right);
-			else return handleOpDouble(op, (Number) left, (Number) right);
-		}
+		//if (isNum) {
+			if (isList(a) && isNumber(b)) return handleList(op, (EnvisionList) a, (Number) b, true);
+			if (isNumber(a) && isList(b)) return handleList(op, (EnvisionList) b, (Number) a, false);
+			else if (isIntegers(a, b)) return handleOpLong(op, ((Number) a).longValue(), ((Number) b).longValue());
+			else return handleOpDouble(op, ((Number) a).doubleValue(), ((Number) b).doubleValue());
+		//}
 		
-		return null;
+		//return null;
 	}
 	
-	private static EnvisionList handleList(Keyword op, EnvisionList list, Number right, boolean isLeft) {
+	private static EnvisionList handleList(Operator op, EnvisionList list, Number b, boolean isLeft) {
 		for (int i = 0; i < list.size(); i++) {
-			Object o = EnvisionObject.convert(list.get(i));
-			if (o instanceof Number) {
-				Number left = (Number) o;
-				if (isIntegers(left, right)) list.set(i, handleOpInt(op, (isLeft) ? left : right, (isLeft) ? right : left));
-				else list.set(i, handleOpDouble(op, (isLeft) ? left : right, (isLeft) ? right : left));
+			var o = EnvisionObject.convert(list.get(i));
+			
+			if (o instanceof Number a) {
+				if (isIntegers(a, b)) {
+					var left = (isLeft) ? a.longValue() : b.longValue();
+					var right = (isLeft) ? b.longValue() : a.longValue();
+					var new_val = handleOpLong(op, left, right);
+					list.set(i, new_val);
+				}
+				else {
+					var left = (isLeft) ? a.doubleValue() : b.doubleValue();
+					var right = (isLeft) ? b.doubleValue() : a.doubleValue();
+					var new_val = handleOpDouble(op, left, right);
+					list.set(i, new_val);
+				}
 			}
-			else throw new ArithmeticError("(" + list.getInternalType() + " " + op + " " + right + ") : Both operands must be numbers.");
+			else throw new ArithmeticError("("+list.getDatatype()+" "+op+" "+b+") : Both operands must be numbers.");
 		}
 		
 		return list;
 	}
 	
-	private static Object handleOpInt(Keyword op, Number left, Number right) {
-		long lVal = left.longValue();
-		long rVal = right.longValue();
+	private static Object handleOpLong(Operator op, long a, long b) {
+		//if divide, check for divide / zero possibility
+		if (op == Operator.DIV) div0(op, a, b);
 		
 		switch (op) {
-		case LESS_THAN: return lVal < rVal;
-		case LESS_THAN_EQUALS: return lVal <= rVal;
-		case GREATER_THAN: return lVal > rVal;
-		case GREATER_THAN_EQUALS: return lVal >= rVal;
-		case SUBTRACT: return lVal - rVal;
-		case MULTIPLY: return lVal * rVal;
-		case DIVIDE: div0(op, left, right); return lVal / rVal;
-		case MODULUS: return lVal % rVal;
-		case SHIFT_LEFT: return (int) lVal << (int) rVal;
-		case SHIFT_RIGHT: return (int) lVal >> (int) rVal;
-		case SHIFT_RIGHT_ARITHMETIC: return (int) lVal >>> (int) rVal;
-		default: return null;
+		case LT: 		return a < b;
+		case LTE: 		return a <= b;
+		case GT: 		return a > b;
+		case GTE: 		return a >= b;
+		case SUB: 		return a - b;
+		case MUL: 		return a * b;
+		case DIV:  		return a / b;
+		case MOD: 		return a % b;
+		case SHL: 		return a << b;
+		case SHR: 		return a >> b;
+		case SHR_AR: 	return a >>> b;
+		default: 		return null;
 		}
 	}
 	
-	private static Object handleOpDouble(Keyword op, Number left, Number right) {
-		double lVal = left.doubleValue();
-		double rVal = right.doubleValue();
+	private static Object handleOpDouble(Operator op, double a, double b) {
+		//if divide, check for divide / zero possibility
+		if (op == Operator.DIV) div0(op, a, b);
 		
 		switch (op) {
-		case LESS_THAN: return lVal < rVal;
-		case LESS_THAN_EQUALS: return lVal <= rVal;
-		case GREATER_THAN: return lVal > rVal;
-		case GREATER_THAN_EQUALS: return lVal >= rVal;
-		case SUBTRACT: return lVal - rVal;
-		case MULTIPLY: return lVal * rVal;
-		case DIVIDE: div0(op, left, right); return lVal / rVal;
-		case MODULUS: return lVal % rVal;
-		case SHIFT_LEFT: return (int) lVal << (int) rVal;
-		case SHIFT_RIGHT: return (int) lVal >> (int) rVal;
-		case SHIFT_RIGHT_ARITHMETIC: return (int) lVal >>> (int) rVal;
-		default: return null;
+		case LT: 		return a < b;
+		case LTE: 		return a <= b;
+		case GT: 		return a > b;
+		case GTE: 		return a >= b;
+		case SUB: 		return a - b;
+		case MUL: 		return a * b;
+		case DIV:  		return a / b;
+		case MOD: 		return a % b;
+		case SHL: 		return (long) a << (long) b;
+		case SHR: 		return (long) a >> (long) b;
+		case SHR_AR: 	return (long) a >>> (long) b;
+		default: 		return null;
 		}
 	}
 	
 	/** Throws / by zero error. */
-	private static void div0(Keyword op, Number left, Number right) {
-		if (right.intValue() == 0) throw new ArithmeticError("(" + left + " " + op.chars + " " + right + ") error! Division by zero!");
+	private static void div0(Operator op, Number a, Number b) {
+		if (b.intValue() == 0) {
+			throw new ArithmeticError("("+a+" "+op.chars+" "+b+") error! Division by zero!");
+		}
 	}
 	
 	private boolean isList(Object a) { return a instanceof EnvisionList; }
 	private boolean isNumber(Object a) { return a instanceof Number; }
 	private boolean isString(Object a) { return a instanceof String; }
-	private boolean bothNumbers(Object left, Object right) { return left instanceof Number && right instanceof Number; }
-	private boolean bothStrings(Object left, Object right) { return left instanceof String && right instanceof String; }
 	
+	/**
+	 * Returns true if both 'a' and 'b' are both Numbers.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return true if both are numbers
+	 */
+	private boolean bothNumbers(Object a, Object b) {
+		return a instanceof Number && b instanceof Number;
+	}
+	
+	/**
+	 * Returns true if both 'a' and 'b' are both strings.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return true if both are strings
+	 */
+	private boolean bothStrings(Object a, Object b) {
+		return a instanceof String && b instanceof String;
+	}
+	
+	/**
+	 * Returns true if both 'a' and 'b' are both integers (or longs).
+	 * 
+	 * @param a
+	 * @param b
+	 * @return true if both are ints or longs
+	 */
 	private static boolean isIntegers(Object a, Object b) {
-		if (a instanceof Number && b instanceof Number) {
-			return NumberUtil.isInteger((Number) a) && NumberUtil.isInteger((Number) b);
-		}
-		return false;
+		return NumberUtil.isInteger(a) && NumberUtil.isInteger(b);
 	}
 	
 }

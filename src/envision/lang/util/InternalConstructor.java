@@ -13,8 +13,8 @@ public abstract class InternalConstructor {
 	private boolean varags = false;
 	private ParameterData params;
 	
-	public InternalConstructor(EnvisionDataType... paramsIn) { this(false, paramsIn); }
-	public InternalConstructor(boolean varagsIn, EnvisionDataType... paramsIn) {
+	public InternalConstructor(Primitives... paramsIn) { this(false, paramsIn); }
+	public InternalConstructor(boolean varagsIn, Primitives... paramsIn) {
 		params = ParameterData.fromTypes(paramsIn);
 		varags = varagsIn;
 	}

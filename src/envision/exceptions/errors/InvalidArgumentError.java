@@ -1,7 +1,7 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.objects.EnvisionMethod;
+import envision.lang.objects.EnvisionFunction;
 
 public class InvalidArgumentError extends EnvisionError {
 	
@@ -13,7 +13,7 @@ public class InvalidArgumentError extends EnvisionError {
 		super("'" + obj + "' is not a valid argument for the given method: " + methodName + "!");
 	}
 	
-	public InvalidArgumentError(Object obj, EnvisionMethod method) {
+	public InvalidArgumentError(Object obj, EnvisionFunction method) {
 		super("'" + obj + "' is not a valid argument for the given method: " + method + "!");
 	}
 	

@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.RangeExpression;
+import envision.parser.expressions.expressions.RangeExpression;
 
 public class IE_Range extends ExpressionExecutor<RangeExpression> {
 

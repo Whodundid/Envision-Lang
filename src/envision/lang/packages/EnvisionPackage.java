@@ -1,8 +1,9 @@
 package envision.lang.packages;
 
-import envision.interpreter.util.Scope;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 
 /**
  *  A package is a structure within Envision which bundles a scope of variables, classes, members, and
@@ -14,7 +15,7 @@ public class EnvisionPackage extends EnvisionObject {
 	Scope packageScope;
 	
 	public EnvisionPackage(String packageName) {
-		super(EnvisionDataType.PACKAGE, packageName);
+		super(new EnvisionDatatype(Primitives.PACKAGE), packageName);
 	}
 	
 	//---------

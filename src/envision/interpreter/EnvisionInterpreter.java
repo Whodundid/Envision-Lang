@@ -2,6 +2,7 @@ package envision.interpreter;
 
 import envision.EnvisionCodeFile;
 import envision.WorkingDirectory;
+import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.UndefinedValueError;
 import envision.interpreter.expressions.IE_Assign;
 import envision.interpreter.expressions.IE_Binary;
@@ -52,76 +53,74 @@ import envision.interpreter.statements.IS_Switch;
 import envision.interpreter.statements.IS_Try;
 import envision.interpreter.statements.IS_VarDec;
 import envision.interpreter.statements.IS_While;
-import envision.interpreter.util.Scope;
 import envision.interpreter.util.TypeManager;
 import envision.interpreter.util.creationUtil.ObjectCreator;
+import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.classes.ClassInstance;
-import envision.lang.objects.EnvisionMethod;
+import envision.lang.datatypes.EnvisionBoolean;
+import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionNullObject;
 import envision.lang.packages.env.EnvPackage;
-import envision.lang.variables.EnvisionBoolean;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
-import envision.parser.expressions.types.AssignExpression;
-import envision.parser.expressions.types.BinaryExpression;
-import envision.parser.expressions.types.CompoundExpression;
-import envision.parser.expressions.types.DomainExpression;
-import envision.parser.expressions.types.EnumExpression;
-import envision.parser.expressions.types.GenericExpression;
-import envision.parser.expressions.types.GetExpression;
-import envision.parser.expressions.types.GroupingExpression;
-import envision.parser.expressions.types.ImportExpression;
-import envision.parser.expressions.types.LambdaExpression;
-import envision.parser.expressions.types.ListIndexExpression;
-import envision.parser.expressions.types.ListIndexSetExpression;
-import envision.parser.expressions.types.ListInitializerExpression;
-import envision.parser.expressions.types.LiteralExpression;
-import envision.parser.expressions.types.LogicalExpression;
-import envision.parser.expressions.types.MethodCallExpression;
-import envision.parser.expressions.types.MethodDeclarationExpression;
-import envision.parser.expressions.types.RangeExpression;
-import envision.parser.expressions.types.SetExpression;
-import envision.parser.expressions.types.SuperExpression;
-import envision.parser.expressions.types.TernaryExpression;
-import envision.parser.expressions.types.ThisConExpression;
-import envision.parser.expressions.types.ThisGetExpression;
-import envision.parser.expressions.types.TypeOfExpression;
-import envision.parser.expressions.types.UnaryExpression;
-import envision.parser.expressions.types.VarDecExpression;
-import envision.parser.expressions.types.VarExpression;
+import envision.parser.expressions.expressions.AssignExpression;
+import envision.parser.expressions.expressions.BinaryExpression;
+import envision.parser.expressions.expressions.CompoundExpression;
+import envision.parser.expressions.expressions.DomainExpression;
+import envision.parser.expressions.expressions.EnumExpression;
+import envision.parser.expressions.expressions.GenericExpression;
+import envision.parser.expressions.expressions.GetExpression;
+import envision.parser.expressions.expressions.GroupingExpression;
+import envision.parser.expressions.expressions.ImportExpression;
+import envision.parser.expressions.expressions.LambdaExpression;
+import envision.parser.expressions.expressions.ListIndexExpression;
+import envision.parser.expressions.expressions.ListIndexSetExpression;
+import envision.parser.expressions.expressions.ListInitializerExpression;
+import envision.parser.expressions.expressions.LiteralExpression;
+import envision.parser.expressions.expressions.LogicalExpression;
+import envision.parser.expressions.expressions.MethodCallExpression;
+import envision.parser.expressions.expressions.MethodDeclarationExpression;
+import envision.parser.expressions.expressions.RangeExpression;
+import envision.parser.expressions.expressions.SetExpression;
+import envision.parser.expressions.expressions.SuperExpression;
+import envision.parser.expressions.expressions.TernaryExpression;
+import envision.parser.expressions.expressions.ThisConExpression;
+import envision.parser.expressions.expressions.ThisGetExpression;
+import envision.parser.expressions.expressions.TypeOfExpression;
+import envision.parser.expressions.expressions.UnaryExpression;
+import envision.parser.expressions.expressions.VarDecExpression;
+import envision.parser.expressions.expressions.VarExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.StatementHandler;
-import envision.parser.statements.types.BlockStatement;
-import envision.parser.statements.types.CaseStatement;
-import envision.parser.statements.types.CatchStatement;
-import envision.parser.statements.types.ClassStatement;
-import envision.parser.statements.types.EnumStatement;
-import envision.parser.statements.types.ExceptionStatement;
-import envision.parser.statements.types.ExpressionStatement;
-import envision.parser.statements.types.ForStatement;
-import envision.parser.statements.types.GenericStatement;
-import envision.parser.statements.types.GetSetStatement;
-import envision.parser.statements.types.IfStatement;
-import envision.parser.statements.types.ImportStatement;
-import envision.parser.statements.types.InterfaceStatement;
-import envision.parser.statements.types.LambdaForStatement;
-import envision.parser.statements.types.LoopControlStatement;
-import envision.parser.statements.types.MethodDeclarationStatement;
-import envision.parser.statements.types.ModularMethodStatement;
-import envision.parser.statements.types.PackageStatement;
-import envision.parser.statements.types.RangeForStatement;
-import envision.parser.statements.types.ReturnStatement;
-import envision.parser.statements.types.SwitchStatement;
-import envision.parser.statements.types.TryStatement;
-import envision.parser.statements.types.VariableStatement;
-import envision.parser.statements.types.WhileStatement;
+import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statements.CaseStatement;
+import envision.parser.statements.statements.CatchStatement;
+import envision.parser.statements.statements.ClassStatement;
+import envision.parser.statements.statements.EnumStatement;
+import envision.parser.statements.statements.ExceptionStatement;
+import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statements.ForStatement;
+import envision.parser.statements.statements.GenericStatement;
+import envision.parser.statements.statements.GetSetStatement;
+import envision.parser.statements.statements.IfStatement;
+import envision.parser.statements.statements.ImportStatement;
+import envision.parser.statements.statements.InterfaceStatement;
+import envision.parser.statements.statements.LambdaForStatement;
+import envision.parser.statements.statements.LoopControlStatement;
+import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statements.ModularMethodStatement;
+import envision.parser.statements.statements.PackageStatement;
+import envision.parser.statements.statements.RangeForStatement;
+import envision.parser.statements.statements.ReturnStatement;
+import envision.parser.statements.statements.SwitchStatement;
+import envision.parser.statements.statements.TryStatement;
+import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statements.WhileStatement;
+import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
+import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** The head class that manages parsing script files. */
 public class EnvisionInterpreter implements StatementHandler, ExpressionHandler {
@@ -132,7 +131,6 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	private final Scope global = new Scope(this);
 	private Scope scope = global;
-	private final Map<Expression, Integer> locals = new HashMap();
 	private WorkingDirectory directory;
 	private EnvisionCodeFile startingFile;
 	public final String fileName;
@@ -156,9 +154,6 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	public EnvisionInterpreter interpret(WorkingDirectory dirIn) throws Exception {
 		directory = dirIn;
 		
-		//define primitives:
-		//typeManager.defineType("int", EnvisionInt.getBase());
-		
 		new EnvPackage().defineOn(this);
 		//EnvisionPackages.defineAll(this);
 		
@@ -170,7 +165,6 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		int cur = 0;
 		try {
 			for (Statement s : statements) {
-				//System.out.println(s);
 				execute(s);
 				cur++;
 			}
@@ -180,6 +174,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		catch (Exception error) {
 			//such professional error handler
 			System.out.println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
+			//error.printStackTrace();
 			throw error;
 		}
 		
@@ -196,15 +191,13 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		//System.out.println("top: " + c + ": " + scope());
 		//System.out.println(c);
 		
-		if (s != null) { s.execute(this); }
+		//if (s != null)
+		s.execute(this);
 	}
 	
 	public Object evaluate(Expression e) {
-		return (e != null) ? e.execute(this) : null;
-	}
-	
-	public void resolve(Expression e, int depth) {
-		locals.put(e, depth);
+		//return (e != null) ? e.execute(this) : null;
+		return e.execute(this);
 	}
 	
 	public void executeBlock(EArrayList<Statement> statements, Scope env) {
@@ -224,7 +217,6 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	public EnvisionCodeFile codeFile() { return startingFile; }
 	public Scope global() { return global; }
 	public Scope scope() { return scope; }
-	public Map<Expression, Integer> locals() { return locals; }
 	public TypeManager getTypeManager() { return typeManager; }
 	
 	//----------------------------
@@ -234,30 +226,23 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	public Scope pushScope() { return scope = new Scope(scope); }
 	public Scope popScope() { return scope = scope.getParentScope(); }
 	
-	public Object lookUpVariable(Token name/*, Expression expr*/) {
-		//Integer distance = locals.get(expr);
+	public Object lookUpVariable(Token name) {
 		EnvisionObject object = null;
 		
-		//if (distance != null) {
-		//	object = scope.getAt(distance, name.lexeme);
-		//}
-		//else {
-			//System.out.println(codeFile() + " : " + scope());
-			object = scope.get(name.lexeme);
-			if (object == null) throw new UndefinedValueError(name.lexeme);
-		//}
+		object = scope.get(name.lexeme);
+		if (object == null) throw new UndefinedValueError(name.lexeme);
 		
 		return object;
 	}
 	
-	public void checkNumberOperand(Token operator, Object operand) {
+	public void checkNumberOperand(Operator operator, Object operand) {
 		if (operand instanceof Number) return;
 		throw new RuntimeException(operator + " : Operand must be a number.");
 	}
 	
-	public void checkNumberOperands(Token operator, Object left, Object right) {
+	public void checkNumberOperands(Operator operator, Object left, Object right) {
 		if (left instanceof Number && right instanceof Number) return;
-		throw new RuntimeException("(" + left + " " + operator.lexeme + " " + right + ") : Operands must be numbers.");
+		throw new RuntimeException("(" + left + " " + operator.chars + " " + right + ") : Operands must be numbers.");
 	}
 	
 	public void checkNumberOperands(String operator, Object left, Object right) {
@@ -279,88 +264,252 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		if (a == null && b == null) return true;
 		if (a == null) return false;
 		
-		if (a instanceof Character) { a = a + ""; }
-		if (b instanceof Character) { b = b + ""; }
+		if (a instanceof Character) return a.equals(b);
+		if (b instanceof Character) return b.equals(a);
 		
-		if (a instanceof EnvisionVariable) return EnvisionVariable.convert(a).equals(b);
-		if (b instanceof EnvisionVariable) return EnvisionVariable.convert(b).equals(a);
+		if (a instanceof EnvisionVariable) return EnvisionObject.convert(a).equals(b);
+		if (b instanceof EnvisionVariable) return EnvisionObject.convert(b).equals(a);
 		
 		return a.equals(b);
 	}
 	
-	public String stringify(Object object) {
-		if (object == null) return "null";
-		
-		//if (object instanceof String) {
-			//object = ((String) object).replace("\"", "");
-		//}
-		
-		if (object instanceof Double) {
-			String text = object.toString();
-			if (text.endsWith(".0")) { text = text.substring(0, text.length() - 2); }
-			return text;
-		}
-		
-		if (object instanceof ClassInstance) {
-			ClassInstance ci = (ClassInstance) object;
-			EnvisionMethod toString = ci.getMethod("toString", new EArrayList());
-			System.out.println("the method: " + toString);
-		}
-		
-		return object.toString();
-	}
-	
-	public boolean isDefined(Token name) {
-		try { scope.get(name.lexeme); return true; } catch (UndefinedValueError e) { return false; }
-	}
-	
+	public boolean isDefined(Token name) { return isDefined(name.lexeme); }
 	public boolean isDefined(String name) {
-		try { scope.get(name); return true; } catch (UndefinedValueError e) { return false; }
+		try {
+			scope.get(name);
+			return true;
+		}
+		catch (UndefinedValueError e) { return false; }
 	}
 	
-	public EnvisionObject checkDefined(Token name) {
-		EnvisionObject o = null;
-		try { o = scope.get(name.lexeme); } catch (UndefinedValueError e) {}
-		if (o != null) { return o; }
-		throw new UndefinedValueError(name.lexeme);
+	/**
+	 * This method will either define or overwrite an already defined value
+	 * within this interpreter's current scope with the given 'object' value.
+	 * <p>
+	 * In the event that the given variable name is not already defined, the
+	 * standard variable declaration process will be used. However, if the value
+	 * is currently defined, the existing value will be completely overwritten,
+	 * regardless of scope or visibility.
+	 * <p>
+	 * In terms of validity, it must be understood that this method will not
+	 * attempt to check for logical variable overwrites, I.E. forcefully changing
+	 * defined variable datatypes. Furthermore, this method will not attempt to preserve
+	 * already existing values under the same name as existing values are completely
+	 * overwritten. In terms of security, this method should be used with the utmost amount
+	 * of caution as declaration overwrites will completely ignore existing variable
+	 * modifiers, such as private or final. This means that potentially sensitive
+	 * data could be overwritten regardless of scope and visibility. As such, this
+	 * method is potentially a very destructive means of variable declaration, which
+	 * could have dramatic effects on further program execution if used improperly.
+	 * <p>
+	 * In nearly every circumstance, the standard variable declaration approaches should be
+	 * preferred over this method.
+	 * 
+	 * @param name The name of the object which will either be defined or overwritten
+	 * @param object The object being storred at the given 'name' location.
+	 * @return The defined object
+	 */
+	public EnvisionObject forceDefine(String name, Object object) {
+		var type = EnvisionDatatype.dynamicallyDetermineType(object);
+		EnvisionObject toDefine = ObjectCreator.createObject(name, type, object, false);
+		EnvisionObject existing = null;
+		
+		try {
+			existing = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (existing == null) scope.define(name, toDefine);
+		else scope.set(name, toDefine);
+		
+		return toDefine;
 	}
 	
-	public EnvisionObject checkDefined(String name) {
-		EnvisionObject o = null;
-		try { o = scope.get(name); } catch (UndefinedValueError e) {}
-		if (o != null) { return o; }
-		throw new UndefinedValueError(name);
+	/**
+	 * This method will either define or overwrite an already defined value
+	 * within this interpreter's current scope with the given 'object' value.
+	 * <p>
+	 * In the event that the given variable name is not already defined, the
+	 * standard variable declaration process will be used. However, if the value
+	 * is currently defined, the existing value will be completely overwritten,
+	 * regardless of scope or visibility.
+	 * <p>
+	 * In terms of validity, it must be understood that this method will not
+	 * attempt to check for logical variable overwrites, I.E. forcefully changing
+	 * defined variable datatypes. Furthermore, this method will not attempt to preserve
+	 * already existing values under the same name as existing values are completely
+	 * overwritten. In terms of security, this method should be used with the utmost amount
+	 * of caution as declaration overwrites will completely ignore existing variable
+	 * modifiers, such as private or final. This means that potentially sensitive
+	 * data could be overwritten regardless of scope and visibility. As such, this
+	 * method is potentially a very destructive means of variable declaration, which
+	 * could have dramatic effects on further program execution if used improperly.
+	 * <p>
+	 * In nearly every circumstance, the standard variable declaration approaches should be
+	 * preferred over this method.
+	 * 
+	 * @param name The name of the object which will either be defined or overwritten
+	 * @param object The object being storred at the given 'name' location.
+	 * @return The defined object
+	 */
+	public EnvisionObject forceDefine(String name, EnvisionDatatype type, Object object) {
+		EnvisionObject toDefine = ObjectCreator.createObject(name, type, object, false);
+		EnvisionObject existing = null;
+		
+		try {
+			existing = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (existing == null) scope.define(name, type, toDefine);
+		else scope.set(name, type, toDefine);
+		
+		return toDefine;
 	}
 	
-	public EnvisionObject defineIfNot(Token name, Object object) {
-		EnvisionObject o = null;
-		try { o = scope.get(name.lexeme); } catch (UndefinedValueError e) {}
-		if (o == null) { return scope.define(name.lexeme, ObjectCreator.createObject(name.lexeme, object)); }
-		return o;
-	}
-	
-	public EnvisionObject defineIfNot(String name, Object object) {
-		EnvisionObject o = null;
-		try { o = scope.get(name); } catch (UndefinedValueError e) {}
-		if (o == null) { return scope.define(name, ObjectCreator.createObject(name, object)); }
-		return o;
-	}
-	
-	public EnvisionObject defineIfNot(Token name, EnvisionObject object) {
-		EnvisionObject o = null;
-		try { o = scope.get(name.lexeme); } catch (UndefinedValueError e) {}
-		if (o == null) { return scope.define(name.lexeme, object); }
-		return o;
-	}
-	
+	/**
+	 * This method will attempt to define a given object if it is
+	 * found to not already exist within the current interpreter
+	 * scope. In the event that a value under the same name is
+	 * already defined, no further action will take place and this
+	 * method will execute quietly.
+	 * <p>
+	 * This method will not attempt to check for inconsistent
+	 * datatypes between existing and incomming values. Simply put,
+	 * this method only chcks if a value of the same 'name' is
+	 * currently defined within the current interpreter scope or not.
+	 * Because of this, it must be understood that just because a
+	 * value under the same name exists within the current interpreter
+	 * scope, it may not be the variable that was expected.
+	 * 
+	 * @param name The name for which to define the given object on
+	 * @param object The object to be defined if not already present
+	 * @return The defined objet
+	 */
 	public EnvisionObject defineIfNot(String name, EnvisionObject object) {
-		EnvisionObject o = scope.get(name);
-		if (o == null) { return scope.define(name, object); }
+		EnvisionObject o = null;
+		
+		try {
+			o = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (o == null) return scope.define(name, object);
+		
 		return o;
 	}
 	
-	public EnvisionObject define(EnvisionMethod m) {
-		return scope.define(m.getName(), m);
+	/**
+	 * This method will attempt to define a given object if it is
+	 * found to not already exist within the current interpreter
+	 * scope. In the event that a value under the same name is
+	 * already defined, no further action will take place and this
+	 * method will execute quietly.
+	 * <p>
+	 * This method will not attempt to check for inconsistent
+	 * datatypes between existing and incomming values. Simply put,
+	 * this method only chcks if a value of the same 'name' is
+	 * currently defined within the current interpreter scope or not.
+	 * Because of this, it must be understood that just because a
+	 * value under the same name exists within the current interpreter
+	 * scope, it may not be the variable that was expected.
+	 * 
+	 * @param name The name for which to define the given object on
+	 * @param object The object to be defined if not already present
+	 * @return The defined object
+	 */
+	public EnvisionObject defineIfNot(String name, EnvisionDatatype type, EnvisionObject object) {
+		EnvisionObject o = null;
+		
+		try {
+			o = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (o == null) return scope.define(name, type, object);
+		
+		return o;
+	}
+	
+	/**
+	 * This method will attempt to update the value of an already existing
+	 * variable under the same name with the given object. In the event
+	 * that the object is not defined under the current interpreter scope,
+	 * the given object will be defined in its place.
+	 * <p>
+	 * Note: This method will ignore inconsistencies between existing value
+	 * datatypes and incomming datatypes. This means that the use of this
+	 * method could potentially lead to destructive variable declarations
+	 * such that existing variables under the same name, but with a different
+	 * datatype, will be overwritten by the new incomming object.
+	 * 
+	 * @param name The name for which to define the given object on
+	 * @param object The object to be updated or defined if not already present
+	 * @return The defined object
+	 */
+	public EnvisionObject updateOrDefine(String name, EnvisionObject object) {
+		EnvisionObject o = null;
+		
+		try {
+			o = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (o == null) return scope.define(name, object);
+		
+		scope.set(name, object);
+		return object;
+	}
+	
+	/**
+	 * This method will attempt to update the value of an already existing
+	 * variable under the same name with the given object. In the event
+	 * that the object is not defined under the current interpreter scope,
+	 * the given object will be defined in its place.
+	 * <p>
+	 * Unlike the version of this method without the 'type' parameter, this
+	 * version will specifically check to ensure that incomming object
+	 * datatypes are consistent with already existing variable datatypes.
+	 * In the event that the incomming datatype does not match, or is not
+	 * an instance of (polymorphism), the existing variable datatype, an
+	 * InvalidDatatypeError is thrown. However, in the case that the
+	 * incomming object is 'NULL', then null (EnvisionNull) will be assigned
+	 * to the existing variable.
+	 * 
+	 * @param name The name for which to define the given object on
+	 * @param object The object to be updated or defined if not already present
+	 * @return The defined object
+	 */
+	public EnvisionObject updateOrDefine(String name, EnvisionDatatype type, EnvisionObject object) {
+		Box2<EnvisionDatatype, EnvisionObject> o = null;
+		
+		//return the typed variable (if it exists)
+		try {
+			o = scope.getTyped(name);
+		} catch (UndefinedValueError e) {}
+		
+		if (o == null) return scope.define(name, type, object);
+		
+		//check for datatype consistency
+		if (!o.getA().equals(type))
+			throw new InvalidDatatypeError("The incomming datatype: '" + type + "' does not match the existing" +
+										   " datatype '" + o.getA() + "'!");
+		
+		scope.set(name, type, object);
+		return object;
+	}
+	
+	/**
+	 * If a variable under the given name is defined within the current
+	 * interpreter scope, then the variable is returned, otherwise
+	 * Java:null is returned instead.
+	 * 
+	 * @param name The variable name for which to retrieve an object from
+	 * @return The objet if it is defined or null if it is not
+	 */
+	public EnvisionObject getIfDefined(String name) {
+		EnvisionObject o = null;
+		
+		try {
+			o = scope.get(name);
+		} catch (UndefinedValueError e) {}
+		
+		return o;
 	}
 	
 	//------------

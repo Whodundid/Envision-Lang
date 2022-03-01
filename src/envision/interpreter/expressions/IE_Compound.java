@@ -4,7 +4,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.CompoundExpression;
+import envision.parser.expressions.expressions.CompoundExpression;
 
 public class IE_Compound extends ExpressionExecutor<CompoundExpression> {
 

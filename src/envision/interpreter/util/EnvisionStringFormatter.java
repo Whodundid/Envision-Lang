@@ -6,33 +6,17 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.objects.EnvisionMethod;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.data.ParameterData;
 import envision.tokenizer.EscapeCode;
-import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
 public class EnvisionStringFormatter {
 	
 	private EnvisionStringFormatter() {}
 
-	/** Removes unnecessary double quotes from the string. */
-	public static String stripQuotes(String in) {
-		String made = "";
-		
-		for (int i = 0; i < in.length(); i++) {
-			char c = in.charAt(i);
-			
-			//always remove the first and last double qoute on the ends of the string
-			if (i != 0 && i != in.length() - 1) {
-				made += c;
-			}
-		}
-		
-		return made;
-	}
-
 	public static String formatPrint(EnvisionInterpreter interpreter, Object o) {
-		return formatPrint(interpreter, new EArrayList().addRT(o));
+		return formatPrint(interpreter, new Object[] {o});
 	}
 	
 	/**
@@ -44,37 +28,39 @@ public class EnvisionStringFormatter {
 	 * @return String formatted for println
 	 */
 	public static String formatPrint(EnvisionInterpreter interpreter, Object[] args) {
-		String out = "";
+		var out = new StringBuilder();
 		
 		for (int i = 0; i < args.length; i++) {
 			Object o = args[i];
 			
 			//test for toString overload
-			if (o instanceof ClassInstance) {
-				ClassInstance inst = (ClassInstance) o;
-				EnvisionMethod toString = ((ClassInstance) o).getMethod("toString", new EArrayList());
+			if (o instanceof ClassInstance inst) {
+				EnvisionFunction toString = inst.getMethod("toString", new ParameterData());
 				if (toString != null) {
-					try { toString.invoke(interpreter); }
+					try {
+						toString.invoke(interpreter, null);
+					}
 					catch (ReturnValue r) {
-						out += EnvisionStringFormatter.handleEscapes(interpreter, (String) EnvisionObject.convert(r.object), inst);
+						String str_r = (String) EnvisionObject.convert(r.object);
+						out.append(handleEscapes(interpreter, str_r, inst));
 					}
 				}
-				else { out += o.toString(); }
+				else out.append(o.toString());
 			}
 			else {
-				out += EnvisionStringFormatter.handleEscapes(interpreter, StringUtil.toString(o), null);
+				out.append(handleEscapes(interpreter, StringUtil.toString(o), null));
 			}
 			
 			//add a space in between arguments
-			if (i < args.length - 1) { out += " "; }
+			if (i < args.length - 1) out.append(" ");
 		}
 		
-		return out;
+		return out.toString();
 	}
 	
 	/** Processes an incomming string and parses for escape characters and performs the accoring function if one is found. */
 	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst) {
-		String out = "";
+		var out = new StringBuilder();
 		
 		//search for escape characters and handle them accordingly
 		for (int i = 0; i < in.length(); i++) {
@@ -85,7 +71,7 @@ public class EnvisionStringFormatter {
 				EscapeCode esc = EscapeCode.getCode(in.charAt(i + 1));
 				
 				//process the code
-				if (esc != null) out += EscapeCode.convertCode(esc);
+				if (esc != null) out.append(EscapeCode.convertCode(esc));
 				//throw invalid escape char code
 				else throw new EnvisionError("Invalid string escape character code! '\\" + in.charAt(i) + "'");
 				
@@ -97,22 +83,22 @@ public class EnvisionStringFormatter {
 				String varName = findVarName(in.substring(i + 1));
 				
 				String val = processObject(interpreter, varName, inst);
-				out += val;
+				out.append(val);
 				
 				//consume the '{varName}'
 				i += varName.length() + 1;
 			}
 			//otherwise just add the char to the output
 			else {
-				out += c;
+				out.append(c);
 			}
 		}
 		
-		return out;
+		return out.toString();
 	}
 	
 	public static String findVarName(String in) {
-		String name = "";
+		var name = new StringBuilder();
 		boolean hasEnd = false;
 		for (int i = 0; i < in.length(); i++) {
 			char c = in.charAt(i);
@@ -122,7 +108,7 @@ public class EnvisionStringFormatter {
 				EscapeCode esc = EscapeCode.getCode(in.charAt(i + 1));
 				
 				//process the code
-				if (esc != null) name += EscapeCode.convertCode(esc);
+				if (esc != null) name.append(EscapeCode.convertCode(esc));
 				//throw invalid escape char code
 				else throw new EnvisionError("Invalid string escape character code! '\\" + in.charAt(i) + "'");
 				
@@ -131,13 +117,20 @@ public class EnvisionStringFormatter {
 				continue;
 			}
 			if (c == '{') throw new EnvisionError("Cannot include additional '{' within a string var replacement code!");
-			if (c == '}') { hasEnd = true; break; }
+			if (c == '}') {
+				hasEnd = true;
+				break;
+			}
 			
-			name += c;
+			name.append(c);
 		}
+		
 		if (!hasEnd) throw new EnvisionError("String var replacement '{...}' has no ending '}'!");
-		if (name.isEmpty() || name.trim().isEmpty()) throw new EnvisionError("String var replacement name is empty or blank!");
-		return name;
+		if (name.isEmpty() || name.toString().trim().isEmpty()) {
+			throw new EnvisionError("String var replacement name is empty or blank!");
+		}
+		
+		return name.toString();
 	}
 	
 	public static String processObject(EnvisionInterpreter interpreter, String varName) { return processObject(interpreter, varName, null); }
@@ -150,18 +143,20 @@ public class EnvisionStringFormatter {
 		else obj = interpreter.scope().get(varName);
 		
 		//if the obj returned is a class instance, recursive replacement will need to be performed
-		if (obj instanceof ClassInstance) { return processClassInstance(interpreter, (ClassInstance) obj); }
+		if (obj instanceof ClassInstance obj_inst) return processClassInstance(interpreter, obj_inst);
 		//otherwise append the object's string value
-		else if (obj != null) { return StringUtil.toString(obj); }
+		else if (obj != null) return StringUtil.toString(obj);
 		//if the obj is null then the variable doesn't actually exist -- throw an error
 		else throw new NullVariableError(varName);
 	}
 	
 	public static String processClassInstance(EnvisionInterpreter interpreter, ClassInstance rInst) {
-		EnvisionMethod toString = rInst.getMethod("toString", new EArrayList());
+		EnvisionFunction toString = rInst.getMethod("toString", new ParameterData());
 		
 		if (toString != null) {
-			try { toString.invoke(interpreter); }
+			try {
+				toString.invoke(interpreter, null);
+			}
 			catch (ReturnValue r) {
 				//recursively replace
 				return handleEscapes(interpreter, StringUtil.toString(r.object), rInst);
@@ -169,7 +164,7 @@ public class EnvisionStringFormatter {
 			throw new EnvisionError("String class instance replacement: this shouldn't be possible!");
 		}
 		
-		return rInst.toString(); 
+		return rInst.toString();
 	}
 	
 }

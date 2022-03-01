@@ -1,29 +1,29 @@
 package envision.lang.packages.env.io;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
-import eutil.datatypes.util.EDataType;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
+import eutil.datatypes.util.DataTypeUtil;
 
 import java.util.Scanner;
 
-public class Read extends EnvisionMethod {
+public class Read extends EnvisionFunction {
 	
 	//I might need to use Strings to handle internal object types..
 	
 	public Read() {
-		super(EnvisionDataType.STRING, "read");
+		super(Primitives.STRING, "read");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		Scanner reader = new Scanner(System.in);
 		String input = reader.next();
 		reader.close();
 		
 		Object rVal = input;
 		
-		switch (EDataType.getStringDataType(input)) {
+		switch (DataTypeUtil.getStringDataType(input)) {
 		case NULL: rVal = null; break;
 		case BOOLEAN: rVal = Boolean.parseBoolean(input); break;
 		case CHAR: rVal = input.charAt(0); break;

@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.ThisGetExpression;
+import envision.parser.expressions.expressions.ThisGetExpression;
 
 public class IE_This extends ExpressionExecutor<ThisGetExpression> {
 

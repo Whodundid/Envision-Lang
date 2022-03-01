@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.MethodDeclarationExpression;
+import envision.parser.expressions.expressions.MethodDeclarationExpression;
 
 public class IE_MethodDec extends ExpressionExecutor<MethodDeclarationExpression> {
 

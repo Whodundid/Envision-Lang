@@ -4,7 +4,7 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.Primitives;
 import envision.parser.EnvisionParser;
 import envision.parser.statements.Statement;
 import envision.tokenizer.Token;
@@ -53,7 +53,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	
 	public EnvisionCodeFile(String fileName) { this(new File(fileName)); }
 	public EnvisionCodeFile(File in) {
-		super(EnvisionDataType.CODE_FILE);
+		super(Primitives.CODE_FILE);
 		theFile = in;
 		if (isValid = checkFile()) {
 			fileName = StringUtil.subStringAfter(theFile.getPath().replace("\\", "."), ".").replace(".nvis", "");
@@ -129,6 +129,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		
 		//prep interpreter
 		try {
+			workingDir = dir;
 			interpreter = new EnvisionInterpreter(this);
 			dir.getBuildPackages().forEach(p -> p.defineOn(interpreter));
 			isLoaded = true;
@@ -205,11 +206,16 @@ public class EnvisionCodeFile extends EnvisionObject {
 		if (!isParsed) parseFile();
 		
 		System.out.println("'" + getFileName() + "' Parsed Statements:");
+		StringBuilder lines = new StringBuilder();
+		int cur = 1;
 		for (Statement s : statements) {
-			StringBuilder line = new StringBuilder("\t");
-			line.append(s.toString());
-			System.out.println(line);
+			lines.append(cur++);
+			lines.append(". ");
+			lines.append("\t");
+			lines.append(s.toString());
+			lines.append("\n");
 		}
+		System.out.println(lines.toString());
 		System.out.println();
 	}
 	

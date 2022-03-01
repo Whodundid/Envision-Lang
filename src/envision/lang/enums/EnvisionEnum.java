@@ -1,13 +1,15 @@
 package envision.lang.enums;
 
-import static envision.lang.util.EnvisionDataType.*;
+import static envision.lang.util.Primitives.*;
 
 import envision.exceptions.EnvisionError;
+import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
+import envision.lang.objects.EnvisionFunction;
 import envision.lang.objects.EnvisionList;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.InternalMethod;
+import envision.lang.util.Primitives;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.structureTypes.InheritableObject;
 import eutil.EUtil;
@@ -19,10 +21,10 @@ public class EnvisionEnum extends InheritableObject {
 	EnvisionEnumConstructor constructor = new EnvisionEnumConstructor(this);
 	
 	EArrayList<EnvisionObject> members = new EArrayList();
-	EArrayList<EnvisionMethod> functions = new EArrayList();
+	EArrayList<EnvisionFunction> functions = new EArrayList();
 	
 	public EnvisionEnum(VisibilityType visIn, String nameIn) {
-		super(EnvisionDataType.ENUM, nameIn);
+		super(new EnvisionDatatype(Primitives.ENUM), nameIn);
 		
 		setVisibility(visIn);
 	}
@@ -43,12 +45,12 @@ public class EnvisionEnum extends InheritableObject {
 		return EUtil.getFirst(values, v -> v.name.equals(name));
 	}
 	
-	public boolean matchesConstructorParams(EArrayList<EnvisionDataType> argsIn) {
+	public boolean matchesConstructorParams(EArrayList<Primitives> argsIn) {
 		if (constructor.hasParams()) {
 			if (argsIn == null || argsIn.isEmpty() || constructor.params.size() != argsIn.size()) { return false; }
 			
 			for (int i = 0; i < constructor.params.size(); i++) {
-				EnvisionDataType t = constructor.params.get(i);
+				Primitives t = constructor.params.get(i);
 				if (t != argsIn.get(i)) { return false; }
 			}
 		}
@@ -57,6 +59,10 @@ public class EnvisionEnum extends InheritableObject {
 	
 	public EArrayList<EnumValue> getValues() { return values; }
 	public EnvisionEnumConstructor getConstructor() { return constructor; }
+
+	@Override
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
+	}
 	
 	/*
 	public void setConstructorParams(ArgumentData dataIn) {

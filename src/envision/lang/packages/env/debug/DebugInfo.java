@@ -5,18 +5,18 @@ import envision.exceptions.errors.InvalidArgumentError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.objects.EnvisionMethod;
-import envision.lang.util.EnvisionDataType;
-import envision.lang.variables.EnvisionVariable;
+import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.objects.EnvisionFunction;
+import envision.lang.util.Primitives;
 
-public class DebugInfo extends EnvisionMethod {
+public class DebugInfo extends EnvisionFunction {
 		
 	public DebugInfo() {
-		super(EnvisionDataType.VOID, "info");
+		super(Primitives.VOID, "info");
 	}
 	
 	@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		if (args.length == 0) { throw new ArgLengthError(this, 0, 1); }
 		
 		Object obj = args[0];
@@ -31,7 +31,7 @@ public class DebugInfo extends EnvisionMethod {
 		out += " DEBUG INFO: '" + o.getName() + "'\n";
 		out += "----------------------------------------------------------------\n";
 		out += tab1 + "General:\n";
-		out += tab2 + "Internal Type: " + o.getInternalType() + "\n";
+		out += tab2 + "Internal Type: " + o.getDatatype() + "\n";
 		out += tab2 + "Hex Hash: 0x" + o.getHexHash() + "\n";
 		out += tab2 + "Modifiers: " + o.getVisibility();
 		if (o.isStrong()) { out += ", strong"; }

@@ -11,14 +11,16 @@ import eutil.datatypes.EArrayList;
 public abstract class InternalMethod {
 	
 	private String name;
-	private String rType;
+	private EnvisionDatatype rType;
 	private boolean varags = false;
 	private ParameterData params;
 	private InternalMethod superMethod = null;
 	private EArrayList<InternalMethod> differentArgs = new EArrayList();
 	
-	public InternalMethod(EnvisionDataType returnTypeIn, String nameIn, EnvisionDataType... paramsIn) { this(returnTypeIn.type, nameIn, paramsIn); }
-	public InternalMethod(String returnTypeIn, String nameIn, EnvisionDataType... paramsIn) {
+	public InternalMethod(Primitives returnTypeIn, String nameIn, Primitives... paramsIn) {
+		this(new EnvisionDatatype(returnTypeIn), nameIn, paramsIn);
+	}
+	public InternalMethod(EnvisionDatatype returnTypeIn, String nameIn, Primitives... paramsIn) {
 		//super(nameIn);
 		//super(returnTypeIn, nameIn);
 		
@@ -27,8 +29,11 @@ public abstract class InternalMethod {
 		name = nameIn;
 		params = ParameterData.fromTypes(paramsIn);
 		
-		for (EnvisionDataType t : paramsIn) {
-			if (t.isArrayType()) { varags = true; break; }
+		for (Primitives t : paramsIn) {
+			if (t.isArrayType()) {
+				varags = true;
+				break;
+			}
 		}
 	}
 	
@@ -41,7 +46,7 @@ public abstract class InternalMethod {
 	
 	/** Called to begin checking args vs. params and execute internal method body. */
 	//@Override
-	public void call(EnvisionInterpreter interpreter, Object[] args) {
+	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
 		InternalMethod theMeth = this;
 		
 		for (InternalMethod m : theMeth.differentArgs) {
@@ -62,6 +67,10 @@ public abstract class InternalMethod {
 		}
 		
 		return false;
+	}
+	
+	public boolean comapreParams(ParameterData in) {
+		return params.compare(in);
 	}
 	
 	/** Checks that arg num matches param num and that each passed arg type matches the coresponding param type. */
@@ -95,8 +104,8 @@ public abstract class InternalMethod {
 	
 	public InternalMethod getSuper() { return superMethod; }
 	public String getIMethodName() { return name; }
-	public String getReturnType() { return rType; }
+	public EnvisionDatatype getReturnType() { return rType; }
 	public ParameterData getParams() { return params; }
-	public boolean isVoid() { return EnvisionDataType.getDataType(getReturnType()) == EnvisionDataType.VOID; }
+	public boolean isVoid() { return rType.isVoid(); }
 	
 }

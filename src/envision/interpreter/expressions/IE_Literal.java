@@ -1,9 +1,8 @@
 package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.EnvisionStringFormatter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.LiteralExpression;
+import envision.parser.expressions.expressions.LiteralExpression;
 
 public class IE_Literal extends ExpressionExecutor<LiteralExpression> {
 
@@ -13,9 +12,9 @@ public class IE_Literal extends ExpressionExecutor<LiteralExpression> {
 
 	@Override
 	public Object run(LiteralExpression expression) {
-		if (expression.value instanceof String) {
-			return EnvisionStringFormatter.stripQuotes((String) expression.value);
-		}
+		//if (expression.value instanceof String) {
+			//return EnvisionStringFormatter.stripQuotes((String) expression.value);
+		//}
 		return expression.value;
 	}
 	

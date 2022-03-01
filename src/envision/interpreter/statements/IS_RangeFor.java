@@ -6,15 +6,15 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.lang.EnvisionObject;
+import envision.lang.datatypes.EnvisionInt;
+import envision.lang.datatypes.EnvisionString;
+import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionList;
-import envision.lang.variables.EnvisionInt;
-import envision.lang.variables.EnvisionString;
-import envision.lang.variables.EnvisionVariable;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.RangeExpression;
-import envision.parser.expressions.types.VarExpression;
+import envision.parser.expressions.expressions.RangeExpression;
+import envision.parser.expressions.expressions.VarExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.RangeForStatement;
+import envision.parser.statements.statements.RangeForStatement;
 import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
 
@@ -32,65 +32,66 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 		pushScope();
 		
 		//handle initializers (if there are any)
-		interpreter.execute(statement.init);
+		if (statement.init != null) interpreter.execute(statement.init);
 		
 		//build range values
 		for (int i = 0; i < ranges.size(); i++) {
-			RangeExpression r = ranges.get(i);
+			RangeExpression range_expr = ranges.get(i);
 			
-			Expression left = r.left;
-			Expression right = r.right;
-			Expression by = r.by;
+			Expression left_expr = range_expr.left;
+			Expression right_expr = range_expr.right;
+			Expression by_expr = range_expr.by;
 			
 			// There is an issue here where actual arithmetic expressions are being created as compound expressions.
 			
 			//System.out.println(left + " : " + right + " : " + by);
 			//System.out.println(right.getClass());
 			
-			Object lVal = handleLeft(left);
-			Object rVal = evaluate(right);
-			Object bVal = (by != null) ? evaluate(by) : (long) 1;
+			Object left = handleLeft(left_expr);
+			Object right = evaluate(right_expr);
+			Object by = (by_expr != null) ? evaluate(by_expr) : (long) 1;
 			
 			EnvisionVariable leftObject = null;
 			
 			try {
-				//handle right
-				if (lVal instanceof Number) {
+				//handle left value
+				if (left instanceof Number) {
 					//ensure that the number being used is an integer
-					if (!(lVal instanceof Integer) && !(lVal instanceof Long)) { throw new Exception(); }
-					leftObject = new EnvisionInt((Number) lVal);
+					if (!(left instanceof Integer) && !(left instanceof Long)) throw new Exception();
+					leftObject = new EnvisionInt((Number) left);
 				}
-				else if (lVal instanceof EnvisionVariable) {
-					EnvisionVariable v = (EnvisionVariable) lVal;
+				else if (left instanceof EnvisionVariable) {
+					var env_var = (EnvisionVariable) left;
 					//ensure that the variable being used is an integer
-					if (!(v instanceof EnvisionInt)) { throw new Exception(); }
-					leftObject = v;
+					if (!(env_var instanceof EnvisionInt)) throw new Exception();
+					leftObject = env_var;
 				}
-				else { throw new Exception(); }
+				else throw new Exception();
 				
-				rVal = (rVal instanceof EnvisionVariable) ? ((EnvisionVariable) rVal).get() : rVal;
-				bVal = (bVal instanceof EnvisionVariable) ? ((EnvisionVariable) bVal).get() : bVal;
+				//right and 'by' values
+				right = EnvisionObject.convert(right);
+				by = EnvisionObject.convert(by);
 				
 				//handle right
-				if (rVal instanceof EnvisionList) { rVal = (long) ((EnvisionList) rVal).size() - 1; }
-				else if (rVal instanceof String) { rVal = (long) ((String) rVal).length(); }
-				else if (rVal instanceof EnvisionString) { rVal = (long) ((EnvisionString) rVal).length(); }
-				else if (rVal instanceof EnvisionInt) { rVal = (long) ((EnvisionInt) rVal).get(); }
-				else { rVal = ((Number) rVal).longValue(); }
+				if (right instanceof EnvisionList env_list) 		right = (long) env_list.size();
+				else if (right instanceof String str) 				right = (long) str.length();
+				else if (right instanceof EnvisionString env_str) 	right = (long) env_str.length();
+				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.get();
+				else 												right = ((Number) right).longValue();
 				
 				//handle by
-				if (bVal instanceof EnvisionList) { bVal = (long) ((EnvisionList) bVal).size(); }
-				else if (bVal instanceof String) { bVal = (long) ((String) bVal).length(); }
-				else if (bVal instanceof EnvisionString) { bVal = (long) ((EnvisionString) bVal).length(); }
-				else if (bVal instanceof EnvisionInt) { bVal = (long) ((EnvisionInt) bVal).get(); }
-				else { bVal = ((Number) bVal).longValue(); }
+				if (by instanceof EnvisionList env_list) 			by = (long) env_list.size();
+				else if (by instanceof String str) 					by = (long) ((String) by).length();
+				else if (by instanceof EnvisionString env_str) 		by = (long) ((EnvisionString) by).length();
+				else if (by instanceof EnvisionInt env_int) 		by = (long) ((EnvisionInt) by).get();
+				else by = ((Number) by).longValue();
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 				throw new RuntimeException("Range expression must use integer based numbers.");
 			}
 			
-			rangeValues.add(new Box3(leftObject, rVal, bVal));
+			rangeValues.add(new Box3(leftObject, right, by));
 		}
 		
 		//ripple carry across ranges
@@ -100,7 +101,6 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 		TOP:
 		while (!done) {
 			Box3<EnvisionVariable, Long, Long> range = rangeValues.getLast();
-			Expression inc = ranges.getLast().left;
 			
 			while (checkLess(range)) {
 				try {
@@ -122,7 +122,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 				
 				Box3<EnvisionVariable, Long, Long> next = rangeValues.get(i);
 				//first check if the range should continue
-				if (!checkKeepGoing(rangeValues)) { break; }
+				if (!checkKeepGoing(rangeValues)) break;
 				
 				//begin the carry by zeroing the first
 				range.a.set(0);
@@ -131,7 +131,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 					next = rangeValues.get(i);
 					
 					//if the next most position is less than it's respective limit, increment it
-					if ((long) next.a.get() < (next.b)) {
+					if (checkLess(next)) {
 						VariableUtil.incrementValue(next.a, next.c, true);
 						carrying = false;
 					}
@@ -144,7 +144,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 			}
 			
 			//if not all values are fully set, restart the loop
-			if (checkKeepGoing(rangeValues)) { continue; }
+			if (checkKeepGoing(rangeValues)) continue;
 			
 			done = true;
 		}
@@ -158,26 +158,30 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 	
 	//-------------------------------
 	
-	private void inc(EnvisionObject obj, Number amount) { VariableUtil.incrementValue(obj, amount, true); }
-	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) { return (long) box.a.get() <= box.b; }
+	private void inc(EnvisionObject obj, Number amount) {
+		VariableUtil.incrementValue(obj, amount, true);
+	}
+	
+	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) {
+		return (long) box.a.get() < box.b;
+	}
 	
 	private Object handleLeft(Expression left) {
-		if (left instanceof VarExpression) {
-			VarExpression leftVar = (VarExpression) left;
-			return (EnvisionVariable) defineIfNot(leftVar.name, new EnvisionInt(0));
+		if (left instanceof VarExpression var) {
+			return defineIfNot(var.getName(), new EnvisionInt());
+			//return updateOrDefine(var.getName(), Primitives.INT.toDatatype(), new EnvisionInt());
+			//return forceDefine(leftVar.name.lexeme, Primitives.INT.toDatatype(), new EnvisionInt());
 		}
 		return evaluate(left);
 	}
 	
 	private boolean checkKeepGoing(EArrayList<Box3<EnvisionVariable, Long, Long>> list) {
 		//cacluate if the loop is done
-		for (Box3<EnvisionVariable, Long, Long> box : list) {
+		for (var box : list) {
 			long a = (long) box.a.get();
 			long b = box.b;
 			//System.out.println("checking: " + a + ":" + b + " = " + (a < b - 1));
-			if (a < b) {
-				return true;
-			}
+			if (a < b) return true;
 		}
 		
 		return false;

@@ -5,8 +5,8 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.BlockStatement;
-import envision.parser.statements.types.WhileStatement;
+import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statements.WhileStatement;
 
 public class IS_While extends StatementExecutor<WhileStatement> {
 

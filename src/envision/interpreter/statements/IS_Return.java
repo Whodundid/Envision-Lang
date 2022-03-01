@@ -5,7 +5,7 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.types.ReturnStatement;
+import envision.parser.statements.statements.ReturnStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_Return extends StatementExecutor<ReturnStatement> {
@@ -19,8 +19,11 @@ public class IS_Return extends StatementExecutor<ReturnStatement> {
 		Expression cond = s.condition;
 		Object r = s.retVals;
 		
-		//System.out.println("RETURN: " + cond + " : " + evaluate(cond));
+		//if there is a condition on the return, evaluate the condition and
+		//only return a value if the condition is true
+		if (cond != null && !isTruthy(evaluate(cond))) return;
 		
+		//otherwise, return some kind of value
 		if (r instanceof EArrayList<?>) {
 			EArrayList<?> retVals = (EArrayList<?>) r;
 			

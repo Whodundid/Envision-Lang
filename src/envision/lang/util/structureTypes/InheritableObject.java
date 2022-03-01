@@ -1,23 +1,22 @@
 package envision.lang.util.structureTypes;
 
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDataType;
+import envision.lang.util.EnvisionDatatype;
 import envision.parser.statements.Statement;
-import envision.parser.statements.types.MethodDeclarationStatement;
+import envision.parser.statements.statements.MethodDeclarationStatement;
 import eutil.datatypes.EArrayList;
 
-public abstract class InheritableObject extends EnvisionObject {
+public abstract class InheritableObject extends InvocableObject {
 	
 	protected EArrayList<InheritableObject> parents = new EArrayList();
 	protected EArrayList<EnvisionObject> staticMembers = new EArrayList();
 	protected EArrayList<Statement> staticStatements = new EArrayList();
 	protected EArrayList<Statement> bodyStatements = new EArrayList();
 	protected EArrayList<MethodDeclarationStatement> constructorStatements = new EArrayList();
-	//protected EArrayList<MethodDeclarationStatement> methods = new EArrayList();
 	
 	//---------------------------------------------------------------------------
 	
-	protected InheritableObject(EnvisionDataType internalTypeIn, String nameIn) {
+	protected InheritableObject(EnvisionDatatype internalTypeIn, String nameIn) {
 		super(internalTypeIn, nameIn);
 	}
 	
@@ -34,7 +33,6 @@ public abstract class InheritableObject extends EnvisionObject {
 	public EArrayList<EnvisionObject> getStaticMembers() { return staticMembers; }
 	public EArrayList<Statement> getStaticStatements() { return staticStatements; }
 	public EArrayList<Statement> getBody() { return bodyStatements; }
-	//public EArrayList<MethodDeclarationStatement> getMethods() { return methods; }
 
 	//---------------------------------------------------------------------------
 	
@@ -42,9 +40,6 @@ public abstract class InheritableObject extends EnvisionObject {
 	public InheritableObject setStatics(EArrayList<Statement> in) { staticStatements = in; return this; }
 	public InheritableObject setBody(EArrayList<Statement> in) { bodyStatements = in; return this; }
 	public InheritableObject setConstructors(EArrayList<MethodDeclarationStatement> in) { constructorStatements = in; return this; }
-	
-	//public InheritableObject setMethods(EArrayList<MethodDeclarationStatement> in) { methods = in; return this; }
-	//public InheritableObject addMethod(MethodDeclarationStatement m) { methods.add(m); return this; }
 	
 	//---------------------------------------------------------------------------
 	

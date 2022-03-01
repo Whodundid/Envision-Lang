@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.types.VarExpression;
+import envision.parser.expressions.expressions.VarExpression;
 
 public class IE_Var extends ExpressionExecutor<VarExpression> {
 
