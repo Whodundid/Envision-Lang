@@ -9,8 +9,8 @@ import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.CaseStatement;
-import envision.parser.statements.statements.SwitchStatement;
+import envision.parser.statements.statement_types.CaseStatement;
+import envision.parser.statements.statement_types.SwitchStatement;
 import envision.tokenizer.Token;
 
 public class IS_Switch extends StatementExecutor<SwitchStatement> {
@@ -50,7 +50,7 @@ public class IS_Switch extends StatementExecutor<SwitchStatement> {
 					if (caseName == null) throw new EnvisionError("Null switch case value!");
 					else if (theEnum != null) caseNameValue = theEnum.getValue(caseName.lexeme);
 					else if (caseName.isLiteral()) caseNameValue = caseName.literal;
-					else caseNameValue = lookUpVariable(caseName);
+					else caseNameValue = scope().get(caseName);
 					
 					//not sure how to handle yet
 					if (isNull(caseNameValue)) { System.out.println("NULL SWITCH CASE"); }

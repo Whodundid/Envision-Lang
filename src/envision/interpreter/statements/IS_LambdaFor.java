@@ -15,13 +15,13 @@ import envision.lang.objects.EnvisionNullObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.CompoundExpression;
-import envision.parser.expressions.expressions.LambdaExpression;
-import envision.parser.expressions.expressions.VarExpression;
+import envision.parser.expressions.expression_types.CompoundExpression;
+import envision.parser.expressions.expression_types.LambdaExpression;
+import envision.parser.expressions.expression_types.VarExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.VariableDeclaration;
-import envision.parser.statements.statements.LambdaForStatement;
-import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statement_types.LambdaForStatement;
+import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.util.VariableDeclaration;
 import eutil.datatypes.EArrayList;
 
 public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {

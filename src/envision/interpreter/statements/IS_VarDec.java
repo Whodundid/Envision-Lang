@@ -19,9 +19,10 @@ import envision.lang.objects.EnvisionNullObject;
 import envision.lang.objects.EnvisionVoidObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.data.DataModifier;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statementUtil.VariableDeclaration;
-import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.util.ParserDeclaration;
+import envision.parser.util.VariableDeclaration;
+import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
 public class IS_VarDec extends StatementExecutor<VariableStatement> {
@@ -38,15 +39,26 @@ public class IS_VarDec extends StatementExecutor<VariableStatement> {
 	public void run(VariableStatement statement) {
 		TypeManager typeMan = interpreter.getTypeManager();
 		
-		//extract statement base parts
+		//extract base statement parts
 		ParserDeclaration statement_declaration = statement.getDeclaration();
 		EArrayList<VariableDeclaration> unprocessed_var_declarations = statement.vars;
-		EnvisionDatatype var_dec_datatype = new EnvisionDatatype(statement_declaration.getReturnType());
+		Token token_returntype = statement_declaration.getReturnType();
+		EnvisionDatatype var_dec_datatype = new EnvisionDatatype(token_returntype);
 		
 		//if the rType correspondes to a specific user defined type, grab its class
 		EnvisionClass typeClass = typeMan.getTypeClass(var_dec_datatype);
 		
+		//---------------------------------------------------------------------------------------------------------------
 		
+		//throw error if the type is either null, isn't a primitive type, or isn't defined within the interpreter
+		if (isNull(var_dec_datatype)) {
+			throw new UndefinedTypeError("No type defined for the variable(s): " + unprocessed_var_declarations);
+		}
+		else if (!typeMan.isTypeDefined(var_dec_datatype)) {
+			throw new UndefinedTypeError("The type '" + var_dec_datatype + "' is undefined within the current scope!");
+		}
+		
+		//---------------------------------------------------------------------------------------------------------------
 		
 		//process each variable declaration
 		for (VariableDeclaration d : unprocessed_var_declarations) {
@@ -62,7 +74,6 @@ public class IS_VarDec extends StatementExecutor<VariableStatement> {
 			
 			//---------------------------------------------------------
 			
-			
 			//check that the variable doesn't already exist locally
 			if (scope().existsLocally(var_name)) throw new DuplicateObjectError(var_name);
 			
@@ -75,23 +86,16 @@ public class IS_VarDec extends StatementExecutor<VariableStatement> {
 				
 				//convert variable objects to their primitives
 				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
-				
+
 				//determine the type of the assignment value
-				assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
+				if (assignment_value instanceof EnvisionObject env_obj) assignment_value_datatype = env_obj.getDatatype();
+				else assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
 				
 				//check that the assignment value actually matches the variable type being created
 				CastingUtil.assert_expected_datatype(var_dec_datatype, assignment_value_datatype);
 				
 				//convert variable type to primitive Java types
 				if (assignment_value instanceof EnvisionVariable v) assignment_value = v.get();
-			}
-			
-			//throw error if the type is either null, isn't a primitive type, or isn't defined within the interpreter
-			if (isNull(var_dec_datatype)) {
-				throw new UndefinedTypeError("No type defined for the variable(s): " + unprocessed_var_declarations);
-			}
-			else if (!var_dec_datatype.isPrimitiveType() && !typeMan.isTypeDefined(var_dec_datatype)) {
-				throw new UndefinedTypeError("No type defined for the variable(s): " + unprocessed_var_declarations);
 			}
 			
 			
@@ -110,6 +114,7 @@ public class IS_VarDec extends StatementExecutor<VariableStatement> {
 				//if it's a class instance, assign the instance name
 				else if (assignment_value instanceof ClassInstance env_class_inst) {
 					env_class_inst.setName(var_name);
+					obj = env_class_inst;
 				}
 				//check for standard object type
 				else if (assignment_value instanceof EnvisionObject env_obj) {

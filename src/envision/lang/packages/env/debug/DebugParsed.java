@@ -6,7 +6,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statement_types.ExpressionStatement;
 
 public class DebugParsed extends EnvisionFunction {
 		

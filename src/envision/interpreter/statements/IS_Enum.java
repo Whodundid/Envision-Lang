@@ -8,9 +8,9 @@ import envision.lang.EnvisionObject;
 import envision.lang.enums.EnvisionEnum;
 import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.EnumExpression;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.EnumStatement;
+import envision.parser.expressions.expression_types.EnumExpression;
+import envision.parser.statements.statement_types.EnumStatement;
+import envision.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
 
 public class IS_Enum extends StatementExecutor<EnumStatement> {

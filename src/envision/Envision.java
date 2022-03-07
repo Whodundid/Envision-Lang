@@ -1,5 +1,8 @@
 package envision;
 
+import java.io.File;
+import java.util.Scanner;
+
 import envision.bytecode.translator.BytecodeTranslator;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.BadDirError;
@@ -9,15 +12,12 @@ import envision.lang.packages.EnvisionLangPackage;
 import envision.parser.EnvisionParser;
 import eutil.datatypes.EArrayList;
 
-import java.io.File;
-import java.util.Scanner;
-
 public class Envision {
 	
-	/** The current build of the Envision Scripting Langauge. */
-	public static final String version = "0.0.300";
-	/** The current build's date of the Envision Scripting Langauge. */
-	public static final String versionDate = "11/20/2021";
+	/** The current build of the Envision Scripting Language. */
+	public static final String version = "0.0.###";
+	/** The current build's date of the Envision Scripting Language. */
+	public static final String versionDate = "3/1/2022";
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
@@ -68,7 +68,7 @@ public class Envision {
 	 * Due to the nature of how Java loads programs on a per-class basis,
 	 * the simple act of class loading will significantly slow down language performance
 	 * on first runs. This setting seeks to improve Envision program runtime consistency
-	 * specifically by requring the language to be fully loaded into the Java class loader before
+	 * specifically by requiring the language to be fully loaded into the Java class loader before
 	 * any Envision code is executed. It should be noted that enabling this setting will actually
 	 * take longer for any Envision code to start executing because the language needs to be
 	 * loaded in full. What this will achieve however, is any Envision code that is executed
@@ -95,7 +95,7 @@ public class Envision {
 	//----------------------------------------------------------------------------------------------------------------
 	
 	/** Packages to be loaded upon program compilation. */
-	private EArrayList<EnvisionLangPackage> packages = new EArrayList();
+	private EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
 	/** A handler which is referenced when an EnvisionError is thrown. */
 	private EnvisionErrorCallback callback = null;
 	/** Settings which will be applied to the Envision Language and (or) given to programs executing at runtime. */
@@ -197,7 +197,7 @@ public class Envision {
 		//interpret the program starting at the main file
 		try {
 			//get user args
-			EArrayList<String> programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList();
+			EArrayList<String> programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<>();
 			
 			//throw interpret error if the file could not be loaded
 			if (!main.load(dir)) throw new InterpreterCreationError();

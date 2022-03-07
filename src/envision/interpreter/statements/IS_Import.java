@@ -10,8 +10,8 @@ import envision.lang.EnvisionObject;
 import envision.lang.packages.env.EnvPackage;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
-import envision.parser.expressions.expressions.ImportExpression;
-import envision.parser.statements.statements.ImportStatement;
+import envision.parser.expressions.expression_types.ImportExpression;
+import envision.parser.statements.statement_types.ImportStatement;
 import envision.tokenizer.Token;
 import eutil.EUtil;
 

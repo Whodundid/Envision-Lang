@@ -11,10 +11,10 @@ import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.RangeExpression;
-import envision.parser.expressions.expressions.VarExpression;
+import envision.parser.expressions.expression_types.RangeExpression;
+import envision.parser.expressions.expression_types.VarExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.RangeForStatement;
+import envision.parser.statements.statement_types.RangeForStatement;
 import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
 

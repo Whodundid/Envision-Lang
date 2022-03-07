@@ -1,16 +1,23 @@
 package envision.parser.statements.statementParsers;
 
-import static envision.tokenizer.KeywordType.*;
-import static envision.tokenizer.Operator.*;
-import static envision.tokenizer.ReservedWord.*;
+import static envision.tokenizer.KeywordType.ARITHMETIC;
+import static envision.tokenizer.KeywordType.DATA_MODIFIER;
+import static envision.tokenizer.KeywordType.VISIBILITY_MODIFIER;
+import static envision.tokenizer.Operator.COLON;
+import static envision.tokenizer.Operator.COMMA;
+import static envision.tokenizer.Operator.GT;
+import static envision.tokenizer.Operator.LT;
+import static envision.tokenizer.Operator.PAREN_L;
+import static envision.tokenizer.Operator.PERIOD;
+import static envision.tokenizer.ReservedWord.IDENTIFIER;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
-import envision.parser.expressions.expressions.GenericExpression;
-import envision.parser.statements.statementUtil.DeclarationType;
-import envision.parser.statements.statementUtil.ParserDeclaration;
+import envision.parser.expressions.expression_types.GenericExpression;
+import envision.parser.util.DeclarationType;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -30,13 +37,17 @@ public class PS_ParseDeclaration extends GenericParser {
 		
 		//collect each piece of the declaration
 		parseVisibility(declaration);
+		if (checkType(DATA_MODIFIER)) parseDataModifiers(declaration);
 		parseDeclarationType(declaration);
 		
 		DeclarationType type = declaration.getDeclarationType();
 		
 		if (type != DeclarationType.OTHER && type != DeclarationType.EXPR) {
-			advance();
-			parseDataModifiers(declaration);
+			if (type == DeclarationType.VAR_DEF) {
+				if (declaration.getReturnType() == null) parseReturnType(declaration);
+				else advance();
+			}
+			else advance();
 			parseGenerics(declaration);
 		}
 		//-- parameters
@@ -97,7 +108,8 @@ public class PS_ParseDeclaration extends GenericParser {
 		
 		dec.applyDeclarationType(type);
 		
-		if (t.keyword.isDataType() || t.isLiteral()) dec.applyReturnType(t);
+		//if the keyword is a datatype, immediately set return type
+		if (t.keyword.isDataType()) dec.applyReturnType(t);
 	}
 	
 	/**
@@ -113,8 +125,10 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers
 		EArrayList<DataModifier> modifiers = new EArrayList();
+		
 		while (checkType(DATA_MODIFIER)) {
-			DataModifier m = DataModifier.of(consumeType(DATA_MODIFIER, "Expected a data modifier!").keyword);
+			Token mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
+			DataModifier m = DataModifier.of(mod_token.keyword);
 			modifiers.addIf(m != null, m);
 		}
 		
@@ -144,6 +158,11 @@ public class PS_ParseDeclaration extends GenericParser {
 		}
 		
 		dec.applyGenerics(generics);
+	}
+	
+	public static void parseReturnType(ParserDeclaration dec) {
+		Token t = consume(IDENTIFIER, "Expected a name identifier!");
+		dec.applyReturnType(t);
 	}
 	
 }

@@ -6,12 +6,14 @@ import envision.interpreter.expressions.IE_Assign;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
+import envision.lang.datatypes.EnvisionString;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.objects.EnvisionVoidObject;
 import envision.lang.util.Primitives;
 import envision.lang.util.data.Parameter;
 import envision.lang.util.data.ParameterData;
 import envision.tokenizer.IKeyword;
+import envision.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 
 public class OperatorOverloadHandler {
@@ -34,7 +36,22 @@ public class OperatorOverloadHandler {
 		// otherwise, check to see what operator is being evaluated as some may still apply regardless
 		// default operators for every object
 		if (op.isOperator()) {
-			switch (op.asOperator()) {
+			var operator = op.asOperator();
+			
+			//check for string additoins
+			if (operator == Operator.ADD) {
+				//only allow strings
+				if (b instanceof String str) {
+					//convert the object to it's string form
+					String obj_str = getToString(interpreter, a);
+					return new EnvisionString(obj_str + str);
+				}
+				
+				throw new UnsupportedOverloadError(a, op, Primitives.getDataType(b) + ":" + b);
+			}
+			
+			//otherwise check for any additional valid default operators
+			switch (operator) {
 			case ASSIGN: return IE_Assign.assign(interpreter, a.getName(), a, b);
 			case COMPARE: return interpreter.isEqual(a, b);
 			case NOT_EQUALS: return !interpreter.isEqual(a, b);
@@ -48,6 +65,17 @@ public class OperatorOverloadHandler {
 	//-----------------
 	// Private Methods
 	//-----------------
+	
+	private static String getToString(EnvisionInterpreter interpreter, EnvisionObject obj) {
+		String toString = null;
+		try {
+			obj.runInternalMethod("toString", interpreter, null);
+		}
+		catch (ReturnValue r) {
+			toString = (String) EnvisionObject.convert(r.object);
+		}
+		return toString;
+	}
 	
 	private static EnvisionFunction getOperatorMethod(ClassInstance c, IKeyword op, Object b) {
 		// first check if the class even has support for the given operator

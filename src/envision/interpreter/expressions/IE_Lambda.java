@@ -4,8 +4,8 @@ import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.CompoundExpression;
-import envision.parser.expressions.expressions.LambdaExpression;
+import envision.parser.expressions.expression_types.CompoundExpression;
+import envision.parser.expressions.expression_types.LambdaExpression;
 
 public class IE_Lambda extends ExpressionExecutor<LambdaExpression> {
 

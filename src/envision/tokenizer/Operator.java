@@ -135,8 +135,6 @@ public enum Operator implements IKeyword {
 	public final String chars;
 	private final int types;
 	
-	private static HashMap<String, Operator> operators = new HashMap();
-	
 	private Operator(String keywordIn, KeywordType... typeIn) {
 		chars = keywordIn;
 
@@ -145,10 +143,20 @@ public enum Operator implements IKeyword {
 		types = m;
 	}
 	
+	//-----------------------------------------------------------------------------------------------------------------------------
+	
+	private static HashMap<String, Operator> operators = new HashMap();
+	
+	static {
+		for (var o : values()) operators.put(o.chars, o);
+	}
+	
 	/** Returns a keyword from the given input String. If no keywords match, null is returned instead. */
 	public static Operator getOperator(String in) {
 		return (in != null) ? operators.get(in) : null;
 	}
+	
+	//-----------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Used to switch the operator position in increment and decrement statements.

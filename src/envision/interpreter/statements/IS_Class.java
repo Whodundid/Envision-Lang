@@ -13,15 +13,15 @@ import envision.lang.util.Primitives;
 import envision.lang.util.data.DataModifier;
 import envision.lang.util.structureTypes.InheritableObject;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.BlockStatement;
-import envision.parser.statements.statements.ClassStatement;
-import envision.parser.statements.statements.EnumStatement;
-import envision.parser.statements.statements.ExpressionStatement;
-import envision.parser.statements.statements.GetSetStatement;
-import envision.parser.statements.statements.MethodDeclarationStatement;
-import envision.parser.statements.statements.ModularMethodStatement;
-import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statement_types.BlockStatement;
+import envision.parser.statements.statement_types.ClassStatement;
+import envision.parser.statements.statement_types.EnumStatement;
+import envision.parser.statements.statement_types.ExpressionStatement;
+import envision.parser.statements.statement_types.GetSetStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.ModularMethodStatement;
+import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
 
 public class IS_Class extends StatementExecutor<ClassStatement> {

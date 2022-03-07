@@ -7,7 +7,7 @@ import static envision.tokenizer.ReservedWord.*;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expressions.LiteralExpression;
+import envision.parser.expressions.expression_types.LiteralExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statementParsers.PS_Class;
 import envision.parser.statements.statementParsers.PS_Enum;
@@ -24,9 +24,9 @@ import envision.parser.statements.statementParsers.PS_Switch;
 import envision.parser.statements.statementParsers.PS_Try;
 import envision.parser.statements.statementParsers.PS_VarDec;
 import envision.parser.statements.statementParsers.PS_While;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.BlockStatement;
-import envision.parser.statements.statements.ExpressionStatement;
+import envision.parser.statements.statement_types.BlockStatement;
+import envision.parser.statements.statement_types.ExpressionStatement;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.KeywordType;
 import envision.tokenizer.Token;
@@ -135,7 +135,7 @@ public abstract class GenericParser {
 		if (match(FOR))					return PS_For.forStatement();
 		if (match(SWITCH))				return PS_Switch.switchStatement();
 		if (match(IF))					return PS_If.ifStatement();
-		if (match(RETURN))				return PS_Return.returnStatement(false);
+		if (match(RETURN))				return PS_Return.returnStatement();
 		if (match(RETIF))				return PS_Return.returnStatement(true);
 		if (check(CONTINUE, CONTIF))	return PS_LoopControl.handleContinue();
 		if (check(BREAK, BREAKIF))		return PS_LoopControl.handleBreak();
@@ -261,6 +261,8 @@ public abstract class GenericParser {
 	public static boolean atEnd() { return current().isEOF(); }
 	public static void advance() { parser.advance(); }
 	public static Token getAdvance() { return parser.getAdvance(); }
+	
+	public static void consumeEmptyLines() { parser.consumeEmptyLines(); }
 	
 	public static Token current() { return parser.current(); }
 	public static Token previous() { return parser.previous(); }

@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statements.PackageStatement;
+import envision.parser.statements.statement_types.PackageStatement;
 
 public class IS_Package extends StatementExecutor<PackageStatement> {
 

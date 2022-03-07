@@ -4,9 +4,9 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expressions.ImportExpression;
+import envision.parser.expressions.expression_types.ImportExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.ImportStatement;
+import envision.parser.statements.statement_types.ImportStatement;
 import envision.tokenizer.Token;
 import eutil.strings.StringUtil;
 

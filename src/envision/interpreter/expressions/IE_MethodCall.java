@@ -23,7 +23,7 @@ import envision.lang.objects.EnvisionVoidObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.InternalMethod;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.MethodCallExpression;
+import envision.parser.expressions.expression_types.MethodCallExpression;
 
 public class IE_MethodCall extends ExpressionExecutor<MethodCallExpression> {
 

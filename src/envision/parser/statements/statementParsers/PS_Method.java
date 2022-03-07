@@ -8,16 +8,21 @@ import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expressions.AssignExpression;
+import envision.parser.expressions.expression_types.AssignExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statementUtil.StatementParameter;
-import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.util.ParserDeclaration;
+import envision.parser.util.StatementParameter;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import main.Experimental_Envision;
 
+/**
+ * Attempts to parse a method declaration statement from tokens.
+ * 
+ * @author Hunter Bragg
+ */
 public class PS_Method extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------
@@ -149,7 +154,6 @@ public class PS_Method extends GenericParser {
 			return Token.create(ARRAY_OP, "[]", current().line);
 		}
 		else if (match(NUMBER)) {
-			//System.out.println("matching number keyword: " + previous().lexeme + current().lexeme + next().lexeme);
 			return Token.create(ReservedWord.NUMBER, current());
 		}
 		else {
@@ -271,7 +275,7 @@ public class PS_Method extends GenericParser {
 						advance();
 					}
 					
-					if (match(VARARGS)) { varargs = true; }
+					if (match(VARARGS)) varargs = true;
 					Token paramName = consume(IDENTIFIER, "Expected parameter name!");
 					
 					Expression assign = null;
@@ -283,7 +287,7 @@ public class PS_Method extends GenericParser {
 					parameters.add(param);
 					
 					//break if varargs
-					if (varargs) { break; }
+					if (varargs) break;
 				}
 				while (match(COMMA));
 			}

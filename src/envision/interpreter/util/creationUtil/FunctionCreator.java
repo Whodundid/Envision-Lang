@@ -8,8 +8,8 @@ import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.data.Parameter;
 import envision.lang.util.data.ParameterData;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.statementUtil.StatementParameter;
-import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.util.StatementParameter;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 

@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statements.IfStatement;
+import envision.parser.statements.statement_types.IfStatement;
 
 public class IS_If extends StatementExecutor<IfStatement> {
 

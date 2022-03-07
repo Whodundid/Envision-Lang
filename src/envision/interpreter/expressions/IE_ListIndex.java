@@ -12,7 +12,7 @@ import envision.lang.enums.EnvisionEnum;
 import envision.lang.objects.EnvisionList;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.ListIndexExpression;
+import envision.parser.expressions.expression_types.ListIndexExpression;
 import envision.tokenizer.Operator;
 import eutil.math.NumberUtil;
 

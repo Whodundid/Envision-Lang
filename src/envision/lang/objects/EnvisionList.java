@@ -260,7 +260,7 @@ public class EnvisionList extends EnvisionObject {
 	
 	public static EnvisionList empty(String type) { return new EnvisionList(type); }
 	
-	public static EnvisionList of(Object... vals) {
+	public static EnvisionList of(Object[] vals) {
 		EnvisionList list = new EnvisionList();
 		list.add(vals);
 		return list;

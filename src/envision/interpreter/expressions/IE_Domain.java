@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.expressions.DomainExpression;
+import envision.parser.expressions.expression_types.DomainExpression;
 
 public class IE_Domain extends ExpressionExecutor<DomainExpression> {
 

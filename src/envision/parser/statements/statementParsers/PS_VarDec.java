@@ -10,10 +10,10 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.ExpressionStatement;
-import envision.parser.statements.statements.GetSetStatement;
-import envision.parser.statements.statements.VariableStatement;
+import envision.parser.statements.statement_types.ExpressionStatement;
+import envision.parser.statements.statement_types.GetSetStatement;
+import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 
 public class PS_VarDec extends GenericParser {
@@ -43,45 +43,33 @@ public class PS_VarDec extends GenericParser {
 			error("Invalid variable data modifiers for '" + type.lexeme + "'! " + declaration.getMods());
 		}
 		
-		/*
-		if (declaration.isStrong()) {
-			if (name != null) {
-				if (type.compareLexeme(name)) errorPrevious("Invalid duplicate identifier!");
-				else errorPrevious(3, "Strong can only not be applied to dynamic variable types!");
-			}
-		}
-		*/
-		
 		//collect any get/set modifiers
 		GetSetStatement getset = null;
 		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
-		
-		//define the actual variable statement
-		Statement varDecStatement = null;
 		
 		//check for type-less variable creation
 		if (check(ASSIGN)) {
 			setPrevious();
 			Expression typeless_varDec = ExpressionParser.parseExpression();
-			varDecStatement = new ExpressionStatement(typeless_varDec);
+			return new ExpressionStatement(typeless_varDec);
 		}
-		else {
-			varDecStatement = new VariableStatement(declaration, getset);
+		
+		//define the actual variable statement
+		VariableStatement varDecStatement = new VariableStatement(declaration, getset);
+		
+		//parse for declared variables
+		do {
+			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
-			//parse for declared variables
-			do {
-				name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
-				
-				//parse for initializer (if there is one)
-				Expression initializer = null;
-				if (match(ASSIGN)) initializer = ExpressionParser.parseExpression();
-				
-				//add variable to statement
-				((VariableStatement) varDecStatement).addVar(name, initializer);
-				name = null;
-			}
-			while (match(COMMA));
+			//parse for initializer (if there is one)
+			Expression initializer = null;
+			if (match(ASSIGN)) initializer = ExpressionParser.parseExpression();
+			
+			//add variable to statement
+			varDecStatement.addVar(name, initializer);
+			name = null;
 		}
+		while (match(COMMA));
 		
 		errorIf(!match(SEMICOLON, NEWLINE, EOF), "Incomplete variable declaration!");
 		return varDecStatement;

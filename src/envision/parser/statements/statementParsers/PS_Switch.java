@@ -9,8 +9,8 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.CaseStatement;
-import envision.parser.statements.statements.SwitchStatement;
+import envision.parser.statements.statement_types.CaseStatement;
+import envision.parser.statements.statement_types.SwitchStatement;
 import envision.tokenizer.Token;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
@@ -18,20 +18,20 @@ import eutil.datatypes.EArrayList;
 public class PS_Switch extends GenericParser {
 	
 	public static Statement switchStatement() {
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		consume(PAREN_L, "Expected '(' after while declaration!");
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		Expression switchExpression = ExpressionParser.parseExpression();
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		consume(PAREN_R, "Expected ')' after while condition!");
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
 		EArrayList<CaseStatement> cases = new EArrayList();
 		CaseStatement defaultCase = null;
 		boolean hasDefault = false;
 		
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		
 		if (!check(CURLY_R)) {
 			while (check(CASE, DEFAULT) && !atEnd()) {
@@ -53,7 +53,7 @@ public class PS_Switch extends GenericParser {
 					}
 				}
 				
-				while (match(NEWLINE));
+				consumeEmptyLines();
 				EArrayList<Statement> body = new EArrayList();
 				
 				if (check(COLON)) {

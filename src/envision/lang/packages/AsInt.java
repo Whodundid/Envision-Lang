@@ -13,7 +13,9 @@ public class AsInt extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
-		ret(((Number) EnvisionVariable.convert(args[0])).intValue());
+		var arg_0 = args[0];
+		var num = (Number) EnvisionVariable.convert(arg_0);
+		ret(num.intValue());
 	}
 	
 }

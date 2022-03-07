@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statements.CatchStatement;
+import envision.parser.statements.statement_types.CatchStatement;
 
 public class IS_Catch extends StatementExecutor<CatchStatement> {
 

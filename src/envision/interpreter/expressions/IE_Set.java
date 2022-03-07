@@ -10,7 +10,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
-import envision.parser.expressions.expressions.SetExpression;
+import envision.parser.expressions.expression_types.SetExpression;
 
 public class IE_Set extends ExpressionExecutor<SetExpression> {
 

@@ -5,13 +5,13 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.KeywordType.*;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expressions.VarExpression;
+import envision.parser.expressions.expression_types.VarExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.DeclarationStage;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.BlockStatement;
-import envision.parser.statements.statements.ClassStatement;
-import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.BlockStatement;
+import envision.parser.statements.statement_types.ClassStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.util.DeclarationStage;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -135,17 +135,13 @@ public class PS_Class extends GenericParser {
 		while (it.hasNext()) {
 			Statement s = it.next();
 			
-			if (s instanceof BlockStatement) {
-				constructors.addAll(isolateConstructors((BlockStatement) s));
+			if (s instanceof BlockStatement bs) {
+				constructors.addAll(isolateConstructors(bs));
 			}
-			else if (s instanceof MethodDeclarationStatement) {
-				MethodDeclarationStatement m = (MethodDeclarationStatement) s;
-				
-				if (m.isConstructor) {
-					m.name = Token.create(ReservedWord.STRING_LITERAL, "init", m.name.line);
-					constructors.add(m);
-					it.remove();
-				}
+			else if (s instanceof MethodDeclarationStatement mds && mds.isConstructor) {
+				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.line);
+				constructors.add(mds);
+				it.remove();
 			}
 		}
 		

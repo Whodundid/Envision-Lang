@@ -3,7 +3,7 @@ package envision.lang.util.structureTypes;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
 import eutil.datatypes.EArrayList;
 
 public abstract class InheritableObject extends InvocableObject {

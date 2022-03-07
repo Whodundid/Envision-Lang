@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statements.CaseStatement;
+import envision.parser.statements.statement_types.CaseStatement;
 
 public class IS_Case extends StatementExecutor<CaseStatement> {
 

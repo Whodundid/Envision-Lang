@@ -30,10 +30,11 @@ import envision.lang.objects.EnvisionList;
 import envision.lang.packages.EnvisionPackage;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
-import envision.parser.expressions.expressions.AssignExpression;
-import envision.parser.expressions.expressions.BinaryExpression;
-import envision.parser.expressions.expressions.VarExpression;
+import envision.parser.expressions.expression_types.AssignExpression;
+import envision.parser.expressions.expression_types.BinaryExpression;
+import envision.parser.expressions.expression_types.VarExpression;
 import envision.tokenizer.Operator;
+import envision.tokenizer.Token;
 import eutil.strings.StringUtil;
 
 public class IE_Assign extends ExpressionExecutor<AssignExpression> {
@@ -72,9 +73,23 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 	
 	@Override
 	public Object run(AssignExpression expression) {
-		String name = expression.name.lexeme;
+		Token name_token = expression.name;
+		String name = (name_token != null) ? name_token.lexeme : null;
+		AssignExpression leftAssign = expression.leftAssign;
 		Object value = evaluate(expression.value);
 		Operator op = expression.operator;
+		
+		//handle left-hand assignment expressions
+		if (leftAssign != null) {
+			Object left_result = run(leftAssign);
+			
+			//Set the target name from the evaluated assignment expression.
+			//The assignment expression result SHOULD only return an EnvisionObject
+			//or a String for the identifier name. If it is neither, throw error
+			if (left_result instanceof EnvisionObject env_obj) name = env_obj.getName();
+			else if (left_result instanceof String str) name = str;
+			else throw new InvalidTargetError("The object '" + left_result + "' is an invalid assignment target!");
+		}
 		
 		return execute(name, value, op);
 	}
@@ -175,7 +190,9 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 			if (var_obj.isFinal()) throw new FinalVarReassignmentError(var_obj, assignment_value);
 			
 			//only allow the same type assignment for strong variables
-			if (var_obj.isStrong()) CastingUtil.assert_expected_datatype(var_datatype, var_obj.getDatatype());
+			if (var_obj.isStrong()) {
+				CastingUtil.assert_expected_datatype(var_obj.getDatatype(), var_datatype);
+			}
 			
 			//assign new value to existing variable
 			s.set(var_name, ObjectCreator.wrap(assignment_value));

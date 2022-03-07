@@ -1,6 +1,6 @@
 package envision.parser.statements;
 
-import envision.parser.statements.statementUtil.ParserDeclaration;
+import envision.parser.util.ParserDeclaration;
 
 public interface Statement {
 	

@@ -5,7 +5,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.TernaryExpression;
+import envision.parser.expressions.expression_types.TernaryExpression;
 
 public class IE_Ternary extends ExpressionExecutor<TernaryExpression> {
 

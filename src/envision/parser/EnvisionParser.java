@@ -5,6 +5,7 @@ import envision.exceptions.EnvisionError;
 import envision.parser.statements.Statement;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.KeywordType;
+import envision.tokenizer.Operator;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import envision.tokenizer.Tokenizer;
@@ -66,7 +67,7 @@ public class EnvisionParser {
 		p.lines = codeFile.getLines();
 		
 		//Any error that is thrown during parsing
-		ParsingError error = null;
+		//ParsingError error = null;
 		
 		//ignore empty files and return an empty statement list
 		if (p.tokens.isEmpty()) return statements;
@@ -81,11 +82,12 @@ public class EnvisionParser {
 		}
 		catch (Exception e) {
 			//wrap the thrown exception into a parsing error
-			error = new ParsingError(e);
+			//error = new ParsingError(e);
+			throw e;
 		}
 		
 		//throw the wrapped error (if there is one)
-		if (error != null) throw error;
+		//if (error != null) throw error;
 		//otherwise return parsed statements
 		return statements;
 	}
@@ -290,6 +292,14 @@ public class EnvisionParser {
 		Token cur = current();
 		advance();
 		return cur;
+	}
+	
+	/**
+	 * Continuously consumes empty lines or lines which only contain a
+	 * semicolon.
+	 */
+	protected void consumeEmptyLines() {
+		while (match(ReservedWord.NEWLINE, Operator.SEMICOLON));
 	}
 	
 	//-----------------------------------------------------------------------------------------------------

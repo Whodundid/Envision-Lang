@@ -53,6 +53,7 @@ public class TypeManager {
 	 * @return true if defined
 	 */
 	public boolean isTypeDefined(EnvisionDatatype typeIn) {
+		if (typeIn != null && typeIn.isPrimitiveType()) return true;
 		return types.containsKey(typeIn.getType());
 	}
 	

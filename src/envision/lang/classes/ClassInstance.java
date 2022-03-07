@@ -35,8 +35,20 @@ public class ClassInstance extends EnvisionObject {
 	// Overrides
 	//-----------
 	
-	@Override public String getTypeString() { return theClass.getTypeString(); }
-	@Override public String toString() { return getTypeString() + "_" + Integer.toHexString(hashCode()); }
+	@Override
+	public String getTypeString() {
+		return theClass.getTypeString();
+	}
+	
+	@Override
+	public String toString() {
+		return getDatatype() + "_" + Integer.toHexString(hashCode());
+	}
+	
+	@Override
+	public EnvisionDatatype getDatatype() {
+		return theClass.getClassDatatype();
+	}
 	
 	//---------
 	// Methods

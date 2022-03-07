@@ -5,7 +5,7 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.statements.ReturnStatement;
+import envision.parser.statements.statement_types.ReturnStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_Return extends StatementExecutor<ReturnStatement> {

@@ -75,7 +75,8 @@ public abstract class InternalMethod {
 	
 	/** Checks that arg num matches param num and that each passed arg type matches the coresponding param type. */
 	protected void validateParams(Object[] args) {
-		if (args == null) throw new EnvisionError(name + ": Null args error!");
+		//if null args, wrap as empty array
+		if (args == null) args = new Object[0];
 		if (!varags && args.length != params.size()) throw new ArgLengthError(name, args.length, params.size());
 		
 		EArrayList<EnvisionObject> callArgs = ObjectCreator.createArgs(args);

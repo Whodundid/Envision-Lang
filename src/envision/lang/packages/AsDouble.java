@@ -8,12 +8,14 @@ import envision.lang.util.Primitives;
 public class AsDouble extends EnvisionFunction {
 	
 	public AsDouble() {
-		super(Primitives.INT, "asDouble");
+		super(Primitives.DOUBLE, "asDouble");
 	}
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
-		ret(((Number) EnvisionVariable.convert(args[0])).doubleValue());
+		var arg_0 = args[0];
+		var num = (Number) EnvisionVariable.convert(arg_0);
+		ret(num.doubleValue());
 	}
 	
 }

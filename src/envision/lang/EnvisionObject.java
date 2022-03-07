@@ -20,7 +20,7 @@ import envision.lang.util.Primitives;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
 import envision.lang.util.data.ParameterData;
-import envision.parser.statements.statementUtil.ParserDeclaration;
+import envision.parser.util.ParserDeclaration;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
 
@@ -133,15 +133,15 @@ public class EnvisionObject {
 	 */
 	protected void registerInternalMethods() {
 		im(new InternalMethod(BOOLEAN, "equals", VAR) { protected void body(Object[] a) { ret(t.equals(a[0])); }});
-		im(new InternalMethod(INT, "hashCode") { protected void body(Object[] a) { ret(t.getObjectHash()); }});
+		im(new InternalMethod(INT, "hash") { protected void body(Object[] a) { ret(t.getObjectHash()); }});
 		im(new InternalMethod(STRING, "hexHash") { protected void body(Object[] a) { ret(t.getHexHash()); }});
 		im(new InternalMethod(BOOLEAN, "isStatic") { protected void body(Object[] a) { ret(t.isStatic()); }});
 		im(new InternalMethod(BOOLEAN, "isFinal") { protected void body(Object[] a) { ret(t.isFinal()); }});
-		im(new InternalMethod(STRING, "getName") { protected void body(Object[] a) { ret(t.getName()); }});
+		im(new InternalMethod(STRING, "name") { protected void body(Object[] a) { ret(t.getName()); }});
 		im(new InternalMethod(STRING, "toString") { protected void body(Object[] a) { ret(t.toString()); }});
-		im(new InternalMethod(STRING, "getType") { protected void body(Object[] a) { ret(t.getDatatype().getType()); }});
-		im(new InternalMethod(STRING, "getTypeString") { protected void body(Object[] a) { ret(t.internalType + "_" + t.getHexHash()); }});
-		im(new InternalMethod(STRING, "getVis") { protected void body(Object[] a) { ret(t.getVisibility().toString()); }});
+		im(new InternalMethod(STRING, "type") { protected void body(Object[] a) { ret(t.getDatatype().getType()); }});
+		im(new InternalMethod(STRING, "typeString") { protected void body(Object[] a) { ret(t.internalType + "_" + t.getHexHash()); }});
+		im(new InternalMethod(STRING, "visibility") { protected void body(Object[] a) { ret(t.getVisibility().toString()); }});
 		im(new InternalMethod(VOID, "setStrong", BOOLEAN) {
 			protected void body(Object[] a) {
 				if (t.isRestricted()) throw new RestrictedAccessError(t);
@@ -324,9 +324,9 @@ public class EnvisionObject {
 	public EnvisionObject setPrivate() { visibility = VisibilityType.PRIVATE; return this; }
 	public EnvisionObject setRestricted() { visibility = VisibilityType.RESTRICTED; return this; }
 	
-	public EnvisionObject setStatic() { modifiers |= DataModifier.STATIC.byteVal; return this; }
-	public EnvisionObject setFinal() { modifiers |= DataModifier.STATIC.byteVal; return this; }
-	public EnvisionObject setStrong() { modifiers |= DataModifier.STATIC.byteVal; return this; }
+	public EnvisionObject setStatic() { addModifier(DataModifier.STATIC); return this; }
+	public EnvisionObject setFinal() { addModifier(DataModifier.FINAL); return this; }
+	public EnvisionObject setStrong() { addModifier(DataModifier.STRONG); return this; }
 	
 	public EnvisionObject setModifier(DataModifier mod, boolean val) {
 		if (val) addModifier(mod);

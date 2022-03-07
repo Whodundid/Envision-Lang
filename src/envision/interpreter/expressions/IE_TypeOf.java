@@ -5,7 +5,7 @@ import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expressions.TypeOfExpression;
+import envision.parser.expressions.expression_types.TypeOfExpression;
 
 public class IE_TypeOf extends ExpressionExecutor<TypeOfExpression> {
 

@@ -4,7 +4,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.ForStatement;
+import envision.parser.statements.statement_types.ForStatement;
 import eutil.datatypes.EArrayList;
 
 public class IS_For extends StatementExecutor<ForStatement> {

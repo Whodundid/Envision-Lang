@@ -14,8 +14,23 @@ public enum EscapeCode {
 	SCOPE_RIGHT,	// \}
 	;
 	
+	//--------------
+	// Constructors
+	//--------------
+	
 	private EscapeCode() {}
 	
+	//----------------
+	// Static Methods
+	//----------------
+	
+	/**
+	 * Returns an EscapeCode associated with the given char,
+	 * or null if no code matches.
+	 * 
+	 * @param c The char to check against
+	 * @return An EscapeCode associated with the given char
+	 */
 	public static EscapeCode getCode(char c) {
 		switch (c) {
 		case ('n'): return NEW_LINE;

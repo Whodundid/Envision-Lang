@@ -27,9 +27,13 @@ public class ObjectCreator {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** Wraps the given set of arguments in coresponding EnvisionObjects for internal language data communication. */
-	public static EArrayList<EnvisionObject> createArgs(Object[] args) {
+	public static EArrayList<EnvisionObject> createArgs(Object... args) {
 		EArrayList<EnvisionObject> callArgs = new EArrayList();
 		
+		//return if incomming args is null
+		if (args == null) return callArgs;
+		
+		//wrap each argument into an object
 		for (Object o : args) {
 			callArgs.add(wrap(o));
 		}
@@ -65,6 +69,8 @@ public class ObjectCreator {
 		
 		//format incomming arguments
 		String name = (nameIn != null) ? nameIn : EnvisionObject.DEFAULT_NAME;
+		//convert var type to definitive type
+		if (typeIn.isVar()) typeIn = EnvisionDatatype.dynamicallyDetermineType(valueIn);
 		Primitives p_type = typeIn.getPrimitiveType();
 		
 		//the object to be created
@@ -110,10 +116,6 @@ public class ObjectCreator {
 			
 		case NULL:
 			obj = new EnvisionNullObject();
-			break;
-			
-		case VAR:
-			obj = new EnvisionObject();
 			break;
 			
 		default: break;

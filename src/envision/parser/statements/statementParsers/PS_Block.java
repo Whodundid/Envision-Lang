@@ -4,7 +4,7 @@ import static envision.tokenizer.Operator.*;
 
 import envision.parser.GenericParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statement_types.BlockStatement;
 import eutil.datatypes.EArrayList;
 
 public class PS_Block extends GenericParser {
@@ -19,8 +19,8 @@ public class PS_Block extends GenericParser {
 			
 			if (s != null) {
 				//unpack blocks
-				if (s instanceof BlockStatement) {
-					for (Statement bs : ((BlockStatement) s).statements) b.add(bs);
+				if (s instanceof BlockStatement block) {
+					for (Statement bs : block.statements) b.add(bs);
 				}
 				else b.add(s);
 			}

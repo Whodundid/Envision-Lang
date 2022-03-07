@@ -16,11 +16,11 @@ public class WorkingDirectory {
 	/** True if the given directory is not null and actually exists. */
 	private final boolean isValid;
 	/** All successfully parsed code files. */
-	private final EArrayList<EnvisionCodeFile> codeFiles = new EArrayList();
+	private final EArrayList<EnvisionCodeFile> codeFiles = new EArrayList<>();
 	/** The main code file. */
 	private EnvisionCodeFile main = null;
 	/** Packages to be added to the interpreters at run time. */
-	private EArrayList<EnvisionLangPackage> packages = new EArrayList();
+	private EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
 	
 	//--------------
 	// Constructors
@@ -45,9 +45,9 @@ public class WorkingDirectory {
 	public void discoverFiles() {
 		if (dir.isDirectory()) {
 			EArrayList<File> start = EUtil.toList(dir.listFiles());
-			EArrayList<File> found = new EArrayList();
-			EArrayList<File> directories = new EArrayList();
-			EArrayList<File> workList = new EArrayList();
+			EArrayList<File> found = new EArrayList<>();
+			EArrayList<File> directories = new EArrayList<>();
+			EArrayList<File> workList = new EArrayList<>();
 			
 			//add all envision code files to be found
 			found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));

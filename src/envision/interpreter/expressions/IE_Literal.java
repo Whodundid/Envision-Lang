@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.expressions.LiteralExpression;
+import envision.parser.expressions.expression_types.LiteralExpression;
 
 public class IE_Literal extends ExpressionExecutor<LiteralExpression> {
 

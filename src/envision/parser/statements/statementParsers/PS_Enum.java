@@ -7,11 +7,11 @@ import envision.lang.util.VisibilityType;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expressions.EnumExpression;
-import envision.parser.expressions.expressions.VarExpression;
+import envision.parser.expressions.expression_types.EnumExpression;
+import envision.parser.expressions.expression_types.VarExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.EnumStatement;
+import envision.parser.statements.statement_types.EnumStatement;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 

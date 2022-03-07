@@ -87,6 +87,7 @@ public enum ReservedWord implements IKeyword {
 	 *  While not strictly necessary, can be used to take on the type of any value.
 	 */
 	VAR("var", KeywordType.DATATYPE),
+	
 	/**
 	 *  While not strictly necessary, can be used to denote functions which do
 	 *  not return any value.

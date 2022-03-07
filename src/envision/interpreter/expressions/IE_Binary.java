@@ -7,7 +7,7 @@ import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.objects.EnvisionList;
-import envision.parser.expressions.expressions.BinaryExpression;
+import envision.parser.expressions.expression_types.BinaryExpression;
 import envision.tokenizer.KeywordType;
 import envision.tokenizer.Operator;
 import eutil.math.NumberUtil;

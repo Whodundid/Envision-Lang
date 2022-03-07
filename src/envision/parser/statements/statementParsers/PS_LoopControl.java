@@ -7,12 +7,25 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.LoopControlStatement;
+import envision.parser.statements.statement_types.LoopControlStatement;
 
+/**
+ * Parses for break and continue statements and their conditional
+ * counterparts.
+ * 
+ * @author Hunter Bragg
+ */
 public class PS_LoopControl extends GenericParser {
 	
+	/**
+	 * Parses break statements. Break statements can have conditional
+	 * logic in the form of 'breakif' where the statement will only break
+	 * if the given parsed condition is true.
+	 * 
+	 * @return The parsed break statement.
+	 */
 	public static Statement handleBreak() {
-		if (match(BREAK)) { return new LoopControlStatement(true); }
+		if (match(BREAK)) return new LoopControlStatement(true);
 		
 		consume(BREAKIF, "Expected a 'breakif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
@@ -22,8 +35,15 @@ public class PS_LoopControl extends GenericParser {
 		return new LoopControlStatement(true, condition);
 	}
 	
+	/**
+	 * Parses continue statements. Continue statements can have conditional
+	 * logic in the form of 'contif' where the statement will only continue
+	 * if the given parsed condition is true.
+	 * 
+	 * @return The parsed continue statement.
+	 */
 	public static Statement handleContinue() {
-		if (match(CONTINUE)) { return new LoopControlStatement(false); }
+		if (match(CONTINUE)) return new LoopControlStatement(false);
 		
 		consume(CONTIF, "Expected a 'contif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");

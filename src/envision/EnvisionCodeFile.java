@@ -55,13 +55,17 @@ public class EnvisionCodeFile extends EnvisionObject {
 	public EnvisionCodeFile(File in) {
 		super(Primitives.CODE_FILE);
 		theFile = in;
+		
 		if (isValid = checkFile()) {
 			fileName = StringUtil.subStringAfter(theFile.getPath().replace("\\", "."), ".").replace(".nvis", "");
 		}
 		else {
 			fileName = "NO_NAME";
 		}
+		
 		setName(fileName);
+		
+		isMain = theFile.getName().toLowerCase().equals("main.nvis");
 	}
 	
 	/**
@@ -160,7 +164,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	
 	/** Returns true if this code file is actually valid and can be executed. */
 	public boolean isValid() { return isValid; }
-	public boolean isMain() { return theFile.getName().toLowerCase().equals("main.nvis"); }
+	public boolean isMain() { return isMain; }
 	public boolean isLoaded() { return isLoaded; }
 	public boolean isTokenized() { return isTokenized; }
 	public boolean isParsed() { return isParsed; }

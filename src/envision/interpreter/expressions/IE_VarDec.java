@@ -5,7 +5,7 @@ import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
-import envision.parser.expressions.expressions.VarDecExpression;
+import envision.parser.expressions.expression_types.VarDecExpression;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.Token;
 

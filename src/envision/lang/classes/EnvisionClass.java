@@ -21,6 +21,7 @@ public class EnvisionClass extends InstantiableObject {
 	private EnvisionFunction constructor;
 	protected Scope classScope;
 	private String className;
+	private EnvisionDatatype classType;
 	
 	//instance creation optimization
 	private ClassConstruct classConstruct;
@@ -33,12 +34,14 @@ public class EnvisionClass extends InstantiableObject {
 		super(typeIn, nameIn);
 		
 		className = nameIn;
+		classType = new EnvisionDatatype(className);
 	}
 	
 	public EnvisionClass(String nameIn) { this(nameIn, null, null); }
 	public EnvisionClass(String nameIn, EArrayList<InheritableObject> parentsIn, EArrayList<Statement> bodyIn) {
 		super(Primitives.CLASS.toDatatype(), nameIn);
 		className = nameIn;
+		classType = new EnvisionDatatype(className);
 		if (parentsIn != null) parents.addAll(parentsIn);
 		if (bodyIn != null) setBody(bodyIn);
 	}
@@ -154,6 +157,7 @@ public class EnvisionClass extends InstantiableObject {
 	public Scope getScope() { return classScope; }
 	public EnvisionFunction getConstructor() { return constructor; }
 	public ClassConstruct getClassConstruct() { return classConstruct; }
+	public EnvisionDatatype getClassDatatype() { return classType; }
 	
 	//---------
 	// Setters

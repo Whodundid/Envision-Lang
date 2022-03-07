@@ -7,10 +7,10 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.util.data.DataModifier;
-import envision.parser.expressions.expressions.VarExpression;
-import envision.parser.statements.statementUtil.ParserDeclaration;
-import envision.parser.statements.statements.GetSetStatement;
-import envision.parser.statements.statements.ReturnStatement;
+import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.statements.statement_types.GetSetStatement;
+import envision.parser.statements.statement_types.ReturnStatement;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 
 public class IS_GetSet extends StatementExecutor<GetSetStatement> {

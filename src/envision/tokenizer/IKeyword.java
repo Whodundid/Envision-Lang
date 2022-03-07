@@ -38,6 +38,13 @@ public interface IKeyword {
 	}
 	
 	/**
+	 * Returns true if this keyword is a data modifier.
+	 */
+	default boolean isDataModifier() {
+		return hasType(KeywordType.DATA_MODIFIER);
+	}
+	
+	/**
 	 * Returns the associated EDataType type of this keyword.
 	 * If this keyword is not a datatype, EDataType.NULL is
 	 * returned instead.

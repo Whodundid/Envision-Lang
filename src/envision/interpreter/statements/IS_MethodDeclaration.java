@@ -4,7 +4,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.FunctionCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.objects.EnvisionFunction;
-import envision.parser.statements.statements.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.MethodDeclarationStatement;
 
 public class IS_MethodDeclaration extends StatementExecutor<MethodDeclarationStatement> {
 

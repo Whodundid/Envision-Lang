@@ -7,7 +7,7 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.IfStatement;
+import envision.parser.statements.statement_types.IfStatement;
 
 public class PS_If extends GenericParser {
 	

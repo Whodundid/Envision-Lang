@@ -2,7 +2,7 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.expressions.GenericExpression;
+import envision.parser.expressions.expression_types.GenericExpression;
 
 public class IE_Generic extends ExpressionExecutor<GenericExpression> {
 

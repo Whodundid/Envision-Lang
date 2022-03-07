@@ -5,9 +5,9 @@ import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statements.BlockStatement;
-import envision.parser.statements.statements.CatchStatement;
-import envision.parser.statements.statements.TryStatement;
+import envision.parser.statements.statement_types.BlockStatement;
+import envision.parser.statements.statement_types.CatchStatement;
+import envision.parser.statements.statement_types.TryStatement;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -19,7 +19,7 @@ public class PS_Try extends GenericParser {
 		
 		EArrayList<CatchStatement> catches = new EArrayList();
 		
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		
 		do {
 			consume(CATCH, "Expected 'catch' statement block after try block!");
@@ -34,11 +34,11 @@ public class PS_Try extends GenericParser {
 		}
 		while (check(CATCH));
 		
-		while (match(NEWLINE));
+		consumeEmptyLines();
 		
 		BlockStatement finallyBlock = null;
 		if (match(FINALLY)) {
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			consume(CURLY_L, "Expected block start after finally declaration!");
 			finallyBlock = new BlockStatement(getBlock());
 		}

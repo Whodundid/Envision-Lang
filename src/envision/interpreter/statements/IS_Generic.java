@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statements.GenericStatement;
+import envision.parser.statements.statement_types.GenericStatement;
 
 public class IS_Generic extends StatementExecutor<GenericStatement> {
 

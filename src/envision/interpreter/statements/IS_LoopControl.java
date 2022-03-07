@@ -5,7 +5,7 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.statements.LoopControlStatement;
+import envision.parser.statements.statement_types.LoopControlStatement;
 
 public class IS_LoopControl extends StatementExecutor<LoopControlStatement> {
 

@@ -1,6 +1,6 @@
 package envision.lang.util.data;
 
-import envision.parser.statements.statementUtil.ParserDeclaration;
+import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.ReservedWord;
 import java.util.List;

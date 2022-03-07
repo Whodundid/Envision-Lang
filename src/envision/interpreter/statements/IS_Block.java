@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.scope.Scope;
-import envision.parser.statements.statements.BlockStatement;
+import envision.parser.statements.statement_types.BlockStatement;
 import envision.interpreter.EnvisionInterpreter;
 
 public class IS_Block extends StatementExecutor<BlockStatement> {
