@@ -175,9 +175,16 @@ public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
 				
 				if (e instanceof VarExpression var_expr) {
 					String name = var_expr.getName();
-					var cur_obj = iterable.get(i);
+					Object cur_obj = iterable.get(i);
 					EnvisionDatatype cur_type = EnvisionDatatype.dynamicallyDetermineType(cur_obj);
-					EnvisionObject created_obj = ObjectCreator.createObject(name, cur_type, cur_obj);
+					
+					EnvisionObject created_obj = null;
+					if (cur_obj instanceof EnvisionVariable env_var) {
+						var temp_obj = EnvisionObject.convert(cur_obj);
+						created_obj = ObjectCreator.createObject(name, cur_type, temp_obj);
+					}
+					else created_obj = (EnvisionObject) cur_obj;
+					
 					scope().define(name, created_obj);
 				}
 				else {
