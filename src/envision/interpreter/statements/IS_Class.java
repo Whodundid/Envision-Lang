@@ -18,8 +18,8 @@ import envision.parser.statements.statement_types.ClassStatement;
 import envision.parser.statements.statement_types.EnumStatement;
 import envision.parser.statements.statement_types.ExpressionStatement;
 import envision.parser.statements.statement_types.GetSetStatement;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
-import envision.parser.statements.statement_types.ModularMethodStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
+import envision.parser.statements.statement_types.ModularFunctionStatement;
 import envision.parser.statements.statement_types.VariableStatement;
 import envision.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
@@ -38,7 +38,7 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		//EArrayList<VarExpression> supers = statement.parentclasses;
 		EArrayList<Statement> body = statement.body;
 		EArrayList<Statement> staticMembers = statement.staticMembers;
-		EArrayList<MethodDeclarationStatement> constructors = statement.initializers;
+		EArrayList<FuncDefStatement> constructors = statement.initializers;
 		
 		//create the class framework
 		EnvisionClass theClass = new EnvisionClass(name.getType());
@@ -86,7 +86,7 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		executeBlock(staticMembers, classScope);
 		
 		//build constructor methods -- inherently static
-		for (MethodDeclarationStatement constructor : constructors) {
+		for (FuncDefStatement constructor : constructors) {
 			EnvisionFunction con = FunctionCreator.buildMethod(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
 			//define the constructor as a static member on the class scope
@@ -130,8 +130,8 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		if (s instanceof ClassStatement) return;
 		if (s instanceof BlockStatement) return;
 		if (s instanceof EnumStatement) return;
-		if (s instanceof MethodDeclarationStatement) return;
-		if (s instanceof ModularMethodStatement) return;
+		if (s instanceof FuncDefStatement) return;
+		if (s instanceof ModularFunctionStatement) return;
 		if (s instanceof VariableStatement) return;
 		if (s instanceof ExpressionStatement) return;
 		if (s instanceof GetSetStatement) return;

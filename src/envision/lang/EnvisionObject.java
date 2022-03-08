@@ -2,29 +2,28 @@ package envision.lang;
 
 import static envision.lang.util.Primitives.*;
 
+import java.util.HashMap;
+
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.RestrictedAccessError;
-import envision.exceptions.errors.UndefinedMethodError;
+import envision.exceptions.errors.UndefinedFunctionError;
 import envision.exceptions.errors.classErrors.UndefinedConstructorError;
-import envision.exceptions.errors.objects.NoInternalMethodsError;
+import envision.exceptions.errors.objects.NoInternalFunctionsError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionList;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
 import envision.lang.util.data.ParameterData;
 import envision.parser.util.ParserDeclaration;
 import eutil.EUtil;
-import eutil.datatypes.EArrayList;
-
-import java.util.HashMap;
 
 /**
  * The underlying parent object class for which all Envision:Java
@@ -66,9 +65,9 @@ public class EnvisionObject {
 	 */
 	protected int modifiers = 0b00000000;
 	/** A list of all methods on this specific object. */
-	protected HashMap<String, InternalMethod> internalMethods = new HashMap();
-	/** True if this object has object methods. */
-	protected boolean hasObjectMethods = true;
+	protected HashMap<String, InternalFunction> internalFunctions = new HashMap();
+	/** True if this object has object functions. */
+	protected boolean hasInternalFunctions = true;
 	
 	/**
 	 * Wrapped with an underlying Java object for special cross language purposes.
@@ -116,13 +115,13 @@ public class EnvisionObject {
 	// Internal Methods
 	//------------------
 	
-	protected void im(InternalMethod m) {
+	protected void im(InternalFunction m) {
 		if (m == null) return;
 		
-		String iMethName = m.getIMethodName();
+		String iFuncName = m.getIFuncName();
 		
 		//overwrite existing internal methods under the same -- no way to perform super method calls :(
-		internalMethods.put(iMethName, m);
+		internalFunctions.put(iFuncName, m);
 	}
 	
 	/**
@@ -132,31 +131,31 @@ public class EnvisionObject {
 	 * specific internal methods.
 	 */
 	protected void registerInternalMethods() {
-		im(new InternalMethod(BOOLEAN, "equals", VAR) { protected void body(Object[] a) { ret(t.equals(a[0])); }});
-		im(new InternalMethod(INT, "hash") { protected void body(Object[] a) { ret(t.getObjectHash()); }});
-		im(new InternalMethod(STRING, "hexHash") { protected void body(Object[] a) { ret(t.getHexHash()); }});
-		im(new InternalMethod(BOOLEAN, "isStatic") { protected void body(Object[] a) { ret(t.isStatic()); }});
-		im(new InternalMethod(BOOLEAN, "isFinal") { protected void body(Object[] a) { ret(t.isFinal()); }});
-		im(new InternalMethod(STRING, "name") { protected void body(Object[] a) { ret(t.getName()); }});
-		im(new InternalMethod(STRING, "toString") { protected void body(Object[] a) { ret(t.toString()); }});
-		im(new InternalMethod(STRING, "type") { protected void body(Object[] a) { ret(t.getDatatype().getType()); }});
-		im(new InternalMethod(STRING, "typeString") { protected void body(Object[] a) { ret(t.internalType + "_" + t.getHexHash()); }});
-		im(new InternalMethod(STRING, "visibility") { protected void body(Object[] a) { ret(t.getVisibility().toString()); }});
-		im(new InternalMethod(VOID, "setStrong", BOOLEAN) {
+		im(new InternalFunction(BOOLEAN, "equals", VAR) { protected void body(Object[] a) { ret(t.equals(a[0])); }});
+		im(new InternalFunction(INT, "hash") { protected void body(Object[] a) { ret(t.getObjectHash()); }});
+		im(new InternalFunction(STRING, "hexHash") { protected void body(Object[] a) { ret(t.getHexHash()); }});
+		im(new InternalFunction(BOOLEAN, "isStatic") { protected void body(Object[] a) { ret(t.isStatic()); }});
+		im(new InternalFunction(BOOLEAN, "isFinal") { protected void body(Object[] a) { ret(t.isFinal()); }});
+		im(new InternalFunction(STRING, "name") { protected void body(Object[] a) { ret(t.getName()); }});
+		im(new InternalFunction(STRING, "toString") { protected void body(Object[] a) { ret(t.toString()); }});
+		im(new InternalFunction(STRING, "type") { protected void body(Object[] a) { ret(t.getDatatype().getType()); }});
+		im(new InternalFunction(STRING, "typeString") { protected void body(Object[] a) { ret(t.internalType + "_" + t.getHexHash()); }});
+		im(new InternalFunction(STRING, "visibility") { protected void body(Object[] a) { ret(t.getVisibility().toString()); }});
+		im(new InternalFunction(VOID, "setStrong", BOOLEAN) {
 			protected void body(Object[] a) {
 				if (t.isRestricted()) throw new RestrictedAccessError(t);
 				if ((boolean) cv(a[0])) t.setStrong();
 				else t.removeModifier(DataModifier.STRONG);
 			}
 		});
-		im(new InternalMethod(LIST, "methods") {
+		im(new InternalFunction(LIST, "functions") {
 			protected void body(Object[] a) {
 				EnvisionList l = new EnvisionList(STRING);
-				internalMethods.keySet().iterator().forEachRemaining(l::add);
+				internalFunctions.keySet().iterator().forEachRemaining(l::add);
 				ret(l);
 			}
 		});
-		im(new InternalMethod(BOOLEAN, "setVis", STRING) {
+		im(new InternalFunction(BOOLEAN, "setVis", STRING) {
 			protected void body(Object[] a) {
 				if (t.isRestricted()) throw new RestrictedAccessError(t);
 				String type = (String) cv(a[0]);
@@ -165,11 +164,11 @@ public class EnvisionObject {
 				case "protected": setProtected(); break;
 				case "private": setPrivate(); break;
 				case "scope": setVisibility(VisibilityType.SCOPE); break;
-				default: throw new InvalidArgumentError(type, getIMethodName());
+				default: throw new InvalidArgumentError(type, getIFuncName());
 				}
 			}
 		});
-		im(new InternalMethod(BOOLEAN, "setFinal", BOOLEAN) {
+		im(new InternalFunction(BOOLEAN, "setFinal", BOOLEAN) {
 			protected void body(Object[] a) {
 				if (t.isRestricted()) throw new RestrictedAccessError(t);
 				if ((boolean) cv(a[0])) t.setFinal();
@@ -178,11 +177,11 @@ public class EnvisionObject {
 		});
 	}
 	
-	/** Returns an InternalMethod with the same name and parameters. */
-	public InternalMethod getInternalMethod(String name, Object[] args) {
+	/** Returns an InternalFunction with the same name and parameters. */
+	public InternalFunction getInternalFunction(String name, Object[] args) {
 		ParameterData passParams = new ParameterData(ObjectCreator.createArgs(args));
 		
-		InternalMethod m = internalMethods.get(name);
+		InternalFunction m = internalFunctions.get(name);
 		if (m == null) return null;
 		
 		return (m.comapreParams(passParams)) ? m : null;
@@ -202,7 +201,7 @@ public class EnvisionObject {
 		EnvisionObject obj = new EnvisionObject(internalType, name);
 		obj.visibility = visibility;
 		obj.modifiers = modifiers;
-		obj.hasObjectMethods = hasObjectMethods;
+		obj.hasInternalFunctions = hasInternalFunctions;
 		obj.javaObject = javaObject;
 		return obj;
 	}
@@ -212,18 +211,18 @@ public class EnvisionObject {
 	 * Internal methods are native to every EnvisionObject and furthermore any object
 	 * that extends off of EnvisionObject.
 	 * 
-	 * @param methodName The method to be executed
+	 * @param funcName The method to be executed
 	 * @param interpreter The active interpreter instance
 	 * @param args Any arguments to be passed to the internal method
 	 */
-	public void runInternalMethod(String methodName, EnvisionInterpreter interpreter, Object[] args) {
-		if (isNull()) throw new NullVariableError(methodName);
-		if (!hasObjectMethods) throw new NoInternalMethodsError(this);
+	public void runInternalFunction(String funcName, EnvisionInterpreter interpreter, Object[] args) {
+		if (isNull()) throw new NullVariableError(funcName);
+		if (!hasInternalFunctions) throw new NoInternalFunctionsError(this);
 		
 		//check for a matching internal method of the same name
-		InternalMethod m = getInternalMethod(methodName, args);
+		InternalFunction m = getInternalFunction(funcName, args);
 		if (m != null) m.invoke(interpreter, args);
-		else throw new UndefinedMethodError(methodName, getClass().getSimpleName());
+		else throw new UndefinedFunctionError(funcName, getClass().getSimpleName());
 	}
 	
 	public void runObjctConstructor(EnvisionInterpreter interpreter, Object[] args) {
@@ -305,7 +304,7 @@ public class EnvisionObject {
 	public boolean isRestricted() { return visibility == VisibilityType.RESTRICTED; }
 	public boolean isStrong() { return hasModifier(DataModifier.STRONG); }
 	public VisibilityType getVisibility() { return visibility; }
-	public boolean hasObjectMethods() { return hasObjectMethods; }
+	public boolean hasInternalFunctions() { return hasInternalFunctions; }
 	//public EArrayList<DataModifier> getModifiers() { return modifiers; }
 	
 	/** Special getter used to grab a wrapped Object in Java into Envision. */
@@ -317,7 +316,7 @@ public class EnvisionObject {
 	
 	public EnvisionObject setName(String nameIn) { name = nameIn; return this; }
 	public EnvisionObject setVisibility(VisibilityType in) { visibility = in; return this; }
-	public EnvisionObject setHasObjectMethods(boolean val) { hasObjectMethods = val; return this; }
+	public EnvisionObject setHasInternalFunctions(boolean val) { hasInternalFunctions = val; return this; }
 	
 	public EnvisionObject setPublic() { visibility = VisibilityType.PUBLIC; return this; }
 	public EnvisionObject setProtected() { visibility = VisibilityType.PROTECTED; return this; }
@@ -370,16 +369,6 @@ public class EnvisionObject {
 	
 	protected static Object cv(Object in) {
 		return convert(in);
-	}
-	
-	//--------------------------
-	// Default Internal Methods
-	//--------------------------
-	
-	private static final EArrayList<InternalMethod> default_object_methods = new EArrayList();
-	
-	static {
-		//create a single 
 	}
 	
 }

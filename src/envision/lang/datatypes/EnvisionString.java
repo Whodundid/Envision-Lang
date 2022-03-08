@@ -6,7 +6,7 @@ import envision.exceptions.EnvisionError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.objects.EnvisionList;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import eutil.datatypes.EArrayList;
 
@@ -80,21 +80,21 @@ public class EnvisionString extends EnvisionVariable {
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
-		im(new InternalMethod(CHAR, "charAt", INT) { protected void body(Object[] a) { ret(charAt((long) a[0])); }});
-		im(new InternalMethod(LIST, "toList") { protected void body(Object[] a) { ret(toList()); }});
-		im(new InternalMethod(INT, "length") { protected void body(Object[] a) { ret(length()); }});
-		im(new InternalMethod(BOOLEAN, "isEmpty") { protected void body(Object[] a) { ret(isEmpty()); }});
-		im(new InternalMethod(BOOLEAN, "isNotEmtpy") { protected void body(Object[] a) { ret(isNotEmpty()); }});
-		im(new InternalMethod(BOOLEAN, "isChar") { protected void body(Object[] a) { ret(isChar()); }});
-		im(new InternalMethod(INT, "ascii") { protected void body(Object[] a) { ret(ascii()); }});
-		im(new InternalMethod(STRING, "lower") { protected void body(Object[] a) { ret(toLowerCase()); }});
-		im(new InternalMethod(STRING, "upper") { protected void body(Object[] a) { ret(toUpperCase()); }});
-		im(new InternalMethod(STRING, "valueOf", VAR) { protected void body(Object[] a) { ret(of(a[0])); }});
-		im(new InternalMethod(STRING, "get") { protected void body(Object[] a) { ret(get()); }});
-		im(new InternalMethod(STRING, "set", VAR) { protected void body(Object[] a) { ret(set(String.valueOf(a[0]))); }});
-		im(new InternalMethod(STRING, "subString", INT) { protected void body(Object[] a) { ret(((String) get()).substring((int) (long) a[0])); }});
-		im(new InternalMethod(STRING, "subString", INT, INT) { protected void body(Object[] a) { ret(((String) get()).substring((int) (long) a[0], (int) (long) a[1])); }});
-		im(new InternalMethod(INT, "cmp", STRING) { protected void body(Object[] a) { ret(((String) get()).compareTo((String) cv(a[0]))); }});
+		im(new InternalFunction(CHAR, "charAt", INT) { protected void body(Object[] a) { ret(charAt((long) a[0])); }});
+		im(new InternalFunction(LIST, "toList") { protected void body(Object[] a) { ret(toList()); }});
+		im(new InternalFunction(INT, "length") { protected void body(Object[] a) { ret(length()); }});
+		im(new InternalFunction(BOOLEAN, "isEmpty") { protected void body(Object[] a) { ret(isEmpty()); }});
+		im(new InternalFunction(BOOLEAN, "isNotEmtpy") { protected void body(Object[] a) { ret(isNotEmpty()); }});
+		im(new InternalFunction(BOOLEAN, "isChar") { protected void body(Object[] a) { ret(isChar()); }});
+		im(new InternalFunction(INT, "ascii") { protected void body(Object[] a) { ret(ascii()); }});
+		im(new InternalFunction(STRING, "lower") { protected void body(Object[] a) { ret(toLowerCase()); }});
+		im(new InternalFunction(STRING, "upper") { protected void body(Object[] a) { ret(toUpperCase()); }});
+		im(new InternalFunction(STRING, "valueOf", VAR) { protected void body(Object[] a) { ret(of(a[0])); }});
+		im(new InternalFunction(STRING, "get") { protected void body(Object[] a) { ret(get()); }});
+		im(new InternalFunction(STRING, "set", VAR) { protected void body(Object[] a) { ret(set(String.valueOf(a[0]))); }});
+		im(new InternalFunction(STRING, "subString", INT) { protected void body(Object[] a) { ret(((String) get()).substring((int) (long) a[0])); }});
+		im(new InternalFunction(STRING, "subString", INT, INT) { protected void body(Object[] a) { ret(((String) get()).substring((int) (long) a[0], (int) (long) a[1])); }});
+		im(new InternalFunction(INT, "cmp", STRING) { protected void body(Object[] a) { ret(((String) get()).compareTo((String) cv(a[0]))); }});
 	}
 	
 	@Override

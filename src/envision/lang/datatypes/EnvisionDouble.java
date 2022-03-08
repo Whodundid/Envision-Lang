@@ -4,7 +4,7 @@ import static envision.lang.util.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 
 /**
@@ -55,11 +55,11 @@ public class EnvisionDouble extends EnvisionNumber {
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
-		im(new InternalMethod(BOOLEAN, "valueOf", VAR) { protected void body(Object[] a) { ret(EnvisionDouble.of(a[0])); }});
-		im(new InternalMethod(BOOLEAN, "get") { protected void body(Object[] a) { ret(EnvisionDouble.this.get()); }});
-		im(new InternalMethod(BOOLEAN, "valueOf", VAR) { protected void body(Object[] a) { ret(EnvisionDouble.this.set((double) a[0])); }});
-		im(new InternalMethod(DOUBLE, "lowest") { protected void body(Object[] a) { ret(Double.MIN_VALUE); }});
-		im(new InternalMethod(DOUBLE, "highest") { protected void body(Object[] a) { ret(Double.MAX_VALUE); }});
+		im(new InternalFunction(BOOLEAN, "valueOf", VAR) { protected void body(Object[] a) { ret(EnvisionDouble.of(a[0])); }});
+		im(new InternalFunction(BOOLEAN, "get") { protected void body(Object[] a) { ret(EnvisionDouble.this.get()); }});
+		im(new InternalFunction(BOOLEAN, "valueOf", VAR) { protected void body(Object[] a) { ret(EnvisionDouble.this.set((double) a[0])); }});
+		im(new InternalFunction(DOUBLE, "lowest") { protected void body(Object[] a) { ret(Double.MIN_VALUE); }});
+		im(new InternalFunction(DOUBLE, "highest") { protected void body(Object[] a) { ret(Double.MAX_VALUE); }});
 	}
 	
 	@Override

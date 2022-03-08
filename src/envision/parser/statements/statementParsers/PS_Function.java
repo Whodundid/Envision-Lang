@@ -10,7 +10,7 @@ import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.expressions.expression_types.AssignExpression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.ReservedWord;
@@ -23,18 +23,18 @@ import main.Experimental_Envision;
  * 
  * @author Hunter Bragg
  */
-public class PS_Method extends GenericParser {
+public class PS_Function extends GenericParser {
 	
-	//-----------------------------------------------------------------------------------
-	// Method Declaration Parsing
-	//-----------------------------------------------------------------------------------
-	// These parsing stages attempt to parse a method declaration statement from tokens.
-	//-----------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	// Function Declaration Parsing
+	//-------------------------------------------------------------------------------------
+	// These parsing stages attempt to parse a function declaration statement from tokens.
+	//-------------------------------------------------------------------------------------
 	
 	//--------------------------------------------------
 	// NOTE:
 	//
-	// An operator overload method will always only
+	// An operator overload function will always only
 	// take in a single parameter for which to perform
 	// it's operation against. Furthermore, an operator
 	// method MUST specify a static parameter type. As
@@ -89,15 +89,15 @@ public class PS_Method extends GenericParser {
 	//
 	//--------------------------------------------------
 	
-	public static Statement methodDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
+	public static Statement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
 		if (declaration == null) declaration = new ParserDeclaration();
 		checkDeclaration(declaration);
 		
-		//variables used to build the method statement
+		//variables used to build the function statement
 		Token name = null, op = null;
 		boolean constructor = false;
 		
-		//first check if this method should be handled as an operator overload method
+		//first check if this function should be handled as an operator overload function
 		if (operator) op = getOperator();
 		else if (init) constructor = true;
 		else name = consume(IDENTIFIER, "Expected a valid name!");
@@ -112,13 +112,13 @@ public class PS_Method extends GenericParser {
 		*/
 		
 		//internal value used for error outputs
-		String methodType = (constructor) ? "initializer" : "function";
-		//start parsing for method parameters
-		EArrayList<StatementParameter> parameters = getMethodParameters(operator, methodType);
-		//attempt to parse method body
-		EArrayList<Statement> body = getMethodBody(constructor);
+		String funcType = (constructor) ? "initializer" : "function";
+		//start parsing for function parameters
+		EArrayList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
+		//attempt to parse function body
+		EArrayList<Statement> body = getFunctionBody(constructor);
 		
-		return new MethodDeclarationStatement(name, op, parameters, body, declaration, constructor, operator);
+		return new FuncDefStatement(name, op, parameters, body, declaration, constructor, operator);
 	}
 	
 	
@@ -221,34 +221,34 @@ public class PS_Method extends GenericParser {
 	}
 	
 	/**
-	 * Gathers up all of the declared method parameters including parameter types (if they exist).
+	 * Gathers up all of the declared function parameters including parameter types (if they exist).
 	 * 
 	 * @param operator : used to determine if this should parse for an operator overload parameter
 	 * @param methodType : passed for potential error outputs
 	 * @return A list of all parsed method parameters
 	 */
-	public static EArrayList<StatementParameter> getMethodParameters() { return getMethodParameters(false, "method"); }
-	public static EArrayList<StatementParameter> getMethodParameters(boolean operator, String methodType) {
+	public static EArrayList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
+	public static EArrayList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
 		EArrayList<StatementParameter> parameters = new EArrayList();
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
-		consume(PAREN_L, "Expected '(' after method name!");
+		consume(PAREN_L, "Expected '(' after function name!");
 		
 		//if the next token is a ')', then there are no parameters
 		if (!check(PAREN_R)) {
 			Token lastType = null;
 			
-			//If this is an operator method, only read in one parameter
+			//If this is an operator function, only read in one parameter
 			if (operator) {
 				//read in a parameter type
 				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
 					lastType = getAdvance();
 				}
 				
-				//ensure that parameters are valid for an operator overload method
-				errorIf(lastType == null, "An operator method must specify a parameter type!");
-				errorIf(match(VARARGS), "An operator method cannot take '...' varaiable arguments!");
+				//ensure that parameters are valid for an operator overload function
+				errorIf(lastType == null, "An operator function must specify a parameter type!");
+				errorIf(match(VARARGS), "An operator function cannot take '...' varaiable arguments!");
 				
 				//get the parameter's name (always required)
 				Token paramName = consume(IDENTIFIER, "Expected parameter name!");
@@ -294,7 +294,7 @@ public class PS_Method extends GenericParser {
 		}
 		
 		if (varargs && match(COMMA)) {
-			error("Variable arguments '...' must be the last argument in a " + methodType + "!");
+			error("Variable arguments '...' must be the last argument in a " + funcType + "!");
 		}
 		
 		consume(PAREN_R, "Expected ')' after parameters!");
@@ -307,8 +307,8 @@ public class PS_Method extends GenericParser {
 	 * @param constructor : don't necessarily have a body
 	 * @return EArrayList<Statement> : list of all parsed method body statements
 	 */
-	public static EArrayList<Statement> getMethodBody() { return getMethodBody(false); }
-	public static EArrayList<Statement> getMethodBody(boolean constructor) {
+	public static EArrayList<Statement> getFunctionBody() { return getFunctionBody(false); }
+	public static EArrayList<Statement> getFunctionBody(boolean constructor) {
 		EArrayList<Statement> body = null;
 		
 		//constructors do not necessarily need to specify a body

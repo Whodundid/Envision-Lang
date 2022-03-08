@@ -7,7 +7,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import envision.lang.util.data.Parameter;
 import envision.lang.util.data.ParameterData;
@@ -56,9 +56,9 @@ public abstract class InvocableObject extends EnvisionObject {
 	 */
 	public void invoke_I(String func_name, EnvisionInterpreter interpreter, Object[] args) {
 		//check to see if this call is for an internal method rather then an object member/function
-		InternalMethod internal_meth = null;
+		InternalFunction internal_meth = null;
 		
-		if (func_name != null) internal_meth = getInternalMethod(func_name, args);
+		if (func_name != null) internal_meth = getInternalFunction(func_name, args);
 		if (internal_meth != null) internal_meth.invoke(interpreter, args);
 		else {
 			checkArgs(args);

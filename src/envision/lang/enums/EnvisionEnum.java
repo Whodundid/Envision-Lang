@@ -8,7 +8,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.objects.EnvisionList;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.structureTypes.InheritableObject;
@@ -31,8 +31,8 @@ public class EnvisionEnum extends InheritableObject {
 	
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
-		im(new InternalMethod(LIST, "values") { protected void body(Object[] a) { ret(new EnvisionList(ENUM_TYPE, values)); }});
-		im(new InternalMethod(INT, "length") { protected void body(Object[] a) { ret(values.size()); }});
+		im(new InternalFunction(LIST, "values") { protected void body(Object[] a) { ret(new EnvisionList(ENUM_TYPE, values)); }});
+		im(new InternalFunction(INT, "length") { protected void body(Object[] a) { ret(values.size()); }});
 	}
 	
 	public void addValue(String name, EArrayList<EnvisionObject> argsIn) {

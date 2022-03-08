@@ -4,7 +4,7 @@ import static envision.lang.util.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 
 /**
@@ -58,8 +58,8 @@ public class EnvisionChar extends EnvisionVariable {
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
 		//im(new InternalMethod(CHAR, "valueOf", OBJECT) { protected void body(Object[] a) { ret(EnvisionChar.of(a[0])); }});
-		im(new InternalMethod(CHAR, "get") { protected void body(Object[] a) { ret(EnvisionChar.this.get()); }});
-		im(new InternalMethod(CHAR, "set", VAR) { protected void body(Object[] a) { ret(EnvisionChar.this.set((char) a[0])); }});
+		im(new InternalFunction(CHAR, "get") { protected void body(Object[] a) { ret(EnvisionChar.this.get()); }});
+		im(new InternalFunction(CHAR, "set", VAR) { protected void body(Object[] a) { ret(EnvisionChar.this.set((char) a[0])); }});
 	}
 	
 	@Override

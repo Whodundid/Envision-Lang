@@ -71,14 +71,14 @@ public class EnvisionClass extends InstantiableObject {
 	 * Overriden to allow for static members to be referenced.
 	 */
 	@Override
-	public void runInternalMethod(String methodName, EnvisionInterpreter interpreter, Object[] args) {
+	public void runInternalFunction(String methodName, EnvisionInterpreter interpreter, Object[] args) {
 		EnvisionObject obj = null;
 		if (classScope != null) obj = classScope.get(methodName);
 		
 		if (obj instanceof EnvisionFunction env_func) env_func.invoke_I(methodName, interpreter, args);
 		if (obj != null) ret(obj);
 		
-		super.runInternalMethod(methodName, interpreter, args);
+		super.runInternalFunction(methodName, interpreter, args);
 	}
 	
 	//---------

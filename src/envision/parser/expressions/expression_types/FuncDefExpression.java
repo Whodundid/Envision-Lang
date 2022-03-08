@@ -3,21 +3,21 @@ package envision.parser.expressions.expression_types;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class MethodDeclarationExpression implements Expression {
+public class FuncDefExpression implements Expression {
 	
-	public final MethodDeclarationStatement declaration;
+	public final FuncDefStatement declaration;
 	
-	public MethodDeclarationExpression(Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
+	public FuncDefExpression(Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
 		ParserDeclaration d = new ParserDeclaration();
 		d.applyReturnType(Token.create(ReservedWord.VAR, "var", nameIn.line));
-		declaration = new MethodDeclarationStatement(nameIn, null, paramsIn, bodyIn, d, false, false);
+		declaration = new FuncDefStatement(nameIn, null, paramsIn, bodyIn, d, false, false);
 	}
 	
 	@Override

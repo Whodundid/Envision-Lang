@@ -10,7 +10,7 @@ public class EnvisionNullObject extends EnvisionVariable {
 	
 	public EnvisionNullObject() {
 		super(Primitives.NULL.toDatatype());
-		hasObjectMethods = false;
+		hasInternalFunctions = false;
 	}
 	
 	@Override

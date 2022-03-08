@@ -8,7 +8,7 @@ import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.BoxList;
 
-public class ModularMethodStatement implements Statement {
+public class ModularFunctionStatement implements Statement {
 	
 	public final Token name;
 	public final BoxList<Token, Token> associations;
@@ -16,7 +16,7 @@ public class ModularMethodStatement implements Statement {
 	public final EArrayList<Statement> body;
 	public final ParserDeclaration declaration;
 	
-	public ModularMethodStatement(Token nameIn,
+	public ModularFunctionStatement(Token nameIn,
 						   BoxList<Token, Token> associationsIn,
 						   EArrayList<StatementParameter> paramsIn,
 						   EArrayList<Statement> bodyIn,

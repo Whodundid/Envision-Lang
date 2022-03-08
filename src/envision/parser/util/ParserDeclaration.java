@@ -64,7 +64,7 @@ public class ParserDeclaration {
 	public ParserDeclaration applyDataMods(EArrayList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
 	public ParserDeclaration applyGenerics(EArrayList<GenericExpression> genericsIn) { generics.addAll(genericsIn); return this; }
 	public ParserDeclaration applyReturnType(Token returnTypeIn) { returnType = returnTypeIn; return this; }
-	public ParserDeclaration applyDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
+	public ParserDeclaration setDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
 	
 	public ParserDeclaration setValues(ParserDeclaration in) {
 		DeclarationStage s = in.getStage();

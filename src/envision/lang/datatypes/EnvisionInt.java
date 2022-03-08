@@ -4,7 +4,7 @@ import static envision.lang.util.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 
 /**
@@ -59,11 +59,11 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
-		im(new InternalMethod(INT, "valueOf", VAR) { protected void body(Object[] a) { ret(of(a[0])); }});
-		im(new InternalMethod(INT, "get") { protected void body(Object[] a) { ret(get()); }});
-		im(new InternalMethod(INT, "set", VAR) { protected void body(Object[] a) { ret(set((long) a[0])); }});
-		im(new InternalMethod(INT, "lowest") { protected void body(Object[] a) { ret(Long.MIN_VALUE); }});
-		im(new InternalMethod(INT, "highest") { protected void body(Object[] a) { ret(Long.MAX_VALUE); }});
+		im(new InternalFunction(INT, "valueOf", VAR) { protected void body(Object[] a) { ret(of(a[0])); }});
+		im(new InternalFunction(INT, "get") { protected void body(Object[] a) { ret(get()); }});
+		im(new InternalFunction(INT, "set", VAR) { protected void body(Object[] a) { ret(set((long) a[0])); }});
+		im(new InternalFunction(INT, "lowest") { protected void body(Object[] a) { ret(Long.MIN_VALUE); }});
+		im(new InternalFunction(INT, "highest") { protected void body(Object[] a) { ret(Long.MAX_VALUE); }});
 	}
 	
 	@Override

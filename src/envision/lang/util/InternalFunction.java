@@ -8,19 +8,19 @@ import envision.lang.EnvisionObject;
 import envision.lang.util.data.ParameterData;
 import eutil.datatypes.EArrayList;
 
-public abstract class InternalMethod {
+public abstract class InternalFunction {
 	
 	private String name;
 	private EnvisionDatatype rType;
 	private boolean varags = false;
 	private ParameterData params;
-	private InternalMethod superMethod = null;
-	private EArrayList<InternalMethod> differentArgs = new EArrayList();
+	private InternalFunction superMethod = null;
+	private EArrayList<InternalFunction> differentArgs = new EArrayList();
 	
-	public InternalMethod(Primitives returnTypeIn, String nameIn, Primitives... paramsIn) {
+	public InternalFunction(Primitives returnTypeIn, String nameIn, Primitives... paramsIn) {
 		this(new EnvisionDatatype(returnTypeIn), nameIn, paramsIn);
 	}
-	public InternalMethod(EnvisionDatatype returnTypeIn, String nameIn, Primitives... paramsIn) {
+	public InternalFunction(EnvisionDatatype returnTypeIn, String nameIn, Primitives... paramsIn) {
 		//super(nameIn);
 		//super(returnTypeIn, nameIn);
 		
@@ -47,9 +47,9 @@ public abstract class InternalMethod {
 	/** Called to begin checking args vs. params and execute internal method body. */
 	//@Override
 	public void invoke(EnvisionInterpreter interpreter, Object[] args) {
-		InternalMethod theMeth = this;
+		InternalFunction theMeth = this;
 		
-		for (InternalMethod m : theMeth.differentArgs) {
+		for (InternalFunction m : theMeth.differentArgs) {
 			if (m.checkParams(args)) theMeth = m;
 			break;
 		}
@@ -103,8 +103,8 @@ public abstract class InternalMethod {
 	
 	//-----------------------------------------------
 	
-	public InternalMethod getSuper() { return superMethod; }
-	public String getIMethodName() { return name; }
+	public InternalFunction getSuper() { return superMethod; }
+	public String getIFuncName() { return name; }
 	public EnvisionDatatype getReturnType() { return rType; }
 	public ParameterData getParams() { return params; }
 	public boolean isVoid() { return rType.isVoid(); }

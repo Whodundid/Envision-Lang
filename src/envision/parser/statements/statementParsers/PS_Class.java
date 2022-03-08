@@ -9,7 +9,7 @@ import envision.parser.expressions.expression_types.VarExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.BlockStatement;
 import envision.parser.statements.statement_types.ClassStatement;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
 import envision.parser.util.DeclarationStage;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.ReservedWord;
@@ -56,7 +56,7 @@ public class PS_Class extends GenericParser {
 		EArrayList<Statement> body = getBlock();
 		EArrayList<Statement> staticMembers = new EArrayList();
 		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EArrayList<MethodDeclarationStatement> constructors = new EArrayList();
+		EArrayList<FuncDefStatement> constructors = new EArrayList();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
@@ -99,10 +99,10 @@ public class PS_Class extends GenericParser {
 			}
 			
 			//check if constructor -- remove from body
-			if (s instanceof MethodDeclarationStatement) {
-				MethodDeclarationStatement meth = (MethodDeclarationStatement) s;
+			if (s instanceof FuncDefStatement) {
+				FuncDefStatement meth = (FuncDefStatement) s;
 				if (meth.isConstructor) {
-					constructors.add((MethodDeclarationStatement) body.remove(i));
+					constructors.add((FuncDefStatement) body.remove(i));
 					bodySize--;
 					i--;
 				}
@@ -128,8 +128,8 @@ public class PS_Class extends GenericParser {
 		return cs;
 	}
 	
-	private static EArrayList<MethodDeclarationStatement> isolateConstructors(BlockStatement in) {
-		EArrayList<MethodDeclarationStatement> constructors = new EArrayList();
+	private static EArrayList<FuncDefStatement> isolateConstructors(BlockStatement in) {
+		EArrayList<FuncDefStatement> constructors = new EArrayList();
 		Iterator<Statement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {
@@ -138,7 +138,7 @@ public class PS_Class extends GenericParser {
 			if (s instanceof BlockStatement bs) {
 				constructors.addAll(isolateConstructors(bs));
 			}
-			else if (s instanceof MethodDeclarationStatement mds && mds.isConstructor) {
+			else if (s instanceof FuncDefStatement mds && mds.isConstructor) {
 				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.line);
 				constructors.add(mds);
 				it.remove();

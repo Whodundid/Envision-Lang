@@ -7,7 +7,7 @@ import envision.parser.util.StatementParameter;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class MethodDeclarationStatement implements Statement {
+public class FuncDefStatement implements Statement {
 	
 	public Token name;
 	public final Token operator;
@@ -17,7 +17,7 @@ public class MethodDeclarationStatement implements Statement {
 	public final boolean isConstructor;
 	public final boolean isOperator;
 	
-	public MethodDeclarationStatement(Token nameIn,
+	public FuncDefStatement(Token nameIn,
 						   Token operatorIn,
 						   EArrayList<StatementParameter> paramsIn,
 						   EArrayList<Statement> bodyIn,

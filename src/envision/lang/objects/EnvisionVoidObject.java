@@ -8,7 +8,7 @@ public class EnvisionVoidObject extends EnvisionObject {
 	
 	public EnvisionVoidObject() {
 		super(Primitives.VOID);
-		hasObjectMethods = false;
+		hasInternalFunctions = false;
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import envision.lang.util.data.ParameterData;
 import envision.lang.util.structureTypes.InvocableObject;
@@ -131,12 +131,12 @@ public class EnvisionFunction extends InvocableObject {
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
 		//im(new InternalMethod(returnType, "invoke", true) { protected void body(EArrayList a) { call(in)}});
-		im(new InternalMethod(BOOLEAN, "hasOverloads") { protected void body(Object[] a) { ret(overloads.isNotEmpty()); }});
-		im(new InternalMethod(LIST, "getOverloads") { protected void body(Object[] a) { ret(new EnvisionList(FUNCTION).addAll(overloads)); }});
-		im(new InternalMethod(INT, "getOverloads") { protected void body(Object[] a) { ret(argLength()); }});
-		im(new InternalMethod(STRING, "getReturnType") { protected void body(Object[] a) { ret(getReturnType()); }});
-		im(new InternalMethod(LIST, "getParamTypes") { protected void body(Object[] a) { ret(new EnvisionList(STRING).addAll(getParamTypes())); }});
-		im(new InternalMethod(BOOLEAN, "getParamNames") { protected void body(Object[] a) { ret(new EnvisionList(STRING).addAll(getParamNames())); }});
+		im(new InternalFunction(BOOLEAN, "hasOverloads") { protected void body(Object[] a) { ret(overloads.isNotEmpty()); }});
+		im(new InternalFunction(LIST, "getOverloads") { protected void body(Object[] a) { ret(new EnvisionList(FUNCTION).addAll(overloads)); }});
+		im(new InternalFunction(INT, "getOverloads") { protected void body(Object[] a) { ret(argLength()); }});
+		im(new InternalFunction(STRING, "getReturnType") { protected void body(Object[] a) { ret(getReturnType()); }});
+		im(new InternalFunction(LIST, "getParamTypes") { protected void body(Object[] a) { ret(new EnvisionList(STRING).addAll(getParamTypes())); }});
+		im(new InternalFunction(BOOLEAN, "getParamNames") { protected void body(Object[] a) { ret(new EnvisionList(STRING).addAll(getParamNames())); }});
 	}
 	
 	//--------------------------

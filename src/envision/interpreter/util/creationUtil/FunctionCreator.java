@@ -8,7 +8,7 @@ import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.data.Parameter;
 import envision.lang.util.data.ParameterData;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -22,7 +22,7 @@ public class FunctionCreator {
 	//----------------------------------------------------------------------
 	
 	/** Returns a new EnvisionMethod built from the given method declaration statement with the given scope as its base of reference. */
-	public static EnvisionFunction buildMethod(EnvisionInterpreter in, MethodDeclarationStatement s, Scope scopeIn) {
+	public static EnvisionFunction buildMethod(EnvisionInterpreter in, FuncDefStatement s, Scope scopeIn) {
 		
 		//---------------------------------------------------------
 		

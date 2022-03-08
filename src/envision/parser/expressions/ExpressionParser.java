@@ -15,7 +15,7 @@ import envision.parser.expressions.expression_types.ListIndexSetExpression;
 import envision.parser.expressions.expression_types.ListInitializerExpression;
 import envision.parser.expressions.expression_types.LiteralExpression;
 import envision.parser.expressions.expression_types.LogicalExpression;
-import envision.parser.expressions.expression_types.MethodCallExpression;
+import envision.parser.expressions.expression_types.FunctionCallExpression;
 import envision.parser.expressions.expression_types.RangeExpression;
 import envision.parser.expressions.expression_types.SetExpression;
 import envision.parser.expressions.expression_types.SuperExpression;
@@ -202,7 +202,7 @@ public class ExpressionParser extends GenericParser {
 	//-----------------------------------------------------------------------------------------------------
 	
 	public static Expression range() {
-		Expression e = methodCall();
+		Expression e = functionCall();
 		
 		if (!(e instanceof RangeExpression) && match(TO)) {
 			Expression right = range();
@@ -218,7 +218,7 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression methodCall() {
+	public static Expression functionCall() {
 		Expression e = primary();
 		
 		while (true) {
@@ -231,21 +231,21 @@ public class ExpressionParser extends GenericParser {
 				e = new ListIndexExpression(e, index);
 			}
 			else if (match(PERIOD)) {
-				Token name = consume("Expected property name after '.'!", IDENTIFIER/*, INIT*/);
+				Token name = consume("Expected property name after '.'!", IDENTIFIER);
 				
-				//check if method call
+				//check if function call
 				if (match(PAREN_L)) {
 					//MethodCallExpression next = null;
 					EArrayList<Expression> args = new EArrayList();
 					
 					if (!check(PAREN_R)) {
-						do { args.add(parseExpression()); }
+						do args.add(parseExpression());
 						while (match(COMMA));
 					}
 					
-					consume(PAREN_R, "Expected a ')' to end method arguments!");
+					consume(PAREN_R, "Expected a ')' to end function arguments!");
 					
-					MethodCallExpression mce = new MethodCallExpression(e, name, args);
+					FunctionCallExpression mce = new FunctionCallExpression(e, name, args);
 					
 					while (match(PERIOD)) {
 						Token nextName = consume("Expected property name after '.'!", IDENTIFIER/*, INIT*/);
@@ -259,10 +259,10 @@ public class ExpressionParser extends GenericParser {
 								}
 								while (match(COMMA));
 							}
-							consume(PAREN_R, "Expected a ')' to end method arguments!");
+							consume(PAREN_R, "Expected a ')' to end function arguments!");
 						}
 						
-						mce.addNext(new MethodCallExpression(null, nextName, nextArgs));
+						mce.addNext(new FunctionCallExpression(null, nextName, nextArgs));
 					}
 					
 					e = mce;
@@ -293,7 +293,7 @@ public class ExpressionParser extends GenericParser {
 		//conclude args/params
 		consume(PAREN_R, "Expected ')' after arguments!");
 		
-		MethodCallExpression e = new MethodCallExpression(callee, args);
+		FunctionCallExpression e = new FunctionCallExpression(callee, args);
 		return e;
 	}
 	
@@ -382,10 +382,11 @@ public class ExpressionParser extends GenericParser {
 			}
 			consume(PAREN_R, "Expected ')' after expression!");
 			
-			if (e == null && !check(LAMBDA)) {
+			/*if (e == null && !check(LAMBDA)) {
 				error("An empty expression can only be followed with a lambda expression!");
 			}
-			else if (match(TERNARY)) {
+			else*/
+			if (match(TERNARY)) {
 				Expression t = parseExpression();
 				consume(COLON, "Expected a ':' in between ternary expressions!");
 				Expression f = parseExpression();
@@ -395,10 +396,13 @@ public class ExpressionParser extends GenericParser {
 				//parser.pd("CUR PRI: " + current());
 				
 				// This is duct tape at best
-				if (e instanceof CompoundExpression) { return e; }
+				if (e instanceof CompoundExpression) return e;
 				
-				//return new CompoundExpression(e);
-				return e;
+				//if there was no lambda production, return empty
+				if (e == null) return new CompoundExpression();
+				else return new CompoundExpression(e);
+				
+				//return e;
 			}
 		}
 		

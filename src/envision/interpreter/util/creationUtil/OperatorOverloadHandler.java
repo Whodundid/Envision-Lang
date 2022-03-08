@@ -69,7 +69,7 @@ public class OperatorOverloadHandler {
 	private static String getToString(EnvisionInterpreter interpreter, EnvisionObject obj) {
 		String toString = null;
 		try {
-			obj.runInternalMethod("toString", interpreter, null);
+			obj.runInternalFunction("toString", interpreter, null);
 		}
 		catch (ReturnValue r) {
 			toString = (String) EnvisionObject.convert(r.object);

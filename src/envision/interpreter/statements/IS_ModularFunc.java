@@ -10,7 +10,7 @@ import envision.parser.expressions.expression_types.BinaryExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.BlockStatement;
 import envision.parser.statements.statement_types.ExpressionStatement;
-import envision.parser.statements.statement_types.ModularMethodStatement;
+import envision.parser.statements.statement_types.ModularFunctionStatement;
 import envision.parser.statements.statement_types.ReturnStatement;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
@@ -19,20 +19,20 @@ import eutil.datatypes.util.BoxList;
 import main.Experimental_Envision;
 
 @Experimental_Envision
-public class IS_ModularMethod extends StatementExecutor<ModularMethodStatement> {
+public class IS_ModularFunc extends StatementExecutor<ModularFunctionStatement> {
 
-	public IS_ModularMethod(EnvisionInterpreter in) {
+	public IS_ModularFunc(EnvisionInterpreter in) {
 		super(in);
 	}
 	
-	public static void run(EnvisionInterpreter in, ModularMethodStatement s) {
-		new IS_ModularMethod(in).run(s);
+	public static void run(EnvisionInterpreter in, ModularFunctionStatement s) {
+		new IS_ModularFunc(in).run(s);
 	}
 	
 	//----------------------------------------------------------------------------------
 	
 	@Override
-	public void run(ModularMethodStatement s) {
+	public void run(ModularFunctionStatement s) {
 		BoxList<Token, Token> associations = s.associations;
 		
 		for (Box2<Token, Token> modAssociation : associations) {

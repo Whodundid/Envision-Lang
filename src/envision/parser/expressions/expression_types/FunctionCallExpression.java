@@ -6,45 +6,45 @@ import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
-public class MethodCallExpression implements Expression {
+public class FunctionCallExpression implements Expression {
 	
-	public MethodCallExpression next;
+	public FunctionCallExpression next;
 	public Object callee;
 	public Token name;
 	public EArrayList<Token> generics;
 	public final EArrayList<Expression> args;
 	
-	public MethodCallExpression(Expression calleeIn, EArrayList<Expression> argsIn) { this(null, calleeIn, null, argsIn); }
-	public MethodCallExpression(Token nameIn, EArrayList<Expression> argsIn) { this(null, null, nameIn, argsIn); }
-	public MethodCallExpression(Expression calleeIn, Token nameIn, EArrayList<Expression> argsIn) { this(null, calleeIn, nameIn, argsIn); }
-	public MethodCallExpression(MethodCallExpression nextIn, Expression calleeIn, Token nameIn, EArrayList<Expression> argsIn) {
+	public FunctionCallExpression(Expression calleeIn, EArrayList<Expression> argsIn) { this(null, calleeIn, null, argsIn); }
+	public FunctionCallExpression(Token nameIn, EArrayList<Expression> argsIn) { this(null, null, nameIn, argsIn); }
+	public FunctionCallExpression(Expression calleeIn, Token nameIn, EArrayList<Expression> argsIn) { this(null, calleeIn, nameIn, argsIn); }
+	public FunctionCallExpression(FunctionCallExpression nextIn, Expression calleeIn, Token nameIn, EArrayList<Expression> argsIn) {
 		this(nextIn, (Object) calleeIn, nameIn, argsIn);
 	}
 	
-	private MethodCallExpression(MethodCallExpression nextIn, Object calleeIn, Token nameIn, EArrayList<Expression> argsIn) {
+	private FunctionCallExpression(FunctionCallExpression nextIn, Object calleeIn, Token nameIn, EArrayList<Expression> argsIn) {
 		next = nextIn;
 		callee = calleeIn;
 		name = nameIn;
 		args = argsIn;
 	}
 	
-	public MethodCallExpression copy(MethodCallExpression in) {
-		return new MethodCallExpression(in.next, in.callee, in.name, in.args);
+	public FunctionCallExpression copy(FunctionCallExpression in) {
+		return new FunctionCallExpression(in.next, in.callee, in.name, in.args);
 	}
 	
-	public MethodCallExpression setCallee(Object in) {
-		MethodCallExpression c = copy(this);
+	public FunctionCallExpression setCallee(Object in) {
+		FunctionCallExpression c = copy(this);
 		c.callee = in;
 		return c;
 	}
 	
-	public MethodCallExpression addNext(MethodCallExpression nextIn) {
+	public FunctionCallExpression addNext(FunctionCallExpression nextIn) {
 		next = nextIn;
 		return this;
 	}
 	
-	public MethodCallExpression applyNext(Object in) {
-		MethodCallExpression c = copy(this.next);
+	public FunctionCallExpression applyNext(Object in) {
+		FunctionCallExpression c = copy(this.next);
 		c.callee = in;
 		return c;
 	}

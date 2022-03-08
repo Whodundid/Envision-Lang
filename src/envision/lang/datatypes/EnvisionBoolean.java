@@ -4,7 +4,7 @@ import static envision.lang.util.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalMethod;
+import envision.lang.util.InternalFunction;
 import envision.lang.util.Primitives;
 import eutil.math.NumberUtil;
 
@@ -72,8 +72,8 @@ public class EnvisionBoolean extends EnvisionVariable {
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
 		//im(new InternalMethod(BOOLEAN, "valueOf", OBJECT) { protected void body(Object[] a) { ret(of(a[0])); }});
-		im(new InternalMethod(BOOLEAN, "get") { protected void body(Object[] a) { ret(get()); }});
-		im(new InternalMethod(BOOLEAN, "set", VAR) { protected void body(Object[] a) { ret(set((boolean) a[0])); }});
+		im(new InternalFunction(BOOLEAN, "get") { protected void body(Object[] a) { ret(get()); }});
+		im(new InternalFunction(BOOLEAN, "set", VAR) { protected void body(Object[] a) { ret(set((boolean) a[0])); }});
 	}
 	
 	@Override

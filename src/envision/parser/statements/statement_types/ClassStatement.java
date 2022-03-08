@@ -14,8 +14,8 @@ public class ClassStatement implements Statement {
 	public final EArrayList<VarExpression> parentclasses = new EArrayList<VarExpression>();
 	public final EArrayList<Statement> body = new EArrayList<Statement>();
 	public final EArrayList<Statement> staticMembers = new EArrayList<Statement>();
-	public final EArrayList<MethodDeclarationStatement> methods = new EArrayList<MethodDeclarationStatement>();
-	public final EArrayList<MethodDeclarationStatement> initializers = new EArrayList<MethodDeclarationStatement>();
+	public final EArrayList<FuncDefStatement> methods = new EArrayList<FuncDefStatement>();
+	public final EArrayList<FuncDefStatement> initializers = new EArrayList<FuncDefStatement>();
 	
 	public ClassStatement(Token nameIn, ParserDeclaration declarationIn) {
 		name = nameIn;
@@ -40,13 +40,13 @@ public class ClassStatement implements Statement {
 		return this;
 	}
 	
-	public ClassStatement setMethods(EArrayList<MethodDeclarationStatement> methodsIn) {
+	public ClassStatement setMethods(EArrayList<FuncDefStatement> methodsIn) {
 		methods.clear();
 		methods.addAll(methodsIn);
 		return this;
 	}
 	
-	public ClassStatement setInitializers(EArrayList<MethodDeclarationStatement> constructorsIn) {
+	public ClassStatement setInitializers(EArrayList<FuncDefStatement> constructorsIn) {
 		initializers.clear();
 		initializers.addAll(constructorsIn);
 		return this;

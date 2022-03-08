@@ -19,8 +19,8 @@ import envision.interpreter.expressions.IE_ListIndexSet;
 import envision.interpreter.expressions.IE_ListInitializer;
 import envision.interpreter.expressions.IE_Literal;
 import envision.interpreter.expressions.IE_Logical;
-import envision.interpreter.expressions.IE_MethodCall;
-import envision.interpreter.expressions.IE_MethodDec;
+import envision.interpreter.expressions.IE_FunctionCall;
+import envision.interpreter.expressions.IE_FuncDef;
 import envision.interpreter.expressions.IE_Range;
 import envision.interpreter.expressions.IE_Set;
 import envision.interpreter.expressions.IE_Super;
@@ -44,8 +44,8 @@ import envision.interpreter.statements.IS_If;
 import envision.interpreter.statements.IS_Import;
 import envision.interpreter.statements.IS_LambdaFor;
 import envision.interpreter.statements.IS_LoopControl;
-import envision.interpreter.statements.IS_MethodDeclaration;
-import envision.interpreter.statements.IS_ModularMethod;
+import envision.interpreter.statements.IS_FuncDef;
+import envision.interpreter.statements.IS_ModularFunc;
 import envision.interpreter.statements.IS_Package;
 import envision.interpreter.statements.IS_RangeFor;
 import envision.interpreter.statements.IS_Return;
@@ -79,8 +79,8 @@ import envision.parser.expressions.expression_types.ListIndexSetExpression;
 import envision.parser.expressions.expression_types.ListInitializerExpression;
 import envision.parser.expressions.expression_types.LiteralExpression;
 import envision.parser.expressions.expression_types.LogicalExpression;
-import envision.parser.expressions.expression_types.MethodCallExpression;
-import envision.parser.expressions.expression_types.MethodDeclarationExpression;
+import envision.parser.expressions.expression_types.FunctionCallExpression;
+import envision.parser.expressions.expression_types.FuncDefExpression;
 import envision.parser.expressions.expression_types.RangeExpression;
 import envision.parser.expressions.expression_types.SetExpression;
 import envision.parser.expressions.expression_types.SuperExpression;
@@ -108,8 +108,8 @@ import envision.parser.statements.statement_types.ImportStatement;
 import envision.parser.statements.statement_types.InterfaceStatement;
 import envision.parser.statements.statement_types.LambdaForStatement;
 import envision.parser.statements.statement_types.LoopControlStatement;
-import envision.parser.statements.statement_types.MethodDeclarationStatement;
-import envision.parser.statements.statement_types.ModularMethodStatement;
+import envision.parser.statements.statement_types.FuncDefStatement;
+import envision.parser.statements.statement_types.ModularFunctionStatement;
 import envision.parser.statements.statement_types.PackageStatement;
 import envision.parser.statements.statement_types.RangeForStatement;
 import envision.parser.statements.statement_types.ReturnStatement;
@@ -531,8 +531,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public void handleImportStatement(ImportStatement s) { IS_Import.run(this, s); }
 	@Override public void handleInterfaceStatement(InterfaceStatement s) {}
 	@Override public void handleLambdaForStatement(LambdaForStatement s) { IS_LambdaFor.run(this, s); }
-	@Override public void handleMethodStatement(MethodDeclarationStatement s) { IS_MethodDeclaration.run(this, s); }
-	@Override public void handleModularMethodStatement(ModularMethodStatement s) { IS_ModularMethod.run(this, s); }
+	@Override public void handleMethodStatement(FuncDefStatement s) { IS_FuncDef.run(this, s); }
+	@Override public void handleModularMethodStatement(ModularFunctionStatement s) { IS_ModularFunc.run(this, s); }
 	@Override public void handlePackageStatement(PackageStatement s) { IS_Package.run(this, s); }
 	@Override public void handleRangeForStatement(RangeForStatement s) { IS_RangeFor.run(this, s); }
 	@Override public void handleReturnStatement(ReturnStatement s) { IS_Return.run(this, s); }
@@ -560,8 +560,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public Object handleListIndexSet_E(ListIndexSetExpression e) { return IE_ListIndexSet.run(this, e); }
 	@Override public Object handleLiteral_E(LiteralExpression e) { return IE_Literal.run(this, e); }
 	@Override public Object handleLogical_E(LogicalExpression e) { return IE_Logical.run(this, e); }
-	@Override public Object handleMethodCall_E(MethodCallExpression e) { return IE_MethodCall.run(this, e); }
-	@Override public Object handleMethodDec_E(MethodDeclarationExpression e) { return IE_MethodDec.run(this, e); }
+	@Override public Object handleMethodCall_E(FunctionCallExpression e) { return IE_FunctionCall.run(this, e); }
+	@Override public Object handleMethodDec_E(FuncDefExpression e) { return IE_FuncDef.run(this, e); }
 	//@Override public Object handleModular_E(ModularExpression e) { return IE_Modular.run(this, e); }
 	@Override public Object handleRange_E(RangeExpression e) { return IE_Range.run(this, e); }
 	@Override public Object handleSet_E(SetExpression e) { return IE_Set.run(this, e); }
