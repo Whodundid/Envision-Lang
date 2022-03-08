@@ -1,21 +1,16 @@
 package envision.parser.statements.statementParsers;
 
-import static envision.tokenizer.KeywordType.ARITHMETIC;
-import static envision.tokenizer.KeywordType.DATA_MODIFIER;
-import static envision.tokenizer.KeywordType.VISIBILITY_MODIFIER;
-import static envision.tokenizer.Operator.COLON;
-import static envision.tokenizer.Operator.COMMA;
-import static envision.tokenizer.Operator.GT;
-import static envision.tokenizer.Operator.LT;
-import static envision.tokenizer.Operator.PAREN_L;
-import static envision.tokenizer.Operator.PERIOD;
-import static envision.tokenizer.ReservedWord.IDENTIFIER;
+import static envision.tokenizer.KeywordType.*;
+import static envision.tokenizer.Operator.*;
+import static envision.tokenizer.ReservedWord.*;
+import static envision.parser.util.DeclarationType.*;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
 import envision.parser.expressions.expression_types.GenericExpression;
+import envision.parser.statements.statement_types.GetSetStatement;
 import envision.parser.util.DeclarationType;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
@@ -24,10 +19,11 @@ import eutil.datatypes.EArrayList;
 public class PS_ParseDeclaration extends GenericParser {
 	
 	/**
-	 * Attempts to parse a complete statement declaration from current tokens.
-	 * This function is to be used outside of method scopes.
+	 * Attempts to parse a complete statement declaration from current
+	 * tokens. This function is to be used outside of method scopes.
 	 * 
-	 * <p>If attempting to parse a scope level variable declaration, use
+	 * <p>
+	 * If attempting to parse a scope level variable declaration, use
 	 * parseScopeVar instead.
 	 * 
 	 * @return A valid declaration for a following statement
@@ -35,38 +31,52 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static ParserDeclaration parseDeclaration() {
 		ParserDeclaration declaration = new ParserDeclaration();
 		
+		//will not check for datatype if true
+		boolean done = false;
+		
 		//collect each piece of the declaration
 		parseVisibility(declaration);
-		if (checkType(DATA_MODIFIER)) parseDataModifiers(declaration);
-		parseDeclarationType(declaration);
 		
-		DeclarationType type = declaration.getDeclarationType();
 		
-		if (type != DeclarationType.OTHER && type != DeclarationType.EXPR) {
-			if (type == DeclarationType.VAR_DEF) {
-				if (declaration.getReturnType() == null) parseReturnType(declaration);
-				else advance();
-			}
-			else advance();
-			parseGenerics(declaration);
+		//handle data modifiers
+		if (!done) {
+			parseDataModifiers(declaration);
+			
+			if (check(GET, SET)) { declaration.setDeclarationType(GETSET); done = true; }
+			if (match(ENUM)) { declaration.setDeclarationType(ENUM_DEF); done = true; }
+			if (check(CURLY_L)) { declaration.setDeclarationType(BLOCK_DEF); done = true; }
 		}
-		//-- parameters
+		
+		//parse generics
+		if (!done) {
+			parseGenerics(declaration);
+			
+			//check for appropriate continuing statement
+			if (check(INIT)) { declaration.setDeclarationType(INIT_DEF); done = true; }
+			if (match(FUNC, OPERATOR_)) { declaration.setDeclarationType(FUNC_DEF); done = true; }
+			if (match(CLASS)) { declaration.setDeclarationType(CLASS_DEF); done = true; }
+			
+		}
+		
+		//parse datatype
+		if (!done) {
+			parseDataType(declaration);
+		}
 		
 		return declaration;
 	}
 	
 	/**
 	 * Will attempt to only parse meaningful tokens which are directly
-	 * related to scope level variable declarations.
-	 * IE. for loop vars.
-	 *  
+	 * related to scope level variable declarations. IE. for loop vars.
+	 * 
 	 * @return A valid scope variable declaration
 	 */
 	public static ParserDeclaration parseScopeVar() {
 		ParserDeclaration declaration = new ParserDeclaration();
 		
 		//get declaration type
-		parseDeclarationType(declaration);
+		parseDataType(declaration);
 		
 		//ensure it's actually a var dec
 		if (declaration.getDeclarationType() != DeclarationType.VAR_DEF)
@@ -85,7 +95,8 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static void parseVisibility(ParserDeclaration dec) {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
-		VisibilityType visibility = VisibilityType.parse(consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!"));
+		VisibilityType visibility = VisibilityType
+				.parse(consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!"));
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
 		
@@ -94,19 +105,22 @@ public class PS_ParseDeclaration extends GenericParser {
 	
 	/**
 	 * Attempts to determine what type of statement is about to be parsed.
+	 * 
 	 * @see DeclarationType
 	 */
-	public static void parseDeclarationType(ParserDeclaration dec) {
+	public static void parseDataType(ParserDeclaration dec) {
 		Token t = current();
 		DeclarationType type = DeclarationType.parseType(t);
 		
 		//check for method calls or class member references
-		if (type == DeclarationType.VAR_DEF && checkNext(PAREN_L, PERIOD)) type = DeclarationType.OTHER;
+		if (type == VAR_DEF && checkNext(PAREN_L, PERIOD))
+			type = OTHER;
 		//check for expression calls
-		if (type == DeclarationType.VAR_DEF && checkNextType(ARITHMETIC)) type = DeclarationType.EXPR;
+		if (type == VAR_DEF && checkNextType(ARITHMETIC))
+			type = EXPR;
 		//if (type == DeclarationType.FUNC_DEF) advance();
 		
-		dec.applyDeclarationType(type);
+		dec.setDeclarationType(type);
 		
 		//if the keyword is a datatype, immediately set return type
 		if (t.keyword.isDataType()) dec.applyReturnType(t);
@@ -114,13 +128,15 @@ public class PS_ParseDeclaration extends GenericParser {
 	
 	/**
 	 * Parses data modifiers from tokens.
+	 * 
 	 * <pre>
 	 * The recognized list of data modifiers are:
 	 * 	static
 	 * 	final
 	 * 	strong
 	 * 	abstract
-	 * 	override</pre>
+	 * 	override
+	 * </pre>
 	 */
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers

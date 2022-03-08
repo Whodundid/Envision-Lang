@@ -20,9 +20,11 @@ public enum DeclarationType {
 	INTERFACE_DEF,
 	OPERATOR_DEF,
 	ENUM_DEF,
+	BLOCK_DEF,
 	GETSET,
 	EXPR,
-	OTHER,;
+	OTHER,
+	;
 	
 	public static DeclarationType parseType(Token t) {
 		
