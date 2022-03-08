@@ -29,10 +29,14 @@ public class PS_VarDec extends GenericParser {
 	public static Statement variableDeclaration(ParserDeclaration declaration) {
 		errorIf(declaration.hasGenerics(), "Variables can not declare generic types in their declaration!");
 		
+		Token type = null;
 		Token name = null;
-		Token type = declaration.getReturnType();
 		
-		Primitives checkType = (type != null) ? type.getPrimitiveDataType() : null;
+		//try to consume a datatype
+		if (checkType(DATATYPE)) type = consumeType(DATATYPE, "Expected a valid datatype!");
+		else type = getAdvance();
+		
+		Primitives checkType = (type != null) ? type.getPrimitiveDataType() : Primitives.VAR;
 		
 		//check for valid variable datatypes
 		errorPreviousIf(checkType == Primitives.VOID, 2, "Variable types cannot be void!");
