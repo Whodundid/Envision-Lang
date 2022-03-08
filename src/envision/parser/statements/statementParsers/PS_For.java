@@ -7,7 +7,7 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.expressions.expression_types.LambdaExpression;
-import envision.parser.expressions.expression_types.NullExpression;
+import envision.parser.expressions.expression_types.EmptyExpression;
 import envision.parser.expressions.expression_types.RangeExpression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.ForStatement;
@@ -132,7 +132,7 @@ public class PS_For extends GenericParser {
 		//check for post actions
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				if (check(PAREN_R)) post.add(new NullExpression());
+				if (check(PAREN_R)) post.add(new EmptyExpression());
 				else {
 					//gather all expressions separated by commas
 					do {
