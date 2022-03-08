@@ -195,7 +195,7 @@ public class IE_Binary extends ExpressionExecutor<BinaryExpression> {
 	
 	/** Throws / by zero error. */
 	private static void div0(Operator op, Number a, Number b) {
-		if (b.intValue() == 0) {
+		if (b.doubleValue() == 0) {
 			throw new ArithmeticError("("+a+" "+op.chars+" "+b+") error! Division by zero!");
 		}
 	}
