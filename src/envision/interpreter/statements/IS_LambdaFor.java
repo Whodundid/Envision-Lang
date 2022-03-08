@@ -97,7 +97,9 @@ public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
 				for (int i = 0; i < vars.size(); i++) {
 					VariableDeclaration varDec = vars.get(i);
 					String name = varDec.getName();
-					Object value = EnvisionVariable.convert(evaluate(varDec.assignment_value));
+					Expression var_assignment = varDec.assignment_value;
+					Object assignment_val = (var_assignment != null) ? evaluate(var_assignment) : null;
+					Object value = EnvisionVariable.convert(assignment_val);
 					
 					//first check if the variable is already defined
 					EnvisionObject obj = scope().get(name);
