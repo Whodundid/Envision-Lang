@@ -1,5 +1,7 @@
 package main;
 
+import static envision.EnvisionSettings.LaunchArgs.*;
+
 import envision.Envision;
 import envision.EnvisionErrorCallback;
 import envision.EnvisionSettings;
@@ -23,9 +25,9 @@ public class LangLauncher extends EnvisionErrorCallback {
 		
 		Envision env = null;
 		env = new Envision();
-		//env = new Envision(EnvisionSettings.of(LaunchArgs.PRELOAD_LANGUAGE));
-		//env = new Envision(EnvisionSettings.of(LaunchArgs.TOKENIZE, LaunchArgs.PARSE_STATEMENTS, LaunchArgs.DONT_EXECUTE));
-		//env = new Envision(EnvisionSettings.of(LaunchArgs.PARSE_STATEMENTS, LaunchArgs.TOKENIZE));
+		//env = new Envision(PRELOAD_LANGUAGE);
+		//env = new Envision(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
+		//env = new Envision(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
 		//long preStart = System.currentTimeMillis();

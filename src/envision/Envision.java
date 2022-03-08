@@ -3,6 +3,7 @@ package envision;
 import java.io.File;
 import java.util.Scanner;
 
+import envision.EnvisionSettings.LaunchArgs;
 import envision.bytecode.translator.BytecodeTranslator;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.BadDirError;
@@ -120,6 +121,10 @@ public class Envision {
 	/** Creates a new Envision workspace. */
 	public Envision(EnvisionSettings launchSettingsIn) {
 		launchSettings = launchSettingsIn;
+	}
+	
+	public Envision(LaunchArgs... argsIn) {
+		launchSettings = new EnvisionSettings(argsIn);
 	}
 	
 	//------------------
