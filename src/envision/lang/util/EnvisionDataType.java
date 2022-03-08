@@ -35,8 +35,14 @@ public class EnvisionDatatype {
 	//--------------
 	
 	public EnvisionDatatype(Token in) {
-		type = in.lexeme;
-		primitive_type = Primitives.getDataType(in.lexeme);
+		if (in == null) {
+			type = Primitives.VAR.string_type;
+			primitive_type = Primitives.VAR;
+		}
+		else {
+			type = in.lexeme;
+			primitive_type = Primitives.getDataType(in.lexeme);
+		}
 	}
 	
 	public EnvisionDatatype(String in) {
