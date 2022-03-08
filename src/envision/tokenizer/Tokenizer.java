@@ -184,9 +184,21 @@ public class Tokenizer {
 		boolean decimal = false;
 		
 		if (peek() == '.' && isDigit(peekNext())) {
+			//consume the '.'
 			advance();
+			//consume any aditional digits
 			while (isDigit(peek())) advance();
 			decimal = true;
+			
+			//check if Exponential notation
+			if (peek() == 'E' && (peekNext() == '-' && isDigit(peekNext(2))) || isDigit(peekNext())) {
+				//consume the E
+				advance();
+				//consume a '-' if there is one
+				if (peek() == '-') advance();
+				//consume any aditional digits
+				while (isDigit(peek())) advance();
+			}
 		}
 		
 		if (decimal) addToken(ReservedWord.NUMBER_LITERAL, Double.parseDouble(source.substring(start, cur)));
@@ -303,6 +315,17 @@ public class Tokenizer {
 	
 	private char peek() { return (atEnd()) ? '\0' : source.charAt(cur); }
 	private char peekNext() { return (cur + 1 >= source.length()) ? '\0' : source.charAt(cur + 1); }
+	
+	/**
+	 * Peeks at the char at the (cur + nextAmount) position.
+	 * 
+	 * @param nextAmount Offset amount
+	 * @return The char at the offset position
+	 */
+	private char peekNext(int nextAmount) {
+		return (cur + nextAmount >= source.length()) ? '\0' : source.charAt(cur + nextAmount); 
+	}
+	
 	private char advance() { return source.charAt(cur++); }
 	private boolean isLetter(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
 	private boolean isDigit(char c) { return c >= '0' && c <= '9'; }
