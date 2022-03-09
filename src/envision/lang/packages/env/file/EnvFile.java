@@ -29,12 +29,18 @@ import java.util.Scanner;
 
 public class EnvFile extends EnvisionClass {
 	
+	/**
+	 * Constant file datatype reference. Use throughout.
+	 * Do not redefine.
+	 */
+	public static final EnvisionDatatype FILE_DATATYPE = new EnvisionDatatype("File");
+	
 	private BoxList<String, Object> ifields = new BoxList();
 	private EArrayList<EnvFileMeth> imethods = new EArrayList();
 	private EArrayList<String> toBeWritten = new EArrayList();
 	
 	public EnvFile(EnvisionInterpreter interpreter) {
-		super("File");
+		super(FILE_DATATYPE.getType());
 		classScope = new Scope(interpreter.scope());
 		addConstructor(new EnvisionFunction(new ParameterData(STRING)));
 		//addConstructor(new EnvisionMethod(new ParameterData("File")));
