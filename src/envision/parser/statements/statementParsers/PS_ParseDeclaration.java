@@ -28,31 +28,31 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * @return A valid declaration for a following statement
 	 */
 	public static ParserDeclaration parseDeclaration() {
-		ParserDeclaration declaration = new ParserDeclaration();
+		ParserDeclaration dec = new ParserDeclaration();
 		
 		//collect each piece of the declaration
-		parseVisibility(declaration);
+		parseVisibility(dec);
 		
 		
 		//handle data modifiers
-		parseDataModifiers(declaration);
+		parseDataModifiers(dec);
 		
-		if (check(GET, SET)) return declaration.setDeclarationType(GETSET);
-		if (match(ENUM)) return declaration.setDeclarationType(ENUM_DEF);
-		if (check(CURLY_L)) return declaration.setDeclarationType(BLOCK_DEF);
+		if (check(GET, SET)) 	return dec.setDeclarationType(GETSET);
+		if (match(ENUM)) 		return dec.setDeclarationType(ENUM_DEF);
+		if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF);
 		
 		//parse generics
-		parseGenerics(declaration);
+		parseGenerics(dec);
 		
 		//check for appropriate continuing statement
-		if (check(INIT)) return declaration.setDeclarationType(INIT_DEF);
-		if (match(FUNC, OPERATOR_)) return declaration.setDeclarationType(FUNC_DEF);
-		if (match(CLASS)) return declaration.setDeclarationType(CLASS_DEF);
+		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF);
+		if (match(FUNC, OPERATOR_)) 	return dec.setDeclarationType(FUNC_DEF);
+		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF);
 		
 		//parse datatype
-		parseDataType(declaration);
+		parseDataType(dec);
 		
-		return declaration;
+		return dec;
 	}
 	
 	/**
