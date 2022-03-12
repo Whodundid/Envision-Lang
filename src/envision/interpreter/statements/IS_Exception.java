@@ -2,20 +2,20 @@ package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.parser.statements.statement_types.ExceptionStatement;
+import envision.parser.statements.statement_types.Stmt_Exception;
 
-public class IS_Exception extends StatementExecutor<ExceptionStatement> {
+public class IS_Exception extends StatementExecutor<Stmt_Exception> {
 
 	public IS_Exception(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(ExceptionStatement statement) {
+	public void run(Stmt_Exception statement) {
 		
 	}
 	
-	public static void run(EnvisionInterpreter in, ExceptionStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_Exception s) {
 		new IS_Exception(in).run(s);
 	}
 	

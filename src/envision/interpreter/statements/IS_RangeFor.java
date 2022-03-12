@@ -11,22 +11,22 @@ import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.RangeExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Range;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.RangeForStatement;
+import envision.parser.statements.statement_types.Stmt_RangeFor;
 import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
 
-public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
+public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	
 	public IS_RangeFor(EnvisionInterpreter intIn) {
 		super(intIn);
 	}
 	
 	@Override
-	public void run(RangeForStatement statement) {
-		EArrayList<RangeExpression> ranges = statement.ranges;
+	public void run(Stmt_RangeFor statement) {
+		EArrayList<Expr_Range> ranges = statement.ranges;
 		EArrayList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList();
 		Statement body = statement.body;
 		pushScope();
@@ -36,7 +36,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 		
 		//build range values
 		for (int i = 0; i < ranges.size(); i++) {
-			RangeExpression range_expr = ranges.get(i);
+			Expr_Range range_expr = ranges.get(i);
 			
 			Expression left_expr = range_expr.left;
 			Expression right_expr = range_expr.right;
@@ -152,7 +152,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 		popScope();
 	}
 	
-	public static void run(EnvisionInterpreter in, RangeForStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_RangeFor s) {
 		new IS_RangeFor(in).run(s);
 	}
 	
@@ -167,7 +167,7 @@ public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
 	}
 	
 	private Object handleLeft(Expression left) {
-		if (left instanceof VarExpression var) {
+		if (left instanceof Expr_Var var) {
 			return defineIfNot(var.getName(), new EnvisionInt());
 			//return updateOrDefine(var.getName(), Primitives.INT.toDatatype(), new EnvisionInt());
 			//return forceDefine(leftVar.name.lexeme, Primitives.INT.toDatatype(), new EnvisionInt());

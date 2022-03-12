@@ -24,10 +24,10 @@ public class LangLauncher extends EnvisionErrorCallback {
 		//Thread.sleep(20000);
 		
 		Envision env = null;
-		env = new Envision();
+		//env = new Envision();
 		//env = new Envision(PRELOAD_LANGUAGE);
 		//env = new Envision(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
-		//env = new Envision(PARSE_STATEMENTS, TOKENIZE);
+		env = new Envision(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
 		//long preStart = System.currentTimeMillis();

@@ -5,7 +5,7 @@ import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.PackageStatement;
+import envision.parser.statements.statement_types.Stmt_Package;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -19,7 +19,7 @@ public class PS_Package extends GenericParser {
 		
 		EArrayList<Statement> body = getBlock();
 		
-		return new PackageStatement(declaration, packageName, body);
+		return new Stmt_Package(declaration, packageName, body);
 	}
 	
 }

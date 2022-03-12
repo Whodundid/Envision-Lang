@@ -19,24 +19,24 @@ import envision.lang.objects.EnvisionNullObject;
 import envision.lang.objects.EnvisionVoidObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.data.DataModifier;
-import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.VariableDeclaration;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class IS_VarDec extends StatementExecutor<VariableStatement> {
+public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 	
 	public IS_VarDec(EnvisionInterpreter in) {
 		super(in);
 	}
 	
-	public static void run(EnvisionInterpreter in, VariableStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_VarDef s) {
 		new IS_VarDec(in).run(s);
 	}
 
 	@Override
-	public void run(VariableStatement statement) {
+	public void run(Stmt_VarDef statement) {
 		TypeManager typeMan = interpreter.getTypeManager();
 		
 		//extract base statement parts

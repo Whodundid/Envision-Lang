@@ -7,24 +7,24 @@ import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.objects.EnvisionList;
-import envision.parser.expressions.expression_types.BinaryExpression;
+import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.tokenizer.KeywordType;
 import envision.tokenizer.Operator;
 import eutil.math.NumberUtil;
 import eutil.strings.StringUtil;
 
-public class IE_Binary extends ExpressionExecutor<BinaryExpression> {
+public class IE_Binary extends ExpressionExecutor<Expr_Binary> {
 
 	public IE_Binary(EnvisionInterpreter in) {
 		super(in);
 	}
 
-	public static Object run(EnvisionInterpreter in, BinaryExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Binary e) {
 		return new IE_Binary(in).run(e);
 	}
 	
 	@Override
-	public Object run(BinaryExpression expression) {
+	public Object run(Expr_Binary expression) {
 		Object a = evaluate(expression.left);
 		Object b = evaluate(expression.right);
 		
@@ -121,7 +121,7 @@ public class IE_Binary extends ExpressionExecutor<BinaryExpression> {
 		
 		//if (isNum) {
 			if (isList(a) && isNumber(b)) return handleList(op, (EnvisionList) a, (Number) b, true);
-			if (isNumber(a) && isList(b)) return handleList(op, (EnvisionList) b, (Number) a, false);
+			else if (isNumber(a) && isList(b)) return handleList(op, (EnvisionList) b, (Number) a, false);
 			else if (isIntegers(a, b)) return handleOpLong(op, ((Number) a).longValue(), ((Number) b).longValue());
 			else return handleOpDouble(op, ((Number) a).doubleValue(), ((Number) b).doubleValue());
 		//}

@@ -5,17 +5,17 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.statements.statement_types.ReturnStatement;
+import envision.parser.statements.statement_types.Stmt_Return;
 import eutil.datatypes.EArrayList;
 
-public class IS_Return extends StatementExecutor<ReturnStatement> {
+public class IS_Return extends StatementExecutor<Stmt_Return> {
 
 	public IS_Return(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(ReturnStatement s) {
+	public void run(Stmt_Return s) {
 		Expression cond = s.condition;
 		Object r = s.retVals;
 		
@@ -41,7 +41,7 @@ public class IS_Return extends StatementExecutor<ReturnStatement> {
 		}
 	}
 	
-	public static void run(EnvisionInterpreter in, ReturnStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_Return s) {
 		new IS_Return(in).run(s);
 	}
 	

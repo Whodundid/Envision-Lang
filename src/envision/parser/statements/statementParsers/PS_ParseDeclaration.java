@@ -1,16 +1,15 @@
 package envision.parser.statements.statementParsers;
 
+import static envision.parser.util.DeclarationType.*;
 import static envision.tokenizer.KeywordType.*;
 import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
-import static envision.parser.util.DeclarationType.*;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
-import envision.parser.expressions.expression_types.GenericExpression;
-import envision.parser.statements.statement_types.GetSetStatement;
+import envision.parser.expressions.expression_types.Expr_Generic;
 import envision.parser.util.DeclarationType;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
@@ -31,37 +30,27 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static ParserDeclaration parseDeclaration() {
 		ParserDeclaration declaration = new ParserDeclaration();
 		
-		//will not check for datatype if true
-		boolean done = false;
-		
 		//collect each piece of the declaration
 		parseVisibility(declaration);
 		
 		
 		//handle data modifiers
-		if (!done) {
-			parseDataModifiers(declaration);
-			
-			if (check(GET, SET)) { declaration.setDeclarationType(GETSET); done = true; }
-			if (match(ENUM)) { declaration.setDeclarationType(ENUM_DEF); done = true; }
-			if (check(CURLY_L)) { declaration.setDeclarationType(BLOCK_DEF); done = true; }
-		}
+		parseDataModifiers(declaration);
+		
+		if (check(GET, SET)) return declaration.setDeclarationType(GETSET);
+		if (match(ENUM)) return declaration.setDeclarationType(ENUM_DEF);
+		if (check(CURLY_L)) return declaration.setDeclarationType(BLOCK_DEF);
 		
 		//parse generics
-		if (!done) {
-			parseGenerics(declaration);
-			
-			//check for appropriate continuing statement
-			if (check(INIT)) { declaration.setDeclarationType(INIT_DEF); done = true; }
-			if (match(FUNC, OPERATOR_)) { declaration.setDeclarationType(FUNC_DEF); done = true; }
-			if (match(CLASS)) { declaration.setDeclarationType(CLASS_DEF); done = true; }
-			
-		}
+		parseGenerics(declaration);
+		
+		//check for appropriate continuing statement
+		if (check(INIT)) return declaration.setDeclarationType(INIT_DEF);
+		if (match(FUNC, OPERATOR_)) return declaration.setDeclarationType(FUNC_DEF);
+		if (match(CLASS)) return declaration.setDeclarationType(CLASS_DEF);
 		
 		//parse datatype
-		if (!done) {
-			parseDataType(declaration);
-		}
+		parseDataType(declaration);
 		
 		return declaration;
 	}
@@ -95,8 +84,8 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static void parseVisibility(ParserDeclaration dec) {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
-		VisibilityType visibility = VisibilityType
-				.parse(consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!"));
+		Token vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
+		VisibilityType visibility = VisibilityType.parse(vis_token);
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
 		
@@ -112,13 +101,14 @@ public class PS_ParseDeclaration extends GenericParser {
 		Token t = current();
 		DeclarationType type = DeclarationType.parseType(t);
 		
-		//check for method calls or class member references
-		if (type == VAR_DEF && checkNext(PAREN_L, PERIOD))
-			type = OTHER;
-		//check for expression calls
-		if (type == VAR_DEF && checkNextType(ARITHMETIC))
-			type = EXPR;
-		//if (type == DeclarationType.FUNC_DEF) advance();
+		if (type == VAR_DEF) {
+			//check for method calls or class member references
+			if (checkNext(PAREN_L, PERIOD)) type = OTHER;
+			//check for typeless var assignment
+			else if (dec.hasDataMods()) type = VAR_DEF;
+			//check for expression calls
+			else if (checkNextType(ARITHMETIC)) type = EXPR;
+		}
 		
 		dec.setDeclarationType(type);
 		
@@ -156,7 +146,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EArrayList<GenericExpression> generics = new EArrayList();
+		EArrayList<Expr_Generic> generics = new EArrayList();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");
@@ -167,7 +157,7 @@ public class PS_ParseDeclaration extends GenericParser {
 					if (match(COLON)) {
 						extension = getAdvance();
 					}
-					generics.add(new GenericExpression(generic, extension));
+					generics.add(new Expr_Generic(generic, extension));
 				}
 				while (match(COMMA));
 			}

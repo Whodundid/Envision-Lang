@@ -5,13 +5,13 @@ import envision.exceptions.errors.DuplicateObjectError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.AssignExpression;
-import envision.parser.expressions.expression_types.BinaryExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
+import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.ExpressionStatement;
-import envision.parser.statements.statement_types.ModularFunctionStatement;
-import envision.parser.statements.statement_types.ReturnStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_Expression;
+import envision.parser.statements.statement_types.Stmt_ModularFuncDef;
+import envision.parser.statements.statement_types.Stmt_Return;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
@@ -19,20 +19,20 @@ import eutil.datatypes.util.BoxList;
 import main.Experimental_Envision;
 
 @Experimental_Envision
-public class IS_ModularFunc extends StatementExecutor<ModularFunctionStatement> {
+public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 
 	public IS_ModularFunc(EnvisionInterpreter in) {
 		super(in);
 	}
 	
-	public static void run(EnvisionInterpreter in, ModularFunctionStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_ModularFuncDef s) {
 		new IS_ModularFunc(in).run(s);
 	}
 	
 	//----------------------------------------------------------------------------------
 	
 	@Override
-	public void run(ModularFunctionStatement s) {
+	public void run(Stmt_ModularFuncDef s) {
 		BoxList<Token, Token> associations = s.associations;
 		
 		for (Box2<Token, Token> modAssociation : associations) {
@@ -56,17 +56,17 @@ public class IS_ModularFunc extends StatementExecutor<ModularFunctionStatement> 
 				for (Statement stmt : statements) {
 					
 					//unbox block statements
-					if (stmt instanceof BlockStatement) {
-						EArrayList<Statement> found = ((BlockStatement) stmt).statements;
-						EArrayList<BlockStatement> workList = new EArrayList();
+					if (stmt instanceof Stmt_Block) {
+						EArrayList<Statement> found = ((Stmt_Block) stmt).statements;
+						EArrayList<Stmt_Block> workList = new EArrayList();
 						
 						while (workList.isNotEmpty()) {
-							EArrayList<BlockStatement> newWork = new EArrayList();
+							EArrayList<Stmt_Block> newWork = new EArrayList();
 							
-							for (BlockStatement bs : workList) {
+							for (Stmt_Block bs : workList) {
 								EArrayList<Statement> bsStatements = bs.statements;
 								for (Statement bss : bsStatements)
-									if (bss instanceof BlockStatement) newWork.add((BlockStatement) bss);
+									if (bss instanceof Stmt_Block) newWork.add((Stmt_Block) bss);
 									else found.add(bss);
 							}
 							
@@ -82,7 +82,7 @@ public class IS_ModularFunc extends StatementExecutor<ModularFunctionStatement> 
 							replaceModular(copy, modAssociation.getB());
 						}
 					}
-					else if (stmt instanceof ReturnStatement) {
+					else if (stmt instanceof Stmt_Return) {
 						Statement copy = stmt.copy();
 						newStatements.add(copy);
 						replaceModular(copy, modAssociation.getB());
@@ -101,23 +101,23 @@ public class IS_ModularFunc extends StatementExecutor<ModularFunctionStatement> 
 	// Not really sure this is the best way to go about doing this right now..
 	private void replaceModular(Statement s, Token ass) {
 		//this is gonna be painful
-		if (s instanceof BlockStatement) throw new EnvisionError("Replace Modular: this shouldn't be possible.");
+		if (s instanceof Stmt_Block) throw new EnvisionError("Replace Modular: this shouldn't be possible.");
 		//if (s instanceof ReturnStatement) { replaceExpression(((ReturnStatement) s).retVals, ass); }
-		if (s instanceof ExpressionStatement) {
-			ExpressionStatement ss = ((ExpressionStatement) s).copy();
+		if (s instanceof Stmt_Expression) {
+			Stmt_Expression ss = ((Stmt_Expression) s).copy();
 			replaceExpression(ss.expression, ass);
 		}
 		
 	}
 	
 	private void replaceExpression(Expression e, Token ass) {
-		if (e instanceof AssignExpression) {
+		if (e instanceof Expr_Assign) {
 			//AssignExpression c = (AssignExpression) e;
 			//if (c.name.isModular()) c.name = ass;
 			//if (c.operator.isModular()) c.operator = ass;
 			//replaceExpression(c.value, ass);
 		}
-		else if (e instanceof BinaryExpression) {
+		else if (e instanceof Expr_Binary) {
 			//BinaryExpression c = (BinaryExpression) e;
 			//if (c.operator.isModular()) { c.operator = ass; c.modular = false; }
 			//replaceExpression(c.left, ass);

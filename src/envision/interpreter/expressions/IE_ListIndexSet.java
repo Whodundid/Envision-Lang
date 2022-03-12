@@ -6,18 +6,18 @@ import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.ListIndexExpression;
-import envision.parser.expressions.expression_types.ListIndexSetExpression;
+import envision.parser.expressions.expression_types.Expr_ListIndex;
+import envision.parser.expressions.expression_types.Expr_SetListIndex;
 
-public class IE_ListIndexSet extends ExpressionExecutor<ListIndexSetExpression> {
+public class IE_ListIndexSet extends ExpressionExecutor<Expr_SetListIndex> {
 
 	public IE_ListIndexSet(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(ListIndexSetExpression e) {
-		ListIndexExpression listIndexExpression = e.list;
+	public Object run(Expr_SetListIndex e) {
+		Expr_ListIndex listIndexExpression = e.list;
 		Expression value = e.value;
 		
 		Expression listExpression = listIndexExpression.list;
@@ -40,7 +40,7 @@ public class IE_ListIndexSet extends ExpressionExecutor<ListIndexSetExpression> 
 		return null;
 	}
 	
-	public static Object run(EnvisionInterpreter in, ListIndexSetExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_SetListIndex e) {
 		return new IE_ListIndexSet(in).run(e);
 	}
 	

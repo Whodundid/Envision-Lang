@@ -7,7 +7,7 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.IfStatement;
+import envision.parser.statements.statement_types.Stmt_If;
 
 public class PS_If extends GenericParser {
 	
@@ -25,7 +25,7 @@ public class PS_If extends GenericParser {
 		match(NEWLINE);
 		Statement elseBranch = (match(ELSE)) ? declaration() : null;
 		
-		return new IfStatement(condition, thenBranch, elseBranch);
+		return new Stmt_If(condition, thenBranch, elseBranch);
 	}
 	
 }

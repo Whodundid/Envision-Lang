@@ -8,9 +8,9 @@ import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expression_types.AssignExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.FuncDefStatement;
+import envision.parser.statements.statement_types.Stmt_FuncDef;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.ReservedWord;
@@ -95,12 +95,25 @@ public class PS_Function extends GenericParser {
 		
 		//variables used to build the function statement
 		Token name = null, op = null;
-		boolean constructor = false;
+		Token returnType = null;
+		boolean constructor = init;
 		
 		//first check if this function should be handled as an operator overload function
 		if (operator) op = getOperator();
-		else if (init) constructor = true;
-		else name = consume(IDENTIFIER, "Expected a valid name!");
+		else if (constructor) consume(INIT, "Expected 'init' here!");
+		else if (checkType(DATATYPE)) {
+			returnType = consumeType(DATATYPE, "Expected a valid function return type!");
+			name = consume(IDENTIFIER, "Expected a valid name!");
+			declaration.applyReturnType(returnType);
+		}
+		else {
+			name = consume(IDENTIFIER, "Expected a valid name!");
+			if (check(IDENTIFIER)) {
+				returnType = name;
+				consume(IDENTIFIER, "Expected a valid function return name!");
+			}
+			declaration.applyReturnType(returnType);
+		}
 		
 		/*
 		//if it's not an initializer and it's not an operator then check to see if it could be a variable instead
@@ -118,7 +131,7 @@ public class PS_Function extends GenericParser {
 		//attempt to parse function body
 		EArrayList<Statement> body = getFunctionBody(constructor);
 		
-		return new FuncDefStatement(name, op, parameters, body, declaration, constructor, operator);
+		return new Stmt_FuncDef(name, op, parameters, body, declaration, constructor, operator);
 	}
 	
 	
@@ -255,9 +268,9 @@ public class PS_Function extends GenericParser {
 				
 				//used for direct value assignment if passed value is null
 				//ex: var thing(int x = 5) ..
-				AssignExpression assign = null;
+				Expr_Assign assign = null;
 				if (matchType(ASSIGNMENT)) {
-					assign = new AssignExpression(paramName, previous().asOperator(), ExpressionParser.parseExpression());
+					assign = new Expr_Assign(paramName, previous().asOperator(), ExpressionParser.parseExpression());
 				}
 				
 				//build and add the parameter

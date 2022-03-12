@@ -4,22 +4,22 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.FunctionCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.objects.EnvisionFunction;
-import envision.parser.statements.statement_types.FuncDefStatement;
+import envision.parser.statements.statement_types.Stmt_FuncDef;
 
-public class IS_FuncDef extends StatementExecutor<FuncDefStatement> {
+public class IS_FuncDef extends StatementExecutor<Stmt_FuncDef> {
 
 	public IS_FuncDef(EnvisionInterpreter in) {
 		super(in);
 	}
 	
-	public static void run(EnvisionInterpreter in, FuncDefStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_FuncDef s) {
 		new IS_FuncDef(in).run(s);
 	}
 	
 	//----------------------------------------------------------------------------------
 	
 	@Override
-	public void run(FuncDefStatement s) {
+	public void run(Stmt_FuncDef s) {
 		//build the method against the current scope from the given declaration
 		EnvisionFunction m = FunctionCreator.buildMethod(interpreter, s, scope());
 		//attempt to find any already existing base method within the given scope

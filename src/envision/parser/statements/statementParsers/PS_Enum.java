@@ -7,10 +7,10 @@ import envision.lang.util.VisibilityType;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expression_types.EnumExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Enum;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.EnumStatement;
+import envision.parser.statements.statement_types.Stmt_EnumDef;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -24,12 +24,12 @@ public class PS_Enum extends GenericParser {
 		if (declaration == null) { declaration = new ParserDeclaration(); }
 		if (declaration.getVisibility() == null) { declaration.applyVisibility(VisibilityType.SCOPE); }
 		
-		EnumStatement s = new EnumStatement(name, declaration);
+		Stmt_EnumDef s = new Stmt_EnumDef(name, declaration);
 		
 		if (match(COLON)) {
 			do {
 				consume(IDENTIFIER, "Expected super enum name.");
-				s.addSuper(new VarExpression(previous()));
+				s.addSuper(new Expr_Var(previous()));
 			}
 			while (match(COMMA));
 		}
@@ -56,7 +56,7 @@ public class PS_Enum extends GenericParser {
 				}
 			}
 			
-			s.addValue(new EnumExpression(valueName, valueArgs));
+			s.addValue(new Expr_Enum(valueName, valueArgs));
 			if (check(COMMA)) { advance(); }
 		}
 		

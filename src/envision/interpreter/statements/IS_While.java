@@ -5,17 +5,17 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.WhileStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_While;
 
-public class IS_While extends StatementExecutor<WhileStatement> {
+public class IS_While extends StatementExecutor<Stmt_While> {
 
 	public IS_While(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(WhileStatement statement) {
+	public void run(Stmt_While statement) {
 		if (statement.isDo) {
 			TOP:
 			do {
@@ -23,8 +23,8 @@ public class IS_While extends StatementExecutor<WhileStatement> {
 				if (b != null) {
 					pushScope();
 					
-					if (b instanceof BlockStatement) {
-						for (Statement s : ((BlockStatement) b).statements) {
+					if (b instanceof Stmt_Block) {
+						for (Statement s : ((Stmt_Block) b).statements) {
 							try { execute(s); }
 							catch (Break e) { break TOP; }
 							catch (Continue e) { continue TOP; }
@@ -48,8 +48,8 @@ public class IS_While extends StatementExecutor<WhileStatement> {
 				if (b != null) {
 					pushScope();
 					
-					if (b instanceof BlockStatement) {
-						for (Statement s : ((BlockStatement) b).statements) {
+					if (b instanceof Stmt_Block) {
+						for (Statement s : ((Stmt_Block) b).statements) {
 							try { execute(s); }
 							catch (Break e) { break TOP; }
 							catch (Continue e) { continue TOP; }
@@ -67,7 +67,7 @@ public class IS_While extends StatementExecutor<WhileStatement> {
 		}
 	}
 	
-	public static void run(EnvisionInterpreter in, WhileStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_While s) {
 		new IS_While(in).run(s);
 	}
 	

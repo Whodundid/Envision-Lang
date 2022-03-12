@@ -7,7 +7,7 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.WhileStatement;
+import envision.parser.statements.statement_types.Stmt_While;
 
 public class PS_While extends GenericParser {
 	
@@ -23,7 +23,7 @@ public class PS_While extends GenericParser {
 			while (match(NEWLINE));
 			consume(PAREN_R, "Expected ')' after while condition!");
 			while (match(NEWLINE));
-			return new WhileStatement(true, condition, body);
+			return new Stmt_While(true, condition, body);
 		}
 		else if (match(WHILE)) {
 			consume(PAREN_L, "Expected '(' after while declaration!");
@@ -32,7 +32,7 @@ public class PS_While extends GenericParser {
 			consume(PAREN_R, "Expected ')' after while condition!");
 			while (match(NEWLINE));
 			Statement body = declaration();
-			return new WhileStatement(false, condition, body);
+			return new Stmt_While(false, condition, body);
 		}
 		error("Expected either a 'do' or a 'while' at this point!");
 		return null;

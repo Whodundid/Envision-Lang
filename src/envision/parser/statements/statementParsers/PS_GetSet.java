@@ -6,7 +6,7 @@ import static envision.tokenizer.ReservedWord.*;
 import envision.lang.util.VisibilityType;
 import envision.parser.GenericParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.GetSetStatement;
+import envision.parser.statements.statement_types.Stmt_GetSet;
 import envision.parser.util.DeclarationStage;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Operator;
@@ -20,7 +20,7 @@ public class PS_GetSet extends GenericParser {
 	public static Statement getSet(ParserDeclaration declaration) {
 		declaration = (declaration == null) ? new ParserDeclaration().setStage(DeclarationStage.VISIBILITY) : declaration;
 		
-		GetSetStatement statement = parseGetSetVis(declaration);
+		Stmt_GetSet statement = parseGetSetVis(declaration);
 		EArrayList<Token> vars = new EArrayList();
 		
 		do vars.add(consume(ReservedWord.IDENTIFIER, "Expected a variable name!"));
@@ -30,9 +30,9 @@ public class PS_GetSet extends GenericParser {
 		return statement;
 	}
 	
-	public static GetSetStatement parseGetSetVis() { return parseGetSetVis((VisibilityType) null); }
-	public static GetSetStatement parseGetSetVis(ParserDeclaration dec) { return parseGetSetVis(dec.getVisibility()); }
-	public static GetSetStatement parseGetSetVis(VisibilityType visIn) {
+	public static Stmt_GetSet parseGetSetVis() { return parseGetSetVis((VisibilityType) null); }
+	public static Stmt_GetSet parseGetSetVis(ParserDeclaration dec) { return parseGetSetVis(dec.getVisibility()); }
+	public static Stmt_GetSet parseGetSetVis(VisibilityType visIn) {
 		//parse for getset modifiers
 		VisibilityType curVis = visIn;
 		VisibilityType getVis = VisibilityType.SCOPE;
@@ -71,7 +71,7 @@ public class PS_GetSet extends GenericParser {
 		}
 		else error("Expected either 'get' or 'set' here!");
 		
-		return new GetSetStatement(getVis, setVis, get, set);
+		return new Stmt_GetSet(getVis, setVis, get, set);
 	}
 	
 }

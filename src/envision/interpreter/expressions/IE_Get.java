@@ -12,11 +12,11 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
 import envision.lang.util.structureTypes.InheritableObject;
-import envision.parser.expressions.expression_types.GetExpression;
+import envision.parser.expressions.expression_types.Expr_Get;
 
-public class IE_Get extends ExpressionExecutor<GetExpression> {
+public class IE_Get extends ExpressionExecutor<Expr_Get> {
 
-	private GetExpression expression;
+	private Expr_Get expression;
 	
 	//--------------------------------------------------------------------
 	
@@ -27,7 +27,7 @@ public class IE_Get extends ExpressionExecutor<GetExpression> {
 	//--------------------------------------------------------------------
 
 	@Override
-	public Object run(GetExpression e) {
+	public Object run(Expr_Get e) {
 		Object o = evaluate((expression = e).object);
 		
 		if (o instanceof ClassInstance) { return getInstanceVal((ClassInstance) o); }
@@ -95,7 +95,7 @@ public class IE_Get extends ExpressionExecutor<GetExpression> {
 	
 	//--------------------------------------------------------------------
 	
-	public static Object run(EnvisionInterpreter in, GetExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Get e) {
 		return new IE_Get(in).run(e);
 	}
 	

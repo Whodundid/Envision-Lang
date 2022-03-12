@@ -10,16 +10,16 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
-import envision.parser.expressions.expression_types.SetExpression;
+import envision.parser.expressions.expression_types.Expr_Set;
 
-public class IE_Set extends ExpressionExecutor<SetExpression> {
+public class IE_Set extends ExpressionExecutor<Expr_Set> {
 
 	public IE_Set(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(SetExpression expression) {
+	public Object run(Expr_Set expression) {
 		Object baseObject = evaluate(expression.object);
 		
 		// error if the object being set is an enum
@@ -55,7 +55,7 @@ public class IE_Set extends ExpressionExecutor<SetExpression> {
 		return null;
 	}
 	
-	public static Object run(EnvisionInterpreter in, SetExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Set e) {
 		return new IE_Set(in).run(e);
 	}
 	

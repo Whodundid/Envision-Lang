@@ -7,26 +7,26 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.util.data.DataModifier;
-import envision.parser.expressions.expression_types.VarExpression;
-import envision.parser.statements.statement_types.GetSetStatement;
-import envision.parser.statements.statement_types.ReturnStatement;
+import envision.parser.expressions.expression_types.Expr_Var;
+import envision.parser.statements.statement_types.Stmt_GetSet;
+import envision.parser.statements.statement_types.Stmt_Return;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
 
-public class IS_GetSet extends StatementExecutor<GetSetStatement> {
+public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 
 	public IS_GetSet(EnvisionInterpreter in) {
 		super(in);
 	}
 
-	public static void run(EnvisionInterpreter in, GetSetStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_GetSet s) {
 		new IS_GetSet(in).run(s);
 	}
 	
 	//----------------------------------------------------------------------
 	
 	@Override
-	public void run(GetSetStatement s) {
+	public void run(Stmt_GetSet s) {
 		/*
 		ParserDeclaration dec = s.declaration;
 		boolean get = s.get;
@@ -82,7 +82,7 @@ public class IS_GetSet extends StatementExecutor<GetSetStatement> {
 		//'abstract' is going to ruin this implementation, but I really have no idea how to handle inheritance yet..
 		
 		//add the return statement
-		meth.addStatement(new ReturnStatement(new VarExpression(var)));
+		meth.addStatement(new Stmt_Return(new Expr_Var(var)));
 		
 		return meth;
 	}

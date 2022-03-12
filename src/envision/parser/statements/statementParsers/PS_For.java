@@ -6,14 +6,14 @@ import static envision.tokenizer.ReservedWord.*;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expression_types.LambdaExpression;
-import envision.parser.expressions.expression_types.EmptyExpression;
-import envision.parser.expressions.expression_types.RangeExpression;
+import envision.parser.expressions.expression_types.Expr_Lambda;
+import envision.parser.expressions.expression_types.Expr_Empty;
+import envision.parser.expressions.expression_types.Expr_Range;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.ForStatement;
-import envision.parser.statements.statement_types.LambdaForStatement;
-import envision.parser.statements.statement_types.RangeForStatement;
-import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.statements.statement_types.Stmt_For;
+import envision.parser.statements.statement_types.Stmt_LambdaFor;
+import envision.parser.statements.statement_types.Stmt_RangeFor;
+import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.Operator;
@@ -34,8 +34,8 @@ public class PS_For extends GenericParser {
 		EArrayList<Expression> post = new EArrayList();
 		Statement body = null;
 		
-		VariableStatement vars = null;
-		EArrayList<RangeExpression> ranges = null;
+		Stmt_VarDef vars = null;
+		EArrayList<Expr_Range> ranges = null;
 		
 		//Token valueType = null, var = null;
 		//Expression list = null;
@@ -83,11 +83,11 @@ public class PS_For extends GenericParser {
 			//check for initializers
 			if (!check(SEMICOLON)) {
 				if (type != 2) {
-					initializer = PS_VarDec.variableDeclaration();
+					initializer = PS_VarDef.variableDeclaration();
 					match(SEMICOLON);
 				}
 				else {
-					vars = new VariableStatement(new ParserDeclaration());
+					vars = new Stmt_VarDef(new ParserDeclaration());
 					
 					do {
 						Token name = consume(IDENTIFIER, "Expected a lambda loop index variable name!");
@@ -113,13 +113,13 @@ public class PS_For extends GenericParser {
 			if (type == 1) {
 				middle = ExpressionParser.parseExpression();
 				
-				errorIf(!(middle instanceof RangeExpression), "Range (to) for loops can only accept range expressions as arguments!");
-				ranges = new EArrayList((RangeExpression) middle);
+				errorIf(!(middle instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
+				ranges = new EArrayList((Expr_Range) middle);
 				
 				while (match(COMMA)) {
 					Expression e = ExpressionParser.parseExpression();
-					errorIf(!(e instanceof RangeExpression), "Range (to) for loops can only accept range expressions as arguments!");
-					RangeExpression range = (RangeExpression) e;
+					errorIf(!(e instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
+					Expr_Range range = (Expr_Range) e;
 					ranges.add(range);
 				}
 			}
@@ -132,7 +132,7 @@ public class PS_For extends GenericParser {
 		//check for post actions
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				if (check(PAREN_R)) post.add(new EmptyExpression());
+				if (check(PAREN_R)) post.add(new Expr_Empty());
 				else {
 					//gather all expressions separated by commas
 					do {
@@ -152,9 +152,9 @@ public class PS_For extends GenericParser {
 		
 		Statement forStatement = null;
 		switch (type) {
-		case 0: forStatement = new ForStatement(initializer, middle, post, body); break;
-		case 1: forStatement = new RangeForStatement(initializer, body).addAll(ranges); break;
-		case 2: forStatement = new LambdaForStatement(vars, (LambdaExpression) middle, post, body); break;
+		case 0: forStatement = new Stmt_For(initializer, middle, post, body); break;
+		case 1: forStatement = new Stmt_RangeFor(initializer, body).addAll(ranges); break;
+		case 2: forStatement = new Stmt_LambdaFor(vars, (Expr_Lambda) middle, post, body); break;
 		default: error("INVALID FOR LOOP TYPE! (" + type + ") -- THIS SHOULDN'T BE POSSIBLE!!");
 		}
 		

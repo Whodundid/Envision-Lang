@@ -4,17 +4,17 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.ForStatement;
+import envision.parser.statements.statement_types.Stmt_For;
 import eutil.datatypes.EArrayList;
 
-public class IS_For extends StatementExecutor<ForStatement> {
+public class IS_For extends StatementExecutor<Stmt_For> {
 
 	public IS_For(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(ForStatement statement) {
+	public void run(Stmt_For statement) {
 		Statement init = statement.init;
 		Statement body = statement.body;
 		Expression cond = statement.cond;
@@ -39,7 +39,7 @@ public class IS_For extends StatementExecutor<ForStatement> {
 		popScope();
 	}
 	
-	public static void run(EnvisionInterpreter in, ForStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_For s) {
 		new IS_For(in).run(s);
 	}
 	

@@ -1,5 +1,8 @@
 package envision;
 
+import java.io.File;
+import java.io.IOException;
+
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision.interpreter.EnvisionInterpreter;
@@ -7,13 +10,11 @@ import envision.lang.EnvisionObject;
 import envision.lang.util.Primitives;
 import envision.parser.EnvisionParser;
 import envision.parser.statements.Statement;
+import envision.parser.statements.statement_types.Stmt_Expression;
 import envision.tokenizer.Token;
 import envision.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
-
-import java.io.File;
-import java.io.IOException;
 
 /** A special type of EnvisionObject which bundles the data comprising a code file along with its statement contents. */
 public class EnvisionCodeFile extends EnvisionObject {
@@ -216,6 +217,11 @@ public class EnvisionCodeFile extends EnvisionObject {
 			lines.append(cur++);
 			lines.append(". ");
 			lines.append("\t");
+			if (s instanceof Stmt_Expression expStmt)
+				lines.append(expStmt.expression.getClass().getSimpleName());
+			else
+				lines.append(s.getClass().getSimpleName());
+			lines.append(" : ");
 			lines.append(s.toString());
 			lines.append("\n");
 		}

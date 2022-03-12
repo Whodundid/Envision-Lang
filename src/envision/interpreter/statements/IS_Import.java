@@ -10,20 +10,20 @@ import envision.lang.EnvisionObject;
 import envision.lang.packages.env.EnvPackage;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
-import envision.parser.expressions.expression_types.ImportExpression;
-import envision.parser.statements.statement_types.ImportStatement;
+import envision.parser.expressions.expression_types.Expr_Import;
+import envision.parser.statements.statement_types.Stmt_Import;
 import envision.tokenizer.Token;
 import eutil.EUtil;
 
-public class IS_Import extends StatementExecutor<ImportStatement> {
+public class IS_Import extends StatementExecutor<Stmt_Import> {
 
 	public IS_Import(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(ImportStatement s) {
-		ImportExpression impE = s.imp;
+	public void run(Stmt_Import s) {
+		Expr_Import impE = s.imp;
 		Token asName = s.asName;
 		String path = impE.path;
 		String obj = impE.object;
@@ -103,7 +103,7 @@ public class IS_Import extends StatementExecutor<ImportStatement> {
 		}
 	}
 	
-	public static void run(EnvisionInterpreter in, ImportStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_Import s) {
 		new IS_Import(in).run(s);
 	}
 	

@@ -240,8 +240,8 @@ public class Envision {
 		return this;
 	}
 	
-	public Envision addPackage(EnvisionLangPackage... pkg) {
-		for (EnvisionLangPackage p : pkg) dir.addBuildPackage(p);
+	public Envision addBuildPackage(EnvisionLangPackage... pkg) {
+		for (int i = 0; i < pkg.length; i++) packages.add(pkg[i]);
 		return this;
 	}
 	

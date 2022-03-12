@@ -8,12 +8,12 @@ import envision.lang.EnvisionObject;
 import envision.lang.enums.EnvisionEnum;
 import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.EnumExpression;
-import envision.parser.statements.statement_types.EnumStatement;
+import envision.parser.expressions.expression_types.Expr_Enum;
+import envision.parser.statements.statement_types.Stmt_EnumDef;
 import envision.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
 
-public class IS_Enum extends StatementExecutor<EnumStatement> {
+public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 
 	public IS_Enum(EnvisionInterpreter in) {
 		super(in);
@@ -22,10 +22,10 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 	// this needs a lot of work..
 	
 	@Override
-	public void run(EnumStatement s) {
+	public void run(Stmt_EnumDef s) {
 		ParserDeclaration dec = s.declaration;
 		String name = s.name.lexeme;
-		EArrayList<EnumExpression> values = s.values;
+		EArrayList<Expr_Enum> values = s.values;
 		
 		//check if already defined
 		if (scope().get(name) != null) throw new DuplicateObjectError(name);
@@ -35,7 +35,7 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 		
 		//read in declared enum values
 		for (int i = 0; i < values.size(); i++) {
-			EnumExpression expr = values.get(i);
+			Expr_Enum expr = values.get(i);
 			
 			String valueName = expr.name.lexeme;
 			EArrayList<Expression> args = expr.args;
@@ -55,7 +55,7 @@ public class IS_Enum extends StatementExecutor<EnumStatement> {
 		scope().define(name, en);
 	}
 	
-	public static void run(EnvisionInterpreter in, EnumStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_EnumDef s) {
 		new IS_Enum(in).run(s);
 	}
 	

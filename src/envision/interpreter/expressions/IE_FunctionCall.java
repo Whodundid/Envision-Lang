@@ -23,11 +23,11 @@ import envision.lang.objects.EnvisionVoidObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.InternalFunction;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.FunctionCallExpression;
+import envision.parser.expressions.expression_types.Expr_FunctionCall;
 
-public class IE_FunctionCall extends ExpressionExecutor<FunctionCallExpression> {
+public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 
-	private FunctionCallExpression e;
+	private Expr_FunctionCall e;
 	private String name;
 	private Object[] args;
 	
@@ -35,14 +35,14 @@ public class IE_FunctionCall extends ExpressionExecutor<FunctionCallExpression> 
 		super(in);
 	}
 	
-	public static Object run(EnvisionInterpreter in, FunctionCallExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_FunctionCall e) {
 		return new IE_FunctionCall(in).run(e);
 	}
 	
 	//-------------------------------------------------------------------------
 
 	@Override
-	public Object run(FunctionCallExpression expression) {
+	public Object run(Expr_FunctionCall expression) {
 		//System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
 		Object o = (expression.callee instanceof Expression expr) ? evaluate(expr) : expression.callee;
 		e = expression;
@@ -138,11 +138,11 @@ public class IE_FunctionCall extends ExpressionExecutor<FunctionCallExpression> 
 			}
 		}
 		
-		if (obj instanceof EnvisionClass) return classCall((EnvisionClass) obj);
-		if (obj instanceof EnvisionFunction) return functionCall((EnvisionFunction) obj);
+		if (obj instanceof EnvisionClass env_class) return classCall(env_class);
+		if (obj instanceof EnvisionFunction env_func) return functionCall(env_func);
 		if (obj instanceof EnvisionObject) return objectFunctionCall(obj);
 		
-		throw new InvalidTargetError(name + " is not a method! Instead is: '" + obj + "'!");
+		throw new InvalidTargetError(name + " is not a function! Instead is: '" + obj + "'!");
 	}
 	
 	//handle classes

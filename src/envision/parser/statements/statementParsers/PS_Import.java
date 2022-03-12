@@ -4,9 +4,9 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expression_types.ImportExpression;
+import envision.parser.expressions.expression_types.Expr_Import;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.ImportStatement;
+import envision.parser.statements.statement_types.Stmt_Import;
 import envision.tokenizer.Token;
 import eutil.strings.StringUtil;
 
@@ -41,7 +41,7 @@ public class PS_Import extends GenericParser {
 		if (match(AS)) {
 			asName = consume(IDENTIFIER, "Expected a valid identifier for which to map an import into!");
 		}
-		return new ImportStatement(new ImportExpression(path, object), asName);
+		return new Stmt_Import(new Expr_Import(path, object), asName);
 	}
 	
 }

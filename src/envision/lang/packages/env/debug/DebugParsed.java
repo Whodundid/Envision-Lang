@@ -6,7 +6,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.objects.EnvisionFunction;
 import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.ExpressionStatement;
+import envision.parser.statements.statement_types.Stmt_Expression;
 
 public class DebugParsed extends EnvisionFunction {
 		
@@ -23,8 +23,8 @@ public class DebugParsed extends EnvisionFunction {
 		for (Statement s : codeFile.getStatements()) {
 			String out = "     " + s + " : ";
 			;
-			if (s instanceof ExpressionStatement) {
-				ExpressionStatement es = (ExpressionStatement) s;
+			if (s instanceof Stmt_Expression) {
+				Stmt_Expression es = (Stmt_Expression) s;
 				out += es.expression.getClass().getSimpleName();
 			}
 			else {

@@ -9,8 +9,8 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.CaseStatement;
-import envision.parser.statements.statement_types.SwitchStatement;
+import envision.parser.statements.statement_types.Stmt_SwitchCase;
+import envision.parser.statements.statement_types.Stmt_SwitchDef;
 import envision.tokenizer.Token;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
@@ -27,8 +27,8 @@ public class PS_Switch extends GenericParser {
 		consumeEmptyLines();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
-		EArrayList<CaseStatement> cases = new EArrayList();
-		CaseStatement defaultCase = null;
+		EArrayList<Stmt_SwitchCase> cases = new EArrayList();
+		Stmt_SwitchCase defaultCase = null;
 		boolean hasDefault = false;
 		
 		consumeEmptyLines();
@@ -75,7 +75,7 @@ public class PS_Switch extends GenericParser {
 				}
 				*/
 				
-				CaseStatement theCase = new CaseStatement(caseName, body, isDefault);
+				Stmt_SwitchCase theCase = new Stmt_SwitchCase(caseName, body, isDefault);
 				if (isDefault) defaultCase = theCase;
 				cases.add(theCase);
 				
@@ -86,12 +86,12 @@ public class PS_Switch extends GenericParser {
 		while (match(NEWLINE));
 		consume(CURLY_R, "Expected a '}' to close switch statement!");
 		
-		return new SwitchStatement(switchExpression, cases, defaultCase);
+		return new Stmt_SwitchDef(switchExpression, cases, defaultCase);
 	}
 	
-	private static boolean hasCase(EArrayList<CaseStatement> cases, Token t) {
+	private static boolean hasCase(EArrayList<Stmt_SwitchCase> cases, Token t) {
 		if (t == null) throw new EnvisionError("Switch Error: Token is null!");
-		for (CaseStatement c : cases) {
+		for (Stmt_SwitchCase c : cases) {
 			if (EUtil.isEqual(c.caseName.lexeme, t.lexeme)) return true;
 		}
 		return false;

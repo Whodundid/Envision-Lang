@@ -7,7 +7,7 @@ import static envision.tokenizer.ReservedWord.*;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
-import envision.parser.expressions.expression_types.LiteralExpression;
+import envision.parser.expressions.expression_types.Expr_Literal;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statementParsers.PS_Class;
 import envision.parser.statements.statementParsers.PS_Enum;
@@ -22,10 +22,10 @@ import envision.parser.statements.statementParsers.PS_ParseDeclaration;
 import envision.parser.statements.statementParsers.PS_Return;
 import envision.parser.statements.statementParsers.PS_Switch;
 import envision.parser.statements.statementParsers.PS_Try;
-import envision.parser.statements.statementParsers.PS_VarDec;
+import envision.parser.statements.statementParsers.PS_VarDef;
 import envision.parser.statements.statementParsers.PS_While;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.ExpressionStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_Expression;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.IKeyword;
 import envision.tokenizer.KeywordType;
@@ -115,7 +115,7 @@ public abstract class GenericParser {
 		case OPERATOR_DEF:  	return PS_Function.functionDeclaration(false, true, dec);
 		case GETSET: 			return PS_GetSet.getSet(dec);
 		case INTERFACE_DEF: 	return PS_Interface.interfaceDeclaration(dec);
-		case VAR_DEF: 			return PS_VarDec.variableDeclaration(dec);
+		case VAR_DEF: 			return PS_VarDef.variableDeclaration(dec);
 		
 		//if the code has reached this point, it means a statement declaration has not been found
 		//and so the parser will now attempt to find a standard statement beginning.
@@ -129,7 +129,7 @@ public abstract class GenericParser {
 	 * @return Statement
 	 */
 	public static Statement parseStatement() {
-		if (match(CURLY_L))				return new BlockStatement(getBlock());
+		if (match(CURLY_L))				return new Stmt_Block(getBlock());
 		if (match(IMPORT))				return PS_Import.handleImport();
 		if (match(TRY))					return PS_Try.tryStatement();
 		if (match(FOR))					return PS_For.forStatement();
@@ -152,10 +152,10 @@ public abstract class GenericParser {
 	public static Statement expressionStatement() {
 		Expression e = ExpressionParser.parseExpression();
 		
-		errorIf(e instanceof LiteralExpression, "Invalid declaration start!");
+		errorIf(e instanceof Expr_Literal, "Invalid declaration start!");
 		//errorIf(!match(SEMICOLON, NEWLINE, EOF), "An expression must be followed by either a ';' or a new line!");
 		
-		return new ExpressionStatement(e);
+		return new Stmt_Expression(e);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
@@ -279,29 +279,29 @@ public abstract class GenericParser {
 	
 	public static void errorPrevious(String message) {
 		setPrevious();
-		parser.error(message);
+		throw parser.error(message);
 	}
 	
 	public static void errorPrevious(int prevAmount, String message) {
 		setPrevious(prevAmount);
-		parser.error(message);
+		throw parser.error(message);
 	}
 	
 	public static void errorIf(boolean condition, String message) {
-		if (condition) parser.error(message);
+		if (condition) throw parser.error(message);
 	}
 	
 	public static void errorPreviousIf(boolean condition, String message) {
 		if (condition) {
 			setPrevious();
-			parser.error(message);
+			throw parser.error(message);
 		}
 	}
 	
 	public static void errorPreviousIf(boolean condition, int prevAmount, String message) {
 		if (condition) {
 			setPrevious(prevAmount);
-			parser.error(message);
+			throw parser.error(message);
 		}
 	}
 	

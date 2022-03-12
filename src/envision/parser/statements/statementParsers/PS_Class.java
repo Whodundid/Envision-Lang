@@ -5,11 +5,11 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.KeywordType.*;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.ClassStatement;
-import envision.parser.statements.statement_types.FuncDefStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_Class;
+import envision.parser.statements.statement_types.Stmt_FuncDef;
 import envision.parser.util.DeclarationStage;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.ReservedWord;
@@ -37,14 +37,14 @@ public class PS_Class extends GenericParser {
 			}
 		}
 		
-		ClassStatement cs = new ClassStatement(name, declaration);
+		Stmt_Class cs = new Stmt_Class(name, declaration);
 		
 		if (match(COLON)) {
 			do {
 				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
 				else if (checkType(DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
 				else error("Expected a valid super class type!");
-				cs.addSuper(new VarExpression(previous()));
+				cs.addSuper(new Expr_Var(previous()));
 			}
 			while (match(COMMA));
 		}
@@ -56,7 +56,7 @@ public class PS_Class extends GenericParser {
 		EArrayList<Statement> body = getBlock();
 		EArrayList<Statement> staticMembers = new EArrayList();
 		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EArrayList<FuncDefStatement> constructors = new EArrayList();
+		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
@@ -64,8 +64,8 @@ public class PS_Class extends GenericParser {
 		for (int i = 0; i < bodySize; i++) {
 			Statement s = body.get(i);
 			//check if constructor -- remove from body
-			if (s instanceof BlockStatement) {
-				BlockStatement b = (BlockStatement) body.remove(i);
+			if (s instanceof Stmt_Block) {
+				Stmt_Block b = (Stmt_Block) body.remove(i);
 				bodySize--;
 				for (Statement bs : b.statements) {
 					body.add(i, bs);
@@ -93,16 +93,16 @@ public class PS_Class extends GenericParser {
 		for (int i = 0; i < bodySize; i++) {
 			Statement s = body.get(i);
 			
-			if (s instanceof BlockStatement) {
-				constructors.addAll(isolateConstructors((BlockStatement) s));
+			if (s instanceof Stmt_Block) {
+				constructors.addAll(isolateConstructors((Stmt_Block) s));
 				//System.out.println("add: " + constructors);
 			}
 			
 			//check if constructor -- remove from body
-			if (s instanceof FuncDefStatement) {
-				FuncDefStatement meth = (FuncDefStatement) s;
+			if (s instanceof Stmt_FuncDef) {
+				Stmt_FuncDef meth = (Stmt_FuncDef) s;
 				if (meth.isConstructor) {
-					constructors.add((FuncDefStatement) body.remove(i));
+					constructors.add((Stmt_FuncDef) body.remove(i));
 					bodySize--;
 					i--;
 				}
@@ -128,17 +128,17 @@ public class PS_Class extends GenericParser {
 		return cs;
 	}
 	
-	private static EArrayList<FuncDefStatement> isolateConstructors(BlockStatement in) {
-		EArrayList<FuncDefStatement> constructors = new EArrayList();
+	private static EArrayList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
+		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
 		Iterator<Statement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {
 			Statement s = it.next();
 			
-			if (s instanceof BlockStatement bs) {
+			if (s instanceof Stmt_Block bs) {
 				constructors.addAll(isolateConstructors(bs));
 			}
-			else if (s instanceof FuncDefStatement mds && mds.isConstructor) {
+			else if (s instanceof Stmt_FuncDef mds && mds.isConstructor) {
 				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.line);
 				constructors.add(mds);
 				it.remove();

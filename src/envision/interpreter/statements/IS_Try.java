@@ -6,16 +6,16 @@ import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.TryStatement;
+import envision.parser.statements.statement_types.Stmt_Try;
 
-public class IS_Try extends StatementExecutor<TryStatement> {
+public class IS_Try extends StatementExecutor<Stmt_Try> {
 
 	public IS_Try(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(TryStatement statement) {
+	public void run(Stmt_Try statement) {
 		Statement tryBlock = statement.tryBlock;
 		Statement finallyBlock = statement.finallyBlock;
 		
@@ -44,7 +44,7 @@ public class IS_Try extends StatementExecutor<TryStatement> {
 		if (thrownVal != null) throw thrownVal;
 	}
 	
-	public static void run(EnvisionInterpreter in, TryStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_Try s) {
 		new IS_Try(in).run(s);
 	}
 	

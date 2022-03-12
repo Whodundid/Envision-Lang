@@ -9,22 +9,22 @@ import envision.lang.enums.EnumValue;
 import envision.lang.enums.EnvisionEnum;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.CaseStatement;
-import envision.parser.statements.statement_types.SwitchStatement;
+import envision.parser.statements.statement_types.Stmt_SwitchCase;
+import envision.parser.statements.statement_types.Stmt_SwitchDef;
 import envision.tokenizer.Token;
 
-public class IS_Switch extends StatementExecutor<SwitchStatement> {
+public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 
 	public IS_Switch(EnvisionInterpreter in) {
 		super(in);
 	}
 	
-	public static void run(EnvisionInterpreter in, SwitchStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_SwitchDef s) {
 		new IS_Switch(in).run(s);
 	}
 
 	@Override
-	public void run(SwitchStatement s) {
+	public void run(Stmt_SwitchDef s) {
 		Expression exprVal = s.expression;
 		Object exprObj = evaluate(exprVal);
 		
@@ -33,7 +33,7 @@ public class IS_Switch extends StatementExecutor<SwitchStatement> {
 		assertNotNull(exprObj);
 		
 		//grab the default case (handy)
-		CaseStatement defaultCase = s.defaultCase;
+		Stmt_SwitchCase defaultCase = s.defaultCase;
 		boolean caseMatched = false;
 		//if this switch is switching on an enum value -- grab the enum that holds it
 		EnvisionEnum theEnum = (exprObj instanceof EnumValue) ? ((EnumValue) exprObj).theEnum : null;
@@ -41,7 +41,7 @@ public class IS_Switch extends StatementExecutor<SwitchStatement> {
 		//run inside of a try/catch to catch for breaks
 		try {
 			//find a matching case (if any)
-			for (CaseStatement c : s.cases) {
+			for (Stmt_SwitchCase c : s.cases) {
 				if (!caseMatched && !c.isDefault) {
 					Token caseName = c.caseName;
 					Object caseNameValue = null;

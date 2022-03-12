@@ -5,9 +5,9 @@ import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.CatchStatement;
-import envision.parser.statements.statement_types.TryStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_Catch;
+import envision.parser.statements.statement_types.Stmt_Try;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -15,9 +15,9 @@ public class PS_Try extends GenericParser {
 	
 	public static Statement tryStatement() {
 		consume(CURLY_L, "Expected block start after try declaration!");
-		BlockStatement tryBlock = new BlockStatement(getBlock());
+		Stmt_Block tryBlock = new Stmt_Block(getBlock());
 		
-		EArrayList<CatchStatement> catches = new EArrayList();
+		EArrayList<Stmt_Catch> catches = new EArrayList();
 		
 		consumeEmptyLines();
 		
@@ -30,20 +30,20 @@ public class PS_Try extends GenericParser {
 			consume(PAREN_R, "Expected catch expression end!");
 			
 			consume(CURLY_L, "Expected block start after catch declaration!");
-			catches.add(new CatchStatement(exceptionType, var, getBlock()));
+			catches.add(new Stmt_Catch(exceptionType, var, getBlock()));
 		}
 		while (check(CATCH));
 		
 		consumeEmptyLines();
 		
-		BlockStatement finallyBlock = null;
+		Stmt_Block finallyBlock = null;
 		if (match(FINALLY)) {
 			consumeEmptyLines();
 			consume(CURLY_L, "Expected block start after finally declaration!");
-			finallyBlock = new BlockStatement(getBlock());
+			finallyBlock = new Stmt_Block(getBlock());
 		}
 		
-		return new TryStatement(tryBlock, catches, finallyBlock);
+		return new Stmt_Try(tryBlock, catches, finallyBlock);
 	}
 	
 }

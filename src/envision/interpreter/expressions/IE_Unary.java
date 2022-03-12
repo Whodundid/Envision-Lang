@@ -12,21 +12,21 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.CompoundExpression;
-import envision.parser.expressions.expression_types.UnaryExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Compound;
+import envision.parser.expressions.expression_types.Expr_Unary;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.math.NumberUtil;
 
-public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
+public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 
 	public IE_Unary(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(UnaryExpression expression) {
+	public Object run(Expr_Unary expression) {
 		Operator op = expression.operator;
 		Expression left = expression.left;
 		Expression right = expression.right;
@@ -47,14 +47,14 @@ public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
 				checkNumberOperand(expression.operator, r);
 				
 				if (op == Operator.SUB) {
-					if (right instanceof CompoundExpression) throw new InvalidTargetError("Cannot apply a negation across multiple values!");
+					if (right instanceof Expr_Compound) throw new InvalidTargetError("Cannot apply a negation across multiple values!");
 					Object o = (isInteger(r)) ? -((Number) r).longValue() : -((Number) r).doubleValue();
 					return o;
 				}
 				
 				//check for pre increment/decrement (++x)
-				if (right instanceof VarExpression) {
-					VarExpression var = (VarExpression) right;
+				if (right instanceof Expr_Var) {
+					Expr_Var var = (Expr_Var) right;
 					//String name = var.name.lexeme;
 					EnvisionObject obj = interpreter.getIfDefined(var.getName());
 					
@@ -64,7 +64,7 @@ public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
 			}
 		}
 		//check for post increment/decrement (x++)
-		else if (left instanceof VarExpression) {
+		else if (left instanceof Expr_Var) {
 			Object l = EnvisionVariable.convert(evaluate(left));
 			
 			//check for class level operator overloading
@@ -75,21 +75,21 @@ public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
 															  null);
 			
 			checkNumberOperand(expression.operator, l);
-			VarExpression var = (VarExpression) left;
+			Expr_Var var = (Expr_Var) left;
 			//String name = var.name.lexeme;
 			EnvisionObject obj = interpreter.getIfDefined(var.getName());
 				
 			if (op == Operator.INC) return VariableUtil.incrementValue(obj, true);
 			else if (op == Operator.DEC) return VariableUtil.decrementValue(obj, true);
 		}
-		else if (left instanceof CompoundExpression) {
-			CompoundExpression ce = (CompoundExpression) left;
+		else if (left instanceof Expr_Compound) {
+			Expr_Compound ce = (Expr_Compound) left;
 			EArrayList<Expression> expressions = ce.expressions;
 			EnvisionList l = new EnvisionList();
 			
 			for (Expression e : expressions) {
 				if (e == null) throw new EnvisionError("The expression is null! This really shouldn't be possible!");
-				if (!(e instanceof VarExpression)) throw new InvalidTargetError("Expected a Variable Expression but got a " + e.getClass().getSimpleName() + "!");
+				if (!(e instanceof Expr_Var)) throw new InvalidTargetError("Expected a Variable Expression but got a " + e.getClass().getSimpleName() + "!");
 				l.add(handleExpression(e, expression.operator));
 			}
 			
@@ -106,7 +106,7 @@ public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
 		if (o instanceof ClassInstance) return OperatorOverloadHandler.handleOverload(interpreter, operator, (ClassInstance) o, null);
 		
 		checkNumberOperand(operator, o);
-		VarExpression var = (VarExpression) e;
+		Expr_Var var = (Expr_Var) e;
 		EnvisionObject obj = interpreter.getIfDefined(var.getName());
 		
 		if (operator == Operator.INC) return VariableUtil.incrementValue(obj, true);
@@ -119,7 +119,7 @@ public class IE_Unary extends ExpressionExecutor<UnaryExpression> {
 		return (a instanceof Number) ? NumberUtil.isInteger((Number) a) : false;
 	}
 	
-	public static Object run(EnvisionInterpreter in, UnaryExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Unary e) {
 		return new IE_Unary(in).run(e);
 	}
 	

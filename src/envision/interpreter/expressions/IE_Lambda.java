@@ -4,19 +4,19 @@ import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.CompoundExpression;
-import envision.parser.expressions.expression_types.LambdaExpression;
+import envision.parser.expressions.expression_types.Expr_Compound;
+import envision.parser.expressions.expression_types.Expr_Lambda;
 
-public class IE_Lambda extends ExpressionExecutor<LambdaExpression> {
+public class IE_Lambda extends ExpressionExecutor<Expr_Lambda> {
 
 	public IE_Lambda(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(LambdaExpression e) {
-		CompoundExpression inputs = e.inputs;
-		CompoundExpression production = e.production;
+	public Object run(Expr_Lambda e) {
+		Expr_Compound inputs = e.inputs;
+		Expr_Compound production = e.production;
 		
 		if (production.isEmpty()) throw new InvalidTargetError("Lambda Error: No production expression defined!");
 		if (!production.hasOne()) throw new InvalidTargetError("A lambda expression can only define one production!");
@@ -32,7 +32,7 @@ public class IE_Lambda extends ExpressionExecutor<LambdaExpression> {
 		return rVal;
 	}
 	
-	public static Object run(EnvisionInterpreter in, LambdaExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Lambda e) {
 		return new IE_Lambda(in).run(e);
 	}
 	

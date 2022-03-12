@@ -12,18 +12,18 @@ import envision.lang.enums.EnvisionEnum;
 import envision.lang.objects.EnvisionList;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.ListIndexExpression;
+import envision.parser.expressions.expression_types.Expr_ListIndex;
 import envision.tokenizer.Operator;
 import eutil.math.NumberUtil;
 
-public class IE_ListIndex extends ExpressionExecutor<ListIndexExpression> {
+public class IE_ListIndex extends ExpressionExecutor<Expr_ListIndex> {
 
 	public IE_ListIndex(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(ListIndexExpression expression) {
+	public Object run(Expr_ListIndex expression) {
 		Expression list = expression.list;
 		Expression index = expression.index;
 		
@@ -51,7 +51,7 @@ public class IE_ListIndex extends ExpressionExecutor<ListIndexExpression> {
 		throw new InvalidTargetError(theList + " is not a valid target for '[]'!");
 	}
 	
-	public static Object run(EnvisionInterpreter in, ListIndexExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_ListIndex e) {
 		return new IE_ListIndex(in).run(e);
 	}
 	

@@ -5,27 +5,26 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expression_types.AssignExpression;
-import envision.parser.expressions.expression_types.BinaryExpression;
-import envision.parser.expressions.expression_types.CompoundExpression;
-import envision.parser.expressions.expression_types.GetExpression;
-import envision.parser.expressions.expression_types.LambdaExpression;
-import envision.parser.expressions.expression_types.ListIndexExpression;
-import envision.parser.expressions.expression_types.ListIndexSetExpression;
-import envision.parser.expressions.expression_types.ListInitializerExpression;
-import envision.parser.expressions.expression_types.LiteralExpression;
-import envision.parser.expressions.expression_types.LogicalExpression;
-import envision.parser.expressions.expression_types.FunctionCallExpression;
-import envision.parser.expressions.expression_types.RangeExpression;
-import envision.parser.expressions.expression_types.SetExpression;
-import envision.parser.expressions.expression_types.SuperExpression;
-import envision.parser.expressions.expression_types.TernaryExpression;
-import envision.parser.expressions.expression_types.ThisConExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
+import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Compound;
+import envision.parser.expressions.expression_types.Expr_FunctionCall;
+import envision.parser.expressions.expression_types.Expr_Get;
+import envision.parser.expressions.expression_types.Expr_Lambda;
+import envision.parser.expressions.expression_types.Expr_ListIndex;
+import envision.parser.expressions.expression_types.Expr_ListInitializer;
+import envision.parser.expressions.expression_types.Expr_Literal;
+import envision.parser.expressions.expression_types.Expr_Logic;
+import envision.parser.expressions.expression_types.Expr_Range;
+import envision.parser.expressions.expression_types.Expr_Set;
+import envision.parser.expressions.expression_types.Expr_SetListIndex;
+import envision.parser.expressions.expression_types.Expr_Super;
+import envision.parser.expressions.expression_types.Expr_Ternary;
 import envision.parser.expressions.expression_types.ThisGetExpression;
-import envision.parser.expressions.expression_types.TypeOfExpression;
-import envision.parser.expressions.expression_types.UnaryExpression;
-import envision.parser.expressions.expression_types.VarDecExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_TypeOf;
+import envision.parser.expressions.expression_types.Expr_Unary;
+import envision.parser.expressions.expression_types.Expr_VarDef;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -55,11 +54,11 @@ public class ExpressionParser extends GenericParser {
 			Operator operator = previous().asOperator();
 			Expression value = assignment();
 			
-			if (e instanceof VarExpression v) return new AssignExpression(v.name, operator, value);
+			if (e instanceof Expr_Var v) return new Expr_Assign(v.name, operator, value);
 			//else if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
-			else if (e instanceof GetExpression g) return new SetExpression(g.object, g.name, value);
-			else if (e instanceof ListIndexExpression lie) return new ListIndexSetExpression(lie, value);
-			else if (e instanceof AssignExpression ae) return new AssignExpression(ae, operator, value);
+			else if (e instanceof Expr_Get g) return new Expr_Set(g.object, g.name, value);
+			else if (e instanceof Expr_ListIndex lie) return new Expr_SetListIndex(lie, value);
+			else if (e instanceof Expr_Assign ae) return new Expr_Assign(ae, operator, value);
 			
 			setPrevious();
 			error("'" + e + "' Invalid assignment target.");
@@ -76,7 +75,7 @@ public class ExpressionParser extends GenericParser {
 		while (match(OR)) {
 			Operator operator = previous().asOperator();
 			Expression right = And();
-			e = new LogicalExpression(e, operator, right);
+			e = new Expr_Logic(e, operator, right);
 		}
 		
 		return e;
@@ -90,7 +89,7 @@ public class ExpressionParser extends GenericParser {
 		while (match(AND)) {
 			Operator operator = previous().asOperator();
 			Expression right = equality();
-			e = new LogicalExpression(e, operator, right);
+			e = new Expr_Logic(e, operator, right);
 		}
 		
 		return e;
@@ -104,7 +103,7 @@ public class ExpressionParser extends GenericParser {
 		if (match(NOT_EQUALS, COMPARE, GT, GTE, LT, LTE)) {
 			Operator operator = previous().asOperator();
 			Expression right = lambda();
-			e = new BinaryExpression(e, operator, right);
+			e = new Expr_Binary(e, operator, right);
 		}
 		
 		//operator expression
@@ -122,7 +121,7 @@ public class ExpressionParser extends GenericParser {
 		if (match(IS/*, ISNOT*/)) {
 			boolean is = previous().keyword == IS;
 			Expression right = lambda();
-			e = new TypeOfExpression(e, is, right);
+			e = new Expr_TypeOf(e, is, right);
 		}
 		
 		return e;
@@ -146,7 +145,7 @@ public class ExpressionParser extends GenericParser {
 			}
 			else compound.add(c);
 			*/
-			e = new LambdaExpression(e, parseExpression());
+			e = new Expr_Lambda(e, parseExpression());
 		}
 		
 		return e;
@@ -160,7 +159,7 @@ public class ExpressionParser extends GenericParser {
 		while (match(ADD, SUB)) {
 			Operator operator = previous().asOperator();
 			Expression right = factor();
-			e = new BinaryExpression(e, operator, right);
+			e = new Expr_Binary(e, operator, right);
 		}
 		
 		return e;
@@ -172,7 +171,7 @@ public class ExpressionParser extends GenericParser {
 		while (match(MUL, DIV, MOD)) {
 			Operator operator = previous().asOperator();
 			Expression right = unary();
-			e = new BinaryExpression(e, operator, right);
+			e = new Expr_Binary(e, operator, right);
 		}
 		
 		return e;
@@ -185,7 +184,7 @@ public class ExpressionParser extends GenericParser {
 			match(NEGATE, SUB, DEC, INC);
 			Operator operator = previous().asOperator();
 			Expression right = unary();
-			Expression e = new UnaryExpression(operator, right, null);
+			Expression e = new Expr_Unary(operator, right, null);
 			return e;
 		}
 		
@@ -193,7 +192,7 @@ public class ExpressionParser extends GenericParser {
 		
 		if (match(DEC, INC)) {
 			Operator o = previous().asOperator();
-			e = new UnaryExpression(o, null, e);
+			e = new Expr_Unary(o, null, e);
 		}
 		
 		return e;
@@ -204,13 +203,13 @@ public class ExpressionParser extends GenericParser {
 	public static Expression range() {
 		Expression e = functionCall();
 		
-		if (!(e instanceof RangeExpression) && match(TO)) {
+		if (!(e instanceof Expr_Range) && match(TO)) {
 			Expression right = range();
 			Expression by = null;
 			if (match(BY)) {
 				by = range();
 			}
-			e = new RangeExpression(e, right, by);
+			e = new Expr_Range(e, right, by);
 		}
 		
 		return e;
@@ -228,7 +227,7 @@ public class ExpressionParser extends GenericParser {
 			else if (match(BRACKET_L)) {
 				Expression index = parseExpression();
 				consume(BRACKET_R, "Expected ']' after list index!");
-				e = new ListIndexExpression(e, index);
+				e = new Expr_ListIndex(e, index);
 			}
 			else if (match(PERIOD)) {
 				Token name = consume("Expected property name after '.'!", IDENTIFIER);
@@ -245,7 +244,7 @@ public class ExpressionParser extends GenericParser {
 					
 					consume(PAREN_R, "Expected a ')' to end function arguments!");
 					
-					FunctionCallExpression mce = new FunctionCallExpression(e, name, args);
+					Expr_FunctionCall mce = new Expr_FunctionCall(e, name, args);
 					
 					while (match(PERIOD)) {
 						Token nextName = consume("Expected property name after '.'!", IDENTIFIER/*, INIT*/);
@@ -262,12 +261,12 @@ public class ExpressionParser extends GenericParser {
 							consume(PAREN_R, "Expected a ')' to end function arguments!");
 						}
 						
-						mce.addNext(new FunctionCallExpression(null, nextName, nextArgs));
+						mce.addNext(new Expr_FunctionCall(null, nextName, nextArgs));
 					}
 					
 					e = mce;
 				}
-				else e = new GetExpression(e, name);
+				else e = new Expr_Get(e, name);
 			}
 			else break;
 		}
@@ -293,7 +292,7 @@ public class ExpressionParser extends GenericParser {
 		//conclude args/params
 		consume(PAREN_R, "Expected ')' after arguments!");
 		
-		FunctionCallExpression e = new FunctionCallExpression(callee, args);
+		Expr_FunctionCall e = new Expr_FunctionCall(callee, args);
 		return e;
 	}
 	
@@ -303,8 +302,8 @@ public class ExpressionParser extends GenericParser {
 		Expression e = null;
 		
 		//if (match(Keyword.MODULAR_VALUE)) return e = new ModularExpression(ParserStage.modularValues);
-		if (match(INIT)) return new VarExpression(previous());
-		if (matchType(OPERATOR)) return new LiteralExpression(previous().keyword);
+		if (match(INIT)) return new Expr_Var(previous());
+		if (matchType(OPERATOR)) return new Expr_Literal(previous().keyword);
 		
 		if ((e = checkLiteral()) != null) return e;
 		if ((e = checkLists()) != null) return e;
@@ -322,10 +321,10 @@ public class ExpressionParser extends GenericParser {
 	//---------------
 	
 	private static Expression checkLiteral() {
-		if (match(FALSE)) return new LiteralExpression(false);
-		if (match(TRUE)) return new LiteralExpression(true);
-		if (match(NULL)) return new LiteralExpression(null);
-		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new LiteralExpression(previous().literal);
+		if (match(FALSE)) return new Expr_Literal(false);
+		if (match(TRUE)) return new Expr_Literal(true);
+		if (match(NULL)) return new Expr_Literal(null);
+		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previous().literal);
 		return null;
 	}
 	
@@ -338,11 +337,11 @@ public class ExpressionParser extends GenericParser {
 			if (match(BY)) {
 				by = range();
 			}
-			return new RangeExpression(new LiteralExpression(0), right, by);
+			return new Expr_Range(new Expr_Literal(0), right, by);
 		}
 		
 		if (match(BRACKET_L)) {
-			ListInitializerExpression e = new ListInitializerExpression();
+			Expr_ListInitializer e = new Expr_ListInitializer();
 			
 			while (match(NEWLINE));
 			if (!check(BRACKET_R)) {
@@ -377,7 +376,7 @@ public class ExpressionParser extends GenericParser {
 						expressions.add(parseExpression());
 					}
 					while (match(COMMA));
-					e = new CompoundExpression(expressions);
+					e = new Expr_Compound(expressions);
 				}
 			}
 			consume(PAREN_R, "Expected ')' after expression!");
@@ -390,19 +389,19 @@ public class ExpressionParser extends GenericParser {
 				Expression t = parseExpression();
 				consume(COLON, "Expected a ':' in between ternary expressions!");
 				Expression f = parseExpression();
-				return new TernaryExpression(e, t, f);
+				return new Expr_Ternary(e, t, f);
 			}
 			else {
 				//parser.pd("CUR PRI: " + current());
 				
 				// This is duct tape at best
-				if (e instanceof CompoundExpression) return e;
+				if (e instanceof Expr_Compound) return e;
 				
 				//if there was no lambda production, return empty
-				if (e == null) return new CompoundExpression();
-				else return new CompoundExpression(e);
+				if (e == null) return new Expr_Compound();
+				//else return new CompoundExpression(e);
 				
-				//return e;
+				return e;
 			}
 		}
 		
@@ -426,7 +425,7 @@ public class ExpressionParser extends GenericParser {
 				}
 				consume(PAREN_R, "Expected a ')' after arguments!");
 				
-				return new ThisConExpression(args);
+				//return new ThisConExpression(args);
 			}
 			if (match(PERIOD)) { return new ThisGetExpression(consume(IDENTIFIER, "Expected a valid identifier!")); }
 			return new ThisGetExpression();
@@ -446,10 +445,10 @@ public class ExpressionParser extends GenericParser {
 				}
 				consume(PAREN_R, "Expected a ')' to close method arguments!");
 				
-				return new SuperExpression(m, args);
+				return new Expr_Super(m, args);
 			}
 			
-			return new SuperExpression(m);
+			return new Expr_Super(m);
 		}
 		
 		return null;
@@ -459,13 +458,13 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkTernary() {
 		if (match(IDENTIFIER, THIS)) {
-			VarExpression e = new VarExpression(previous());
+			Expr_Var e = new Expr_Var(previous());
 			
 			if (match(TERNARY)) {
 				Expression t = parseExpression();
 				consume(COLON, "Expected a ':' in between ternary expressions!");
 				Expression f = parseExpression();
-				return new TernaryExpression(e, t, f);
+				return new Expr_Ternary(e, t, f);
 			}
 			
 			return e;
@@ -493,7 +492,7 @@ public class ExpressionParser extends GenericParser {
 				}
 			}
 			
-			return new VarDecExpression(type, params);
+			return new Expr_VarDef(type, params);
 		}
 		
 		return null;

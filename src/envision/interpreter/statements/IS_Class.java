@@ -13,32 +13,32 @@ import envision.lang.util.Primitives;
 import envision.lang.util.data.DataModifier;
 import envision.lang.util.structureTypes.InheritableObject;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.ClassStatement;
-import envision.parser.statements.statement_types.EnumStatement;
-import envision.parser.statements.statement_types.ExpressionStatement;
-import envision.parser.statements.statement_types.GetSetStatement;
-import envision.parser.statements.statement_types.FuncDefStatement;
-import envision.parser.statements.statement_types.ModularFunctionStatement;
-import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_Class;
+import envision.parser.statements.statement_types.Stmt_EnumDef;
+import envision.parser.statements.statement_types.Stmt_Expression;
+import envision.parser.statements.statement_types.Stmt_GetSet;
+import envision.parser.statements.statement_types.Stmt_FuncDef;
+import envision.parser.statements.statement_types.Stmt_ModularFuncDef;
+import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
 
-public class IS_Class extends StatementExecutor<ClassStatement> {
+public class IS_Class extends StatementExecutor<Stmt_Class> {
 
 	public IS_Class(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public void run(ClassStatement statement) {
+	public void run(Stmt_Class statement) {
 		ParserDeclaration dec = statement.declaration;
 		
 		EnvisionDatatype name = new EnvisionDatatype(statement.name.lexeme);
 		//EArrayList<VarExpression> supers = statement.parentclasses;
 		EArrayList<Statement> body = statement.body;
 		EArrayList<Statement> staticMembers = statement.staticMembers;
-		EArrayList<FuncDefStatement> constructors = statement.initializers;
+		EArrayList<Stmt_FuncDef> constructors = statement.initializers;
 		
 		//create the class framework
 		EnvisionClass theClass = new EnvisionClass(name.getType());
@@ -86,7 +86,7 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 		executeBlock(staticMembers, classScope);
 		
 		//build constructor methods -- inherently static
-		for (FuncDefStatement constructor : constructors) {
+		for (Stmt_FuncDef constructor : constructors) {
 			EnvisionFunction con = FunctionCreator.buildMethod(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
 			//define the constructor as a static member on the class scope
@@ -127,18 +127,18 @@ public class IS_Class extends StatementExecutor<ClassStatement> {
 	*/
 	
 	private void checkValid(Statement s) {
-		if (s instanceof ClassStatement) return;
-		if (s instanceof BlockStatement) return;
-		if (s instanceof EnumStatement) return;
-		if (s instanceof FuncDefStatement) return;
-		if (s instanceof ModularFunctionStatement) return;
-		if (s instanceof VariableStatement) return;
-		if (s instanceof ExpressionStatement) return;
-		if (s instanceof GetSetStatement) return;
+		if (s instanceof Stmt_Class) return;
+		if (s instanceof Stmt_Block) return;
+		if (s instanceof Stmt_EnumDef) return;
+		if (s instanceof Stmt_FuncDef) return;
+		if (s instanceof Stmt_ModularFuncDef) return;
+		if (s instanceof Stmt_VarDef) return;
+		if (s instanceof Stmt_Expression) return;
+		if (s instanceof Stmt_GetSet) return;
 		throw new InvalidClassStatement(s);
 	}
 	
-	public static void run(EnvisionInterpreter in, ClassStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_Class s) {
 		new IS_Class(in).run(s);
 	}
 	

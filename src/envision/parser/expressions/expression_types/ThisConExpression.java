@@ -24,7 +24,8 @@ public class ThisConExpression implements Expression {
 	
 	@Override
 	public Object execute(ExpressionHandler handler) {
-		return handler.handleThisCon_E(this);
+		//return handler.handleThisCon_E(this);
+		return null;
 	}
 	
 }

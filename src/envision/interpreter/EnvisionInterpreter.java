@@ -9,6 +9,8 @@ import envision.interpreter.expressions.IE_Binary;
 import envision.interpreter.expressions.IE_Compound;
 import envision.interpreter.expressions.IE_Domain;
 import envision.interpreter.expressions.IE_Enum;
+import envision.interpreter.expressions.IE_FuncDef;
+import envision.interpreter.expressions.IE_FunctionCall;
 import envision.interpreter.expressions.IE_Generic;
 import envision.interpreter.expressions.IE_Get;
 import envision.interpreter.expressions.IE_Grouping;
@@ -19,8 +21,6 @@ import envision.interpreter.expressions.IE_ListIndexSet;
 import envision.interpreter.expressions.IE_ListInitializer;
 import envision.interpreter.expressions.IE_Literal;
 import envision.interpreter.expressions.IE_Logical;
-import envision.interpreter.expressions.IE_FunctionCall;
-import envision.interpreter.expressions.IE_FuncDef;
 import envision.interpreter.expressions.IE_Range;
 import envision.interpreter.expressions.IE_Set;
 import envision.interpreter.expressions.IE_Super;
@@ -38,13 +38,13 @@ import envision.interpreter.statements.IS_Enum;
 import envision.interpreter.statements.IS_Exception;
 import envision.interpreter.statements.IS_Expression;
 import envision.interpreter.statements.IS_For;
+import envision.interpreter.statements.IS_FuncDef;
 import envision.interpreter.statements.IS_Generic;
 import envision.interpreter.statements.IS_GetSet;
 import envision.interpreter.statements.IS_If;
 import envision.interpreter.statements.IS_Import;
 import envision.interpreter.statements.IS_LambdaFor;
 import envision.interpreter.statements.IS_LoopControl;
-import envision.interpreter.statements.IS_FuncDef;
 import envision.interpreter.statements.IS_ModularFunc;
 import envision.interpreter.statements.IS_Package;
 import envision.interpreter.statements.IS_RangeFor;
@@ -64,59 +64,58 @@ import envision.lang.packages.env.EnvPackage;
 import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
-import envision.parser.expressions.expression_types.AssignExpression;
-import envision.parser.expressions.expression_types.BinaryExpression;
-import envision.parser.expressions.expression_types.CompoundExpression;
-import envision.parser.expressions.expression_types.DomainExpression;
-import envision.parser.expressions.expression_types.EnumExpression;
-import envision.parser.expressions.expression_types.GenericExpression;
-import envision.parser.expressions.expression_types.GetExpression;
-import envision.parser.expressions.expression_types.GroupingExpression;
-import envision.parser.expressions.expression_types.ImportExpression;
-import envision.parser.expressions.expression_types.LambdaExpression;
-import envision.parser.expressions.expression_types.ListIndexExpression;
-import envision.parser.expressions.expression_types.ListIndexSetExpression;
-import envision.parser.expressions.expression_types.ListInitializerExpression;
-import envision.parser.expressions.expression_types.LiteralExpression;
-import envision.parser.expressions.expression_types.LogicalExpression;
-import envision.parser.expressions.expression_types.FunctionCallExpression;
-import envision.parser.expressions.expression_types.FuncDefExpression;
-import envision.parser.expressions.expression_types.RangeExpression;
-import envision.parser.expressions.expression_types.SetExpression;
-import envision.parser.expressions.expression_types.SuperExpression;
-import envision.parser.expressions.expression_types.TernaryExpression;
-import envision.parser.expressions.expression_types.ThisConExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
+import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Compound;
+import envision.parser.expressions.expression_types.Expr_Domain;
+import envision.parser.expressions.expression_types.Expr_Enum;
+import envision.parser.expressions.expression_types.Expr_FuncDef;
+import envision.parser.expressions.expression_types.Expr_FunctionCall;
+import envision.parser.expressions.expression_types.Expr_Generic;
+import envision.parser.expressions.expression_types.Expr_Get;
+import envision.parser.expressions.expression_types.Expr_Grouping;
+import envision.parser.expressions.expression_types.Expr_Import;
+import envision.parser.expressions.expression_types.Expr_Lambda;
+import envision.parser.expressions.expression_types.Expr_ListIndex;
+import envision.parser.expressions.expression_types.Expr_ListInitializer;
+import envision.parser.expressions.expression_types.Expr_Literal;
+import envision.parser.expressions.expression_types.Expr_Logic;
+import envision.parser.expressions.expression_types.Expr_Range;
+import envision.parser.expressions.expression_types.Expr_Set;
+import envision.parser.expressions.expression_types.Expr_SetListIndex;
+import envision.parser.expressions.expression_types.Expr_Super;
+import envision.parser.expressions.expression_types.Expr_Ternary;
 import envision.parser.expressions.expression_types.ThisGetExpression;
-import envision.parser.expressions.expression_types.TypeOfExpression;
-import envision.parser.expressions.expression_types.UnaryExpression;
-import envision.parser.expressions.expression_types.VarDecExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_TypeOf;
+import envision.parser.expressions.expression_types.Expr_Unary;
+import envision.parser.expressions.expression_types.Expr_VarDef;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
 import envision.parser.statements.StatementHandler;
-import envision.parser.statements.statement_types.BlockStatement;
-import envision.parser.statements.statement_types.CaseStatement;
-import envision.parser.statements.statement_types.CatchStatement;
-import envision.parser.statements.statement_types.ClassStatement;
-import envision.parser.statements.statement_types.EnumStatement;
-import envision.parser.statements.statement_types.ExceptionStatement;
-import envision.parser.statements.statement_types.ExpressionStatement;
-import envision.parser.statements.statement_types.ForStatement;
-import envision.parser.statements.statement_types.GenericStatement;
-import envision.parser.statements.statement_types.GetSetStatement;
-import envision.parser.statements.statement_types.IfStatement;
-import envision.parser.statements.statement_types.ImportStatement;
-import envision.parser.statements.statement_types.InterfaceStatement;
-import envision.parser.statements.statement_types.LambdaForStatement;
-import envision.parser.statements.statement_types.LoopControlStatement;
-import envision.parser.statements.statement_types.FuncDefStatement;
-import envision.parser.statements.statement_types.ModularFunctionStatement;
-import envision.parser.statements.statement_types.PackageStatement;
-import envision.parser.statements.statement_types.RangeForStatement;
-import envision.parser.statements.statement_types.ReturnStatement;
-import envision.parser.statements.statement_types.SwitchStatement;
-import envision.parser.statements.statement_types.TryStatement;
-import envision.parser.statements.statement_types.VariableStatement;
-import envision.parser.statements.statement_types.WhileStatement;
+import envision.parser.statements.statement_types.Stmt_Block;
+import envision.parser.statements.statement_types.Stmt_SwitchCase;
+import envision.parser.statements.statement_types.Stmt_Catch;
+import envision.parser.statements.statement_types.Stmt_Class;
+import envision.parser.statements.statement_types.Stmt_EnumDef;
+import envision.parser.statements.statement_types.Stmt_Exception;
+import envision.parser.statements.statement_types.Stmt_Expression;
+import envision.parser.statements.statement_types.Stmt_For;
+import envision.parser.statements.statement_types.Stmt_FuncDef;
+import envision.parser.statements.statement_types.Stmt_Generic;
+import envision.parser.statements.statement_types.Stmt_GetSet;
+import envision.parser.statements.statement_types.Stmt_If;
+import envision.parser.statements.statement_types.Stmt_Import;
+import envision.parser.statements.statement_types.Stmt_InterfaceDef;
+import envision.parser.statements.statement_types.Stmt_LambdaFor;
+import envision.parser.statements.statement_types.Stmt_LoopControl;
+import envision.parser.statements.statement_types.Stmt_ModularFuncDef;
+import envision.parser.statements.statement_types.Stmt_Package;
+import envision.parser.statements.statement_types.Stmt_RangeFor;
+import envision.parser.statements.statement_types.Stmt_Return;
+import envision.parser.statements.statement_types.Stmt_SwitchDef;
+import envision.parser.statements.statement_types.Stmt_Try;
+import envision.parser.statements.statement_types.Stmt_VarDef;
+import envision.parser.statements.statement_types.Stmt_While;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
@@ -516,62 +515,61 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	// Statements
 	//------------
 	
-	@Override public void handleBlockStatement(BlockStatement s) { IS_Block.run(this, s); }
-	@Override public void handleLoopControlStatement(LoopControlStatement s) { IS_LoopControl.run(this, s); }
-	@Override public void handleCatchStatement(CatchStatement s) { IS_Catch.run(this, s); }
-	@Override public void handleCaseStatement(CaseStatement s) { IS_Case.run(this, s); }
-	@Override public void handleClassStatement(ClassStatement s) { IS_Class.run(this, s); }
-	@Override public void handleEnumStatement(EnumStatement s) { IS_Enum.run(this, s); }
-	@Override public void handleExceptionStatement(ExceptionStatement s) { IS_Exception.run(this, s); }
-	@Override public void handleExpressionStatement(ExpressionStatement s) { IS_Expression.run(this, s); }
-	@Override public void handleForStatement(ForStatement s) { IS_For.run(this, s); }
-	@Override public void handleGenericStatement(GenericStatement s) { IS_Generic.run(this, s); }
-	@Override public void handleGetSetStatement(GetSetStatement s) { IS_GetSet.run(this, s); }
-	@Override public void handleIfStatement(IfStatement s) { IS_If.run(this, s); }
-	@Override public void handleImportStatement(ImportStatement s) { IS_Import.run(this, s); }
-	@Override public void handleInterfaceStatement(InterfaceStatement s) {}
-	@Override public void handleLambdaForStatement(LambdaForStatement s) { IS_LambdaFor.run(this, s); }
-	@Override public void handleMethodStatement(FuncDefStatement s) { IS_FuncDef.run(this, s); }
-	@Override public void handleModularMethodStatement(ModularFunctionStatement s) { IS_ModularFunc.run(this, s); }
-	@Override public void handlePackageStatement(PackageStatement s) { IS_Package.run(this, s); }
-	@Override public void handleRangeForStatement(RangeForStatement s) { IS_RangeFor.run(this, s); }
-	@Override public void handleReturnStatement(ReturnStatement s) { IS_Return.run(this, s); }
-	@Override public void handleSwitchStatement(SwitchStatement s) { IS_Switch.run(this, s); }
-	@Override public void handleTryStatement(TryStatement s) { IS_Try.run(this, s); }
-	@Override public void handleVariableStatement(VariableStatement s) { IS_VarDec.run(this, s); }
-	@Override public void handleWhileStatement(WhileStatement s) { IS_While.run(this, s); }
+	@Override public void handleBlockStatement(Stmt_Block s) { IS_Block.run(this, s); }
+	@Override public void handleLoopControlStatement(Stmt_LoopControl s) { IS_LoopControl.run(this, s); }
+	@Override public void handleCatchStatement(Stmt_Catch s) { IS_Catch.run(this, s); }
+	@Override public void handleCaseStatement(Stmt_SwitchCase s) { IS_Case.run(this, s); }
+	@Override public void handleClassStatement(Stmt_Class s) { IS_Class.run(this, s); }
+	@Override public void handleEnumStatement(Stmt_EnumDef s) { IS_Enum.run(this, s); }
+	@Override public void handleExceptionStatement(Stmt_Exception s) { IS_Exception.run(this, s); }
+	@Override public void handleExpressionStatement(Stmt_Expression s) { IS_Expression.run(this, s); }
+	@Override public void handleForStatement(Stmt_For s) { IS_For.run(this, s); }
+	@Override public void handleGenericStatement(Stmt_Generic s) { IS_Generic.run(this, s); }
+	@Override public void handleGetSetStatement(Stmt_GetSet s) { IS_GetSet.run(this, s); }
+	@Override public void handleIfStatement(Stmt_If s) { IS_If.run(this, s); }
+	@Override public void handleImportStatement(Stmt_Import s) { IS_Import.run(this, s); }
+	@Override public void handleInterfaceStatement(Stmt_InterfaceDef s) {}
+	@Override public void handleLambdaForStatement(Stmt_LambdaFor s) { IS_LambdaFor.run(this, s); }
+	@Override public void handleMethodStatement(Stmt_FuncDef s) { IS_FuncDef.run(this, s); }
+	@Override public void handleModularMethodStatement(Stmt_ModularFuncDef s) { IS_ModularFunc.run(this, s); }
+	@Override public void handlePackageStatement(Stmt_Package s) { IS_Package.run(this, s); }
+	@Override public void handleRangeForStatement(Stmt_RangeFor s) { IS_RangeFor.run(this, s); }
+	@Override public void handleReturnStatement(Stmt_Return s) { IS_Return.run(this, s); }
+	@Override public void handleSwitchStatement(Stmt_SwitchDef s) { IS_Switch.run(this, s); }
+	@Override public void handleTryStatement(Stmt_Try s) { IS_Try.run(this, s); }
+	@Override public void handleVariableStatement(Stmt_VarDef s) { IS_VarDec.run(this, s); }
+	@Override public void handleWhileStatement(Stmt_While s) { IS_While.run(this, s); }
 	
 	//-------------
 	// Expressions
 	//-------------
 	
-	@Override public Object handleAssign_E(AssignExpression e) { return IE_Assign.run(this, e); }
-	@Override public Object handleBinary_E(BinaryExpression e) { return IE_Binary.run(this, e); }
-	@Override public Object handleCompound_E(CompoundExpression e) { return IE_Compound.run(this, e); }
-	@Override public Object handleDomain_E(DomainExpression e) { return IE_Domain.run(this, e); }
-	@Override public Object handleEnum_E(EnumExpression e) { return IE_Enum.run(this, e); }
-	@Override public Object handleGeneric_E(GenericExpression e) { return IE_Generic.run(this, e); }
-	@Override public Object handleGet_E(GetExpression e) { return IE_Get.run(this, e); }
-	@Override public Object handleGrouping_E(GroupingExpression e) { return IE_Grouping.run(this, e); }
-	@Override public Object handleImport_E(ImportExpression e) { return IE_Import.run(this, e); }
-	@Override public Object handleLambda_E(LambdaExpression e) { return IE_Lambda.run(this, e); }
-	@Override public Object handleListIndex_E(ListIndexExpression e) { return IE_ListIndex.run(this, e); }
-	@Override public Object handleListInitializer_E(ListInitializerExpression e) { return IE_ListInitializer.run(this, e); }
-	@Override public Object handleListIndexSet_E(ListIndexSetExpression e) { return IE_ListIndexSet.run(this, e); }
-	@Override public Object handleLiteral_E(LiteralExpression e) { return IE_Literal.run(this, e); }
-	@Override public Object handleLogical_E(LogicalExpression e) { return IE_Logical.run(this, e); }
-	@Override public Object handleMethodCall_E(FunctionCallExpression e) { return IE_FunctionCall.run(this, e); }
-	@Override public Object handleMethodDec_E(FuncDefExpression e) { return IE_FuncDef.run(this, e); }
+	@Override public Object handleAssign_E(Expr_Assign e) { return IE_Assign.run(this, e); }
+	@Override public Object handleBinary_E(Expr_Binary e) { return IE_Binary.run(this, e); }
+	@Override public Object handleCompound_E(Expr_Compound e) { return IE_Compound.run(this, e); }
+	@Override public Object handleDomain_E(Expr_Domain e) { return IE_Domain.run(this, e); }
+	@Override public Object handleEnum_E(Expr_Enum e) { return IE_Enum.run(this, e); }
+	@Override public Object handleGeneric_E(Expr_Generic e) { return IE_Generic.run(this, e); }
+	@Override public Object handleGet_E(Expr_Get e) { return IE_Get.run(this, e); }
+	@Override public Object handleGrouping_E(Expr_Grouping e) { return IE_Grouping.run(this, e); }
+	@Override public Object handleImport_E(Expr_Import e) { return IE_Import.run(this, e); }
+	@Override public Object handleLambda_E(Expr_Lambda e) { return IE_Lambda.run(this, e); }
+	@Override public Object handleListIndex_E(Expr_ListIndex e) { return IE_ListIndex.run(this, e); }
+	@Override public Object handleListInitializer_E(Expr_ListInitializer e) { return IE_ListInitializer.run(this, e); }
+	@Override public Object handleListIndexSet_E(Expr_SetListIndex e) { return IE_ListIndexSet.run(this, e); }
+	@Override public Object handleLiteral_E(Expr_Literal e) { return IE_Literal.run(this, e); }
+	@Override public Object handleLogical_E(Expr_Logic e) { return IE_Logical.run(this, e); }
+	@Override public Object handleMethodCall_E(Expr_FunctionCall e) { return IE_FunctionCall.run(this, e); }
+	@Override public Object handleMethodDec_E(Expr_FuncDef e) { return IE_FuncDef.run(this, e); }
 	//@Override public Object handleModular_E(ModularExpression e) { return IE_Modular.run(this, e); }
-	@Override public Object handleRange_E(RangeExpression e) { return IE_Range.run(this, e); }
-	@Override public Object handleSet_E(SetExpression e) { return IE_Set.run(this, e); }
-	@Override public Object handleSuper_E(SuperExpression e) { return IE_Super.run(this, e); }
-	@Override public Object handleTernary_E(TernaryExpression e) { return IE_Ternary.run(this, e); }
-	@Override public Object handleThisCon_E(ThisConExpression e) { return null; }
+	@Override public Object handleRange_E(Expr_Range e) { return IE_Range.run(this, e); }
+	@Override public Object handleSet_E(Expr_Set e) { return IE_Set.run(this, e); }
+	@Override public Object handleSuper_E(Expr_Super e) { return IE_Super.run(this, e); }
+	@Override public Object handleTernary_E(Expr_Ternary e) { return IE_Ternary.run(this, e); }
 	@Override public Object handleThisGet_E(ThisGetExpression e) { return IE_This.run(this, e); }
-	@Override public Object handleTypeOf_E(TypeOfExpression e) { return IE_TypeOf.run(this, e); }
-	@Override public Object handleUnary_E(UnaryExpression e) { return IE_Unary.run(this, e); }
-	@Override public Object handleVarDec_E(VarDecExpression e) { return IE_VarDec.run(this, e); }
-	@Override public Object handleVar_E(VarExpression e) { return IE_Var.run(this, e); }
+	@Override public Object handleTypeOf_E(Expr_TypeOf e) { return IE_TypeOf.run(this, e); }
+	@Override public Object handleUnary_E(Expr_Unary e) { return IE_Unary.run(this, e); }
+	@Override public Object handleVarDec_E(Expr_VarDef e) { return IE_VarDec.run(this, e); }
+	@Override public Object handleVar_E(Expr_Var e) { return IE_Var.run(this, e); }
 	
 }

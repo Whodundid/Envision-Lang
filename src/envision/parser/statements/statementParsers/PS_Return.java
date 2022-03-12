@@ -7,7 +7,7 @@ import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.ReturnStatement;
+import envision.parser.statements.statement_types.Stmt_Return;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -63,7 +63,7 @@ public class PS_Return extends GenericParser {
 			while (match(COMMA));
 		}
 		
-		return new ReturnStatement(cond, retVals);
+		return new Stmt_Return(cond, retVals);
 	}
 	
 }

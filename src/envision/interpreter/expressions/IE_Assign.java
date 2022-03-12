@@ -30,14 +30,14 @@ import envision.lang.objects.EnvisionList;
 import envision.lang.packages.EnvisionPackage;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
-import envision.parser.expressions.expression_types.AssignExpression;
-import envision.parser.expressions.expression_types.BinaryExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
+import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
 import eutil.strings.StringUtil;
 
-public class IE_Assign extends ExpressionExecutor<AssignExpression> {
+public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 
 	private String name;
 	private Object value;
@@ -51,8 +51,8 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 		super(in);
 	}
 
-	public static Object handleAssign(EnvisionInterpreter in, BinaryExpression e, Operator opIn) {
-		if (e.left instanceof VarExpression v) {
+	public static Object handleAssign(EnvisionInterpreter in, Expr_Binary e, Operator opIn) {
+		if (e.left instanceof Expr_Var v) {
 			IE_Assign inst = new IE_Assign(in);
 			
 			String name = v.getName();
@@ -65,17 +65,17 @@ public class IE_Assign extends ExpressionExecutor<AssignExpression> {
 		throw new InvalidTargetError("Expected a valid BinaryExpression with a left-handed var assignment model! Got: '" + e + "' instead!");
 	}
 	
-	public static Object run(EnvisionInterpreter in, AssignExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Assign e) {
 		return new IE_Assign(in).run(e);
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	@Override
-	public Object run(AssignExpression expression) {
+	public Object run(Expr_Assign expression) {
 		Token name_token = expression.name;
 		String name = (name_token != null) ? name_token.lexeme : null;
-		AssignExpression leftAssign = expression.leftAssign;
+		Expr_Assign leftAssign = expression.leftAssign;
 		Object value = evaluate(expression.value);
 		Operator op = expression.operator;
 		

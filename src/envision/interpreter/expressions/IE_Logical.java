@@ -2,17 +2,17 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.expression_types.LogicalExpression;
+import envision.parser.expressions.expression_types.Expr_Logic;
 import envision.tokenizer.Operator;
 
-public class IE_Logical extends ExpressionExecutor<LogicalExpression> {
+public class IE_Logical extends ExpressionExecutor<Expr_Logic> {
 
 	public IE_Logical(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(LogicalExpression expression) {
+	public Object run(Expr_Logic expression) {
 		Object left = evaluate(expression.left);
 		Operator op = expression.operator;
 		
@@ -29,7 +29,7 @@ public class IE_Logical extends ExpressionExecutor<LogicalExpression> {
 		return null;
 	}
 	
-	public static Object run(EnvisionInterpreter in, LogicalExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Logic e) {
 		return new IE_Logical(in).run(e);
 	}
 }

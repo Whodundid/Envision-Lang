@@ -2,20 +2,20 @@ package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.parser.expressions.expression_types.DomainExpression;
+import envision.parser.expressions.expression_types.Expr_Domain;
 
-public class IE_Domain extends ExpressionExecutor<DomainExpression> {
+public class IE_Domain extends ExpressionExecutor<Expr_Domain> {
 
 	public IE_Domain(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(DomainExpression expression) {
+	public Object run(Expr_Domain expression) {
 		return null;
 	}
 	
-	public static Object run(EnvisionInterpreter in, DomainExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_Domain e) {
 		return new IE_Domain(in).run(e);
 	}
 	

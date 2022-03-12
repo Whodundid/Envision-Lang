@@ -1,7 +1,7 @@
 package envision.parser.util;
 
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.AssignExpression;
+import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.tokenizer.Token;
 
 public class StatementParameter {
@@ -11,7 +11,7 @@ public class StatementParameter {
 	public final Expression assignment;
 	public final boolean varags;
 	
-	public StatementParameter(AssignExpression assignmentIn, boolean varagsIn) { this(null, null, assignmentIn, varagsIn); }
+	public StatementParameter(Expr_Assign assignmentIn, boolean varagsIn) { this(null, null, assignmentIn, varagsIn); }
 	public StatementParameter(Token typeIn, Token nameIn, boolean varagsIn) { this(typeIn, nameIn, null, varagsIn); }
 	public StatementParameter(Token typeIn, Token nameIn, Expression assignmentIn, boolean varagsIn) {
 		type = typeIn;

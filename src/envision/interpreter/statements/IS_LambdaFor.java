@@ -15,22 +15,22 @@ import envision.lang.objects.EnvisionNullObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.CompoundExpression;
-import envision.parser.expressions.expression_types.LambdaExpression;
-import envision.parser.expressions.expression_types.VarExpression;
+import envision.parser.expressions.expression_types.Expr_Compound;
+import envision.parser.expressions.expression_types.Expr_Lambda;
+import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
-import envision.parser.statements.statement_types.LambdaForStatement;
-import envision.parser.statements.statement_types.VariableStatement;
+import envision.parser.statements.statement_types.Stmt_LambdaFor;
+import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.VariableDeclaration;
 import eutil.datatypes.EArrayList;
 
-public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
+public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 
-	LambdaForStatement s;
+	Stmt_LambdaFor s;
 	Iterable iterable;
 	//if there is a reference made to the internal counter, this will keep track of it
 	EnvisionInt index = null;
-	CompoundExpression production;
+	Expr_Compound production;
 	boolean hasPostArgs = false;
 	
 	//----------------------------------------------
@@ -41,17 +41,17 @@ public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
 	
 	//----------------------------------------------
 
-	public static void run(EnvisionInterpreter in, LambdaForStatement s) {
+	public static void run(EnvisionInterpreter in, Stmt_LambdaFor s) {
 		new IS_LambdaFor(in).run(s);
 	}
 	
 	//----------------------------------------------------------------------
 	
 	@Override
-	public void run(LambdaForStatement s) {
+	public void run(Stmt_LambdaFor s) {
 		//first check if the lambda is iterating over an iterable object
-		LambdaExpression lambda = (this.s = s).lambda;
-		CompoundExpression input = lambda.inputs;
+		Expr_Lambda lambda = (this.s = s).lambda;
+		Expr_Compound input = lambda.inputs;
 		if (input.isEmpty()) throw new InvalidTargetError("Lambda For loops must specify a target!");
 		if (!input.hasOne()) throw new InvalidTargetError("Too many targets! Lambda For loops can ONLY specify ONE target!");
 		iterable = new Iterable(evaluate(input.getFirst()));
@@ -89,8 +89,8 @@ public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
 	
 	private void handleInit() {
 		if (s.init != null) {
-			if (s.init instanceof VariableStatement var_stmt) {
-				VariableStatement initVars = (VariableStatement) s.init;
+			if (s.init instanceof Stmt_VarDef var_stmt) {
+				Stmt_VarDef initVars = (Stmt_VarDef) s.init;
 				EArrayList<VariableDeclaration> vars = initVars.vars;
 				
 				//declare and initialize each variable, the first var will be used as the internal counter reference
@@ -175,7 +175,7 @@ public class IS_LambdaFor extends StatementExecutor<LambdaForStatement> {
 		for (Expression e : production.expressions) {
 			if (first) {
 				
-				if (e instanceof VarExpression var_expr) {
+				if (e instanceof Expr_Var var_expr) {
 					String name = var_expr.getName();
 					Object cur_obj = iterable.get(i);
 					EnvisionDatatype cur_type = EnvisionDatatype.dynamicallyDetermineType(cur_obj);

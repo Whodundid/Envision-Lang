@@ -2,7 +2,7 @@ package envision.parser.util;
 
 import envision.lang.util.VisibilityType;
 import envision.lang.util.data.DataModifier;
-import envision.parser.expressions.expression_types.GenericExpression;
+import envision.parser.expressions.expression_types.Expr_Generic;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -16,12 +16,12 @@ public class ParserDeclaration {
 	private VisibilityType vis = VisibilityType.SCOPE;
 	private EArrayList<Token> parameters = new EArrayList();
 	private EArrayList<DataModifier> modifiers = new EArrayList();
-	private EArrayList<GenericExpression> generics = new EArrayList();
+	private EArrayList<Expr_Generic> generics = new EArrayList();
 	private Token returnType = null;
 	
-	public ParserDeclaration() { this(VisibilityType.SCOPE, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<GenericExpression>()); }
-	public ParserDeclaration(VisibilityType visIn) { this(visIn, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<GenericExpression>()); }
-	public ParserDeclaration(VisibilityType visIn, EArrayList<Token> paramsIn, EArrayList<DataModifier> modsIn, EArrayList<GenericExpression> genericsIn) {
+	public ParserDeclaration() { this(VisibilityType.SCOPE, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<Expr_Generic>()); }
+	public ParserDeclaration(VisibilityType visIn) { this(visIn, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<Expr_Generic>()); }
+	public ParserDeclaration(VisibilityType visIn, EArrayList<Token> paramsIn, EArrayList<DataModifier> modsIn, EArrayList<Expr_Generic> genericsIn) {
 		vis = visIn;
 		parameters = paramsIn;
 		modifiers = modsIn;
@@ -34,7 +34,7 @@ public class ParserDeclaration {
 		vis = in.vis;
 		parameters = new EArrayList<Token>(in.getParams());
 		modifiers = new EArrayList<DataModifier>(in.getMods());
-		generics = new EArrayList<GenericExpression>(in.getGenerics());
+		generics = new EArrayList<Expr_Generic>(in.getGenerics());
 		returnType = in.returnType;
 		id = num++;
 	}
@@ -62,7 +62,7 @@ public class ParserDeclaration {
 	public ParserDeclaration applyVisibility(VisibilityType visIn) { vis = visIn; return this; }
 	public ParserDeclaration applyParams(EArrayList<Token> paramsIn) { parameters.addAll(paramsIn); return this; }
 	public ParserDeclaration applyDataMods(EArrayList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
-	public ParserDeclaration applyGenerics(EArrayList<GenericExpression> genericsIn) { generics.addAll(genericsIn); return this; }
+	public ParserDeclaration applyGenerics(EArrayList<Expr_Generic> genericsIn) { generics.addAll(genericsIn); return this; }
 	public ParserDeclaration applyReturnType(Token returnTypeIn) { returnType = returnTypeIn; return this; }
 	public ParserDeclaration setDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
 	
@@ -81,7 +81,7 @@ public class ParserDeclaration {
 	
 	public ParserDeclaration addParameter(Token paramIn) { parameters.add(paramIn); return this; }
 	public ParserDeclaration addModifier(DataModifier modIn) { modifiers.add(modIn); return this; }
-	public ParserDeclaration addGeneric(GenericExpression genericIn) { generics.add(genericIn); return this; }
+	public ParserDeclaration addGeneric(Expr_Generic genericIn) { generics.add(genericIn); return this; }
 	
 	public ParserDeclaration advanceStage() { stage = stage.next(); return this; }
 	public ParserDeclaration setStage(DeclarationStage in) { stage = in; return this; }
@@ -104,7 +104,7 @@ public class ParserDeclaration {
 	public VisibilityType getVisibility() { return vis; }
 	public EArrayList<Token> getParams() { return parameters; }
 	public EArrayList<DataModifier> getMods() { return modifiers; }
-	public EArrayList<GenericExpression> getGenerics() { return generics; }
+	public EArrayList<Expr_Generic> getGenerics() { return generics; }
 	public Token getReturnType() { return returnType; }
 	
 	public static ParserDeclaration createIfNull() { return createIfNull(DeclarationStage.VISIBILITY); }

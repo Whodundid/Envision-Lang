@@ -5,16 +5,16 @@ import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.TypeOfExpression;
+import envision.parser.expressions.expression_types.Expr_TypeOf;
 
-public class IE_TypeOf extends ExpressionExecutor<TypeOfExpression> {
+public class IE_TypeOf extends ExpressionExecutor<Expr_TypeOf> {
 
 	public IE_TypeOf(EnvisionInterpreter in) {
 		super(in);
 	}
 
 	@Override
-	public Object run(TypeOfExpression e) {
+	public Object run(Expr_TypeOf e) {
 		Expression left = e.left;
 		Expression right = e.right;
 		boolean is = e.is;
@@ -27,7 +27,7 @@ public class IE_TypeOf extends ExpressionExecutor<TypeOfExpression> {
 		return (is) ? same : !same;
 	}
 	
-	public static Object run(EnvisionInterpreter in, TypeOfExpression e) {
+	public static Object run(EnvisionInterpreter in, Expr_TypeOf e) {
 		return new IE_TypeOf(in).run(e);
 	}
 	
