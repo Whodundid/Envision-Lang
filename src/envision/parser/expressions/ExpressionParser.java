@@ -20,7 +20,7 @@ import envision.parser.expressions.expression_types.Expr_Set;
 import envision.parser.expressions.expression_types.Expr_SetListIndex;
 import envision.parser.expressions.expression_types.Expr_Super;
 import envision.parser.expressions.expression_types.Expr_Ternary;
-import envision.parser.expressions.expression_types.ThisGetExpression;
+import envision.parser.expressions.expression_types.Expr_This;
 import envision.parser.expressions.expression_types.Expr_TypeOf;
 import envision.parser.expressions.expression_types.Expr_Unary;
 import envision.parser.expressions.expression_types.Expr_VarDef;
@@ -427,8 +427,8 @@ public class ExpressionParser extends GenericParser {
 				
 				//return new ThisConExpression(args);
 			}
-			if (match(PERIOD)) { return new ThisGetExpression(consume(IDENTIFIER, "Expected a valid identifier!")); }
-			return new ThisGetExpression();
+			if (match(PERIOD)) { return new Expr_This(consume(IDENTIFIER, "Expected a valid identifier!")); }
+			return new Expr_This();
 		}
 		
 		if (match(SUPER)) {

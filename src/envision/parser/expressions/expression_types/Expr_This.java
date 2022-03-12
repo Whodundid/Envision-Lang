@@ -4,12 +4,12 @@ import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.tokenizer.Token;
 
-public class ThisGetExpression implements Expression {
+public class Expr_This implements Expression {
 
 	public final Token keyword;
 	
-	public ThisGetExpression() { this(null); }
-	public ThisGetExpression(Token keywordIn) {
+	public Expr_This() { this(null); }
+	public Expr_This(Token keywordIn) {
 		keyword = keywordIn;
 	}
 	

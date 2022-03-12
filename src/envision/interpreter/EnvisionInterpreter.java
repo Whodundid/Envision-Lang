@@ -85,7 +85,7 @@ import envision.parser.expressions.expression_types.Expr_Set;
 import envision.parser.expressions.expression_types.Expr_SetListIndex;
 import envision.parser.expressions.expression_types.Expr_Super;
 import envision.parser.expressions.expression_types.Expr_Ternary;
-import envision.parser.expressions.expression_types.ThisGetExpression;
+import envision.parser.expressions.expression_types.Expr_This;
 import envision.parser.expressions.expression_types.Expr_TypeOf;
 import envision.parser.expressions.expression_types.Expr_Unary;
 import envision.parser.expressions.expression_types.Expr_VarDef;
@@ -566,7 +566,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public Object handleSet_E(Expr_Set e) { return IE_Set.run(this, e); }
 	@Override public Object handleSuper_E(Expr_Super e) { return IE_Super.run(this, e); }
 	@Override public Object handleTernary_E(Expr_Ternary e) { return IE_Ternary.run(this, e); }
-	@Override public Object handleThisGet_E(ThisGetExpression e) { return IE_This.run(this, e); }
+	@Override public Object handleThisGet_E(Expr_This e) { return IE_This.run(this, e); }
 	@Override public Object handleTypeOf_E(Expr_TypeOf e) { return IE_TypeOf.run(this, e); }
 	@Override public Object handleUnary_E(Expr_Unary e) { return IE_Unary.run(this, e); }
 	@Override public Object handleVarDec_E(Expr_VarDef e) { return IE_VarDec.run(this, e); }

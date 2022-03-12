@@ -21,7 +21,7 @@ import envision.parser.expressions.expression_types.Expr_Set;
 import envision.parser.expressions.expression_types.Expr_SetListIndex;
 import envision.parser.expressions.expression_types.Expr_Super;
 import envision.parser.expressions.expression_types.Expr_Ternary;
-import envision.parser.expressions.expression_types.ThisGetExpression;
+import envision.parser.expressions.expression_types.Expr_This;
 import envision.parser.expressions.expression_types.Expr_TypeOf;
 import envision.parser.expressions.expression_types.Expr_Unary;
 import envision.parser.expressions.expression_types.Expr_VarDef;
@@ -51,7 +51,7 @@ public interface ExpressionHandler {
 	public Object handleSet_E(Expr_Set e);
 	public Object handleSuper_E(Expr_Super e);
 	public Object handleTernary_E(Expr_Ternary e);
-	public Object handleThisGet_E(ThisGetExpression e);
+	public Object handleThisGet_E(Expr_This e);
 	public Object handleTypeOf_E(Expr_TypeOf e);
 	public Object handleUnary_E(Expr_Unary e);
 	public Object handleVarDec_E(Expr_VarDef e);
