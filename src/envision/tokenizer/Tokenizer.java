@@ -310,9 +310,6 @@ public class Tokenizer {
 		return r;
 	}
 	
-	private boolean check(ReservedWord k) { return checkInOrder(k.chars.toCharArray()); }
-	private boolean match(ReservedWord k) { return matchInOrder(k.chars.toCharArray()); }
-	
 	private char peek() { return (atEnd()) ? '\0' : source.charAt(cur); }
 	private char peekNext() { return (cur + 1 >= source.length()) ? '\0' : source.charAt(cur + 1); }
 	
@@ -350,7 +347,6 @@ public class Tokenizer {
 		if (theFile.isValid()) {
 			
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(theFile.getSystemFile())))) {
-				
 				String l = reader.readLine();
 				while (l != null) {
 					l = l.replace("\t", "");

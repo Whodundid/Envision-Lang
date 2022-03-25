@@ -105,8 +105,7 @@ public class EnvisionClass extends InstantiableObject {
 	}
 	
 	public boolean isInstanceof(Object in) {
-		if (in instanceof ClassInstance) {
-			ClassInstance inst = (ClassInstance) in;
+		if (in instanceof ClassInstance inst) {
 			return this.equals(inst.getEClass());
 		}
 		return false;
@@ -163,8 +162,13 @@ public class EnvisionClass extends InstantiableObject {
 	// Setters
 	//---------
 	
-	public EnvisionClass setScope(Scope in) { classScope = in; return this; }
+	public EnvisionClass setScope(Scope in) {
+		classScope = in;
+		return this;
+	}
 	
-	public void assignConstruct(ClassConstruct in) { classConstruct = in; }
+	public void assignConstruct(ClassConstruct in) {
+		classConstruct = in;
+	}
 	
 }
