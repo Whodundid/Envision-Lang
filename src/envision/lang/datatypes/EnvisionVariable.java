@@ -1,114 +1,102 @@
 package envision.lang.datatypes;
 
 import envision.exceptions.errors.FinalVarReassignmentError;
+import envision.lang.EnvisionObject;
+import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDatatype;
 
 /**
- * The EnvisionVariable is a specific EnvisionObject type
- * which is primarily responsible for providing a direct
- * mapping between Envision datatype values and actual Java
- * Object values.
+ * The EnvisionVariable is a specific EnvisionObject type which is
+ * primarily responsible for providing a direct mapping between
+ * Envision datatype and an actual Java Object value.
  * <p>
  * Due to the fact that Envision:Java is written in Java, all
- * corresponding Envision datatypes must be backed by some
- * kind of equivalent datatype structure within Java. The
- * EnvisionVariable class is intended to not only back that
- * object value but also directly manage how that data
- * interacts within the rest of the EnvisionInterpreter.
+ * corresponding Envision datatypes must be backed by some kind of
+ * equivalent datatype structure within Java. The EnvisionVariable
+ * class is intended to not only back that object value but also
+ * directly manage how that data interacts within the rest of the
+ * EnvisionInterpreter.
  * <p>
- * EnvisionVariable, at its core, is intended to be used
- * purely as a superclass structure for which other specific
- * datatype models are built from. While Envision:java does
- * directly support generic 'var' values for both variable
- * instantiation and assignment, these are not truely
- * generic values on the backend of things. As such, even
- * 'var' value types are still directly mapped to a specific,
- * strongly typed Java datatype under the hood. Due to this
- * fact, generic 'var' values are not technically generic
- * at all in nature. However, any 'var' value may be
- * dynamically reassigned at runtime by simply assigning a
- * new value to the variable. Upon assigning a new value
- * to an existing generic 'var' EnvisionVariable, The new
- * value's datatype is first automatically determined by the
- * interpreter and is assigned to the variable.
+ * EnvisionVariable, at its core, is intended to be used purely as a
+ * superclass structure for which other specific datatype models are
+ * built from. While Envision:java does directly support generic 'var'
+ * values for both variable instantiation and assignment, these are
+ * not truly generic values on the backend of things. As such, even
+ * 'var' value types are still directly mapped to a specific, strongly
+ * typed Java datatype under the hood. Due to this fact, generic 'var'
+ * values are not technically generic at all in nature. However, any
+ * 'var' value may be dynamically reassigned at runtime by simply
+ * assigning a new value to the variable. Upon assigning a new value
+ * to an existing generic 'var' EnvisionVariable, The new value's
+ * datatype is first automatically determined by the interpreter and
+ * is assigned to the variable.
+ * <p>
+ * Every EnvisionVariable is intended to wrap some Envision primitive
+ * datatype.
+ * <ul>
+ * For instance:
+ * <li>EnvisionBoolean
+ * <li>EnvisionChar
+ * <li>EnvisionInt
+ * <li>EnvisionDouble
+ * <li>EnvisionString
+ * <li>EnvisionList
+ * </ul>
+ * These primitive types are designed to not support any kind of
+ * instance scope as they are technically primitive values at their
+ * core. Because of this, no instance scope is passed during a
+ * variable's creation. Instead, the only scope a primitive variable
+ * inherits is the static scope of the class it is derived from. This
+ * ensures that the primitive object instance still maintains access
+ * to all internal member fields and functions. Furthermore, unlike a
+ * class instance created from a user-defiend class, the internal
+ * variable value is manged using Java:Objects instead of Envision for
+ * improved performance.
  */
-public abstract class EnvisionVariable extends EnvisionClass {
+public abstract class EnvisionVariable extends ClassInstance {
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	/**
+	 * Native variable types do not have any discernable instance scope
+	 * and will simply utilize the deriving class's static class scope for
+	 * access to all internal member fields and functions.
+	 * 
+	 * @param parentClass The class for which this variable is an instance
+	 */
+	protected EnvisionVariable(EnvisionClass parentClass) {
+		super(parentClass);
+	}
+	
+	//---------
+	// Getters
+	//---------
+	
 
 	/**
-	 * The backing object stored by all EnvisionVariables.
+	 * Returns the Envision Object wrapping some underlying Java object.
+	 * Used for in-language passes.
 	 * 
-	 * <p>
-	 * This Object is responsible for managing the internal
-	 * Java datatype values which are the primary backing
-	 * for all datatypes in Envision:Java.
-	 * 
-	 * <p>
-	 * For instnace, an EnvisionBoolean would directly be
-	 * backed with an actual Java Boolean at its core.
-	 * 
-	 * @author Hunter
+	 * @return The wrapping Envision object
 	 */
-	protected Object var_value;
-	
-	//-----------------------------
-	// ScriptVariable Constructors
-	//-----------------------------
-	
-	protected EnvisionVariable(EnvisionDatatype type) {
-		this(type, DEFAULT_NAME);
-	}
-	
-	protected EnvisionVariable(EnvisionDatatype type, String nameIn) {
-		super(type, nameIn);
-	}
-	
-	//-----------
-	// Overrides
-	//-----------
-	
-	@Override
-	public String toString() {
-		return "" + var_value;
-	}
-	
-	@Override
-	public boolean equals(Object in) {
-		if (in instanceof EnvisionVariable v) {
-			Object val = v.get();
-			return (val == null) ? (var_value == null) : (val.equals(var_value));
-		}
-		return false;
-	}
-	
-	//------------------------
-	// ScriptVariable Getters
-	//------------------------
+	public abstract EnvisionObject get();
 	
 	/**
 	 * Returns the underlying Java Object which actually backs
 	 * this EnvisionVariable.
 	 * 
-	 * @return The backing Java Object.
+	 * @return The backing Java Object
 	 */
-	public Object get() { return var_value; }
+	public abstract Object get_i();
 	
-	//------------------------
-	// ScriptVariable Setters
-	//------------------------
+	//---------
+	// Setters
+	//---------
 	
-	/*
-	public EnvisionVariable set(EnvisionVariable valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		var_value = valIn.var_value;
-		return this;
-	}
-	*/
+	public abstract EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError;
 	
-	public EnvisionVariable set(Object valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		var_value = valIn;
-		return this;
-	}
+	public abstract EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError;
 	
 }

@@ -59,9 +59,9 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.objects.EnvisionNullObject;
-import envision.lang.packages.env.EnvPackage;
+import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
+import envision.packages.env.EnvPackage;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.parser.expressions.expression_types.Expr_Assign;
@@ -128,7 +128,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	// Fields
 	//--------
 	
-	private final Scope global = new Scope(this);
+	private final Scope global = new Scope();
 	private Scope scope = global;
 	private WorkingDirectory directory;
 	private EnvisionCodeFile startingFile;
@@ -258,8 +258,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	}
 	
 	public boolean isEqual(Object a, Object b) {
-		if (a instanceof EnvisionNullObject && b == null) return true;
-		if (a == null && b instanceof EnvisionNullObject) return true;
+		if (a instanceof EnvisionNull && b == null) return true;
+		if (a == null && b instanceof EnvisionNull) return true;
 		if (a == null && b == null) return true;
 		if (a == null) return false;
 		
@@ -310,7 +310,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 */
 	public EnvisionObject forceDefine(String name, Object object) {
 		var type = EnvisionDatatype.dynamicallyDetermineType(object);
-		EnvisionObject toDefine = ObjectCreator.createObject(name, type, object, false);
+		EnvisionObject toDefine = ObjectCreator.createObject(type, object, false);
 		EnvisionObject existing = null;
 		
 		try {
@@ -351,7 +351,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @return The defined object
 	 */
 	public EnvisionObject forceDefine(String name, EnvisionDatatype type, Object object) {
-		EnvisionObject toDefine = ObjectCreator.createObject(name, type, object, false);
+		EnvisionObject toDefine = ObjectCreator.createObject(type, object, false);
 		EnvisionObject existing = null;
 		
 		try {

@@ -30,6 +30,10 @@ public class Expr_Assign implements Expression {
 		modulars = null;
 	}
 	
+	public String getName() {
+		return name.lexeme;
+	}
+	
 	@Override
 	public String toString() {
 		String n = "";

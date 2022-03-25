@@ -1,7 +1,7 @@
 package envision.interpreter.statements;
 
 import envision.exceptions.EnvisionError;
-import envision.exceptions.errors.DuplicateObjectError;
+import envision.exceptions.errors.AlreadyDefinedError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.expressions.Expression;
@@ -45,7 +45,7 @@ public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 			
 			//if there is already an existing method of the same name, this is invalid!
 			if (base != null) {
-				throw new DuplicateObjectError(s.name.lexeme);
+				throw new AlreadyDefinedError(s.name.lexeme);
 			}
 			else {
 				//if the statement is valid, iterate across all of the method's scope statements

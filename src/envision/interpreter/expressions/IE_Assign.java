@@ -20,16 +20,15 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.datatypes.EnvisionString;
+import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.enums.EnumValue;
-import envision.lang.enums.EnvisionEnum;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.objects.EnvisionList;
-import envision.lang.packages.EnvisionPackage;
+import envision.lang.internal.EnvisionFunction;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
+import envision.packages.EnvisionPackage;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.parser.expressions.expression_types.Expr_Var;
@@ -86,7 +85,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			//Set the target name from the evaluated assignment expression.
 			//The assignment expression result SHOULD only return an EnvisionObject
 			//or a String for the identifier name. If it is neither, throw error
-			if (left_result instanceof EnvisionObject env_obj) name = env_obj.getName();
+			if (left_result instanceof EnvisionObject env_obj) name = leftAssign.getName();
 			else if (left_result instanceof String str) name = str;
 			else throw new InvalidTargetError("The object '" + left_result + "' is an invalid assignment target!");
 		}
@@ -178,11 +177,11 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			
 			//if the assignment_value was not an object conversion - create new object
 			if (var_obj == null) {
-				var_obj = ObjectCreator.createObject(var_name, var_datatype, assignment_value, false);
+				var_obj = ObjectCreator.createObject(var_datatype, assignment_value, false);
 			}
 			
 			//define as 'var' type variable
-			s.define(var_name, EnvisionDatatype.prim_var(), var_obj);
+			s.define(var_name, EnvisionDatatype.NULL_TYPE, var_obj);
 		}
 		//if the object does exist, attemt to assign the new value to it
 		else {
@@ -206,8 +205,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		if (in instanceof EnvisionList env_list) return env_list;
 		if (in instanceof EnvisionClass env_class) return env_class;
 		if (in instanceof ClassInstance env_inst) return env_inst;
-		if (in instanceof EnvisionEnum env_enum) return env_enum;
-		if (in instanceof EnumValue env_enum_value) return env_enum_value;
+		//if (in instanceof EnvisionEnum env_enum) return env_enum;
+		//if (in instanceof EnumValue env_enum_value) return env_enum_value;
 		if (in instanceof EnvisionCodeFile env_code) return env_code;
 		if (in instanceof EnvisionPackage env_pkg) return env_pkg;
 		return null;
@@ -227,8 +226,13 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		
 		//check for list additions
 		if (obj instanceof EnvisionList env_list) {
-			if (value == env_list) throw new SelfAdditionError((EnvisionList) value);
-			env_list.add(value);
+			if (value == env_list) throw new SelfAdditionError(env_list);
+			if (value instanceof EnvisionObject env_obj) env_list.add(env_obj);
+			else {
+				EnvisionDatatype type = EnvisionDatatype.dynamicallyDetermineType(value);
+				EnvisionObject obj = ObjectCreator.createObject(type, value, false, false);
+				env_list.add(obj);
+			}
 			return env_list;
 		}
 		
@@ -259,7 +263,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			new_val.append(value);
 			
 			//to upgrade the datatype from char -> string requires creating new string object
-			EnvisionString new_obj = new EnvisionString(name, new_val.toString());
+			EnvisionString new_obj = EnvisionStringClass.newString(new_val.toString());
 			
 			//assign new value to vars and immediately return to stop double assignment
 			scope().set(name, new_obj.getDatatype(), new_obj);
@@ -269,14 +273,14 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		{
 			assert_number(value_type);
 			var_val = ((Double) var_val) + ((Number) value).doubleValue();
-			var.set(var_val);
+			var.set_i(var_val);
 			break;
 		}
 		case INT:
 		{
 			assert_number(value_type);
 			var_val = ((Long) var_val) + ((Number) value).longValue();
-			var.set(var_val);
+			var.set_i(var_val);
 			break;
 		}
 		case STRING:
@@ -291,7 +295,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		};
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -331,7 +335,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -375,11 +379,12 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			//char mul_additions require the char to be upgraded to a string
 			var old_val = (char) var_val;
 			var new_val = new StringBuilder(String.valueOf(old_val));
-			for (int i = 0; i < ((Number) value).longValue(); i++)
+			for (int i = 0; i < ((Number) value).longValue(); i++) {
 				new_val.append(old_val);
+			}
 			
 			//to upgrade the datatype from char -> string requires creating new string object
-			EnvisionString new_obj = new EnvisionString(name, new_val.toString());
+			EnvisionString new_obj = EnvisionStringClass.newString(new_val.toString());
 			
 			//assign new value to vars and immediately return to stop double assignment
 			scope().set(name, new_obj.getDatatype(), new_obj);
@@ -406,7 +411,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -445,7 +450,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -484,7 +489,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -523,7 +528,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -562,7 +567,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -601,7 +606,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -640,7 +645,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -679,7 +684,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}
@@ -718,7 +723,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//assign the new value
-		var.set(var_val);
+		var.set_i(var_val);
 		
 		return var_val;
 	}

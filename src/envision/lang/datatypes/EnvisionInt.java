@@ -1,61 +1,93 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
-
-import envision.interpreter.EnvisionInterpreter;
+import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalFunction;
-import envision.lang.util.Primitives;
 
 /**
  * A script variable representing a number without a decimal place.
  * Encoded with Java Longs.
  */
 public class EnvisionInt extends EnvisionNumber {
-
+	
+	public long long_val;
+	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public EnvisionInt() { this(DEFAULT_NAME, 0l); }
-	public EnvisionInt(long in) { this(DEFAULT_NAME, in); }
-	public EnvisionInt(Number in) { this(DEFAULT_NAME, in.longValue()); }
-	public EnvisionInt(String nameIn) { this(nameIn, 0l); }
-	public EnvisionInt(String nameIn, Number in) { this(nameIn, in.longValue()); }
-	public EnvisionInt(String nameIn, long in) {
-		super(Primitives.INT.toDatatype(), nameIn);
-		var_value = in;
+	protected EnvisionInt() { this(0l); }
+	protected EnvisionInt(Number in) { this(in.longValue()); }
+	protected EnvisionInt(long in) {
+		super(EnvisionIntClass.INT_CLASS);
+		long_val = in;
 	}
 	
-	public EnvisionInt(boolean val) { this(DEFAULT_NAME, val); }
-	public EnvisionInt(String nameIn, boolean val) {
-		super(Primitives.INT.toDatatype(), nameIn);
-		var_value = (val) ? 1 : 0;
+	protected EnvisionInt(boolean val) {
+		super(EnvisionIntClass.INT_CLASS);
+		long_val = (val) ? 1 : 0;
 	}
 	
-	public EnvisionInt(EnvisionInt in) {
-		super(Primitives.INT.toDatatype(), in.name);
-		var_value = in.var_value;
+	protected EnvisionInt(EnvisionInt in) {
+		super(EnvisionIntClass.INT_CLASS);
+		long_val = in.long_val;
 	}
 	
-	public EnvisionInt(EnvisionNumber in) {
-		super(Primitives.INT.toDatatype(), in.getName());
-		var_value = (long) in.get();
+	protected EnvisionInt(EnvisionNumber in) {
+		super(EnvisionIntClass.INT_CLASS);
+		long_val = in.intVal().long_val;
 	}
 	
 	//-----------
 	// Overrides
 	//-----------
 	
-	public long getLong() {
-		return (long) var_value;
+	@Override
+	public EnvisionObject get() {
+		return this;
 	}
 	
 	@Override
-	public EnvisionInt copy() {
-		 return new EnvisionInt(this);
+	public Object get_i() {
+		return long_val;
 	}
 	
+	@Override
+	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof EnvisionInt env_int) {
+			this.long_val = env_int.long_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-long value to a long!");
+	}
+	
+	@Override
+	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof Long long_val) {
+			this.long_val = long_val;
+			return this;
+		}
+		//have to account for integers in this case
+		else if (valIn instanceof Integer int_val) {
+			this.long_val = int_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-long value to a long!");
+	}
+	
+	@Override public long intVal_i() { return long_val; }
+	@Override public double doubleVal_i() { return (double) long_val; }
+	@Override public EnvisionInt intVal() { return this; }
+	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.newDouble(long_val); }
+	
+	@Override
+	public EnvisionInt copy() {
+		 return EnvisionIntClass.newInt(long_val);
+	}
+	
+	/*
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
@@ -78,6 +110,7 @@ public class EnvisionInt extends EnvisionNumber {
 		}
 		return null;
 	}
+	*/
 	
 	public static EnvisionInt of(int val) { return new EnvisionInt(val); }
 	public static EnvisionInt of(String val) { return new EnvisionInt(Long.parseLong(val)); }

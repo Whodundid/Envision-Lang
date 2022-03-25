@@ -7,18 +7,17 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.optimizations.ClassConstruct;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionFunction;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.DataModifier;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
-import envision.lang.util.data.DataModifier;
-import envision.lang.util.structureTypes.InheritableObject;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Block;
 import envision.parser.statements.statement_types.Stmt_Class;
 import envision.parser.statements.statement_types.Stmt_EnumDef;
 import envision.parser.statements.statement_types.Stmt_Expression;
-import envision.parser.statements.statement_types.Stmt_GetSet;
 import envision.parser.statements.statement_types.Stmt_FuncDef;
+import envision.parser.statements.statement_types.Stmt_GetSet;
 import envision.parser.statements.statement_types.Stmt_ModularFuncDef;
 import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
@@ -57,7 +56,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//}
 		
 		//set modifiers
-		theClass.setVisibility(dec.getVisibility());
+		//theClass.setVisibility(dec.getVisibility());
 		for (DataModifier d : dec.getMods()) { theClass.setModifier(d, true); }
 		
 		//go through statements and process valid ones (Variable declarations, Method declarations, Objects)
@@ -65,6 +64,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//for (Statement s : staticMembers) { checkValid(s); }
 		
 		//gather visible parent members
+		/*
 		for (InheritableObject sc : theClass.getParents()) {
 			//get visible staticmembers
 			for (Statement s : sc.getBody()) {
@@ -81,6 +81,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 				}
 			}
 		}
+		*/
 		
 		//execute the static members against the class's scope
 		executeBlock(staticMembers, classScope);

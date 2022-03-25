@@ -1,35 +1,41 @@
 package envision.interpreter.util.optimizations;
 
+import java.util.Map;
+
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.objects.EnvisionFunction;
+import envision.lang.internal.EnvisionFunction;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
 import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
-
-import java.util.Map;
+import eutil.datatypes.util.BoxList;
 
 /**
- * ClassConstructs are intended to optimize class interpreting by caching
- * relavant static and instance based members for new instances.
+ * ClassConstructs are intended to optimize class instance creation by
+ * caching relavant static and instance based members during
+ * interpretation. This process reduces instance creation time by
+ * removing the need to re-interpret the class's body every time a new
+ * instance is built. Ultimately, this means that instance members are
+ * only ever interpreted once.
  * 
- * New class instances will be created from this construct implementation
- * so that common class members do not need to be reconstructed everytime.
+ * <p>
+ * New object instances should be created using this construct
+ * implementation to drastically improve instance creation
+ * performance. The overall performance impact this approach will have
+ * on instance creation is directly proportional to the number of
+ * instances created using this construct.
  * 
- * This process reduces instance creation time by removing the need to re-interpret
- * the class's body each time a new instance is built. Therefore, instance members
- * are only ever interpreted once.
+ * <p>
+ * Upon instance creation, a new version of each member is copied onto
+ * the resulting instance scope. This method is significantly faster
+ * than re-interpreting the same body statements over and over again
+ * because member types are already known.
  * 
- * Upon instance creation, a new version of each member is copied onto the resulting
- * instance scope. This method is significantly faster than re-interpreting the same
- * body statements over and over again because member types are already known.
- * 
- * @author Hunter
+ * @author Hunter Bragg
  */
 public class ClassConstruct {
 	
@@ -41,7 +47,7 @@ public class ClassConstruct {
 	private Scope internalScope;
 	
 	private EnvisionFunction constructor;
-	private EArrayList<EnvisionObject> fields;
+	private BoxList<String, EnvisionObject> fields;
 	private EArrayList<EnvisionFunction> methods;
 	
 	/** Pulling scope map out for fast reference. */
@@ -54,7 +60,7 @@ public class ClassConstruct {
 	public ClassConstruct(EnvisionInterpreter interpreter, EnvisionClass c) {
 		theClass = c;
 		constructName = c.getTypeString();
-		internalScope = new Scope(c.getScope());
+		internalScope = new Scope(c.getClassScope());
 		internal_scope_values = internalScope.values;
 		constructor = c.getConstructor();
 		
@@ -69,15 +75,15 @@ public class ClassConstruct {
 		interpreter.executeBlock(theClass.getBody(), internalScope);
 		
 		//extract members from scope
-		fields = internalScope.fields();
-		methods = internalScope.methods();
+		fields = internalScope.named_fields();
+		methods = internalScope.functions();
 	}
 	
 	//------------------
 	// Instance Builder
 	//------------------
 	
-	public void call(EnvisionInterpreter interpreter, Object[] args) {	
+	public void call(EnvisionInterpreter interpreter, EnvisionObject[] args) {	
 		throw new ReturnValue(buildInstance(interpreter, args));
 	}
 	
@@ -89,14 +95,17 @@ public class ClassConstruct {
 	 * @param args
 	 * @return
 	 */
-	public ClassInstance buildInstance(EnvisionInterpreter interpreter, Object[] args) {
-		Scope buildScope = new Scope(theClass.getScope());
+	public ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		Scope buildScope = new Scope(theClass.getClassScope());
 		ClassInstance inst = new ClassInstance(theClass, buildScope);
 		
 		//create copies of fields
-		buildScope.define("this", inst);
-		for (EnvisionObject f : fields) {
-			buildScope.define(f.getName(), f.getDatatype(), f.copy());
+		buildScope.define("this", inst.getDatatype(), inst);
+		for (int i = 0; i < fields.size(); i++) {
+			Box2<String, EnvisionObject> f = fields.get(i);
+			String field_name = f.getA();
+			EnvisionObject the_field = f.getB();
+			buildScope.define(field_name, the_field.getDatatype(), the_field.copy());
 		}
 		
 		//create copies of methods
@@ -104,10 +113,10 @@ public class ClassConstruct {
 			EnvisionFunction copy = m.copy().setScope(buildScope);
 			
 			//extract operators
-			if (m.isOperator()) inst.addOperator(m.getOperator(), copy);
+			if (m.isOperator()) inst.addOperatorOverload(m.getOperator(), copy);
 			
 			//copy the method
-			buildScope.define(m.getName(), Primitives.FUNCTION, copy);
+			buildScope.define(m.getFunctionName(), EnvisionDatatype.FUNC_TYPE, copy);
 		}
 		
 		//init constructor

@@ -5,7 +5,7 @@ import envision.exceptions.errors.NullVariableError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.objects.EnvisionNullObject;
+import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
@@ -75,6 +75,10 @@ public abstract class InterpreterExecutor {
 		return interpreter.defineIfNot(name, obj);
 	}
 	
+	protected EnvisionObject defineIfNot(String name, EnvisionDatatype typeIn, EnvisionObject obj) {
+		return interpreter.defineIfNot(name, typeIn, obj);
+	}
+	
 	protected EnvisionObject updateOrDefine(String name, EnvisionObject obj) {
 		return interpreter.updateOrDefine(name, obj);
 	}
@@ -92,7 +96,7 @@ public abstract class InterpreterExecutor {
 	 * @return true if the given object is in fact null
 	 */
 	public static boolean isNull(Object in) {
-		return (in == null || in instanceof EnvisionNullObject);
+		return (in == null || in instanceof EnvisionNull);
 	}
 	
 	/**

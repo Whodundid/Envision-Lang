@@ -2,19 +2,15 @@ package envision.interpreter.util.creationUtil;
 
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.expressions.IE_Assign;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.datatypes.EnvisionString;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.objects.EnvisionVoidObject;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.internal.EnvisionVoid;
+import envision.lang.util.Parameter;
+import envision.lang.util.ParameterData;
 import envision.lang.util.Primitives;
-import envision.lang.util.data.Parameter;
-import envision.lang.util.data.ParameterData;
 import envision.tokenizer.IKeyword;
-import envision.tokenizer.Operator;
-import eutil.datatypes.EArrayList;
 
 public class OperatorOverloadHandler {
 	
@@ -24,13 +20,13 @@ public class OperatorOverloadHandler {
 		// if the overload exists, run the operator overload method
 		if (theOverload != null) {
 			try {
-				theOverload.invoke(interpreter, b);
+				theOverload.invoke(interpreter, ObjectCreator.wrap(b));
 			}
 			catch (ReturnValue r) {
 				return r.object;
 			}
 			//return void if nothing was returned from the overload
-			return new EnvisionVoidObject();
+			return EnvisionVoid.VOID;
 		}
 		
 		// otherwise, check to see what operator is being evaluated as some may still apply regardless
@@ -39,20 +35,20 @@ public class OperatorOverloadHandler {
 			var operator = op.asOperator();
 			
 			//check for string additoins
-			if (operator == Operator.ADD) {
+			//if (operator == Operator.ADD) {
 				//only allow strings
-				if (b instanceof String str) {
+				//if (b instanceof String str) {
 					//convert the object to it's string form
-					String obj_str = getToString(interpreter, a);
-					return new EnvisionString(obj_str + str);
-				}
+					//String obj_str = getToString(interpreter, a);
+					//return EnvisionStringClass.newString(obj_str + str);
+				//}
 				
-				throw new UnsupportedOverloadError(a, op, Primitives.getDataType(b) + ":" + b);
-			}
+				//throw new UnsupportedOverloadError(a, op, Primitives.getDataType(b) + ":" + b);
+			//}
 			
 			//otherwise check for any additional valid default operators
 			switch (operator) {
-			case ASSIGN: return IE_Assign.assign(interpreter, a.getName(), a, b);
+			//case ASSIGN: return IE_Assign.assign(interpreter, a.getName(), a, b);
 			case COMPARE: return interpreter.isEqual(a, b);
 			case NOT_EQUALS: return !interpreter.isEqual(a, b);
 			default: break;
@@ -66,21 +62,10 @@ public class OperatorOverloadHandler {
 	// Private Methods
 	//-----------------
 	
-	private static String getToString(EnvisionInterpreter interpreter, EnvisionObject obj) {
-		String toString = null;
-		try {
-			obj.runInternalFunction("toString", interpreter, null);
-		}
-		catch (ReturnValue r) {
-			toString = (String) EnvisionObject.convert(r.object);
-		}
-		return toString;
-	}
-	
 	private static EnvisionFunction getOperatorMethod(ClassInstance c, IKeyword op, Object b) {
 		// first check if the class even has support for the given operator
-		EArrayList<EnvisionFunction> overloads = c.getOperator(op);
-		if (overloads == null) return null;
+		EnvisionFunction op_func = c.getOperator(op);
+		if (op_func == null) return null;
 		
 		ParameterData params = new ParameterData();
 		if (b != null) {
@@ -90,20 +75,15 @@ public class OperatorOverloadHandler {
 		}
 		
 		EnvisionFunction theOverload = null;
-		for (EnvisionFunction m : overloads) {
-			
-			// check if the overload supports the given target parameter
-			if (m.getParams().compare(params)) {
-				theOverload = m;
-				break;
-			}
-			// otherwise check if any of the overload's overloads support the parameter
-			else {
-				EnvisionFunction methOverload = m.getOverload(params);
-				if (methOverload == null) continue;
-				theOverload = methOverload;
-				break;
-			}
+		
+		// check if the overload supports the given target parameter
+		if (op_func.getParams().compare(params)) {
+			theOverload = op_func;
+		}
+		// otherwise check if any of the overload's overloads support the parameter
+		else {
+			EnvisionFunction funcOverload = op_func.getOverload(params);
+			if (funcOverload != null) theOverload = funcOverload;
 		}
 		
 		//return the overload, even if null

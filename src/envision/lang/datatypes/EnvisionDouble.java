@@ -1,46 +1,41 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
-
-import envision.interpreter.EnvisionInterpreter;
+import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalFunction;
-import envision.lang.util.Primitives;
 
 /**
- * A script variable representing a number with a decimal point.
- * Backed by Java double values.
+ * A variable representing a number with a decimal point.
+ * Backed internally by Java:Double values.
  */
 public class EnvisionDouble extends EnvisionNumber {
-
+	
+	public double double_val;
+	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public EnvisionDouble() { this(DEFAULT_NAME, 0.0); }
-	public EnvisionDouble(double in) { this(DEFAULT_NAME, in); }
-	public EnvisionDouble(Number in) { this(DEFAULT_NAME, in.doubleValue()); }
-	public EnvisionDouble(String nameIn) { this(nameIn, 0.0); }
-	public EnvisionDouble(String nameIn, Number in) { this(nameIn, in.doubleValue()); }
-	public EnvisionDouble(String nameIn, double in) {
-		super(Primitives.DOUBLE.toDatatype(), nameIn);
-		var_value = in;
+	protected EnvisionDouble() { this(0.0); }
+	protected EnvisionDouble(Number in) { this(in.doubleValue()); }
+	protected EnvisionDouble(double in) {
+		super(EnvisionDoubleClass.DOUBLE_CLASS);
+		double_val = in;
 	}
 	
-	public EnvisionDouble(boolean val) { this(DEFAULT_NAME, val); }
-	public EnvisionDouble(String nameIn, boolean val) {
-		super(Primitives.DOUBLE.toDatatype(), nameIn);
-		var_value = (val) ? 1.0 : 0.0;
+	protected EnvisionDouble(boolean val) {
+		super(EnvisionDoubleClass.DOUBLE_CLASS);
+		double_val = (val) ? 1.0 : 0.0;
 	}
 	
-	public EnvisionDouble(EnvisionDouble in) {
-		super(Primitives.DOUBLE.toDatatype(), in.name);
-		var_value = in.var_value;
+	protected EnvisionDouble(EnvisionDouble in) {
+		super(EnvisionDoubleClass.DOUBLE_CLASS);
+		double_val = in.double_val;
 	}
 	
-	public EnvisionDouble(EnvisionNumber in) {
-		super(Primitives.DOUBLE.toDatatype(), in.getName());
-		var_value = in.var_value;
+	protected EnvisionDouble(EnvisionNumber in) {
+		super(EnvisionDoubleClass.DOUBLE_CLASS);
+		double_val = in.doubleVal().double_val;
 	}
 	
 	//-----------
@@ -48,10 +43,51 @@ public class EnvisionDouble extends EnvisionNumber {
 	//-----------
 	
 	@Override
-	public EnvisionDouble copy() {
-		return new EnvisionDouble(name, (double) var_value);
+	public EnvisionObject get() {
+		return this;
 	}
 	
+	@Override
+	public Object get_i() {
+		return double_val;
+	}
+	
+	@Override
+	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof EnvisionDouble env_double) {
+			this.double_val = env_double.double_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-double value to a double!");
+	}
+	
+	@Override
+	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof Double double_val) {
+			this.double_val = double_val;
+			return this;
+		}
+		//have to account for float in this case
+		else if (valIn instanceof Float float_val) {
+			this.double_val = float_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-double value to a double!");
+	}
+	
+	@Override public long intVal_i() { return (long) double_val; }
+	@Override public double doubleVal_i() { return double_val; }
+	@Override public EnvisionInt intVal() { return EnvisionIntClass.newInt(double_val); }
+	@Override public EnvisionDouble doubleVal() { return this; }
+	
+	@Override
+	public EnvisionDouble copy() {
+		return EnvisionDoubleClass.newDouble(double_val);
+	}
+	
+	/*
 	@Override
 	protected void registerInternalMethods() {
 		super.registerInternalMethods();
@@ -73,6 +109,7 @@ public class EnvisionDouble extends EnvisionNumber {
 		}
 		return null;
 	}
+	*/
 	
 	public static EnvisionDouble of(double val) { return new EnvisionDouble(val); }
 	public static EnvisionDouble of(String val) { return new EnvisionDouble(Double.parseDouble(val)); }

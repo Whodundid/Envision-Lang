@@ -4,12 +4,11 @@ import java.io.File;
 import java.util.Scanner;
 
 import envision.EnvisionSettings.LaunchArgs;
-import envision.bytecode.translator.BytecodeTranslator;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.BadDirError;
 import envision.exceptions.errors.workingDirectory.InterpreterCreationError;
 import envision.exceptions.errors.workingDirectory.NoMainError;
-import envision.lang.packages.EnvisionLangPackage;
+import envision.packages.EnvisionLangPackage;
 import envision.parser.EnvisionParser;
 import eutil.datatypes.EArrayList;
 
@@ -209,8 +208,6 @@ public class Envision {
 			
 			//actually execute the built program
 			main.execute(programArgs);
-			
-			new BytecodeTranslator(main).translate();
 			
 			if (liveMode) {
 				Scanner reader = new Scanner(System.in);

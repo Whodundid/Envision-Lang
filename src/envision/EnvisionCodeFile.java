@@ -16,7 +16,10 @@ import envision.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
-/** A special type of EnvisionObject which bundles the data comprising a code file along with its statement contents. */
+/**
+ * A special type of EnvisionObject which bundles the data comprising
+ * a code file along with its statement contents.
+ */
 public class EnvisionCodeFile extends EnvisionObject {
 	
 	/** The name of the code file itself. */
@@ -54,7 +57,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	
 	public EnvisionCodeFile(String fileName) { this(new File(fileName)); }
 	public EnvisionCodeFile(File in) {
-		super(Primitives.CODE_FILE);
+		super(Primitives.CODE_FILE.toDatatype());
 		theFile = in;
 		
 		if (isValid = checkFile()) {
@@ -63,8 +66,6 @@ public class EnvisionCodeFile extends EnvisionObject {
 		else {
 			fileName = "NO_NAME";
 		}
-		
-		setName(fileName);
 		
 		isMain = theFile.getName().toLowerCase().equals("main.nvis");
 	}

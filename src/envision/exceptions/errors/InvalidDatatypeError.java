@@ -1,8 +1,8 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
+import envision.lang.util.Parameter;
 import envision.lang.util.Primitives;
-import envision.lang.util.data.Parameter;
 
 public class InvalidDatatypeError extends EnvisionError {
 

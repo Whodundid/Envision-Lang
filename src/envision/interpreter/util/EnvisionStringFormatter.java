@@ -6,8 +6,8 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.util.data.ParameterData;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.ParameterData;
 import envision.tokenizer.EscapeCode;
 import eutil.strings.StringUtil;
 
@@ -27,7 +27,7 @@ public class EnvisionStringFormatter {
 	 * @param args
 	 * @return String formatted for println
 	 */
-	public static String formatPrint(EnvisionInterpreter interpreter, Object[] args) {
+	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		var out = new StringBuilder();
 		
 		for (int i = 0; i < args.length; i++) {
@@ -35,10 +35,10 @@ public class EnvisionStringFormatter {
 			
 			//test for toString overload
 			if (o instanceof ClassInstance inst) {
-				EnvisionFunction toString = inst.getMethod("toString", new ParameterData());
+				EnvisionFunction toString = inst.getFunction("toString", new ParameterData());
 				if (toString != null) {
 					try {
-						toString.invoke(interpreter, null);
+						toString.invoke(interpreter, new EnvisionObject[0]);
 					}
 					catch (ReturnValue r) {
 						String str_r = (String) EnvisionObject.convert(r.object);
@@ -151,11 +151,11 @@ public class EnvisionStringFormatter {
 	}
 	
 	public static String processClassInstance(EnvisionInterpreter interpreter, ClassInstance rInst) {
-		EnvisionFunction toString = rInst.getMethod("toString", new ParameterData());
+		EnvisionFunction toString = rInst.getFunction("toString", new ParameterData());
 		
 		if (toString != null) {
 			try {
-				toString.invoke(interpreter, null);
+				toString.invoke(interpreter, new EnvisionObject[0]);
 			}
 			catch (ReturnValue r) {
 				//recursively replace

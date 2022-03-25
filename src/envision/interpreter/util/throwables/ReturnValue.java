@@ -1,17 +1,44 @@
 package envision.interpreter.util.throwables;
 
-/** A means of returning data across method/class scopes. */
+import envision.lang.EnvisionObject;
+import envision.lang.internal.EnvisionNull;
+
+/**
+ * A means of returning data across method/class scopes. Throw an
+ * instance of this so that it can be caught 'returned' somewhere
+ * else.
+ * 
+ * @author Hunter Bragg
+ */
 public class ReturnValue extends RuntimeException {
 	
-	/** The object being returned. */
-	public final Object object;
+	//--------
+	// Fields
+	//--------
 	
-	public ReturnValue() { this(null); }
-	public ReturnValue(Object objIn) {
+	/**
+	 * The object being returned.
+	 */
+	public final EnvisionObject object;
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	public ReturnValue() { this(EnvisionNull.NULL); }
+	public ReturnValue(EnvisionObject objIn) {
 		object = objIn;
 	}
 	
-	/** Returns true if the return value is null. */
-	public boolean isNull() { return object == null; }
+	//---------
+	// Methods
+	//---------
+	
+	/**
+	 * Returns true if the return value is null.
+	 */
+	public boolean isNull() {
+		return object == null;
+	}
 	
 }

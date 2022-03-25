@@ -23,7 +23,7 @@ public final class VariableUtil {
 	public static Number incDecVal(EnvisionObject obj, Number amount, boolean post) {
 		if (obj instanceof EnvisionNumber num) {
 			Primitives type = num.getPrimitiveType();
-			Number val = (Number) num.get();
+			Number val = (Number) num.get_i();
 			Number toSet = null;
 			
 			switch (type) {
@@ -32,7 +32,7 @@ public final class VariableUtil {
 			default: throw new ArithmeticError("Invalid datatype! Can only be an int or a double! " + type);
 			}
 			
-			num.set(toSet);
+			num.set_i(toSet);
 			return (post) ? val : toSet;
 		}
 		return null;

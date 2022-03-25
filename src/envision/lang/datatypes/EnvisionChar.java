@@ -1,11 +1,8 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
-
-import envision.interpreter.EnvisionInterpreter;
+import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalFunction;
-import envision.lang.util.Primitives;
 
 /**
  * 
@@ -15,34 +12,26 @@ public class EnvisionChar extends EnvisionVariable {
 	
 	public static final char NULL_CHAR = '\0';
 	
+	public char char_val;
+	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public EnvisionChar() { this(NULL_CHAR); }
-	public EnvisionChar(char val) { this(DEFAULT_NAME, val); }
-	public EnvisionChar(String nameIn) { this(nameIn, NULL_CHAR); }
-	public EnvisionChar(String nameIn, char val) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		var_value = val;
+	protected EnvisionChar() { this(NULL_CHAR); }
+	protected EnvisionChar(char val) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = val;
 	}
 	
-	public EnvisionChar(boolean val) { this(DEFAULT_NAME, val); }
-	public EnvisionChar(String nameIn, boolean val) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		var_value = (val) ? 'T' : 'F';
+	protected EnvisionChar(boolean val) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = (val) ? 'T' : 'F';
 	}
 	
-	public EnvisionChar(EnvisionChar in) {
-		super(Primitives.CHAR.toDatatype(), in.name);
-		var_value = in.var_value;
-	}
-	
-	public EnvisionChar(Object objIn) { this(DEFAULT_NAME, objIn); }
-	public EnvisionChar(String nameIn, Object objIn) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		String sVal = String.valueOf(objIn);
-		var_value = (sVal != null && !sVal.isEmpty()) ? sVal.charAt(0) : NULL_CHAR;
+	protected EnvisionChar(EnvisionChar in) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = in.char_val;
 	}
 	
 	//-----------
@@ -50,42 +39,38 @@ public class EnvisionChar extends EnvisionVariable {
 	//-----------
 	
 	@Override
-	public EnvisionChar copy() {
-		return new EnvisionChar(this);
+	public EnvisionObject get() {
+		return this;
 	}
 	
 	@Override
-	protected void registerInternalMethods() {
-		super.registerInternalMethods();
-		//im(new InternalMethod(CHAR, "valueOf", OBJECT) { protected void body(Object[] a) { ret(EnvisionChar.of(a[0])); }});
-		im(new InternalFunction(CHAR, "get") { protected void body(Object[] a) { ret(EnvisionChar.this.get()); }});
-		im(new InternalFunction(CHAR, "set", VAR) { protected void body(Object[] a) { ret(EnvisionChar.this.set((char) a[0])); }});
+	public Object get_i() {
+		return char_val;
 	}
 	
 	@Override
-	protected EnvisionObject runConstructor(EnvisionInterpreter interpreter, Object[] args) {
-		if (args.length == 0) return new EnvisionChar(DEFAULT_NAME, NULL_CHAR);
-		if (args.length == 1) {
-			Object obj = args[0];
-			
-			if (obj instanceof Character c) return new EnvisionChar(c);
-			if (obj instanceof EnvisionChar c) return new EnvisionChar(c);
-			if (obj instanceof EnvisionInt i) return new EnvisionChar(i);
+	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof EnvisionChar env_char) {
+			char_val = env_char.char_val;
+			return this;
 		}
-		return null;
+		throw new EnvisionError("Attempted to internally set non-char value to a char!");
 	}
 	
-	//--------
-	// Static
-	//--------
-	
-	public static EnvisionChar of(char val) {
-		return new EnvisionChar(val);
+	@Override
+	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof Character char_val) {
+			this.char_val = char_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-char value to a char!");
 	}
 	
-	public static EnvisionChar of(String val) {
-		return new EnvisionChar((val != null && !val.isEmpty()) ? val.charAt(0) : NULL_CHAR);
+	@Override
+	public EnvisionChar copy() {
+		return EnvisionCharClass.newChar(this);
 	}
-	
 	
 }

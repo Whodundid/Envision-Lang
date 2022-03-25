@@ -5,8 +5,6 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.ReturnValue;
-import envision.lang.enums.EnumValue;
-import envision.lang.enums.EnvisionEnum;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_SwitchCase;
@@ -36,7 +34,7 @@ public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 		Stmt_SwitchCase defaultCase = s.defaultCase;
 		boolean caseMatched = false;
 		//if this switch is switching on an enum value -- grab the enum that holds it
-		EnvisionEnum theEnum = (exprObj instanceof EnumValue) ? ((EnumValue) exprObj).theEnum : null;
+		//EnvisionEnum theEnum = (exprObj instanceof EnumValue) ? ((EnumValue) exprObj).theEnum : null;
 		
 		//run inside of a try/catch to catch for breaks
 		try {
@@ -48,9 +46,9 @@ public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 					
 					//determine type of value the case name represents
 					if (caseName == null) throw new EnvisionError("Null switch case value!");
-					else if (theEnum != null) caseNameValue = theEnum.getValue(caseName.lexeme);
+					//else if (theEnum != null) caseNameValue = theEnum.getValue(caseName.lexeme);
 					else if (caseName.isLiteral()) caseNameValue = caseName.literal;
-					else caseNameValue = scope().get(caseName);
+					else caseNameValue = scope().get(caseName.lexeme);
 					
 					//not sure how to handle yet
 					if (isNull(caseNameValue)) { System.out.println("NULL SWITCH CASE"); }

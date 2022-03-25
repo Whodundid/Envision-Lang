@@ -3,7 +3,6 @@ package envision.interpreter.expressions;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.expression_types.Expr_VarDef;
 import envision.tokenizer.IKeyword;
@@ -22,7 +21,7 @@ public class IE_VarDec extends ExpressionExecutor<Expr_VarDef> {
 		
 		if (k.isDataType()) {
 			var type = new EnvisionDatatype(typeToken.getPrimitiveDataType());
-			return ObjectCreator.createDefault(EnvisionObject.DEFAULT_NAME, type, false);
+			return ObjectCreator.createDefault(type, false);
 		}
 		
 		return null;

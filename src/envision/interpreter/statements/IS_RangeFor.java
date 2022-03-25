@@ -7,9 +7,11 @@ import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
+import envision.lang.datatypes.EnvisionIntClass;
+import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.objects.EnvisionList;
+import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Range;
 import envision.parser.expressions.expression_types.Expr_Var;
@@ -55,13 +57,12 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 			
 			try {
 				//handle left value
-				if (left instanceof Number) {
+				if (left instanceof Number num) {
 					//ensure that the number being used is an integer
 					if (!(left instanceof Integer) && !(left instanceof Long)) throw new Exception();
-					leftObject = new EnvisionInt((Number) left);
+					leftObject = EnvisionIntClass.newInt(num);
 				}
-				else if (left instanceof EnvisionVariable) {
-					var env_var = (EnvisionVariable) left;
+				else if (left instanceof EnvisionVariable env_var) {
 					//ensure that the variable being used is an integer
 					if (!(env_var instanceof EnvisionInt)) throw new Exception();
 					leftObject = env_var;
@@ -69,22 +70,22 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 				else throw new Exception();
 				
 				//right and 'by' values
-				right = EnvisionObject.convert(right);
-				by = EnvisionObject.convert(by);
+				//right = EnvisionObject.convert(right);
+				//by = EnvisionObject.convert(by);
 				
 				//handle right
-				if (right instanceof EnvisionList env_list) 		right = (long) env_list.size();
+				if (right instanceof EnvisionList env_list) 		right = (long) env_list.size_i();
 				else if (right instanceof String str) 				right = (long) str.length();
-				else if (right instanceof EnvisionString env_str) 	right = (long) env_str.length();
-				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.get();
+				else if (right instanceof EnvisionString env_str) 	right = (long) env_str.length_i();
+				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.long_val;
 				else 												right = ((Number) right).longValue();
 				
 				//handle by
-				if (by instanceof EnvisionList env_list) 			by = (long) env_list.size();
-				else if (by instanceof String str) 					by = (long) ((String) by).length();
-				else if (by instanceof EnvisionString env_str) 		by = (long) ((EnvisionString) by).length();
-				else if (by instanceof EnvisionInt env_int) 		by = (long) ((EnvisionInt) by).get();
-				else by = ((Number) by).longValue();
+				if (by instanceof EnvisionList env_list) 			by = (long) env_list.size_i();
+				else if (by instanceof String str) 					by = (long) str.length();
+				else if (by instanceof EnvisionString env_str) 		by = (long) env_str.length_i();
+				else if (by instanceof EnvisionInt env_int) 		by = (long) env_int.long_val;
+				else 												by = ((Number) by).longValue();
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -125,7 +126,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 				if (!checkKeepGoing(rangeValues)) break;
 				
 				//begin the carry by zeroing the first
-				range.a.set(0);
+				range.a.set_i(0);
 				
 				while (carrying && i >= 0) {
 					next = rangeValues.get(i);
@@ -137,7 +138,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 					}
 					//otherwise, zero it out then continue until a range is found that is not at the end
 					else {
-						next.a.set(0);
+						next.a.set_i(0);
 						i--;
 					}
 				}
@@ -163,14 +164,12 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	}
 	
 	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) {
-		return (long) box.a.get() < box.b;
+		return (long) box.a.get_i() < box.b;
 	}
 	
 	private Object handleLeft(Expression left) {
 		if (left instanceof Expr_Var var) {
-			return defineIfNot(var.getName(), new EnvisionInt());
-			//return updateOrDefine(var.getName(), Primitives.INT.toDatatype(), new EnvisionInt());
-			//return forceDefine(leftVar.name.lexeme, Primitives.INT.toDatatype(), new EnvisionInt());
+			return defineIfNot(var.getName(), EnvisionDatatype.INT_TYPE, EnvisionIntClass.newInt());
 		}
 		return evaluate(left);
 	}
@@ -178,7 +177,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	private boolean checkKeepGoing(EArrayList<Box3<EnvisionVariable, Long, Long>> list) {
 		//cacluate if the loop is done
 		for (var box : list) {
-			long a = (long) box.a.get();
+			long a = (long) box.a.get_i();
 			long b = box.b;
 			//System.out.println("checking: " + a + ":" + b + " = " + (a < b - 1));
 			if (a < b) return true;

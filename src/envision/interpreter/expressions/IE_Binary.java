@@ -6,7 +6,10 @@ import envision.interpreter.util.creationUtil.OperatorOverloadHandler;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.objects.EnvisionList;
+import envision.lang.datatypes.EnvisionBooleanClass;
+import envision.lang.datatypes.EnvisionDoubleClass;
+import envision.lang.datatypes.EnvisionIntClass;
+import envision.lang.datatypes.EnvisionList;
 import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.tokenizer.KeywordType;
 import envision.tokenizer.Operator;
@@ -130,7 +133,7 @@ public class IE_Binary extends ExpressionExecutor<Expr_Binary> {
 	}
 	
 	private static EnvisionList handleList(Operator op, EnvisionList list, Number b, boolean isLeft) {
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size_i(); i++) {
 			var o = EnvisionObject.convert(list.get(i));
 			
 			if (o instanceof Number a) {
@@ -153,43 +156,43 @@ public class IE_Binary extends ExpressionExecutor<Expr_Binary> {
 		return list;
 	}
 	
-	private static Object handleOpLong(Operator op, long a, long b) {
+	private static EnvisionObject handleOpLong(Operator op, long a, long b) {
 		//if divide, check for divide / zero possibility
 		if (op == Operator.DIV) div0(op, a, b);
 		
 		switch (op) {
-		case LT: 		return a < b;
-		case LTE: 		return a <= b;
-		case GT: 		return a > b;
-		case GTE: 		return a >= b;
-		case SUB: 		return a - b;
-		case MUL: 		return a * b;
-		case DIV:  		return a / b;
-		case MOD: 		return a % b;
-		case SHL: 		return a << b;
-		case SHR: 		return a >> b;
-		case SHR_AR: 	return a >>> b;
-		default: 		return null;
+		case LT: 		return EnvisionBooleanClass.newBoolean(a < b);
+		case LTE: 		return EnvisionBooleanClass.newBoolean(a <= b);
+		case GT: 		return EnvisionBooleanClass.newBoolean(a > b);
+		case GTE: 		return EnvisionBooleanClass.newBoolean(a >= b);
+		case SUB: 		return EnvisionIntClass.newInt(a - b);
+		case MUL: 		return EnvisionIntClass.newInt(a * b);
+		case DIV:  		return EnvisionIntClass.newInt(a / b);
+		case MOD: 		return EnvisionIntClass.newInt(a % b);
+		case SHL: 		return EnvisionIntClass.newInt(a << b);
+		case SHR: 		return EnvisionIntClass.newInt(a >> b);
+		case SHR_AR: 	return EnvisionIntClass.newInt(a >>> b);
+		default: 		throw new ArithmeticError("Invalid Operator! " + op);
 		}
 	}
 	
-	private static Object handleOpDouble(Operator op, double a, double b) {
+	private static EnvisionObject handleOpDouble(Operator op, double a, double b) {
 		//if divide, check for divide / zero possibility
 		if (op == Operator.DIV) div0(op, a, b);
 		
 		switch (op) {
-		case LT: 		return a < b;
-		case LTE: 		return a <= b;
-		case GT: 		return a > b;
-		case GTE: 		return a >= b;
-		case SUB: 		return a - b;
-		case MUL: 		return a * b;
-		case DIV:  		return a / b;
-		case MOD: 		return a % b;
-		case SHL: 		return (long) a << (long) b;
-		case SHR: 		return (long) a >> (long) b;
-		case SHR_AR: 	return (long) a >>> (long) b;
-		default: 		return null;
+		case LT: 		return EnvisionBooleanClass.newBoolean(a < b);
+		case LTE: 		return EnvisionBooleanClass.newBoolean(a <= b);
+		case GT: 		return EnvisionBooleanClass.newBoolean(a > b);
+		case GTE: 		return EnvisionBooleanClass.newBoolean(a >= b);
+		case SUB: 		return EnvisionDoubleClass.newDouble(a - b);
+		case MUL: 		return EnvisionDoubleClass.newDouble(a * b);
+		case DIV:  		return EnvisionDoubleClass.newDouble(a / b);
+		case MOD: 		return EnvisionDoubleClass.newDouble(a % b);
+		case SHL: 		return EnvisionIntClass.newInt((long) a << (long) b);
+		case SHR: 		return EnvisionIntClass.newInt((long) a >> (long) b);
+		case SHR_AR: 	return EnvisionIntClass.newInt((long) a >>> (long) b);
+		default: 		throw new ArithmeticError("Invalid Operator! " + op);
 		}
 	}
 	

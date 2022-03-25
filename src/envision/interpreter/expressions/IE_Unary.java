@@ -4,13 +4,15 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidOperationError;
 import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
+import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.creationUtil.OperatorOverloadHandler;
 import envision.interpreter.util.creationUtil.VariableUtil;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
+import envision.lang.datatypes.EnvisionList;
+import envision.lang.datatypes.EnvisionListClass;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.objects.EnvisionList;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Compound;
 import envision.parser.expressions.expression_types.Expr_Unary;
@@ -85,12 +87,14 @@ public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 		else if (left instanceof Expr_Compound) {
 			Expr_Compound ce = (Expr_Compound) left;
 			EArrayList<Expression> expressions = ce.expressions;
-			EnvisionList l = new EnvisionList();
+			EnvisionList l = EnvisionListClass.newList();
 			
 			for (Expression e : expressions) {
 				if (e == null) throw new EnvisionError("The expression is null! This really shouldn't be possible!");
 				if (!(e instanceof Expr_Var)) throw new InvalidTargetError("Expected a Variable Expression but got a " + e.getClass().getSimpleName() + "!");
-				l.add(handleExpression(e, expression.operator));
+				Object result = handleExpression(e, expression.operator);
+				EnvisionObject result_obj = ObjectCreator.wrap(result);
+				l.add(result_obj);
 			}
 			
 			return l;
