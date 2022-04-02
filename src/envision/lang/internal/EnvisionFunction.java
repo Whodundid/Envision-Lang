@@ -14,7 +14,6 @@ import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Parameter;
 import envision.lang.util.ParameterData;

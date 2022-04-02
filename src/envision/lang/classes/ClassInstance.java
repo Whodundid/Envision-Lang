@@ -15,7 +15,6 @@ import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionBooleanClass;
 import envision.lang.datatypes.EnvisionString;
-import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
@@ -324,7 +323,7 @@ public class ClassInstance extends EnvisionObject {
 	 */
 	public String executeToString_i(EnvisionInterpreter interpreter) {
 		EnvisionObject result = executeFunction("toString", interpreter, new EnvisionObject[0]);
-		if (result instanceof EnvisionString env_str) return result.toString();
+		if (result instanceof EnvisionString env_str) return env_str.string_val;
 		return result.toString();
 	}
 	
