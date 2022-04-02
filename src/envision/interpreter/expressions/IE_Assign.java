@@ -5,11 +5,6 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArithmeticError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidTargetError;
-import envision.exceptions.errors.NotANumberError;
-import envision.exceptions.errors.NotAVariableError;
-import envision.exceptions.errors.NullVariableError;
-import envision.exceptions.errors.StrongVarReassignmentError;
-import envision.exceptions.errors.listErrors.SelfAdditionError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.CastingUtil;
 import envision.interpreter.util.EnvisionStringFormatter;
@@ -21,8 +16,6 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionList;
-import envision.lang.datatypes.EnvisionNumber;
-import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
@@ -34,28 +27,31 @@ import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.parser.expressions.expression_types.Expr_Var;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
-import eutil.strings.StringUtil;
 
 public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 
 	private String name;
-	private Object value;
 	private Integer dist;
 	private Operator op;
 	private EnvisionObject obj;
+	private EnvisionObject value;
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	protected IE_Assign(EnvisionInterpreter in) {
 		super(in);
 	}
+	
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_Assign e) {
+		return new IE_Assign(in).run(e);
+	}
 
-	public static Object handleAssign(EnvisionInterpreter in, Expr_Binary e, Operator opIn) {
+	public static EnvisionObject handleAssign(EnvisionInterpreter in, Expr_Binary e, Operator opIn) {
 		if (e.left instanceof Expr_Var v) {
 			IE_Assign inst = new IE_Assign(in);
 			
 			String name = v.getName();
-			Object value = in.evaluate(e.right);
+			EnvisionObject value = in.evaluate(e.right);
 			Operator op = opIn;
 			
 			return inst.execute(name, value, op);
@@ -64,47 +60,50 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		throw new InvalidTargetError("Expected a valid BinaryExpression with a left-handed var assignment model! Got: '" + e + "' instead!");
 	}
 	
-	public static Object run(EnvisionInterpreter in, Expr_Assign e) {
-		return new IE_Assign(in).run(e);
-	}
-	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	@Override
-	public Object run(Expr_Assign expression) {
+	public EnvisionObject run(Expr_Assign expression) {
 		Token name_token = expression.name;
 		String name = (name_token != null) ? name_token.lexeme : null;
 		Expr_Assign leftAssign = expression.leftAssign;
-		Object value = evaluate(expression.value);
+		EnvisionObject value = evaluate(expression.value);
 		Operator op = expression.operator;
 		
 		//handle left-hand assignment expressions
-		if (leftAssign != null) {
-			Object left_result = run(leftAssign);
+		//if (leftAssign != null) {
+			//EnvisionObject left_result = run(leftAssign);
 			
 			//Set the target name from the evaluated assignment expression.
 			//The assignment expression result SHOULD only return an EnvisionObject
 			//or a String for the identifier name. If it is neither, throw error
-			if (left_result instanceof EnvisionObject env_obj) name = leftAssign.getName();
-			else if (left_result instanceof String str) name = str;
-			else throw new InvalidTargetError("The object '" + left_result + "' is an invalid assignment target!");
-		}
+			//if (left_result instanceof EnvisionString)
+			//if (left_result instanceof EnvisionObject env_obj) name = leftAssign.getName();
+			//else if (left_result instanceof String str) name = str;
+			//else throw new InvalidTargetError("The object '" + left_result + "' is an invalid assignment target!");
+		//}
 		
 		return execute(name, value, op);
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	private Object execute(String nameIn, Object valueIn, Operator opIn) {
+	private EnvisionObject execute(String nameIn, EnvisionObject valueIn, Operator opIn) {
 		name = nameIn;
-		value = EnvisionObject.convert(valueIn);
+		value = valueIn;
 		op = opIn;
 		obj = scope().get(name);
 		
-		if (obj instanceof ClassInstance env_class) {
-			return OperatorOverloadHandler.handleOverload(interpreter, op, env_class, value);
+		//if the given object is a class instance and supports
+		//the given operator, run the operator overload
+		if (obj instanceof ClassInstance env_class && env_class.supportsOperator(opIn)) {
+			return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
 		}
-		else return switch (op) {
+		
+		//otherwise, handle default assignment
+		if (op == Operator.ASSIGN) return assign();
+		/*
+		return switch (op) {
 		case ASSIGN -> assign();
 		case ADD_ASSIGN -> add();
 		case SUB_ASSIGN -> sub();
@@ -119,9 +118,12 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		case SHR_AR_ASSIGN -> arithShiftR();
 		default -> throw new EnvisionError("Invalid assignment operator! " + op);
 		};
+		*/
+		//error if this point is reached
+		throw new EnvisionError("Invalid assignment operator! " + op);
 	}
 
-	private Object assign() {
+	private EnvisionObject assign() {
 		return assign(interpreter, name, obj, value);
 	}
 	
@@ -138,7 +140,10 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * @param value the new value to be assigned
 	 * @return the new value
 	 */
-	public static Object assign(EnvisionInterpreter interpreter, String name, EnvisionObject obj, Object value) {
+	public static EnvisionObject assign(EnvisionInterpreter interpreter,
+										String name,
+										EnvisionObject obj,
+										EnvisionObject value) {
 		Scope s = interpreter.scope();
 		//System.out.println(name + " -- " + obj + " -- " + value);
 		
@@ -147,7 +152,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//the name of the variable
 		String var_name = name;
 		//the new value to be assigned the the variable
-		Object assignment_value = value;
+		EnvisionObject assignment_value = value;
 		//the datatype of the new assignment value
 		EnvisionDatatype var_datatype = null;
 		//the existing variable -- if present
@@ -157,14 +162,18 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		
 		//handle specific assignment_value types
 		if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
-		else if (assignment_value instanceof EnvisionObject env_obj) assignment_value = env_obj;
+		else assignment_value = value;
 		
+		//grab datatype
+		var_datatype = assignment_value.getDatatype();
+		//if (assignment_value instanceof ClassInstance inst) var_datatype = inst.getDatatype();
 		//dynamically determine assignment value type
-		var_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
+		//else var_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
 		
 		//in the event that the incomming value is a string, format the input
 		if (var_datatype.isString()) {
-			assignment_value = EnvisionStringFormatter.formatPrint(interpreter, assignment_value);
+			String prt = EnvisionStringFormatter.formatPrint(interpreter, assignment_value);
+			assignment_value = EnvisionStringClass.newString(prt);
 		}
 		
 		//---------------------------------------------------------
@@ -181,7 +190,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			}
 			
 			//define as 'var' type variable
-			s.define(var_name, EnvisionDatatype.NULL_TYPE, var_obj);
+			s.define(var_name, EnvisionDatatype.VAR_TYPE, var_obj);
 		}
 		//if the object does exist, attemt to assign the new value to it
 		else {
@@ -200,7 +209,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		return assignment_value;
 	}
 	
-	private static EnvisionObject checkObjectConversion(Object in) {
+	private static EnvisionObject checkObjectConversion(EnvisionObject in) {
 		if (in instanceof EnvisionFunction env_func) return env_func;
 		if (in instanceof EnvisionList env_list) return env_list;
 		if (in instanceof EnvisionClass env_class) return env_class;
@@ -218,7 +227,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object add() {
+	/*
+	private EnvisionObject add() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -267,7 +277,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			
 			//assign new value to vars and immediately return to stop double assignment
 			scope().set(name, new_obj.getDatatype(), new_obj);
-			return new_val;
+			return new_obj;
 		}
 		case DOUBLE:
 		{
@@ -297,8 +307,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '-=' operation and
@@ -306,7 +317,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object sub() {
+	/*
+	private EnvisionObject sub() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -319,7 +331,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get incomming value type
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -337,9 +349,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
-	
+	*/
 	/**
 	 * This method specifically relates to the '*=' operation and
 	 * can only be applied to the following types:
@@ -350,7 +362,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object mul() {
+	/*
+	private EnvisionObject mul() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -388,7 +401,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			
 			//assign new value to vars and immediately return to stop double assignment
 			scope().set(name, new_obj.getDatatype(), new_obj);
-			return new_val;
+			return new_obj;
 		}
 		case DOUBLE:
 		{
@@ -413,8 +426,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '/=' operation and
@@ -422,7 +436,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object div() {
+	/*
+	private EnvisionObject div() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -433,8 +448,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//cast to variable
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
-		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Primitives var_ptype = var_type.getPrimitiveType();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -452,8 +467,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '%=' operation and
@@ -461,7 +477,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object mod() {
+	/*
+	private EnvisionObject mod() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -473,7 +490,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -491,8 +508,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '&=' operation and
@@ -500,7 +518,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object and() {
+	/*
+	private EnvisionObject and() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -512,7 +531,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -530,8 +549,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '|=' operation and
@@ -539,7 +559,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object or() {
+	/*
+	private EnvisionObject or() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -551,7 +572,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -569,8 +590,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '^=' operation and
@@ -578,7 +600,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object xor() {
+	/*
+	private EnvisionObject xor() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -590,7 +613,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -608,8 +631,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '<<=' operation and
@@ -617,7 +641,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object shiftL() {
+	/*
+	private EnvisionObject shiftL() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -629,7 +654,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -647,8 +672,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '>>=' operation and
@@ -656,7 +682,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object shiftR() {
+	/*
+	private EnvisionObject shiftR() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -668,7 +695,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -686,8 +713,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	/**
 	 * This method specifically relates to the '>>>=' operation and
@@ -695,7 +723,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * 
 	 * @return the new value
 	 */
-	private Object arithShiftR() {
+	/*
+	private EnvisionObject arithShiftR() {
 		//don't allow null vars
 		if (obj == null) throw new NullVariableError(name);
 		//don't allow final reassignment
@@ -707,7 +736,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		EnvisionVariable var = (EnvisionVariable) obj;
 		EnvisionDatatype var_type = var.getDatatype();
 		var var_ptype = var_type.getPrimitiveType();
-		Object var_val = var.get();
+		Object var_val = var.get_i();
 		
 		//get datatype of incoming value
 		EnvisionDatatype value_type = EnvisionDatatype.dynamicallyDetermineType(value);
@@ -725,8 +754,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//assign the new value
 		var.set_i(var_val);
 		
-		return var_val;
+		return var;
 	}
+	*/
 	
 	//---------------------------------------------------------------------------
 	

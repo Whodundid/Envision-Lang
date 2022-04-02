@@ -1,8 +1,11 @@
 package envision.interpreter.expressions;
 
+import envision.exceptions.errors.ExpressionError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.expression_types.Expr_Var;
+import envision.tokenizer.Token;
 
 /**
  * Handles individual variable lookup expressions.
@@ -20,15 +23,24 @@ public class IE_Var extends ExpressionExecutor<Expr_Var> {
 		super(in);
 	}
 
-	public static Object run(EnvisionInterpreter in, Expr_Var e) {
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_Var e) {
 		return new IE_Var(in).run(e);
 	}
 	
 	//---------------------------------------------------------------------
 	
 	@Override
-	public Object run(Expr_Var expression) {
-		return interpreter.lookUpVariable(expression.name);
+	public EnvisionObject run(Expr_Var e) {
+		Token name = e.name;
+		if (name == null) throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
+		
+		//get name from interpreter
+		EnvisionObject obj = interpreter.lookUpVariable(e.name.lexeme);
+		
+		//convert primitive variable values to their object value
+		//if (obj instanceof EnvisionVariable env_var) return ObjectCreator.wrap(env_var.get_i());
+		
+		return obj;
 	}
 	
 }

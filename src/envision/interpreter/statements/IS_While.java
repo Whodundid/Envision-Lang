@@ -39,11 +39,11 @@ public class IS_While extends StatementExecutor<Stmt_While> {
 					popScope();
 				}
 			}
-			while (isTruthy(evaluate(statement.condition)));
+			while (isTrue(evaluate(statement.condition)));
 		}
 		else {
 			TOP:
-			while (isTruthy(evaluate(statement.condition))) {
+			while (isTrue(evaluate(statement.condition))) {
 				Statement b = statement.body;
 				if (b != null) {
 					pushScope();

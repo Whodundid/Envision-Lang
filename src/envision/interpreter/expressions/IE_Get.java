@@ -22,24 +22,24 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	//--------------------------------------------------------------------
 
 	@Override
-	public Object run(Expr_Get e) {
-		Object o = evaluate((expression = e).object);
+	public EnvisionObject run(Expr_Get e) {
+		EnvisionObject o = evaluate((expression = e).object);
 		
-		if (o instanceof ClassInstance inst) { return getInstanceVal(inst); }
+		if (o instanceof ClassInstance inst) return getInstanceVal(inst);
 		//if (o instanceof InheritableObject) { }
-		if (o instanceof EnvisionCodeFile code_file) { return getImportVal(code_file); }
+		if (o instanceof EnvisionCodeFile code_file) return getImportVal(code_file);
 		//if (o instanceof EnvisionEnum enum_obj) { return getEnumValue(enum_obj); }
 		
-		throw new EnvisionError("TEMP: Invalid get expression! " + e + " : " + o);
+		throw new EnvisionError("TEMP: Invalid get expression! " + e + " : " + o + " : " + o.getClass());
 	}
 	
 	//--------------------------------------------------------------------
 	
-	private Object getInstanceVal(ClassInstance in) {
+	private EnvisionObject getInstanceVal(ClassInstance in) {
 		EnvisionObject object = in.get(expression.name.lexeme);
 		
 		//first check if the object even exists
-		if (object == null) { throw new UndefinedValueError(expression.name.lexeme); }
+		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
 		
 		//check if restricted
 		//if (object.isRestricted()) {
@@ -55,11 +55,11 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 		return object;
 	}
 	
-	private Object getImportVal(EnvisionCodeFile in) {
+	private EnvisionObject getImportVal(EnvisionCodeFile in) {
 		EnvisionObject object = in.getValue(expression.name.lexeme);
 		
 		//first check if the object even exists
-		if (object == null) { throw new UndefinedValueError(expression.name.lexeme); }
+		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
 		
 		//check if restricted
 		//if (object.isRestricted()) {
@@ -92,7 +92,7 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	
 	//--------------------------------------------------------------------
 	
-	public static Object run(EnvisionInterpreter in, Expr_Get e) {
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_Get e) {
 		return new IE_Get(in).run(e);
 	}
 	

@@ -46,7 +46,8 @@ public class PS_ParseDeclaration extends GenericParser {
 		
 		//check for appropriate continuing statement
 		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF);
-		if (match(FUNC, OPERATOR_)) 	return dec.setDeclarationType(FUNC_DEF);
+		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF);
+		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF);
 		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF);
 		
 		//parse datatype

@@ -15,12 +15,12 @@ public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer>
 		super(in);
 	}
 	
-	public static Object run(EnvisionInterpreter in, Expr_ListInitializer e) {
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_ListInitializer e) {
 		return new IE_ListInitializer(in).run(e);
 	}
 
 	@Override
-	public Object run(Expr_ListInitializer expression) {
+	public EnvisionObject run(Expr_ListInitializer expression) {
 		//create new generic list
 		EnvisionList l = EnvisionListClass.newList();
 		

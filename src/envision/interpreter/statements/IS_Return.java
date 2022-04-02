@@ -29,7 +29,7 @@ public class IS_Return extends StatementExecutor<Stmt_Return> {
 		
 		//if there is a condition on the return, evaluate the condition and
 		//only return a value if the condition is true
-		if (cond != null && !isTruthy(evaluate(cond))) return;
+		if (cond != null && !isTrue(evaluate(cond))) return;
 		
 		//otherwise, return some kind of value
 		if (r instanceof EArrayList<?>) {

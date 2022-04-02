@@ -1,6 +1,5 @@
 package envision.packages.env.math;
 
-import envision.interpreter.EnvisionInterpreter;
 import envision.packages.EnvisionLangPackage;
 
 public class MathPackage extends EnvisionLangPackage {
@@ -12,7 +11,7 @@ public class MathPackage extends EnvisionLangPackage {
 	}
 
 	@Override
-	public void buildMethods() {
+	public void buildFunctions() {
 		packageScope.defineFunction(new Sqrt());
 		packageScope.defineFunction(new Pow());
 		packageScope.defineFunction(new Log());
@@ -22,18 +21,6 @@ public class MathPackage extends EnvisionLangPackage {
 		packageScope.defineFunction(new RandDouble());
 		packageScope.defineFunction(new RandStr());
 		packageScope.defineFunction(new RandName());
-	}
-
-	@Override
-	public void buildFields() {
-	}
-
-	@Override
-	public void buildClasses(EnvisionInterpreter interpreter) {
-	}
-	
-	@Override
-	public void buildPackages(EnvisionInterpreter interpreter) {
 	}
 	
 }

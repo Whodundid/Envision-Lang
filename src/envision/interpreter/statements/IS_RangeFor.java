@@ -1,7 +1,7 @@
 package envision.interpreter.statements;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.VariableUtil;
+import envision.interpreter.util.creationUtil.NumberUtil;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
@@ -77,14 +77,14 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 				if (right instanceof EnvisionList env_list) 		right = (long) env_list.size_i();
 				else if (right instanceof String str) 				right = (long) str.length();
 				else if (right instanceof EnvisionString env_str) 	right = (long) env_str.length_i();
-				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.long_val;
+				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.int_val;
 				else 												right = ((Number) right).longValue();
 				
 				//handle by
 				if (by instanceof EnvisionList env_list) 			by = (long) env_list.size_i();
 				else if (by instanceof String str) 					by = (long) str.length();
 				else if (by instanceof EnvisionString env_str) 		by = (long) env_str.length_i();
-				else if (by instanceof EnvisionInt env_int) 		by = (long) env_int.long_val;
+				else if (by instanceof EnvisionInt env_int) 		by = (long) env_int.int_val;
 				else 												by = ((Number) by).longValue();
 			}
 			catch (Exception e) {
@@ -133,7 +133,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 					
 					//if the next most position is less than it's respective limit, increment it
 					if (checkLess(next)) {
-						VariableUtil.incrementValue(next.a, next.c, true);
+						NumberUtil.increment(next.a, next.c, true);
 						carrying = false;
 					}
 					//otherwise, zero it out then continue until a range is found that is not at the end
@@ -160,7 +160,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	//-------------------------------
 	
 	private void inc(EnvisionObject obj, Number amount) {
-		VariableUtil.incrementValue(obj, amount, true);
+		NumberUtil.increment(obj, amount, true);
 	}
 	
 	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) {

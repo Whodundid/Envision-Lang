@@ -3,11 +3,8 @@ package envision.interpreter.util;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.NullVariableError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.ParameterData;
 import envision.tokenizer.EscapeCode;
 import eutil.strings.StringUtil;
 
@@ -15,8 +12,8 @@ public class EnvisionStringFormatter {
 	
 	private EnvisionStringFormatter() {}
 
-	public static String formatPrint(EnvisionInterpreter interpreter, Object o) {
-		return formatPrint(interpreter, new Object[] {o});
+	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject o) {
+		return formatPrint(interpreter, new EnvisionObject[] {o});
 	}
 	
 	/**
@@ -28,24 +25,20 @@ public class EnvisionStringFormatter {
 	 * @return String formatted for println
 	 */
 	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		var out = new StringBuilder();
+		StringBuilder out = new StringBuilder();
 		
 		for (int i = 0; i < args.length; i++) {
-			Object o = args[i];
+			EnvisionObject o = args[i];
 			
 			//test for toString overload
 			if (o instanceof ClassInstance inst) {
-				EnvisionFunction toString = inst.getFunction("toString", new ParameterData());
-				if (toString != null) {
-					try {
-						toString.invoke(interpreter, new EnvisionObject[0]);
-					}
-					catch (ReturnValue r) {
-						String str_r = (String) EnvisionObject.convert(r.object);
-						out.append(handleEscapes(interpreter, str_r, inst));
-					}
-				}
-				else out.append(o.toString());
+				//grab the toString of the instance as well as the instance itself
+				String str = inst.executeToString_i(interpreter);
+				
+				ClassInstance to_pass = null;
+				if (!inst.isPrimitive()) to_pass = inst;
+					
+				out.append(handleEscapes(interpreter, str, to_pass));
 			}
 			else {
 				out.append(handleEscapes(interpreter, StringUtil.toString(o), null));
@@ -60,7 +53,7 @@ public class EnvisionStringFormatter {
 	
 	/** Processes an incomming string and parses for escape characters and performs the accoring function if one is found. */
 	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst) {
-		var out = new StringBuilder();
+		StringBuilder out = new StringBuilder();
 		
 		//search for escape characters and handle them accordingly
 		for (int i = 0; i < in.length(); i++) {
@@ -133,7 +126,6 @@ public class EnvisionStringFormatter {
 		return name.toString();
 	}
 	
-	public static String processObject(EnvisionInterpreter interpreter, String varName) { return processObject(interpreter, varName, null); }
 	public static String processObject(EnvisionInterpreter interpreter, String varName, ClassInstance inst) {
 		EnvisionObject obj = null;
 		
@@ -143,28 +135,14 @@ public class EnvisionStringFormatter {
 		else obj = interpreter.scope().get(varName);
 		
 		//if the obj returned is a class instance, recursive replacement will need to be performed
-		if (obj instanceof ClassInstance obj_inst) return processClassInstance(interpreter, obj_inst);
+		if (obj instanceof ClassInstance obj_inst) {
+			String r_str = obj_inst.executeToString_i(interpreter);
+			return handleEscapes(interpreter, r_str, obj_inst);
+		}
 		//otherwise append the object's string value
 		else if (obj != null) return StringUtil.toString(obj);
 		//if the obj is null then the variable doesn't actually exist -- throw an error
 		else throw new NullVariableError(varName);
-	}
-	
-	public static String processClassInstance(EnvisionInterpreter interpreter, ClassInstance rInst) {
-		EnvisionFunction toString = rInst.getFunction("toString", new ParameterData());
-		
-		if (toString != null) {
-			try {
-				toString.invoke(interpreter, new EnvisionObject[0]);
-			}
-			catch (ReturnValue r) {
-				//recursively replace
-				return handleEscapes(interpreter, StringUtil.toString(r.object), rInst);
-			}
-			throw new EnvisionError("String class instance replacement: this shouldn't be possible!");
-		}
-		
-		return rInst.toString();
 	}
 	
 }

@@ -32,6 +32,9 @@ public class EnvisionCharClass extends EnvisionClass {
 	 */
 	private EnvisionCharClass() {
 		super(Primitives.CHAR);
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------

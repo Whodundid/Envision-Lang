@@ -7,6 +7,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
 
 public class DebugScope extends EnvisionFunction {
@@ -33,9 +34,11 @@ public class DebugScope extends EnvisionFunction {
 			}
 			if (o instanceof ClassInstance) {
 				ClassInstance inst = (ClassInstance) o;
+				EnvisionDatatype type = inst.getDatatype();
+				Scope inst_scope = inst.getScope();
 				String header = "\n";
 				header += "------------------------------------------------------------";
-				header += "\nSCOPE DEBUG: (" + inst + " : " + o + ")\n" + ((ClassInstance) o).getScope() + "\n" + ((ClassInstance) o).getScope().getParentScope();
+				header += "\nSCOPE DEBUG: (" + type + " : " + o + ")\n" + inst_scope + "\n" + inst_scope.getParentScope();
 				header += "\n------------------------------------------------------------";
 				System.out.println(header);
 			}

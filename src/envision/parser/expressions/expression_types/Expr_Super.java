@@ -1,5 +1,6 @@
 package envision.parser.expressions.expression_types;
 
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.tokenizer.Token;
@@ -24,7 +25,7 @@ public class Expr_Super implements Expression {
 	}
 	
 	@Override
-	public Object execute(ExpressionHandler handler) {
+	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleSuper_E(this);
 	}
 	

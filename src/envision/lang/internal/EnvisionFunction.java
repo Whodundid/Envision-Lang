@@ -14,6 +14,7 @@ import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Parameter;
 import envision.lang.util.ParameterData;
@@ -288,12 +289,6 @@ public class EnvisionFunction extends ClassInstance {
 				&& m.isConstructor == isConstructor && m.isOperatorOverload == isOperatorOverload;
 	}
 	
-	//----------------
-	// Invoke Methods
-	//----------------
-	
-	
-	
 	//-------------------
 	// Overload Handling
 	//-------------------
@@ -509,6 +504,29 @@ public class EnvisionFunction extends ClassInstance {
 	//---------
 	
 	/**
+	 * Compares the incoming function name against this function's name.
+	 * Returns true if they match.
+	 * 
+	 * @param funcName The incoming function name
+	 * @return True if matching
+	 */
+	public boolean compare(String funcName) {
+		return this.functionName.equals(funcName);
+	}
+	
+	/**
+	 * Directly compares this function's name and parameters to the
+	 * incoming name and parameters. Returns true if they match
+	 * 
+	 * @param funcName The incoming function name
+	 * @param params The incoming parameters
+	 * @return True if matching
+	 */
+	public boolean compare(String funcName, ParameterData params) {
+		return this.functionName.equals(funcName) && this.params.compare(params);
+	}
+	
+	/**
 	 * The expected number of arguments to be read. 255 is the absolute
 	 * max.
 	 */
@@ -536,9 +554,35 @@ public class EnvisionFunction extends ClassInstance {
 	 * Should be called initially to check for valid arguments.
 	 * If arguments are valid, then the actual invoke method is called.
 	 */
-	public void invoke_I(String func_name, EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	public void invoke_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		checkArgs(args);
 		invoke(interpreter, args);
+	}
+	
+	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject arg) {
+		return invoke_r(interpreter, new EnvisionObject[]{arg});
+	}
+	
+	/**
+	 * Executes and returns the result of this function call. If the
+	 * function does not actually return anything, return VOID instead.
+	 * 
+	 * @param <E> An expected function return type
+	 * @param interpreter
+	 * @param args
+	 * @return
+	 */
+	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		//execute function
+		try {
+			invoke_i(interpreter, args);
+		}
+		catch (ReturnValue r) {
+			return (E) r.result;
+		}
+		
+		//return void by default
+		return (E) EnvisionVoid.VOID;
 	}
 	
 	/**
@@ -567,8 +611,13 @@ public class EnvisionFunction extends ClassInstance {
 				Parameter type = types.get(j);
 				Parameter obj = args.get(i);
 				
-				if (!type.compare(obj)) throw new InvalidDatatypeError(obj, type);
+				if (!type.compare(obj)) throw new InvalidDatatypeError(type, obj);
 			}
+			
+			//ensure that there is a valid function overload to support the given arguments
+			EnvisionFunction overload = getOverload(args);
+			//if there are no overloads with matching parameters -- throw an error
+			if (overload == null) throw new NoOverloadError(this, args);
 		}
 	}
 	

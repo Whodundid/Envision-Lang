@@ -179,4 +179,16 @@ public enum Operator implements IKeyword {
 		return (types & type.byte_val) == type.byte_val;
 	}
 	
+	/**
+	 * Returns true if this operator is a unary expression operator.
+	 * 
+	 * @return true if unary
+	 */
+	public boolean isUnary() {
+		return switch (this) {
+		case NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+		default -> false;
+		};
+	}
+	
 }

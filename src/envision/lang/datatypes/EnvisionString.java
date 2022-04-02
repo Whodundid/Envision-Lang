@@ -2,8 +2,15 @@ package envision.lang.datatypes;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
+import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NullVariableError;
+import envision.exceptions.errors.objects.UnsupportedOverloadError;
+import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
+import envision.lang.classes.ClassInstance;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
+import envision.tokenizer.Operator;
 
 /** A script variable representing a list of characters. */
 public class EnvisionString extends EnvisionVariable {
@@ -40,6 +47,21 @@ public class EnvisionString extends EnvisionVariable {
 	//-----------
 	
 	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof EnvisionString env_string && env_string.equals(env_string));
+	}
+	
+	@Override
+	public String toString() {
+		return string_val;
+	}
+	
+	@Override
+	public EnvisionString copy() {
+		return new EnvisionString(this);
+	}
+	
+	@Override
 	public EnvisionObject get() {
 		return this;
 	}
@@ -70,13 +92,65 @@ public class EnvisionString extends EnvisionVariable {
 	}
 	
 	@Override
-	public String toString() {
-		return "\"" + string_val + "\"";
+	public boolean supportsOperator(Operator op) {
+		return switch (op) {
+		case ADD, MUL -> true;
+		case ADD_ASSIGN, MUL_ASSIGN -> true;
+		default -> false;
+		};
 	}
 	
 	@Override
-	public EnvisionString copy() {
-		return new EnvisionString(this);
+	public EnvisionObject handleOperatorOverloads
+		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
+			throws UnsupportedOverloadError
+	{
+		//reject null object values
+		if (obj == null) throw new NullVariableError();
+		
+		//only support '+', '+=', '*', '*='
+		
+		//addition operators
+		if (op == Operator.ADD || op == Operator.ADD_ASSIGN) {
+			String obj_toString = null;
+			
+			//convert incomming object to a string representation
+			if (obj instanceof EnvisionVariable env_var) 	obj_toString = env_var.toString();
+			else if (obj instanceof ClassInstance inst) 	obj_toString = inst.executeToString_i(interpreter);
+			else 											obj_toString = obj.toString();
+			
+			//add operator
+			if (op == Operator.ADD) return EnvisionStringClass.newString(string_val + obj_toString);
+			//add assign operator
+			else {
+				string_val += obj_toString;
+				return this;
+			}
+		}
+		
+		//mul_addition operators
+		if (op == Operator.MUL || op == Operator.MUL_ASSIGN) {
+			long multiply_val = 0;
+			
+			//convert incomming object to an integer representation
+			if (obj instanceof EnvisionInt env_int) multiply_val = env_int.int_val;
+			else throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, obj.getDatatype());
+			
+			//repeat current string 'x' number of times
+			StringBuilder new_val = new StringBuilder();
+			for (int i = 0; i < multiply_val; i++) new_val.append(string_val);
+			
+			//mul operator
+			if (op == Operator.MUL) return EnvisionStringClass.newString(new_val.toString());
+			//mul assign operator
+			else {
+				string_val = new_val.toString();
+				return this;
+			}
+		}
+			
+		//throw error if this point is reached
+		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 	}
 	
 	//---------
@@ -85,6 +159,7 @@ public class EnvisionString extends EnvisionVariable {
 	
 	public char charAt_i(long pos) { return string_val.charAt((int) pos); }
 	public char charAt_i(int pos) { return string_val.charAt(pos); }
+	public EnvisionChar charAt(EnvisionInt pos) { return charAt((int) pos.int_val); }
 	public EnvisionChar charAt(long pos) { return charAt((int) pos); }
 	public EnvisionChar charAt(int pos) {
 		EnvisionChar c = EnvisionCharClass.newChar(string_val.charAt(pos));
@@ -152,8 +227,8 @@ public class EnvisionString extends EnvisionVariable {
 	
 	public String substring_i(int start) { return substring_i(start, string_val.length()); }
 	public String substring_i(int start, int end) { return string_val.substring(start, end); }
-	public EnvisionString substring(EnvisionInt start) { return substring((int) start.long_val); }
-	public EnvisionString substring(EnvisionInt start, EnvisionInt end) { return substring((int) start.long_val, (int) end.long_val); }
+	public EnvisionString substring(EnvisionInt start) { return substring((int) start.int_val); }
+	public EnvisionString substring(EnvisionInt start, EnvisionInt end) { return substring((int) start.int_val, (int) end.int_val); }
 	public EnvisionString substring(int start) { return EnvisionStringClass.newString(substring_i(start)); }
 	public EnvisionString substring(int start, int end) {
 		return EnvisionStringClass.newString(substring_i(start, end));

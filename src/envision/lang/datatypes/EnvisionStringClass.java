@@ -11,6 +11,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.internal.EnvisionNull;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
@@ -35,6 +36,9 @@ public class EnvisionStringClass extends EnvisionClass {
 		
 		//define static class members
 		staticClassScope.defineFunction(new IFunc_static_valueOf());
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------
@@ -53,6 +57,72 @@ public class EnvisionStringClass extends EnvisionClass {
 		EnvisionString str = new EnvisionString(value);
 		STRING_CLASS.defineScopeMembers(str);
 		return str;
+	}
+	
+	/**
+	 * Takes in some EnvisionObject and returns it's direct String
+	 * representation. Accounts for null values. Does not account for
+	 * class instance 'toString' overrides however.
+	 * 
+	 * @param value The object to be converted to a string
+	 * @return An EnvisionString containing the String value of the given
+	 *         object
+	 */
+	public static EnvisionString valueOf(EnvisionObject value) {
+		String str_val = null;
+		if (value == null) str_val = EnvisionNull.NULL.getTypeString();
+		else str_val = value.getTypeString();
+		EnvisionString str = new EnvisionString(str_val);
+		STRING_CLASS.defineScopeMembers(str);
+		return str;
+	}
+	
+	/**
+	 * Joins the values of each EnvisionString into a single
+	 * EnvisionString.
+	 * 
+	 * @param a First String
+	 * @param b Second String
+	 * @return A joined version of each string's contents
+	 */
+	public static EnvisionString concatenate(EnvisionString a, EnvisionString b) {
+		return newString(a.string_val + b.string_val);
+	}
+	
+	/**
+	 * Joins the values of each String into a single
+	 * EnvisionString.
+	 * 
+	 * @param a First String
+	 * @param b Second String
+	 * @return A joined version of each string's contents
+	 */
+	public static EnvisionString concatenate(String a, EnvisionString b) {
+		return newString(a + b.string_val);
+	}
+	
+	/**
+	 * Joins the values of each String into a single
+	 * EnvisionString.
+	 * 
+	 * @param a First String
+	 * @param b Second String
+	 * @return A joined version of each string's contents
+	 */
+	public static EnvisionString concatenate(EnvisionString a, String b) {
+		return newString(a.string_val + b);
+	}
+	
+	/**
+	 * Joins the values of each String into a single
+	 * EnvisionString.
+	 * 
+	 * @param a First String
+	 * @param b Second String
+	 * @return A joined version of each string's contents
+	 */
+	public static EnvisionString concatenate(String a, String b) {
+		return newString(a + b);
 	}
 	
 	//-----------
@@ -104,6 +174,8 @@ public class EnvisionStringClass extends EnvisionClass {
 		Scope inst_scope = str.getScope();
 		
 		//define instance members
+		inst_scope.defineFunction(new IFunc_equals(str)); //override equals
+		inst_scope.defineFunction(new IFunc_toString(str)); //override toString
 		inst_scope.defineFunction(new IFunc_charAt(str));
 		inst_scope.defineFunction(new IFunc_toList(str));
 		inst_scope.defineFunction(new IFunc_length(str));
@@ -122,10 +194,34 @@ public class EnvisionStringClass extends EnvisionClass {
 	// Instance Member Functions
 	//---------------------------
 	
+	/**
+	 * Override equals to account for internal string value.
+	 */
+	public static class IFunc_equals<E extends EnvisionString> extends InstanceFunction<E> {
+		IFunc_equals(E instIn) { super(instIn, BOOLEAN, "equals", VAR); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			EnvisionObject obj = args[0];
+			boolean eq = false;
+			if (obj instanceof EnvisionString env_str) eq = inst.string_val.equals(env_str.string_val);
+			EnvisionBoolean eq_obj = EnvisionBooleanClass.newBoolean(eq);
+			ret(eq_obj);
+		}
+	}
+	
+	/**
+	 * Override toString to account for internal string value.
+	 */
+	public static class IFunc_toString<E extends EnvisionString> extends InstanceFunction<E> {
+		IFunc_toString(E instIn) { super(instIn, STRING, "toString"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(inst);
+		}
+	}
+	
 	private static class IFunc_charAt<E extends EnvisionString> extends InstanceFunction<E> {
 		IFunc_charAt(E inst) { super(inst, CHAR, "charAt", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			int pos = (int) ((EnvisionInt) args[0]).long_val;
+			int pos = (int) ((EnvisionInt) args[0]).int_val;
 			ret(inst.charAt(pos));
 		}
 	}

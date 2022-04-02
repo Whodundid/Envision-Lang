@@ -35,6 +35,9 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		
 		//define static members
 		staticClassScope.defineFunction(new IFunc_static_valueOf());
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------
@@ -106,6 +109,8 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		//define instance members
 		inst_scope.defineFunction(new IFunc_get(d));
 		inst_scope.defineFunction(new IFunc_set(d));
+		inst_scope.defineFunction(new IFunc_min(d));
+		inst_scope.defineFunction(new IFunc_max(d));
 	}
 	
 	//---------------------------
@@ -124,6 +129,20 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.double_val = ((EnvisionDouble) args[0]).double_val;
 			ret(inst);
+		}
+	}
+	
+	private static class IFunc_min<E extends EnvisionDouble> extends InstanceFunction<E> {
+		IFunc_min(E instIn) { super(instIn, DOUBLE, "min"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(EnvisionDoubleClass.newDouble(Double.MIN_VALUE));
+		}
+	}
+	
+	private static class IFunc_max<E extends EnvisionDouble> extends InstanceFunction<E> {
+		IFunc_max(E instIn) { super(instIn, DOUBLE, "max"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(EnvisionDoubleClass.newDouble(Double.MAX_VALUE));
 		}
 	}
 	

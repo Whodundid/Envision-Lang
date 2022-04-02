@@ -35,6 +35,9 @@ public class EnvisionIntClass extends EnvisionClass {
 		
 		//define static members
 		staticClassScope.defineFunction(new IFunc_static_valueOf());
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------
@@ -115,14 +118,14 @@ public class EnvisionIntClass extends EnvisionClass {
 	private static class IFunc_get<E extends EnvisionInt> extends InstanceFunction<E> {
 		IFunc_get(E instIn) { super(instIn, INT, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionDoubleClass.newDouble(inst.long_val));
+			ret(EnvisionIntClass.newInt(inst.int_val));
 		}
 	}
 	
 	private static class IFunc_set<E extends EnvisionInt> extends InstanceFunction<E> {
 		IFunc_set(E instIn) { super(instIn, INT, "set", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			inst.long_val = ((EnvisionInt) args[0]).long_val;
+			inst.int_val = ((EnvisionInt) args[0]).int_val;
 			ret(inst);
 		}
 	}

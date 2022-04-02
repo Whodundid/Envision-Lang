@@ -8,10 +8,13 @@ import envision.exceptions.errors.InvalidArgumentError;
 import envision.exceptions.errors.listErrors.EmptyListError;
 import envision.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision.exceptions.errors.listErrors.LockedListError;
+import envision.exceptions.errors.objects.UnsupportedOverloadError;
+import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
+import envision.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
@@ -71,6 +74,10 @@ public class EnvisionList extends ClassInstance {
 	// Overrides
 	//-----------
 	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof EnvisionList env_list && env_list.list == list);
+	}
 	
 	@Override
 	public EnvisionList copy() {
@@ -78,35 +85,34 @@ public class EnvisionList extends ClassInstance {
 		return new EnvisionList(this);
 	}
 	
-	//--------------------------------------
-	
-	/*
-	@Override
-	protected EnvisionObject runConstructor(EnvisionInterpreter interpreter, Object[] args) {
-		if (args.length == 0) { return new EnvisionInt(); }
-		if (args.length == 1) {
-			Object obj = convert(args[0]);
-			
-			if (obj instanceof EnvisionList) { return new EnvisionList((EnvisionList) obj); }
-			if (obj instanceof Long) { return new EnvisionList().setSize((long) obj, new EnvisionNullObject()); }
-		}
-		if (args.length == 2) {
-			Object a = convert(args[0]);
-			Object b = convert(args[1]);
-			
-			if (a instanceof Long) { return new EnvisionList().setSize((long) a, b); }
-		}
-		return null;
-	}
-	*/
-	
-	//-----------
-	// Overrides
-	//-----------
-	
 	@Override
 	public String toString() {
 		return "[" + StringUtil.combineAll(list, ", ") + "]";
+	}
+	
+	@Override
+	public boolean supportsOperator(Operator op) {
+		return switch (op) {
+		case ADD -> true;
+		default -> false;
+		};
+	}
+	
+	@Override
+	public EnvisionObject handleOperatorOverloads
+		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
+			throws UnsupportedOverloadError
+	{
+		//Special case -- EnvisionLists do natively support null additions
+		
+		//only support '+=' operator
+		if (op != Operator.ADD_ASSIGN)
+			throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		
+		//attempt to add the incomming object to this list
+		add(obj);
+		
+		return this;
 	}
 	
 	//---------
@@ -167,7 +173,7 @@ public class EnvisionList extends ClassInstance {
 	// List Get Methods
 	//------------------
 	
-	public EnvisionObject get(EnvisionInt index) { return get((int) index.long_val); }
+	public EnvisionObject get(EnvisionInt index) { return get((int) index.int_val); }
 	public EnvisionObject get(long index) { return get((int) index); }
 	public EnvisionObject get(int index) { return list.get(checkEmpty(checkIndex(index))); }
 	
@@ -178,7 +184,7 @@ public class EnvisionList extends ClassInstance {
 	// List Remove Methods
 	//---------------------
 	
-	public EnvisionObject remove(EnvisionInt index) { return remove(index.long_val); }
+	public EnvisionObject remove(EnvisionInt index) { return remove(index.int_val); }
 	public EnvisionObject remove(long index) { return remove((int) index); }
 	public EnvisionObject remove(int index) {
 		if (sizeLocked) throw lockedError();
@@ -200,7 +206,7 @@ public class EnvisionList extends ClassInstance {
 	//------------------
 	
 	public EnvisionObject set(EnvisionInt index, EnvisionObject obj) {
-		return list.set(checkIndex((int) index.long_val), obj);
+		return list.set(checkIndex((int) index.int_val), obj);
 	}
 	
 	public EnvisionObject set(long index, EnvisionObject obj) {
@@ -224,13 +230,13 @@ public class EnvisionList extends ClassInstance {
 	//-------------------
 	
 	public EnvisionList setSize(EnvisionObject[] args) {
-		if (args.length == 2) return setSize(((EnvisionInt) args[0]).long_val, args[1]);
-		if (args.length == 1) return setSize(((EnvisionInt) args[0]).long_val, null);
+		if (args.length == 2) return setSize(((EnvisionInt) args[0]).int_val, args[1]);
+		if (args.length == 1) return setSize(((EnvisionInt) args[0]).int_val, null);
 		throw new EnvisionError("Invalid argumets -- EnvisionList::setSize");
 	}
 	
 	public EnvisionList setSize(EnvisionObject sizeObj, EnvisionObject defaultValue) {
-		if (sizeObj instanceof EnvisionInt env_int) return setSize(env_int.long_val, defaultValue);
+		if (sizeObj instanceof EnvisionInt env_int) return setSize(env_int.int_val, defaultValue);
 		throw new InvalidArgumentError("Expected an integer for size!");
 	}
 	
@@ -269,7 +275,7 @@ public class EnvisionList extends ClassInstance {
 		return new EnvisionList(this, l);
 	}
 	
-	public EnvisionList swap(EnvisionInt a, EnvisionInt b) { return swap(a.long_val, b.long_val); }
+	public EnvisionList swap(EnvisionInt a, EnvisionInt b) { return swap(a.int_val, b.int_val); }
 	public EnvisionList swap(long indexA, long indexB) { return swap((int) indexA, (int) indexB); }
 	public EnvisionList swap(int indexA, int indexB) {
 		checkEmpty();
@@ -278,14 +284,14 @@ public class EnvisionList extends ClassInstance {
 	}
 	
 	public EnvisionList shiftLeft() { return shiftLeft(1); }
-	public EnvisionList shiftLeft(EnvisionInt intIn) { return shiftLeft((int) intIn.long_val); }
+	public EnvisionList shiftLeft(EnvisionInt intIn) { return shiftLeft((int) intIn.int_val); }
 	public EnvisionList shiftLeft(long amount) { return shiftLeft((int) amount); }
 	public EnvisionList shiftLeft(int amount) {
 		return new EnvisionList(this, list.shiftLeft(amount));
 	}
 	
 	public EnvisionList shiftRight() { return shiftRight(1); }
-	public EnvisionList shiftRight(EnvisionInt intIn) { return shiftRight((int) intIn.long_val); }
+	public EnvisionList shiftRight(EnvisionInt intIn) { return shiftRight((int) intIn.int_val); }
 	public EnvisionList shiftRight(long amount) { return shiftRight((int) amount); }
 	public EnvisionList shiftRight(int amount) {
 		return new EnvisionList(this, list.shiftRight(amount));

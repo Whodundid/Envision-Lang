@@ -220,6 +220,8 @@ public class ExpressionParser extends GenericParser {
 	public static Expression functionCall() {
 		Expression e = primary();
 		
+		//System.out.println("PRIMARY : " + e + " : " + e.getClass());
+		
 		while (true) {
 			if (check(PAREN_L)) {
 				e = finishCall(e);
@@ -232,6 +234,8 @@ public class ExpressionParser extends GenericParser {
 			else if (match(PERIOD)) {
 				Token name = consume("Expected property name after '.'!", IDENTIFIER);
 				
+				//System.out.println("HERE: " + name + " : " + next());
+				
 				//check if function call
 				if (match(PAREN_L)) {
 					//MethodCallExpression next = null;
@@ -243,11 +247,11 @@ public class ExpressionParser extends GenericParser {
 					}
 					
 					consume(PAREN_R, "Expected a ')' to end function arguments!");
-					
+					/*
 					Expr_FunctionCall mce = new Expr_FunctionCall(e, name, args);
 					
 					while (match(PERIOD)) {
-						Token nextName = consume("Expected property name after '.'!", IDENTIFIER/*, INIT*/);
+						Token nextName = consume("Expected property name after '.'!", IDENTIFIER);
 						//System.out.println("next name: " + nextName);
 						EArrayList<Expression> nextArgs = new EArrayList();
 						
@@ -265,6 +269,7 @@ public class ExpressionParser extends GenericParser {
 					}
 					
 					e = mce;
+					*/
 				}
 				else e = new Expr_Get(e, name);
 			}

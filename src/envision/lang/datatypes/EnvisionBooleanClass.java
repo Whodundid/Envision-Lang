@@ -34,6 +34,9 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		
 		//define static members
 		staticClassScope.defineFunction(new IFunc_static_valueOf());
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------

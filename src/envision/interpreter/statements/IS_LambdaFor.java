@@ -4,7 +4,7 @@ import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
-import envision.interpreter.util.creationUtil.VariableUtil;
+import envision.interpreter.util.creationUtil.NumberUtil;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
@@ -65,19 +65,19 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 		handleInit();
 		hasPostArgs = s.post != null && s.post.isNotEmpty();
 		
-		while (index.long_val < iterable.size()) {
+		while (index.int_val < iterable.size()) {
 			//push loop iteration scope
 			pushScope();
 			
 			//execute lambda then body
-			handleLambdaProductions(index.long_val);
+			handleLambdaProductions(index.int_val);
 			if (body != null) execute(body);
 			
 			//pop loop iteration scope
 			popScope();
 			
 			if (!hasPostArgs) {
-				VariableUtil.incrementValue(index, false);
+				NumberUtil.increment(index, false);
 			}
 			else {
 				for (Expression postExp : s.post) evaluate(postExp);

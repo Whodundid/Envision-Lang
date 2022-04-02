@@ -16,8 +16,26 @@ import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
+/**
+ * The parent class for all Envision Functions. This is a special
+ * class in that new function instances should not, and cannot be
+ * directly instantiated from this class. Any attempt to do so will
+ * result in an error being thrown. Native function creation is
+ * strictly exclusive to the EnvisionInterpreter and its various
+ * runtime handles.
+ * 
+ * @author Hunter Bragg
+ */
 public class EnvisionFunctionClass extends EnvisionClass {
 
+	/**
+	 * The single, static class instance for which all Envision Function's
+	 * derive from. Do not use to instantiate new function instances. This
+	 * class is exclusively intended to provide a structure backbone to
+	 * functions in an object sense. This class is also responsible for
+	 * holding any (and all) native EnvisionFunction static and abstract
+	 * methods.
+	 */
 	public static final EnvisionFunctionClass FUNC_CLASS = new EnvisionFunctionClass();
 	
 	//--------------

@@ -1,7 +1,6 @@
 package envision.interpreter.expressions;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
@@ -12,10 +11,14 @@ public class IE_Set extends ExpressionExecutor<Expr_Set> {
 	public IE_Set(EnvisionInterpreter in) {
 		super(in);
 	}
-
+	
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_Set e) {
+		return new IE_Set(in).run(e);
+	}
+	
 	@Override
-	public Object run(Expr_Set expression) {
-		Object baseObject = evaluate(expression.object);
+	public EnvisionObject run(Expr_Set expression) {
+		EnvisionObject baseObject = evaluate(expression.object);
 		
 		// error if the object being set is an enum
 		//if (baseObject instanceof EnvisionEnum env_enum) throw new EnumReassignmentError(env_enum, expression.value);
@@ -34,24 +37,11 @@ public class IE_Set extends ExpressionExecutor<Expr_Set> {
 			
 			//usually there would be some type checking going on here -- but not yet..
 			
-			Object value = evaluate(expression.value);
-			if (value instanceof EnvisionObject env_obj) {
-				inst.set(expression.name.lexeme, env_obj);
-			}
-			//try to make it into an object
-			else {
-				EnvisionObject o = ObjectCreator.wrap(value);
-				if (o != null) {
-					inst.set(expression.name.lexeme, o);
-				}
-			}
+			EnvisionObject value = evaluate(expression.value);
+			inst.set(expression.name.lexeme, value);
 		}
 		
 		return null;
-	}
-	
-	public static Object run(EnvisionInterpreter in, Expr_Set e) {
-		return new IE_Set(in).run(e);
 	}
 	
 }

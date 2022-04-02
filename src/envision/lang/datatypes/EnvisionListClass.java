@@ -29,6 +29,9 @@ public class EnvisionListClass extends EnvisionClass {
 	 */
 	private EnvisionListClass() {
 		super(Primitives.LIST);
+		
+		//set final to prevent user-extension
+		setFinal();
 	}
 	
 	//---------------------

@@ -1,4 +1,4 @@
-package envision.interpreter.util.optimizations;
+package envision.lang.classes;
 
 import java.util.Map;
 
@@ -6,8 +6,6 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
-import envision.lang.classes.ClassInstance;
-import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.util.EnvisionDatatype;
 import eutil.datatypes.Box2;
@@ -108,6 +106,9 @@ public class ClassConstruct {
 			buildScope.define(field_name, the_field.getDatatype(), the_field.copy());
 		}
 		
+		//define scope memebers
+		theClass.defineScopeMembers(inst);
+		
 		//create copies of methods
 		for (EnvisionFunction m : methods) {
 			EnvisionFunction copy = m.copy().setScope(buildScope);
@@ -125,8 +126,6 @@ public class ClassConstruct {
 			copyConstructor.setScope(buildScope);
 			copyConstructor.invoke(interpreter, args);
 		}
-		
-		System.out.println("construct: " + inst.getDatatype());
 		
 		return inst;
 	}

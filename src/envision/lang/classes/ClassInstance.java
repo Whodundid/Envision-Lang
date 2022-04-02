@@ -1,24 +1,26 @@
 package envision.lang.classes;
 
-import static envision.lang.util.Primitives.*;
-
 import java.util.HashMap;
 
+import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.DuplicateFunctionError;
+import envision.exceptions.errors.FinalVarReassignmentError;
+import envision.exceptions.errors.NotAFunctionError;
+import envision.exceptions.errors.UndefinedFunctionError;
+import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
+import envision.interpreter.util.CastingUtil;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
+import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionBooleanClass;
-import envision.lang.datatypes.EnvisionInt;
-import envision.lang.datatypes.EnvisionIntClass;
-import envision.lang.datatypes.EnvisionList;
-import envision.lang.datatypes.EnvisionListClass;
+import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
+import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.InstanceFunction;
 import envision.lang.util.ParameterData;
-import envision.tokenizer.IKeyword;
 import envision.tokenizer.Operator;
 
 /**
@@ -48,6 +50,7 @@ public class ClassInstance extends EnvisionObject {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = instanceScopeIn;
+		registerNatives();
 	}
 	
 	/**
@@ -61,6 +64,7 @@ public class ClassInstance extends EnvisionObject {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = new Scope(derivingClassIn.staticClassScope);
+		registerNatives();
 	}
 	
 	//-----------
@@ -82,20 +86,262 @@ public class ClassInstance extends EnvisionObject {
 	//---------
 	
 	/**
-	 * Returns the first class level function matching the given name. If
-	 * no function with that name exists, null is returned instead.
+	 * Called during instance initialization.
 	 */
-	public EnvisionFunction getFunction(String funcName) {
-		return instanceScope.functions().getFirst(m -> m.getFunctionName().equals(funcName));
+	protected void registerNatives() {};
+	
+	/**
+	 * Used to natively handle operator overloads within class instances.
+	 * Each time an expression is processed that directly references this
+	 * object instance, this method is called and given the operator in
+	 * question, and the object the operator is being applied to in the
+	 * expression.
+	 * <p>
+	 * If no direct override to this method has been provided, this method
+	 * will attempt to find and execute a single EnvisionFunction within
+	 * this instance's scope which matches the given operator overload
+	 * parameters. In the even that no operator overload function is
+	 * found, then an UnsupportedOverloadError will be thrown to indicate
+	 * the incompatibility between this class instance and the given
+	 * expression.
+	 * <p>
+	 * Primitives and natively defined classes such as: EnvisionBoolean,
+	 * EnvisionChar, EnvisionInt, EnvisionDouble, EnvisionString,
+	 * EnvisionList, EnvisionFile directly override this method to provide
+	 * their own specific operator overload handles for various
+	 * expressions.
+	 * <p>
+	 * All expressions within Envision:Java are processed in a
+	 * left-to-right manner, meaning that an operator expression will
+	 * ALWAYS have the following structure: 'this' OPERATOR 'obj'. Where
+	 * 'this' is this object instance, OPERATOR is the operator being
+	 * used, and 'obj' is the object for which the given operator is being
+	 * applied to under the context of object instance.
+	 * 
+	 * @throws UnsupportedOverloadError Thrown when the given operator
+	 *                                  'op' is not supported by this
+	 *                                  class instance.
+	 * 
+	 * @param interpreter The interpreter for which this expression is being evaluated against
+	 * @param scopeName The name of 'this' object within the current scope
+	 * @param op  The operator being applied
+	 * @param obj The object for which the given operator is being applied
+	 *            to
+	 * @return The result of the expression
+	 */
+	public EnvisionObject handleOperatorOverloads
+		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
+			throws UnsupportedOverloadError
+	{
+		//natively support assignment '='
+		if (op == Operator.ASSIGN) {
+			//as assignment can involve complete scope overwrites, assignment
+			//operations must be directly handled using the interpreter's scope
+			//to account for scope visibility and naming
+			
+			//if the assignment object is Java:Null, this is an error and must be thrown.
+			//Java:Null should not be directly referencable in Envision, let alone assignable.
+			//EnvisionNull.Null should be used to represent actual Null values within Envision.
+			if (obj == null) throw new EnvisionError("EnvisionObject is Java:Null!");
+			
+			//check for final value reassignment
+			if (isFinal()) throw new FinalVarReassignmentError(this, obj);
+			
+			//first, start by checking if the assignment value is null
+			//in which case, simply assign null to this scope definition
+			if (obj == EnvisionNull.NULL) {
+				interpreter.scope().set(scopeName, internalType, EnvisionNull.NULL);
+				return EnvisionNull.NULL;
+			}
+			
+			//start by determining object types for assignment compatibility
+			EnvisionDatatype this_type = getDatatype();
+			EnvisionDatatype asgn_type = obj.getDatatype();
+			
+			//check for type mismatch
+			if (isStrong()) CastingUtil.assert_expected_datatype(this_type, asgn_type);
+			
+			//check for exact type matches
+			//this approach does not require value overwriting within the scope
+			if (this_type.compareType(asgn_type) && this instanceof EnvisionVariable env_var) {
+				env_var.set(obj);
+				return this;
+			}
+			
+			//assign new value in scope
+			interpreter.scope().set(scopeName, asgn_type, obj);
+			
+			//effectively this action can ultimately result in 'this' object's death
+			//within the JVM as 'this' object is removed from the scope's value
+			return obj;
+		}
+		
+		//natively support comparison '=='
+		if (op == Operator.COMPARE) {
+			//each native primitive type should have their own method 
+			//of 'equals' to account for cross language design barriers
+			return EnvisionBooleanClass.newBoolean(equals(obj));
+		}
+		
+		//natively support not equals '!='
+		if (op == Operator.NOT_EQUALS) {
+			//each native primitive type should have their own method 
+			//of 'equals' to account for cross language design barriers
+			return EnvisionBooleanClass.newBoolean(!equals(obj));
+		}
+		
+		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 	}
 	
 	/**
-	 * Returns a class level method matching the given name and parameters
-	 * (if it exists).
+	 * Returns the first function matching the given name. If no function
+	 * with that name exists, null is returned instead.
+	 * 
+	 * @param funcName The name of the function
+	 * @return The matching function
+	 */
+	public EnvisionFunction getFunction(String funcName) {
+		return instanceScope.functions().getFirst(f -> f.compare(funcName));
+	}
+	
+	/**
+	 * Returns a function on this instance's scope matching the given name
+	 * and parameters (if it exists).
+	 * 
+	 * @param funcName The name of the function
+	 * @param params   The parameters of the function
+	 * @return The matching function
 	 */
 	public EnvisionFunction getFunction(String funcName, ParameterData params) {
-		return instanceScope.functions().getFirst(
-				m -> m.getFunctionName().equals(funcName) && m.getParams().compare(params));
+		return instanceScope.functions().getFirst(f -> f.compare(funcName, params));
+	}
+	
+	/**
+	 * Attempts to execute and return a defined function within this
+	 * instance's scope. If there is no function defined with the given
+	 * name in this scope, an UndefinedFunctionError is thrown instead.
+	 * Otherwise, if there is an object with the given name but it is not
+	 * a function, a NotAFunctionError is thrown. No arguments are passed
+	 * using this version.
+	 * <p>
+	 * Note: This method can throw any of the errors involved with
+	 * standard function execution within Envision:Java. As such, it is
+	 * important to fully understand the function being called including
+	 * the parameter types and arguments that are expected.
+	 * 
+	 * @param funcName    The name of the function to call
+	 * @param interpreter The interpreter executing the function's
+	 *                    statements
+	 * 
+	 * @param <E>         The expected return type of the function
+	 * 
+	 * @return The result of the function's execution, could be void
+	 * 
+	 * @throws UndefinedFunctionError Thrown if there is no function with
+	 *                                the given name in this scope
+	 * 								
+	 * @throws NotAFunctionError      Thrown if there is an object with
+	 *                                the given name, but it's not a
+	 *                                function
+	 */
+	public <E extends EnvisionObject> E executeFunction
+		(String funcName, EnvisionInterpreter interpreter)
+			throws UndefinedFunctionError, NotAFunctionError
+	{
+		return executeFunction(funcName, interpreter, new EnvisionObject[0]);
+	}
+	
+	/**
+	 * Attempts to execute and return a defined function within this
+	 * instance's scope. If there is no function defined with the given
+	 * name in this scope, an UndefinedFunctionError is thrown instead.
+	 * Otherwise, if there is an object with the given name but it is not
+	 * a function, a NotAFunctionError is thrown.
+	 * <p>
+	 * Note: This method can throw any of the errors involved with
+	 * standard function execution within Envision:Java. As such, it is
+	 * important to fully understand the function being called including
+	 * the parameter types and arguments that are expected.
+	 * 
+	 * @param funcName    The name of the function to call
+	 * @param interpreter The interpreter executing the function's
+	 *                    statements
+	 * @param args        The arguments to pass to the function
+	 * 
+	 * @param <E>         The expected return type of the function
+	 * 
+	 * @return The result of the function's execution, could be void
+	 * 
+	 * @throws UndefinedFunctionError Thrown if there is no function with
+	 *                                the given name in this scope
+	 * 								
+	 * @throws NotAFunctionError      Thrown if there is an object with
+	 *                                the given name, but it's not a
+	 *                                function
+	 */
+	public <E extends EnvisionObject> E executeFunction
+		(String funcName, EnvisionInterpreter interpreter, EnvisionObject[] args)
+			throws UndefinedFunctionError, NotAFunctionError
+	{
+		//attempt to get function with given name from scope
+		EnvisionObject obj = instanceScope.get(funcName);
+		if (obj == null) throw new UndefinedFunctionError(funcName);
+		if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
+		
+		//execute and return function result -- even if void
+		EnvisionFunction func = (EnvisionFunction) obj;
+		E result = func.invoke_r(interpreter, args);
+		
+		//check for null values
+		//if (result.getDatatype().equals(EnvisionDatatype.NULL_TYPE)) {
+		//	if (func.getReturnType().equals(EnvisionDatatype.STRING_TYPE)) {
+		//		return (E) EnvisionStringClass.newString(EnvisionDatatype.STRING_TYPE.getType());
+		//	}
+		//}
+		
+		return result;
+	}
+	
+	/**
+	 * Directly executes this instance's toString function and returns the
+	 * result as an EnvisionString.
+	 * 
+	 * @param interpreter The interpreter executing the function's
+	 *                    statements
+	 * @return The result of this instance's toString function
+	 */
+	public EnvisionString executeToString(EnvisionInterpreter interpreter) {
+		return executeFunction("toString", interpreter, new EnvisionObject[0]);
+	}
+	
+	/**
+	 * Directly executes this instance's toString function and returns the
+	 * result as a Java:String.
+	 * 
+	 * @param interpreter The interpreter executing the function's
+	 *                    statements
+	 * @return The result of this instance's toString function
+	 */
+	public String executeToString_i(EnvisionInterpreter interpreter) {
+		EnvisionObject result = executeFunction("toString", interpreter, new EnvisionObject[0]);
+		if (result instanceof EnvisionString env_str) return result.toString();
+		return result.toString();
+	}
+	
+	public EnvisionBoolean executeEquals(EnvisionInterpreter interpreter, EnvisionObject obj) {
+		return executeEquals(interpreter, new EnvisionObject[]{obj});
+	}
+	
+	public EnvisionBoolean executeEquals(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		return executeFunction("equals", interpreter, args);
+	}
+	
+	public boolean executeEquals_i(EnvisionInterpreter interpreter, EnvisionObject obj) {
+		return executeEquals(interpreter, new EnvisionObject[]{obj}).bool_val;
+	}
+	
+	public boolean executeEquals_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		return executeEquals(interpreter, args).bool_val;
 	}
 	
 	//---------
@@ -162,7 +408,6 @@ public class ClassInstance extends EnvisionObject {
 			if (opFunc.hasOverload(incoming_params)) throw new DuplicateFunctionError(funcName, incoming_params);
 			
 			opFunc.addOverload(op);
-			
 		}
 		operators.put(operator, op);
 	}
@@ -171,7 +416,7 @@ public class ClassInstance extends EnvisionObject {
 	 * Returns the operator overload method corresponding to the given
 	 * operator. Returns null if there is no overload.
 	 */
-	public EnvisionFunction getOperator(IKeyword op) {
+	public EnvisionFunction getOperator(Operator op) {
 		return operators.get(op);
 	}
 	
@@ -190,83 +435,6 @@ public class ClassInstance extends EnvisionObject {
 	 */
 	public boolean supportsOperator(Operator op) {
 		return (op != null) ? operators.containsKey(op) : false;
-	}
-	
-	//---------------------------
-	// Instance Member Functions
-	//---------------------------
-	
-	public static class IFunc_equals<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_equals(E instIn) { super(instIn, BOOLEAN, "equals", VAR); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var eq = inst.equals((EnvisionInt) args[0]);
-			ret(EnvisionBooleanClass.newBoolean(eq));
-		}
-	}
-	
-	public static class IFunc_hash<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_hash(E instIn) { super(instIn, INT, "hash"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var hash = inst.getObjectHash();
-			ret(EnvisionIntClass.newInt(hash));
-		}
-	}
-	
-	public static class IFunc_hexHash<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_hexHash(E instIn) { super(instIn, STRING, "hexHash"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var hexHash = inst.getHexHash();
-			ret(EnvisionStringClass.newString(hexHash));
-		}
-	}
-	
-	public static class IFunc_isStatic<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_isStatic(E instIn) { super(instIn, BOOLEAN, "isStatic"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var isStatic = inst.isStatic();
-			ret(EnvisionBooleanClass.newBoolean(isStatic));
-		}
-	}
-	
-	public static class IFunc_isFinal<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_isFinal(E instIn) { super(instIn, BOOLEAN, "isFinal"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var isFinal = inst.isFinal();
-			ret(EnvisionBooleanClass.newBoolean(isFinal));
-		}
-	}
-	
-	public static class IFunc_toString<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_toString(E instIn) { super(instIn, STRING, "toString"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var toString = inst.toString();
-			ret(EnvisionStringClass.newString(toString));
-		}
-	}
-	
-	public static class IFunc_type<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_type(E instIn) { super(instIn, STRING, "type"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var type = inst.getDatatype().getType();
-			ret(EnvisionStringClass.newString(type));
-		}
-	}
-	
-	public static class IFunc_typeString<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_typeString(E instIn) { super(instIn, STRING, "typeString"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var typeString = inst.getDatatype().getType() + "_" + inst.getHexHash();
-			ret(EnvisionStringClass.newString(typeString));
-		}
-	}
-	
-	public static class IFunc_functions<E extends ClassInstance> extends InstanceFunction<E> {
-		IFunc_functions(E instIn) { super(instIn, LIST, "functions"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionList functions = EnvisionListClass.newList(EnvisionDatatype.FUNC_TYPE);
-			for (var f : inst.getScope().getMethods()) functions.add(f);
-			ret(functions);
-		}
 	}
 	
 	//-------------------------

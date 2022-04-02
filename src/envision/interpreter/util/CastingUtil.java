@@ -74,6 +74,11 @@ public class CastingUtil {
 		Primitives expected_ptype = expected.getPrimitiveType();
 		Primitives toCheck_ptype = toCheck.getPrimitiveType();
 		
+		//check for null passes
+		if (toCheck_ptype == Primitives.NULL) {
+			return;
+		}
+		
 		//-----------------------------------------------------------------------------
 		// While this system works, it does not account for these kinds of situtations
 		//

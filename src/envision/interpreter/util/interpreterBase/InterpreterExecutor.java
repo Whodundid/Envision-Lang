@@ -10,7 +10,6 @@ import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
-import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
@@ -27,33 +26,22 @@ public abstract class InterpreterExecutor {
 	//---------------------
 	
 	public void execute(Statement s) { interpreter.execute(s); }
-	public Object evaluate(Expression e) { return interpreter.evaluate(e); }
+	public EnvisionObject evaluate(Expression e) { return interpreter.evaluate(e); }
 	public void executeBlock(EArrayList<Statement> statements, Scope env) { interpreter.executeBlock(statements, env); }
 	
+	public boolean isTrue(EnvisionObject obj) { return interpreter.isTrue(obj); }
+	public boolean isEqual(EnvisionObject a, EnvisionObject b) { return interpreter.isEqual(a, b); }
+	
 	public WorkingDirectory workingDir() { return interpreter.workingDir(); }
-	public Scope global() { return interpreter.global(); }
+	public Scope global() { return interpreter.internalScope(); }
 	public Scope scope() { return interpreter.scope(); }
 	
 	protected Scope pushScope() { return interpreter.pushScope(); }
 	protected Scope popScope() { return interpreter.popScope(); }
 	
-	protected Object lookUpVariable(Token name) {
+	protected EnvisionObject lookUpVariable(String name) {
 		return interpreter.lookUpVariable(name);
 	}
-	
-	protected void checkNumberOperand(Operator operator, Object operand) {
-		interpreter.checkNumberOperand(operator, operand);
-	}
-	protected void checkNumberOperands(Operator operator, Object left, Object right) {
-		interpreter.checkNumberOperands(operator, left, right);
-	}
-	protected void checkNumberOperands(String operator, Object left, Object right) {
-		interpreter.checkNumberOperands(operator, left, right);
-	}
-	
-	protected boolean isTruthy(Object object) { return interpreter.isTruthy(object); }
-	protected boolean isEqual(Object a, Object b) { return interpreter.isEqual(a, b); }
-	//protected String stringify(Object object) { return interpreter.stringify(object); }
 	
 	protected boolean isDefined(Token name) {
 		return interpreter.isDefined(name.lexeme);
@@ -63,11 +51,11 @@ public abstract class InterpreterExecutor {
 		return interpreter.isDefined(name);
 	}
 	
-	protected EnvisionObject forceDefine(String name, Object object) {
+	protected EnvisionObject forceDefine(String name, EnvisionObject object) {
 		return interpreter.forceDefine(name, object);
 	}
 	
-	protected EnvisionObject forceDefine(String name, EnvisionDatatype type, Object object) {
+	protected EnvisionObject forceDefine(String name, EnvisionDatatype type, EnvisionObject object) {
 		return interpreter.forceDefine(name, type, object);
 	}
 	
@@ -95,8 +83,8 @@ public abstract class InterpreterExecutor {
 	 * @param in The object being compared to null
 	 * @return true if the given object is in fact null
 	 */
-	public static boolean isNull(Object in) {
-		return (in == null || in instanceof EnvisionNull);
+	public static boolean isNull(EnvisionObject in) {
+		return (in == null || in == EnvisionNull.NULL);
 	}
 	
 	/**
@@ -112,6 +100,18 @@ public abstract class InterpreterExecutor {
 	}
 	
 	/**
+	 * Returns true if the given datatype is either null by Java terms,
+	 * or is equivalent to the static EnvisionDataType.NULL by Envision
+	 * terms.
+	 * 
+	 * @param typeIn The datatype being compared to null
+	 * @return true if the given datatype is in fact null
+	 */
+	public static boolean isNull(EnvisionDatatype typeIn) {
+		return (typeIn == null || typeIn == EnvisionDatatype.NULL_TYPE);
+	}
+	
+	/**
 	 * This method will throw a NullVariableError if the given object 
 	 * is found to actually be null by either Java or Envision:Java's
 	 * terms.
@@ -121,7 +121,7 @@ public abstract class InterpreterExecutor {
 	 * 
 	 * @param in The object being compared to null.
 	 */
-	public static void assertNotNull(Object in) {
+	public static void assertNotNull(EnvisionObject in) {
 		if (isNull(in)) throw new NullVariableError(in);
 	}
 	

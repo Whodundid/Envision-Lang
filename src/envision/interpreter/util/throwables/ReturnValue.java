@@ -19,7 +19,7 @@ public class ReturnValue extends RuntimeException {
 	/**
 	 * The object being returned.
 	 */
-	public final EnvisionObject object;
+	public final EnvisionObject result;
 	
 	//--------------
 	// Constructors
@@ -27,7 +27,7 @@ public class ReturnValue extends RuntimeException {
 	
 	public ReturnValue() { this(EnvisionNull.NULL); }
 	public ReturnValue(EnvisionObject objIn) {
-		object = objIn;
+		result = objIn;
 	}
 	
 	//---------
@@ -38,7 +38,7 @@ public class ReturnValue extends RuntimeException {
 	 * Returns true if the return value is null.
 	 */
 	public boolean isNull() {
-		return object == null;
+		return result == null;
 	}
 	
 }

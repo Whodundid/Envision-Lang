@@ -15,7 +15,7 @@ public class Sleep extends EnvisionFunction {
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		try {
-			long amount = ((EnvisionInt) args[0]).long_val;
+			long amount = ((EnvisionInt) args[0]).int_val;
 			Thread.sleep(amount);
 		}
 		catch (InterruptedException e) {
