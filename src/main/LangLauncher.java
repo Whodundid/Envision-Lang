@@ -7,6 +7,7 @@ import envision.EnvisionErrorCallback;
 import envision.EnvisionSettings;
 import envision.EnvisionSettings.LaunchArgs;
 import envision.exceptions.EnvisionError;
+import eutil.random.RandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
@@ -17,6 +18,16 @@ public class LangLauncher extends EnvisionErrorCallback {
 		TracingPrintStream.enableTracingEmptyLines(true);
 		TracingPrintStream.disableTrace();
 		
+		/*
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 100000; i++) {
+			Thing a = new Thing(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
+			Thing b = new Thing(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
+			
+			System.out.println(a + " | " + b + " | " + (a.add(b)));
+		}
+		System.out.println(System.currentTimeMillis() - start);
+		*/
 		new LangLauncher();
 	}
 	
@@ -24,10 +35,10 @@ public class LangLauncher extends EnvisionErrorCallback {
 		//Thread.sleep(20000);
 		
 		Envision env = null;
-		//env = new Envision();
+		env = new Envision();
 		//env = new Envision(PRELOAD_LANGUAGE);
 		//env = new Envision(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
-		env = new Envision(PARSE_STATEMENTS, TOKENIZE);
+		//env = new Envision(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
 		//long preStart = System.currentTimeMillis();
