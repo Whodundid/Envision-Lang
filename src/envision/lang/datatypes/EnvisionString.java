@@ -15,7 +15,12 @@ import envision.tokenizer.Operator;
 /** A script variable representing a list of characters. */
 public class EnvisionString extends EnvisionVariable {
 	
-	public String string_val;
+	/**
+	 * The internal StringBuilder for which all strings are built from.
+	 * Instead of directly using a string, a StringBuilder is more memory
+	 * efficient when dealing with string concatenation and appending.
+	 */
+	protected StringBuilder string_val;
 	
 	//--------------
 	// Constructors
@@ -24,7 +29,7 @@ public class EnvisionString extends EnvisionVariable {
 	protected EnvisionString() { this(""); }
 	protected EnvisionString(String valueIn) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = valueIn;
+		string_val = new StringBuilder(valueIn);
 	}
 	
 	protected EnvisionString(EnvisionString in) {
@@ -34,12 +39,17 @@ public class EnvisionString extends EnvisionVariable {
 	
 	protected EnvisionString(EnvisionObject in) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = String.valueOf(in);
+		string_val = new StringBuilder(String.valueOf(in));
+	}
+	
+	protected EnvisionString(StringBuilder in) {
+		super(EnvisionStringClass.STRING_CLASS);
+		string_val = in;
 	}
 	
 	protected EnvisionString(Object in) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = String.valueOf(in);
+		string_val = new StringBuilder(String.valueOf(in));
 	}
 	
 	//-----------
@@ -53,7 +63,7 @@ public class EnvisionString extends EnvisionVariable {
 	
 	@Override
 	public String toString() {
-		return string_val;
+		return string_val.toString();
 	}
 	
 	@Override
@@ -67,8 +77,8 @@ public class EnvisionString extends EnvisionVariable {
 	}
 	
 	@Override
-	public Object get_i() {
-		return string_val;
+	public String get_i() {
+		return string_val.toString();
 	}
 	
 	@Override
@@ -85,7 +95,7 @@ public class EnvisionString extends EnvisionVariable {
 	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
 		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
 		if (valIn instanceof String str) {
-			string_val = str;
+			string_val = new StringBuilder(str);
 			return this;
 		}
 		throw new EnvisionError("Attempted to internally set non-string value to a string!");
@@ -120,10 +130,10 @@ public class EnvisionString extends EnvisionVariable {
 			else 											obj_toString = obj.toString();
 			
 			//add operator
-			if (op == Operator.ADD) return EnvisionStringClass.newString(string_val + obj_toString);
+			if (op == Operator.ADD) return EnvisionStringClass.newString(string_val.append(obj_toString));
 			//add assign operator
 			else {
-				string_val += obj_toString;
+				string_val.append(obj_toString);
 				return this;
 			}
 		}
@@ -144,7 +154,7 @@ public class EnvisionString extends EnvisionVariable {
 			if (op == Operator.MUL) return EnvisionStringClass.newString(new_val.toString());
 			//mul assign operator
 			else {
-				string_val = new_val.toString();
+				string_val = new_val;
 				return this;
 			}
 		}
@@ -175,12 +185,12 @@ public class EnvisionString extends EnvisionVariable {
 		return list;
 	}
 	
-	public boolean contains_i(String in) { return string_val.contains(in); }
+	public boolean contains_i(String in) { return string_val.toString().contains(in); }
 	public EnvisionBoolean contains(String in) {
 		return EnvisionBooleanClass.newBoolean(contains_i(in));
 	}
 	
-	public boolean matches_i(String in) { return string_val.matches(in); }
+	public boolean matches_i(String in) { return string_val.toString().matches(in); }
 	public EnvisionBoolean matches(String in) {
 		return EnvisionBooleanClass.newBoolean(matches_i(in));
 	}
@@ -215,12 +225,12 @@ public class EnvisionString extends EnvisionVariable {
 		return EnvisionIntClass.newInt((int) string_val.charAt(0));
 	}
 	
-	public String toLowerCase_i() { return string_val.toLowerCase(); }
+	public String toLowerCase_i() { return string_val.toString().toLowerCase(); }
 	public EnvisionString toLowerCase() {
 		return EnvisionStringClass.newString(toLowerCase_i());
 	}
 	
-	public String toUpperCase_i() { return string_val.toUpperCase(); }
+	public String toUpperCase_i() { return string_val.toString().toUpperCase(); }
 	public EnvisionString toUpperCase() {
 		return EnvisionStringClass.newString(toUpperCase_i());
 	}

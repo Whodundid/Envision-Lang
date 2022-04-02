@@ -53,6 +53,12 @@ public class EnvisionStringClass extends EnvisionClass {
 		return str;
 	}
 	
+	public static EnvisionString newString(StringBuilder value) {
+		EnvisionString str = new EnvisionString(value);
+		STRING_CLASS.defineScopeMembers(str);
+		return str;
+	}
+	
 	public static EnvisionString newStrting(EnvisionObject value) {
 		EnvisionString str = new EnvisionString(value);
 		STRING_CLASS.defineScopeMembers(str);
@@ -86,7 +92,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(EnvisionString a, EnvisionString b) {
-		return newString(a.string_val + b.string_val);
+		return newString(a.string_val.append(b.string_val));
 	}
 	
 	/**

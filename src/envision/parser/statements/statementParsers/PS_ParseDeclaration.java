@@ -33,7 +33,6 @@ public class PS_ParseDeclaration extends GenericParser {
 		//collect each piece of the declaration
 		parseVisibility(dec);
 		
-		
 		//handle data modifiers
 		parseDataModifiers(dec);
 		

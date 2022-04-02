@@ -323,7 +323,6 @@ public class ClassInstance extends EnvisionObject {
 	 */
 	public String executeToString_i(EnvisionInterpreter interpreter) {
 		EnvisionObject result = executeFunction("toString", interpreter, new EnvisionObject[0]);
-		if (result instanceof EnvisionString env_str) return env_str.string_val;
 		return result.toString();
 	}
 	

@@ -78,7 +78,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 		
 		//attempt creation from arg
-		if (arg_val instanceof EnvisionString env_str) file = new EnvisionFile(env_str.string_val);
+		if (arg_val instanceof EnvisionString env_str) file = new EnvisionFile(env_str.toString());
 		else if (arg_val instanceof EnvisionFile env_file) file = new EnvisionFile(env_file.iFile.getAbsolutePath());
 		
 		//if null, creation failed!
@@ -325,7 +325,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		IFunc_rename(E instIn) { super(instIn, BOOLEAN, "rename", new ParameterData(STRING)); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (args.length == 0) ret(EnvisionBoolean.FALSE);
-			String name = ((EnvisionString) args[0]).string_val;
+			String name = ((EnvisionString) args[0]).toString();
 			boolean val = inst.iFile.renameTo(new File(name));
 			ret(EnvisionBooleanClass.newBoolean(val));
 		}
