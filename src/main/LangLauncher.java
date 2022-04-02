@@ -7,6 +7,7 @@ import envision.EnvisionErrorCallback;
 import envision.EnvisionSettings;
 import envision.EnvisionSettings.LaunchArgs;
 import envision.exceptions.EnvisionError;
+import eutil.random.RandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
@@ -17,6 +18,16 @@ public class LangLauncher extends EnvisionErrorCallback {
 		TracingPrintStream.enableTracingEmptyLines(true);
 		TracingPrintStream.disableTrace();
 		
+		/*
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 100000; i++) {
+			Thing a = new Thing(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
+			Thing b = new Thing(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
+			
+			System.out.println(a + " | " + b + " | " + (a.add(b)));
+		}
+		System.out.println(System.currentTimeMillis() - start);
+		*/
 		new LangLauncher();
 	}
 	

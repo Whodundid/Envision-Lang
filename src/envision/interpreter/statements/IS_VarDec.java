@@ -1,7 +1,7 @@
 package envision.interpreter.statements;
 
 import envision.exceptions.EnvisionError;
-import envision.exceptions.errors.DuplicateObjectError;
+import envision.exceptions.errors.AlreadyDefinedError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.UndefinedTypeError;
 import envision.exceptions.errors.VoidAssignmentError;
@@ -13,12 +13,12 @@ import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.objects.EnvisionList;
-import envision.lang.objects.EnvisionNullObject;
-import envision.lang.objects.EnvisionVoidObject;
+import envision.lang.internal.EnvisionNull;
+import envision.lang.internal.EnvisionVoid;
+import envision.lang.util.DataModifier;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.data.DataModifier;
 import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.VariableDeclaration;
@@ -75,14 +75,14 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			//---------------------------------------------------------
 			
 			//check that the variable doesn't already exist locally
-			if (scope().existsLocally(var_name)) throw new DuplicateObjectError(var_name);
+			if (scope().existsLocally(var_name)) throw new AlreadyDefinedError(var_name);
 			
 			//evaluate the assignment value (if there is one)
 			if (d.assignment_value != null) {
 				assignment_value = evaluate(d.assignment_value);
 				
 				//don't allow void assignment
-				if (assignment_value instanceof EnvisionVoidObject) throw new VoidAssignmentError(var_name);
+				if (assignment_value instanceof EnvisionVoid) throw new VoidAssignmentError(var_name);
 				
 				//convert variable objects to their primitives
 				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
@@ -103,7 +103,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			
 			
 			//create the default instance of the variable : defaults to a null object
-			EnvisionObject obj = new EnvisionNullObject();
+			EnvisionObject obj = EnvisionNull.NULL;
 			
 			//create the variable with its initial value(s)
 			if (assignment_value != null) {
@@ -113,7 +113,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				}
 				//if it's a class instance, assign the instance name
 				else if (assignment_value instanceof ClassInstance env_class_inst) {
-					env_class_inst.setName(var_name);
+					//env_class_inst.setName(var_name);
 					obj = env_class_inst;
 				}
 				//check for standard object type
@@ -125,13 +125,13 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				}
 				//otherwise, create new object with the given assignment_value
 				else {
-					obj = ObjectCreator.createObject(var_name, var_dec_datatype, assignment_value, false);
+					obj = ObjectCreator.createObject(var_dec_datatype, assignment_value, false, false);
 				}
 			}
 			//the assignment_value is null -- handle as if class defined type
 			else {
 				//assign default value
-				obj = ObjectCreator.createDefault(var_name, var_dec_datatype, false);
+				obj = ObjectCreator.createDefault(var_dec_datatype, false);
 			}
 			
 			
@@ -139,10 +139,10 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			
 			
 			//assign name
-			obj.setName(var_name);
+			//obj.setName(var_name);
 			
 			//Set visibility
-			obj.setVisibility(statement_declaration.getVisibility());
+			//obj.setVisibility(statement_declaration.getVisibility());
 			
 			//Set data modifiers
 			for (DataModifier m : statement_declaration.getMods()) {

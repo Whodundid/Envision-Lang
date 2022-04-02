@@ -6,8 +6,8 @@ import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
 
 import envision.exceptions.EnvisionError;
+import envision.lang.util.DataModifier;
 import envision.lang.util.VisibilityType;
-import envision.lang.util.data.DataModifier;
 import envision.parser.GenericParser;
 import envision.parser.expressions.expression_types.Expr_Generic;
 import envision.parser.util.DeclarationType;
@@ -33,7 +33,6 @@ public class PS_ParseDeclaration extends GenericParser {
 		//collect each piece of the declaration
 		parseVisibility(dec);
 		
-		
 		//handle data modifiers
 		parseDataModifiers(dec);
 		
@@ -46,7 +45,8 @@ public class PS_ParseDeclaration extends GenericParser {
 		
 		//check for appropriate continuing statement
 		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF);
-		if (match(FUNC, OPERATOR_)) 	return dec.setDeclarationType(FUNC_DEF);
+		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF);
+		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF);
 		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF);
 		
 		//parse datatype

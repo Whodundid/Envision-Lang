@@ -1,109 +1,78 @@
 package envision.interpreter.util.creationUtil;
 
+import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.expressions.IE_Assign;
-import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.datatypes.EnvisionString;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.objects.EnvisionVoidObject;
-import envision.lang.util.Primitives;
-import envision.lang.util.data.Parameter;
-import envision.lang.util.data.ParameterData;
-import envision.tokenizer.IKeyword;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.Parameter;
+import envision.lang.util.ParameterData;
 import envision.tokenizer.Operator;
-import eutil.datatypes.EArrayList;
 
 public class OperatorOverloadHandler {
 	
-	public static Object handleOverload(EnvisionInterpreter interpreter, IKeyword op, ClassInstance a, Object b) {
-		EnvisionFunction theOverload = getOperatorMethod(a, op, b);
+	/**
+	 * Performs top-level class instance operator overload handles.
+	 * If the base class instance natively supports the given operator overload,
+	 * then attempt to directely run the given operator overload function.
+	 * 
+	 * @param interpreter
+	 * @param a_scopeName
+	 * @param op
+	 * @param a
+	 * @param obj
+	 * @return
+	 */
+	public static EnvisionObject handleOverload(EnvisionInterpreter interpreter,
+												String a_scopeName,
+											    Operator op,
+											    ClassInstance a,
+											    EnvisionObject obj)
+	{
+		//error on null base objects
+		if (a == null) throw new NullVariableError();
 		
-		// if the overload exists, run the operator overload method
-		if (theOverload != null) {
-			try {
-				theOverload.invoke(interpreter, b);
-			}
-			catch (ReturnValue r) {
-				return r.object;
-			}
-			//return void if nothing was returned from the overload
-			return new EnvisionVoidObject();
+		//if object is a primitive, handle native primitive overloads
+		if (a.isPrimitive()) return a.handleOperatorOverloads(interpreter, a_scopeName, op, obj);
+		
+		//if the base object directly supports the operator, grab the operator function and execute it
+		if (a.supportsOperator(op)) {
+			EnvisionFunction op_func = getOperatorMethod(a, op, obj);
+			//if the operator function is null -- skip this and jump to throwing error
+			if (op_func != null) return op_func.invoke_r(interpreter, obj);
 		}
 		
-		// otherwise, check to see what operator is being evaluated as some may still apply regardless
-		// default operators for every object
-		if (op.isOperator()) {
-			var operator = op.asOperator();
-			
-			//check for string additoins
-			if (operator == Operator.ADD) {
-				//only allow strings
-				if (b instanceof String str) {
-					//convert the object to it's string form
-					String obj_str = getToString(interpreter, a);
-					return new EnvisionString(obj_str + str);
-				}
-				
-				throw new UnsupportedOverloadError(a, op, Primitives.getDataType(b) + ":" + b);
-			}
-			
-			//otherwise check for any additional valid default operators
-			switch (operator) {
-			case ASSIGN: return IE_Assign.assign(interpreter, a.getName(), a, b);
-			case COMPARE: return interpreter.isEqual(a, b);
-			case NOT_EQUALS: return !interpreter.isEqual(a, b);
-			default: break;
-			}
-		}
-		
-		throw new UnsupportedOverloadError(a, op, Primitives.getDataType(b) + ":" + b);
+		//otherwise, throw error
+		String errorMsg = (obj != null) ? obj.getDatatype() + ":" + obj : "";
+		throw new UnsupportedOverloadError(a, op, errorMsg);
 	}
 	
 	//-----------------
 	// Private Methods
 	//-----------------
 	
-	private static String getToString(EnvisionInterpreter interpreter, EnvisionObject obj) {
-		String toString = null;
-		try {
-			obj.runInternalFunction("toString", interpreter, null);
-		}
-		catch (ReturnValue r) {
-			toString = (String) EnvisionObject.convert(r.object);
-		}
-		return toString;
-	}
-	
-	private static EnvisionFunction getOperatorMethod(ClassInstance c, IKeyword op, Object b) {
+	private static EnvisionFunction getOperatorMethod(ClassInstance c, Operator op, EnvisionObject b) {
 		// first check if the class even has support for the given operator
-		EArrayList<EnvisionFunction> overloads = c.getOperator(op);
-		if (overloads == null) return null;
+		EnvisionFunction op_func = c.getOperator(op);
+		if (op_func == null) return null;
 		
 		ParameterData params = new ParameterData();
 		if (b != null) {
 			// create parameters around the given 'b' target arg
-			EnvisionObject obj = ObjectCreator.wrap(b);
-			params.add(new Parameter(obj));
+			params.add(new Parameter(b));
 		}
 		
 		EnvisionFunction theOverload = null;
-		for (EnvisionFunction m : overloads) {
-			
-			// check if the overload supports the given target parameter
-			if (m.getParams().compare(params)) {
-				theOverload = m;
-				break;
-			}
-			// otherwise check if any of the overload's overloads support the parameter
-			else {
-				EnvisionFunction methOverload = m.getOverload(params);
-				if (methOverload == null) continue;
-				theOverload = methOverload;
-				break;
-			}
+		
+		// check if the overload supports the given target parameter
+		if (op_func.getParams().compare(params)) {
+			theOverload = op_func;
+		}
+		// otherwise check if any of the overload's overloads support the parameter
+		else {
+			EnvisionFunction funcOverload = op_func.getOverload(params);
+			if (funcOverload != null) theOverload = funcOverload;
 		}
 		
 		//return the overload, even if null

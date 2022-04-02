@@ -12,6 +12,10 @@ public class IS_For extends StatementExecutor<Stmt_For> {
 	public IS_For(EnvisionInterpreter in) {
 		super(in);
 	}
+	
+	public static void run(EnvisionInterpreter in, Stmt_For s) {
+		new IS_For(in).run(s);
+	}
 
 	@Override
 	public void run(Stmt_For statement) {
@@ -26,7 +30,7 @@ public class IS_For extends StatementExecutor<Stmt_For> {
 		execute(init);
 		
 		//body
-		while (isTruthy(evaluate(cond))) {
+		while (isTrue(evaluate(cond))) {
 			pushScope();
 			execute(body);
 			//post
@@ -37,10 +41,6 @@ public class IS_For extends StatementExecutor<Stmt_For> {
 		}
 				
 		popScope();
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_For s) {
-		new IS_For(in).run(s);
 	}
 	
 }

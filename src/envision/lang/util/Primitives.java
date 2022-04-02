@@ -1,21 +1,17 @@
 package envision.lang.util;
 
+import java.util.HashMap;
+
 import envision.EnvisionCodeFile;
 import envision.lang.EnvisionObject;
-import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.enums.EnumValue;
-import envision.lang.enums.EnvisionEnum;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.objects.EnvisionList;
-import envision.lang.packages.EnvisionPackage;
-import envision.tokenizer.IKeyword;
+import envision.lang.internal.EnvisionFunction;
+import envision.packages.EnvisionPackage;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.util.DataTypeUtil;
-
-import java.util.HashMap;
 
 /**
  * An enum outlining all primitive datatypes to be associated with the
@@ -41,10 +37,11 @@ public enum Primitives {
 	NULL("_null_"),
 	CLASS("//class"),
 	CLASS_INSTANCE("//class_inst"),
+	INTERFACE("//interface"),
 	PACKAGE("package"),
 	CODE_FILE("code_file"),
 	FUNCTION("//function"),
-	OPERATOR("operator"),
+	//OPERATOR("operator"),
 	//EXCEPTION("exception"),
 	
 	// basic types
@@ -55,11 +52,11 @@ public enum Primitives {
 	DOUBLE("double"),
 	STRING("string"),
 	NUMBER("number"),
+	LIST("list"),
 	
 	// dynamic object types
 	
 	VAR("var"),
-	LIST("list"),
 	ENUM("enum"),
 	ENUM_TYPE("//enum_type"),
 	
@@ -367,16 +364,16 @@ public enum Primitives {
 		if (obj instanceof EnvisionList env_list) return LIST;
 		if (obj instanceof EnvisionFunction env_func) return FUNCTION;
 		if (obj instanceof EnvisionClass env_class) return CLASS;
-		if (obj instanceof ClassInstance env_inst) return CLASS_INSTANCE;
-		if (obj instanceof EnvisionEnum env_enum) return ENUM;
-		if (obj instanceof EnumValue env_enum_val) return ENUM_TYPE;
+		//if (obj instanceof ClassInstance env_inst) return CLASS_INSTANCE;
+		//if (obj instanceof EnvisionEnum env_enum) return ENUM;
+		//if (obj instanceof EnumValue env_enum_val) return ENUM_TYPE;
 		if (obj instanceof EnvisionCodeFile env_code) return CODE_FILE;
 		if (obj instanceof EnvisionPackage env_pkg) return PACKAGE;
-		return (obj != null) ? obj.getDatatype().getPrimitiveType() : null;
+		return (obj != null) ? obj.getDatatype().getPrimitiveType() : null;	
 	}
 	
 	public static Primitives getDataType(Object in) {
-		if (in instanceof IKeyword k && k.isOperator()) return OPERATOR;
+		//if (in instanceof IKeyword k && k.isOperator()) return OPERATOR;
 		if (in instanceof EnvisionObject env_obj) return getDataType(env_obj);
 		return getDataType(DataTypeUtil.getDataType(in));
 	}

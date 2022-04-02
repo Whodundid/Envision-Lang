@@ -1,12 +1,13 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.objects.EnvisionFunction;
+import envision.lang.internal.EnvisionFunction;
 
 public class NoReturnStatementError extends EnvisionError {
 
-	public NoReturnStatementError(EnvisionFunction method) {
-		super("The method: '" + method.getName() + "' declares a return type of (" + method.getReturnType() + ") but does not actually return anything!");
+	public NoReturnStatementError(EnvisionFunction func) {
+		super("The method: '" + func.getFunctionName() + "' declares a return type of ("
+				+ func.getReturnType() + ") but does not actually return anything!");
 	}
 	
 }

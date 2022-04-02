@@ -3,10 +3,11 @@ package envision.interpreter.util.creationUtil;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.objects.EnvisionFunction;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.DataModifier;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.data.Parameter;
-import envision.lang.util.data.ParameterData;
+import envision.lang.util.Parameter;
+import envision.lang.util.ParameterData;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.statement_types.Stmt_FuncDef;
 import envision.parser.util.StatementParameter;
@@ -38,7 +39,7 @@ public class FunctionCreator {
 			//wrap the return type if not null
 			if (dec_return_type != null) function_return_datatype = new EnvisionDatatype(dec_return_type);
 			//otherwise, assign var as retun type
-			else function_return_datatype = EnvisionDatatype.prim_var();
+			else function_return_datatype = EnvisionDatatype.VAR_TYPE;
 		}
 		
 		
@@ -60,9 +61,8 @@ public class FunctionCreator {
 		
 		
 		m.setScope(scopeIn);
-		m.applyDeclaration(s.declaration);
+		for (DataModifier mod : s.declaration.getMods()) m.setModifier(mod, true);
 		if (s.body != null) m.setBody(s.body);
-		
 		
 		return m;
 	}
@@ -107,7 +107,7 @@ public class FunctionCreator {
 			Token type = p.type;
 			
 			String theName = name.lexeme;
-			EnvisionDatatype theType = (type != null) ? new EnvisionDatatype(type) : EnvisionDatatype.prim_var();
+			EnvisionDatatype theType = (type != null) ? new EnvisionDatatype(type) : EnvisionDatatype.VAR_TYPE;
 			
 			Expression assign = p.assignment;
 			

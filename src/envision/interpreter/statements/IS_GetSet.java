@@ -1,12 +1,12 @@
 package envision.interpreter.statements;
 
-import envision.exceptions.errors.DuplicateObjectError;
+import envision.exceptions.errors.AlreadyDefinedError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.objects.EnvisionFunction;
-import envision.lang.util.data.DataModifier;
+import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.DataModifier;
 import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.statement_types.Stmt_GetSet;
 import envision.parser.statements.statement_types.Stmt_Return;
@@ -54,7 +54,7 @@ public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 		//check if get method for variable already exists
 		//format: get + capitalFirst(token)
 		EnvisionObject checkExist = scope().get(methName);
-		if (checkExist != null) throw new DuplicateObjectError(methName);
+		if (checkExist != null) throw new AlreadyDefinedError(methName);
 		
 		//create new getter/setter method and define it on scope
 		EnvisionFunction meth = buildMethod(get, theVar, dec, methName, var);
@@ -74,7 +74,7 @@ public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 		EnvisionFunction meth = new EnvisionFunction(theVar.getDatatype(), methName);
 		
 		//set visibility and modifiers
-		meth.setVisibility(dec.getVisibility());
+		//meth.setVisibility(dec.getVisibility());
 		for (DataModifier mod : dec.getMods()) {
 			meth.setModifier(mod, true);
 		}

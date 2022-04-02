@@ -1,7 +1,7 @@
 package envision.parser.util;
 
+import envision.lang.util.DataModifier;
 import envision.lang.util.VisibilityType;
-import envision.lang.util.data.DataModifier;
 import envision.parser.expressions.expression_types.Expr_Generic;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;

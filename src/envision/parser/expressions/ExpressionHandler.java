@@ -1,5 +1,6 @@
 package envision.parser.expressions;
 
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
 import envision.parser.expressions.expression_types.Expr_Compound;
@@ -24,37 +25,37 @@ import envision.parser.expressions.expression_types.Expr_Ternary;
 import envision.parser.expressions.expression_types.Expr_This;
 import envision.parser.expressions.expression_types.Expr_TypeOf;
 import envision.parser.expressions.expression_types.Expr_Unary;
-import envision.parser.expressions.expression_types.Expr_VarDef;
 import envision.parser.expressions.expression_types.Expr_Var;
+import envision.parser.expressions.expression_types.Expr_VarDef;
 
 public interface ExpressionHandler {
 	
-	public Object handleAssign_E(Expr_Assign e);
-	public Object handleBinary_E(Expr_Binary e);
-	public Object handleCompound_E(Expr_Compound e);
-	public Object handleDomain_E(Expr_Domain e);
-	public Object handleEnum_E(Expr_Enum e);
-	public Object handleGeneric_E(Expr_Generic e);
-	public Object handleGet_E(Expr_Get e);
-	public Object handleGrouping_E(Expr_Grouping e);
-	public Object handleImport_E(Expr_Import e);
-	public Object handleLambda_E(Expr_Lambda e);
-	public Object handleListIndex_E(Expr_ListIndex e);
-	public Object handleListInitializer_E(Expr_ListInitializer e);
-	public Object handleListIndexSet_E(Expr_SetListIndex e);
-	public Object handleLiteral_E(Expr_Literal e);
-	public Object handleLogical_E(Expr_Logic e);
-	public Object handleMethodCall_E(Expr_FunctionCall e);
-	public Object handleMethodDec_E(Expr_FuncDef e);
-	//public Object handleModular_E(ModularExpression e);
-	public Object handleRange_E(Expr_Range e);
-	public Object handleSet_E(Expr_Set e);
-	public Object handleSuper_E(Expr_Super e);
-	public Object handleTernary_E(Expr_Ternary e);
-	public Object handleThisGet_E(Expr_This e);
-	public Object handleTypeOf_E(Expr_TypeOf e);
-	public Object handleUnary_E(Expr_Unary e);
-	public Object handleVarDec_E(Expr_VarDef e);
-	public Object handleVar_E(Expr_Var e);
+	public EnvisionObject handleAssign_E(Expr_Assign e);
+	public EnvisionObject handleBinary_E(Expr_Binary e);
+	public EnvisionObject handleCompound_E(Expr_Compound e);
+	public EnvisionObject handleDomain_E(Expr_Domain e);
+	public EnvisionObject handleEnum_E(Expr_Enum e);
+	public EnvisionObject handleGeneric_E(Expr_Generic e);
+	public EnvisionObject handleGet_E(Expr_Get e);
+	public EnvisionObject handleGrouping_E(Expr_Grouping e);
+	public EnvisionObject handleImport_E(Expr_Import e);
+	public EnvisionObject handleLambda_E(Expr_Lambda e);
+	public EnvisionObject handleListIndex_E(Expr_ListIndex e);
+	public EnvisionObject handleListInitializer_E(Expr_ListInitializer e);
+	public EnvisionObject handleListIndexSet_E(Expr_SetListIndex e);
+	public EnvisionObject handleLiteral_E(Expr_Literal e);
+	public EnvisionObject handleLogical_E(Expr_Logic e);
+	public EnvisionObject handleMethodCall_E(Expr_FunctionCall e);
+	public EnvisionObject handleMethodDec_E(Expr_FuncDef e);
+	//public EnvisionObject handleModular_E(ModularExpression e);
+	public EnvisionObject handleRange_E(Expr_Range e);
+	public EnvisionObject handleSet_E(Expr_Set e);
+	public EnvisionObject handleSuper_E(Expr_Super e);
+	public EnvisionObject handleTernary_E(Expr_Ternary e);
+	public EnvisionObject handleThisGet_E(Expr_This e);
+	public EnvisionObject handleTypeOf_E(Expr_TypeOf e);
+	public EnvisionObject handleUnary_E(Expr_Unary e);
+	public EnvisionObject handleVarDec_E(Expr_VarDef e);
+	public EnvisionObject handleVar_E(Expr_Var e);
 	
 }

@@ -1,11 +1,15 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
-
+import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.FinalVarReassignmentError;
+import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NullVariableError;
+import envision.exceptions.errors.StrongVarReassignmentError;
+import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.InternalFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.EnvisionDatatype;
+import envision.tokenizer.Operator;
 
 /**
  * 
@@ -15,34 +19,26 @@ public class EnvisionChar extends EnvisionVariable {
 	
 	public static final char NULL_CHAR = '\0';
 	
+	public char char_val;
+	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public EnvisionChar() { this(NULL_CHAR); }
-	public EnvisionChar(char val) { this(DEFAULT_NAME, val); }
-	public EnvisionChar(String nameIn) { this(nameIn, NULL_CHAR); }
-	public EnvisionChar(String nameIn, char val) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		var_value = val;
+	protected EnvisionChar() { this(NULL_CHAR); }
+	protected EnvisionChar(char val) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = val;
 	}
 	
-	public EnvisionChar(boolean val) { this(DEFAULT_NAME, val); }
-	public EnvisionChar(String nameIn, boolean val) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		var_value = (val) ? 'T' : 'F';
+	protected EnvisionChar(boolean val) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = (val) ? 'T' : 'F';
 	}
 	
-	public EnvisionChar(EnvisionChar in) {
-		super(Primitives.CHAR.toDatatype(), in.name);
-		var_value = in.var_value;
-	}
-	
-	public EnvisionChar(Object objIn) { this(DEFAULT_NAME, objIn); }
-	public EnvisionChar(String nameIn, Object objIn) {
-		super(Primitives.CHAR.toDatatype(), nameIn);
-		String sVal = String.valueOf(objIn);
-		var_value = (sVal != null && !sVal.isEmpty()) ? sVal.charAt(0) : NULL_CHAR;
+	protected EnvisionChar(EnvisionChar in) {
+		super(EnvisionCharClass.CHAR_CLASS);
+		char_val = in.char_val;
 	}
 	
 	//-----------
@@ -50,42 +46,124 @@ public class EnvisionChar extends EnvisionVariable {
 	//-----------
 	
 	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof EnvisionChar env_char && env_char.char_val == char_val);
+	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(char_val);
+	}
+	
+	@Override
 	public EnvisionChar copy() {
-		return new EnvisionChar(this);
+		return EnvisionCharClass.newChar(this);
 	}
 	
 	@Override
-	protected void registerInternalMethods() {
-		super.registerInternalMethods();
-		//im(new InternalMethod(CHAR, "valueOf", OBJECT) { protected void body(Object[] a) { ret(EnvisionChar.of(a[0])); }});
-		im(new InternalFunction(CHAR, "get") { protected void body(Object[] a) { ret(EnvisionChar.this.get()); }});
-		im(new InternalFunction(CHAR, "set", VAR) { protected void body(Object[] a) { ret(EnvisionChar.this.set((char) a[0])); }});
+	public EnvisionObject get() {
+		return this;
 	}
 	
 	@Override
-	protected EnvisionObject runConstructor(EnvisionInterpreter interpreter, Object[] args) {
-		if (args.length == 0) return new EnvisionChar(DEFAULT_NAME, NULL_CHAR);
-		if (args.length == 1) {
-			Object obj = args[0];
-			
-			if (obj instanceof Character c) return new EnvisionChar(c);
-			if (obj instanceof EnvisionChar c) return new EnvisionChar(c);
-			if (obj instanceof EnvisionInt i) return new EnvisionChar(i);
+	public Object get_i() {
+		return char_val;
+	}
+	
+	@Override
+	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof EnvisionChar env_char) {
+			char_val = env_char.char_val;
+			return this;
 		}
-		return null;
+		throw new EnvisionError("Attempted to internally set non-char value to a char!");
 	}
 	
-	//--------
-	// Static
-	//--------
-	
-	public static EnvisionChar of(char val) {
-		return new EnvisionChar(val);
+	@Override
+	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
+		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
+		if (valIn instanceof Character char_val) {
+			this.char_val = char_val;
+			return this;
+		}
+		throw new EnvisionError("Attempted to internally set non-char value to a char!");
 	}
 	
-	public static EnvisionChar of(String val) {
-		return new EnvisionChar((val != null && !val.isEmpty()) ? val.charAt(0) : NULL_CHAR);
+	@Override
+	public boolean supportsOperator(Operator op) {
+		return switch (op) {
+		case ADD, MUL -> true;
+		default -> false;
+		};
 	}
 	
+	@Override
+	public EnvisionObject handleOperatorOverloads
+		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
+			throws UnsupportedOverloadError
+	{
+		//dont allow null expression objects
+		if (obj == null) throw new NullVariableError();
+		
+		//only accept if an EnvisionVariable type
+		if (!(obj instanceof EnvisionVariable))
+			throw new InvalidDatatypeError("Expected a variable but got '" + obj.getDatatype() + "' instead!");
+		
+		//extract incomming object datatype
+		EnvisionDatatype obj_type = obj.getDatatype();
+		
+		//only natively support '+' and '*'
+		switch (op) {
+		case ADD:
+		{
+			//due to the fact that char additions require the datatype being
+			//upgraded to a string, check for strong char and error if true
+			if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			
+			//only accept char or string objects
+			if (obj_type != EnvisionDatatype.CHAR_TYPE && obj_type != EnvisionDatatype.STRING_TYPE)
+				throw new InvalidDatatypeError(EnvisionDatatype.STRING_TYPE, obj_type);
+			
+			//char additions require the char to be upgraded to a string
+			String new_val = String.valueOf(char_val);
+			if (obj instanceof EnvisionChar env_char) new_val += env_char.char_val;
+			if (obj instanceof EnvisionString env_str) new_val += env_str.string_val;
+			
+			//to upgrade the datatype from char -> string requires creating new string object
+			EnvisionString new_obj = EnvisionStringClass.newString(new_val);
+			
+			//assign new value to vars and immediately return created object
+			interpreter.scope().set(scopeName, new_obj.getDatatype(), new_obj);
+			return new_obj;
+		}
+		
+		case MUL:
+		{
+			//due to the fact that char mul_additions require the datatype being
+			//upgraded to a string, check for strong char and error if true
+			if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			
+			//only accept int objects
+			if (obj_type != EnvisionDatatype.INT_TYPE)
+				throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, obj_type);
+			
+			//char mul_additions require the char to be upgraded to a string
+			StringBuilder new_val = new StringBuilder();
+			long multiply_val = ((EnvisionInt) obj).int_val;
+			for (int i = 0; i < multiply_val; i++) new_val.append(char_val);
+			
+			//to upgrade the datatype from char -> string requires creating new string object
+			EnvisionString new_obj = EnvisionStringClass.newString(new_val);
+			
+			//assign new value to vars and immediately return created object
+			interpreter.scope().set(scopeName, new_obj.getDatatype(), new_obj);
+			return new_obj;
+		}
+		
+		//throw error if this point is reached
+		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		}
+	}
 	
 }

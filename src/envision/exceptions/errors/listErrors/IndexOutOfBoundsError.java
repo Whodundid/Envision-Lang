@@ -1,7 +1,7 @@
 package envision.exceptions.errors.listErrors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.objects.EnvisionList;
+import envision.lang.datatypes.EnvisionList;
 
 public class IndexOutOfBoundsError extends EnvisionError {
 

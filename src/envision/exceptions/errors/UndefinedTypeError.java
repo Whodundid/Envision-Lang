@@ -15,7 +15,7 @@ public class UndefinedTypeError extends EnvisionError {
 	}
 	
 	public UndefinedTypeError(EnvisionObject type) {
-		this((type != null) ? type.getName() : "(null)");
+		this((type != null) ? String.valueOf(type) : "(null)");
 	}
 	
 	public static UndefinedTypeError badType(String typeIn) {

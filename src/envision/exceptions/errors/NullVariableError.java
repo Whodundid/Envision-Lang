@@ -1,6 +1,7 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
+import envision.lang.EnvisionObject;
 
 /** An error thrown if null is returned for a variable call. */
 public class NullVariableError extends EnvisionError {
@@ -13,7 +14,7 @@ public class NullVariableError extends EnvisionError {
 		super("Variable '" + varName + "' has not been declared within this scope!");
 	}
 	
-	public NullVariableError(Object obj) {
+	public NullVariableError(EnvisionObject obj) {
 		super("The given object '" + obj + "' is null!");
 	}
 	

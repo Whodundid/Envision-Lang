@@ -1,5 +1,6 @@
 package envision.parser.expressions.expression_types;
 
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.tokenizer.Operator;
@@ -30,6 +31,10 @@ public class Expr_Assign implements Expression {
 		modulars = null;
 	}
 	
+	public String getName() {
+		return name.lexeme;
+	}
+	
 	@Override
 	public String toString() {
 		String n = "";
@@ -45,7 +50,7 @@ public class Expr_Assign implements Expression {
 	}
 	
 	@Override
-	public Object execute(ExpressionHandler handler) {
+	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleAssign_E(this);
 	}
 	

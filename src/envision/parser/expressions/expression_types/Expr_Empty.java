@@ -1,5 +1,6 @@
 package envision.parser.expressions.expression_types;
 
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 
@@ -17,7 +18,7 @@ public class Expr_Empty implements Expression {
 	}
 	
 	@Override
-	public Object execute(ExpressionHandler handler) {
+	public EnvisionObject execute(ExpressionHandler handler) {
 		return null;
 	}
 	

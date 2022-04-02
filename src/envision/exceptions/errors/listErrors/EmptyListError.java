@@ -1,12 +1,12 @@
 package envision.exceptions.errors.listErrors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.objects.EnvisionList;
+import envision.lang.datatypes.EnvisionList;
 
 public class EmptyListError extends EnvisionError {
 
 	public EmptyListError(EnvisionList list) {
-		super("The list: '" + list.getName() + "' is empty!");
+		super("The list: '" + list + "' is empty!");
 	}
 
 }

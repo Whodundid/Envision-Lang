@@ -77,7 +77,7 @@ public abstract class GenericParser {
 		
 		//prevent invalid statement beginnings
 		errorIf(check(TRUE, FALSE), "Invalid declaration start!");
-		errorIf(check(OPERATOR_), "Invalid declaration start!");
+		//errorIf(check(OPERATOR_), "Invalid declaration start!");
 		errorIf(check(AS, TO, BY, CATCH, FINALLY), "Invalid declaration start!");
 		errorIf(checkType(ARITHMETIC) && !checkType(VISIBILITY_MODIFIER), "Invalid declaration start!");
 		//errorIf(checkType(SEPARATOR), "Invalid declaration start!");

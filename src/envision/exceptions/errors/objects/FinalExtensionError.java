@@ -6,7 +6,7 @@ import envision.lang.EnvisionObject;
 public class FinalExtensionError extends EnvisionError {
 	
 	public FinalExtensionError(EnvisionObject in) {
-		super("The given extension target: '" + in.getName() + "' is final and cannot be extended!");
+		super("The given extension target: '" + in + "' is final and cannot be extended!");
 	}
 
 }

@@ -10,7 +10,7 @@ public class NotAClassError extends EnvisionError {
 	}
 	
 	public NotAClassError(EnvisionObject in) {
-		super("The given object: '" + ((in != null) ? in.getName() : "(null)") + "' is not a valid class!");
+		super("The given object: '" + ((in != null) ? in : "(null)") + "' is not a valid class!");
 	}
 
 }

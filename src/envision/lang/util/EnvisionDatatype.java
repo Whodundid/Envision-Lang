@@ -16,6 +16,21 @@ import envision.tokenizer.Token;
  */
 public class EnvisionDatatype {
 	
+	public static final EnvisionDatatype VAR_TYPE 			= 	Primitives.VAR.toDatatype();
+	public static final EnvisionDatatype NULL_TYPE			= 	Primitives.NULL.toDatatype();
+	public static final EnvisionDatatype VOID_TYPE			= 	Primitives.VOID.toDatatype();
+	public static final EnvisionDatatype BOOL_TYPE			= 	Primitives.BOOLEAN.toDatatype();
+	public static final EnvisionDatatype CHAR_TYPE 			= 	Primitives.CHAR.toDatatype();
+	public static final EnvisionDatatype INT_TYPE 			= 	Primitives.INT.toDatatype();
+	public static final EnvisionDatatype DOUBLE_TYPE 		= 	Primitives.DOUBLE.toDatatype();
+	public static final EnvisionDatatype NUMBER_TYPE 		= 	Primitives.NUMBER.toDatatype();
+	public static final EnvisionDatatype STRING_TYPE 		= 	Primitives.STRING.toDatatype();
+	public static final EnvisionDatatype LIST_TYPE 			= 	Primitives.LIST.toDatatype();
+	public static final EnvisionDatatype CLASS_TYPE 		= 	Primitives.CLASS.toDatatype();
+	public static final EnvisionDatatype INTERFACE_TYPE 	= 	Primitives.INTERFACE.toDatatype();
+	public static final EnvisionDatatype FUNC_TYPE 			= 	Primitives.FUNCTION.toDatatype();
+	public static final EnvisionDatatype PACKAGE_TYPE		= 	Primitives.PACKAGE.toDatatype();
+	
 	//--------
 	// Fields
 	//--------
@@ -264,30 +279,6 @@ public class EnvisionDatatype {
 	
 	public static boolean isNumber(EnvisionDatatype type) { 
 		return (type != null) ? type.isNumber() : false;
-	}
-	
-	/**
-	 * Handy helper method used to quickly encapsulate the generic 'var'
-	 * type into an EnvisionDataType.
-	 */
-	public static EnvisionDatatype prim_var() {
-		return new EnvisionDatatype(Primitives.VAR);
-	}
-	
-	/**
-	 * Handy helper method used to quickly encapsulate the 'null'
-	 * type into an EnvisionDataType.
-	 */
-	public static EnvisionDatatype prim_null() {
-		return new EnvisionDatatype(Primitives.NULL);
-	}
-	
-	/**
-	 * Handy helper method used to quickly encapsulate the 'void'
-	 * type into an EnvisionDataType.
-	 */
-	public static EnvisionDatatype prim_void() {
-		return new EnvisionDatatype(Primitives.VOID);
 	}
 	
 	/**

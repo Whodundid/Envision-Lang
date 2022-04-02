@@ -17,7 +17,7 @@ public class VariableCastError extends EnvisionError {
 	}
 	
 	public VariableCastError(EnvisionVariable var, EnvisionDatatype castType) {
-		super("Variable '" + ((var != null) ? var.getName() : "null") + "' cannot be cast as type " + castType + "!");
+		super("Variable '" + ((var != null) ? var : "null") + "' cannot be cast as type " + castType + "!");
 	}
 
 }

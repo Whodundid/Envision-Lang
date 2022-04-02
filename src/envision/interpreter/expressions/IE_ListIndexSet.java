@@ -1,10 +1,13 @@
 package envision.interpreter.expressions;
 
+import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.listErrors.NotAListError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
-import envision.lang.objects.EnvisionList;
+import envision.lang.datatypes.EnvisionList;
+import envision.lang.util.EnvisionDatatype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_ListIndex;
 import envision.parser.expressions.expression_types.Expr_SetListIndex;
@@ -14,34 +17,43 @@ public class IE_ListIndexSet extends ExpressionExecutor<Expr_SetListIndex> {
 	public IE_ListIndexSet(EnvisionInterpreter in) {
 		super(in);
 	}
+	
+	public static EnvisionObject run(EnvisionInterpreter in, Expr_SetListIndex e) {
+		return new IE_ListIndexSet(in).run(e);
+	}
 
 	@Override
-	public Object run(Expr_SetListIndex e) {
+	public EnvisionObject run(Expr_SetListIndex e) {
 		Expr_ListIndex listIndexExpression = e.list;
 		Expression value = e.value;
 		
 		Expression listExpression = listIndexExpression.list;
 		Expression listExpressionIndex = listIndexExpression.index;
-		Object listObject = evaluate(listExpression);
-		Object listIndex = evaluate(listExpressionIndex);
+		EnvisionObject listObject = evaluate(listExpression);
+		EnvisionObject listIndex = evaluate(listExpressionIndex);
 		
-		if (listObject instanceof EnvisionList) {
-			EnvisionList l = (EnvisionList) listObject;
-			long i = -1;
-			if (listIndex instanceof Long) { i = (Long) listIndex; }
-			else if (listIndex instanceof EnvisionInt) { i = (long) ((EnvisionInt) listIndex).get(); }
-			
-			Object theValue = evaluate(value);
-			Object obj = EnvisionObject.convert(theValue);
-			
-			l.set(i, obj);
-		}
+		//only allow lists
+		if (!(listObject instanceof EnvisionList)) throw new NotAListError(listObject);
 		
-		return null;
-	}
-	
-	public static Object run(EnvisionInterpreter in, Expr_SetListIndex e) {
-		return new IE_ListIndexSet(in).run(e);
+		//assign the 'value' at the given 'listIndex'
+		EnvisionList env_list = (EnvisionList) listObject;
+		
+		//default index
+		long i = -1;
+		
+		//only allow integers for array indexes
+		if (!(listIndex instanceof EnvisionInt))
+			throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, listIndex.getDatatype());
+		
+		//get index as long
+		i = ((EnvisionInt) listIndex).int_val;
+		
+		//assign the result to the index position
+		EnvisionObject assign_value = evaluate(value);
+		env_list.set(i, assign_value);
+		
+		//return the new value
+		return assign_value;
 	}
 	
 }

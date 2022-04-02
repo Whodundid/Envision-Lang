@@ -1,7 +1,7 @@
 package envision;
 
 import envision.exceptions.errors.workingDirectory.MultipleMainsError;
-import envision.lang.packages.EnvisionLangPackage;
+import envision.packages.EnvisionLangPackage;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
 

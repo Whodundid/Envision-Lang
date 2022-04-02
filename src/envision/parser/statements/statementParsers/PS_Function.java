@@ -4,7 +4,7 @@ import static envision.tokenizer.KeywordType.*;
 import static envision.tokenizer.Operator.*;
 import static envision.tokenizer.ReservedWord.*;
 
-import envision.lang.util.data.DataModifier;
+import envision.lang.util.DataModifier;
 import envision.parser.GenericParser;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;

@@ -6,12 +6,12 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.VariableCastError;
 import envision.lang.EnvisionObject;
-import envision.lang.datatypes.EnvisionBoolean;
-import envision.lang.datatypes.EnvisionChar;
-import envision.lang.datatypes.EnvisionDouble;
-import envision.lang.datatypes.EnvisionInt;
+import envision.lang.datatypes.EnvisionBooleanClass;
+import envision.lang.datatypes.EnvisionCharClass;
+import envision.lang.datatypes.EnvisionDoubleClass;
+import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionNumber;
-import envision.lang.datatypes.EnvisionString;
+import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Primitives;
@@ -74,6 +74,11 @@ public class CastingUtil {
 		Primitives expected_ptype = expected.getPrimitiveType();
 		Primitives toCheck_ptype = toCheck.getPrimitiveType();
 		
+		//check for null passes
+		if (toCheck_ptype == Primitives.NULL) {
+			return;
+		}
+		
 		//-----------------------------------------------------------------------------
 		// While this system works, it does not account for these kinds of situtations
 		//
@@ -121,69 +126,70 @@ public class CastingUtil {
 		switch (from) {
 		case CHAR:
 		{
-			var charVal = (char) varIn.get();
+			var charVal = (char) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> new EnvisionChar(charVal);
-			case BOOLEAN -> new EnvisionBoolean(charVal);
-			case INT -> new EnvisionInt(charVal);
-			case NUMBER, DOUBLE -> new EnvisionDouble(charVal);
-			case STRING -> new EnvisionString(charVal);
+			case CHAR -> EnvisionCharClass.newChar(charVal);
+			case BOOLEAN -> EnvisionBooleanClass.newBoolean(charVal);
+			case INT -> EnvisionIntClass.newInt(charVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(charVal);
+			case STRING -> EnvisionStringClass.newString(charVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
 			
 		case BOOLEAN:
 		{
-			var boolVal = (boolean) varIn.get();
+			var boolVal = (boolean) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> new EnvisionChar(boolVal);
-			case BOOLEAN -> new EnvisionBoolean(boolVal);
-			case INT -> new EnvisionInt(boolVal);
-			case NUMBER, DOUBLE -> new EnvisionDouble(boolVal);
-			case STRING -> new EnvisionString(boolVal);
+			case CHAR -> EnvisionCharClass.newChar(boolVal);
+			case BOOLEAN -> EnvisionBooleanClass.newBoolean(boolVal);
+			case INT -> EnvisionIntClass.newInt(boolVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(boolVal);
+			case STRING -> EnvisionStringClass.newString(boolVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
 		case INT:
 		{
-			var longVal = ((Number) varIn.get()).longValue();
+			long longVal = ((EnvisionNumber) varIn).intVal_i();
 			
 			return switch (to) {
-			case CHAR -> new EnvisionChar(longVal);
-			case BOOLEAN -> new EnvisionBoolean(longVal);
-			case INT -> new EnvisionInt(longVal);
-			case NUMBER, DOUBLE -> new EnvisionDouble(longVal);
-			case STRING -> new EnvisionString(longVal);
+			//case CHAR -> EnvisionCharClass.newChar(longVal);
+			case BOOLEAN -> EnvisionBooleanClass.newBoolean(longVal != 0);
+			case INT -> EnvisionIntClass.newInt(longVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(longVal);
+			case STRING -> EnvisionStringClass.newString(longVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
 		case DOUBLE:
 		{
-			var doubleVal = ((Number) varIn.get()).doubleValue();
+			double doubleVal = ((EnvisionNumber) varIn).doubleVal_i();
 			
 			return switch (to) {
-			case CHAR -> new EnvisionChar(doubleVal);
-			case BOOLEAN -> new EnvisionBoolean(doubleVal);
-			case INT -> new EnvisionBoolean(doubleVal);
-			case NUMBER, DOUBLE -> new EnvisionDouble(doubleVal);
-			case STRING -> new EnvisionString(doubleVal);
+			//case CHAR -> EnvisionCharClass.newChar(doubleVal);
+			//case BOOLEAN -> EnvisionBooleanClass.newBoolean(doubleVal);
+			case INT -> EnvisionIntClass.newInt(doubleVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(doubleVal);
+			case STRING -> EnvisionStringClass.newString(doubleVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
 		case STRING:
 		{
-			var strVal = (String) varIn.get();
+			//String strVal = (String) varIn.get_i();
 			
-			return switch (to) {
-			case CHAR -> new EnvisionChar(strVal);
-			case BOOLEAN -> new EnvisionBoolean(strVal);
-			case INT -> new EnvisionInt(strVal);
-			case NUMBER, DOUBLE -> new EnvisionDouble(strVal);
-			case STRING -> new EnvisionString(strVal);
-			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
-			};
+			//return switch (to) {
+			//case CHAR -> EnvisionCharClass.newChar(strVal);
+			//case BOOLEAN -> EnvisionBooleanClass.newBoolean(strVal);
+			//case INT -> EnvisionIntClass.newInt(strVal);
+			//case NUMBER, DOUBLE -> new EnvisionDouble(strVal);
+			//case STRING -> EnvisionStringClass.newString(strVal);
+			//default -> 
+			//};
+			throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 		}
 		default: throw new VariableCastError(varIn, typeIn);
 		}

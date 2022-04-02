@@ -1,5 +1,6 @@
 package envision.parser.expressions.expression_types;
 
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 
@@ -22,7 +23,7 @@ public class Expr_Literal implements Expression {
 	}
 	
 	@Override
-	public Object execute(ExpressionHandler handler) {
+	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleLiteral_E(this);
 	}
 	

@@ -1,17 +1,8 @@
 package envision.interpreter.statements;
 
-import envision.exceptions.errors.DuplicateObjectError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.lang.EnvisionObject;
-import envision.lang.enums.EnvisionEnum;
-import envision.lang.util.EnvisionDatatype;
-import envision.parser.expressions.Expression;
-import envision.parser.expressions.expression_types.Expr_Enum;
 import envision.parser.statements.statement_types.Stmt_EnumDef;
-import envision.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
 
 public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 
@@ -23,12 +14,13 @@ public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 	
 	@Override
 	public void run(Stmt_EnumDef s) {
+		/*
 		ParserDeclaration dec = s.declaration;
 		String name = s.name.lexeme;
 		EArrayList<Expr_Enum> values = s.values;
 		
 		//check if already defined
-		if (scope().get(name) != null) throw new DuplicateObjectError(name);
+		if (scope().get(name) != null) throw new AlreadyDefinedError(name);
 		
 		//create the enum instance
 		EnvisionEnum en = new EnvisionEnum(dec.getVisibility(), name);
@@ -53,6 +45,7 @@ public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 		}
 		
 		scope().define(name, en);
+		*/
 	}
 	
 	public static void run(EnvisionInterpreter in, Stmt_EnumDef s) {
