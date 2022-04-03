@@ -106,8 +106,8 @@ public class EnvisionCharClass extends EnvisionClass {
 		Scope inst_scope = c.getScope();
 		
 		//define instance members
-		inst_scope.defineFunction(new IFunc_get(c));
-		inst_scope.defineFunction(new IFunc_set(c));
+		//inst_scope.defineFunction(new IFunc_get(c));
+		//inst_scope.defineFunction(new IFunc_set(c));
 	}
 	
 	//---------------------------

@@ -82,6 +82,7 @@ public class EnvisionListClass extends EnvisionClass {
 		Scope inst_scope = l.getScope();
 		
 		//define members
+		/*
 		inst_scope.defineFunction(new IFunc_add(l));
 		inst_scope.defineFunction(new IFunc_addR(l));
 		inst_scope.defineFunction(new IFunc_addRT(l));
@@ -114,6 +115,7 @@ public class EnvisionListClass extends EnvisionClass {
 		inst_scope.defineFunction(new IFunc_shuffle(l));
 		inst_scope.defineFunction(new IFunc_size(l));
 		inst_scope.defineFunction(new IFunc_swap(l));
+		*/
 	}
 	
 	//---------------------------

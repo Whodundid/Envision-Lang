@@ -107,10 +107,10 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		Scope inst_scope = d.getScope();
 		
 		//define instance members
-		inst_scope.defineFunction(new IFunc_get(d));
-		inst_scope.defineFunction(new IFunc_set(d));
-		inst_scope.defineFunction(new IFunc_min(d));
-		inst_scope.defineFunction(new IFunc_max(d));
+		//inst_scope.defineFunction(new IFunc_get(d));
+		//inst_scope.defineFunction(new IFunc_set(d));
+		//inst_scope.defineFunction(new IFunc_min(d));
+		//inst_scope.defineFunction(new IFunc_max(d));
 	}
 	
 	//---------------------------

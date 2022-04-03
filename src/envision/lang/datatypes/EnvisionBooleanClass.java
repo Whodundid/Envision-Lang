@@ -110,8 +110,8 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		Scope inst_scope = bool.getScope();
 		
 		//define instance members
-		inst_scope.defineFunction(new IFunc_get(bool));
-		inst_scope.defineFunction(new IFunc_set(bool));
+		//inst_scope.defineFunction(new IFunc_get(bool));
+		//inst_scope.defineFunction(new IFunc_set(bool));
 	}
 	
 	//---------------------------
@@ -119,7 +119,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	//---------------------------
 	
 	private static class IFunc_get<E extends EnvisionBoolean> extends InstanceFunction<E> {
-		IFunc_get(E instIn) { super(instIn, BOOLEAN, "get"); }
+		public IFunc_get(E instIn) { super(instIn, BOOLEAN, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.newBoolean(inst.bool_val));
 		}
@@ -138,7 +138,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	//-------------------------
 	
 	private static class IFunc_static_valueOf extends EnvisionFunction {
-		IFunc_static_valueOf() {
+		public IFunc_static_valueOf() {
 			super(BOOLEAN, "valueOf", STRING);
 			//allow valueOf(Boolean)
 			addOverload(BOOLEAN, BOOLEAN);
@@ -147,7 +147,10 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (args[0] instanceof EnvisionString env_str) {
-				ret(EnvisionBooleanClass.newBoolean(env_str.string_val.equals("true")));
+				ret(EnvisionBooleanClass.newBoolean(env_str.string_val.toString().equals("true")));
+			}
+			else if (args[0] instanceof EnvisionInt env_int) {
+				ret(EnvisionBooleanClass.newBoolean(env_int.int_val == 1));
 			}
 			ret(EnvisionBooleanClass.newBoolean((EnvisionBoolean) args[0]));
 		}

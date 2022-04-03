@@ -15,10 +15,12 @@ import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionBooleanClass;
 import envision.lang.datatypes.EnvisionString;
+import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.lang.util.ParameterData;
 import envision.tokenizer.Operator;
 
@@ -282,9 +284,11 @@ public class ClassInstance extends EnvisionObject {
 		(String funcName, EnvisionInterpreter interpreter, EnvisionObject[] args)
 			throws UndefinedFunctionError, NotAFunctionError
 	{
+		//System.out.println("\tClassInstance FUNC CALL: " + this + " : " + this.getDatatype() + " : " + funcName);
 		//attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
-		if (obj == null) throw new UndefinedFunctionError(funcName);
+		if (obj == null) throw new UndefinedFunctionError(funcName, this);
+		if (obj instanceof FunctionPrototype proto) obj = proto.build(args);
 		if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
 		//execute and return function result -- even if void
@@ -310,6 +314,12 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The result of this instance's toString function
 	 */
 	public EnvisionString executeToString(EnvisionInterpreter interpreter) {
+		//if primitive -- simply return the wrapped native toString value
+		if (isPrimitive) {
+			if (this instanceof EnvisionString env_str) return env_str.get();
+			else return EnvisionStringClass.newString(toString());
+		}
+		//otherwise, attempt to execute the 'toString' function
 		return executeFunction("toString", interpreter, new EnvisionObject[0]);
 	}
 	
@@ -322,6 +332,12 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The result of this instance's toString function
 	 */
 	public String executeToString_i(EnvisionInterpreter interpreter) {
+		//if primitive -- simply return the native toString value
+		if (isPrimitive) {
+			if (this instanceof EnvisionString env_str) return env_str.get_i();
+			else return toString();
+		}
+		//otherwise, attempt to execute the 'toString' function and return the internal string value
 		EnvisionObject result = executeFunction("toString", interpreter, new EnvisionObject[0]);
 		return result.toString();
 	}

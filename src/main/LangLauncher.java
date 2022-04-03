@@ -24,7 +24,7 @@ public class LangLauncher extends EnvisionErrorCallback {
 			Thing a = new Thing(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
 			Thing b = new Thing(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
 			
-			System.out.println(a + " | " + b + " | " + (a.add(b)));
+			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
 		}
 		System.out.println(System.currentTimeMillis() - start);
 		*/

@@ -107,8 +107,8 @@ public class EnvisionIntClass extends EnvisionClass {
 		Scope inst_scope = i.getScope();
 		
 		//define instance members
-		inst_scope.defineFunction(new IFunc_get(i));
-		inst_scope.defineFunction(new IFunc_set(i));
+		//inst_scope.defineFunction(new IFunc_get(i));
+		//inst_scope.defineFunction(new IFunc_set(i));
 	}
 	
 	//---------------------------

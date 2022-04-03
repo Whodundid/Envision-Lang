@@ -180,6 +180,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		Scope inst_scope = str.getScope();
 		
 		//define instance members
+		/*
 		inst_scope.defineFunction(new IFunc_equals(str)); //override equals
 		inst_scope.defineFunction(new IFunc_toString(str)); //override toString
 		inst_scope.defineFunction(new IFunc_charAt(str));
@@ -194,6 +195,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		inst_scope.defineFunction(new IFunc_set(str));
 		inst_scope.defineFunction(new IFunc_substring(str));
 		inst_scope.defineFunction(new IFunc_compareTo(str));
+		*/
 	}
 	
 	//---------------------------

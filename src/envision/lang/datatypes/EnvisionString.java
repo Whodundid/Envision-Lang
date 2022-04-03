@@ -72,7 +72,7 @@ public class EnvisionString extends EnvisionVariable {
 	}
 	
 	@Override
-	public EnvisionObject get() {
+	public EnvisionString get() {
 		return this;
 	}
 	

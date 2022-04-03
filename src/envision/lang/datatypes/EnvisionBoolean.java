@@ -64,7 +64,7 @@ public class EnvisionBoolean extends EnvisionVariable {
 	}
 	
 	@Override
-	public EnvisionObject get() {
+	public EnvisionBoolean get() {
 		return this;
 	}
 	

@@ -16,6 +16,7 @@ import envision.lang.datatypes.EnvisionChar;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.lang.util.Primitives;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
@@ -220,6 +221,18 @@ public class Scope {
 	public EnvisionFunction defineFunction(EnvisionFunction func) {
 		values.put(func.getFunctionName(), new Box2<EnvisionDatatype, EnvisionObject>(func.getDatatype(), func));
 		return func;
+	}
+	
+	/**
+	 * Defines a function prototype within this scope.
+	 * 
+	 * @param prototype The function prototype to be defined
+	 * @return The defined prototype
+	 */
+	public FunctionPrototype defineFunctionPrototype(FunctionPrototype prototype) {
+		var boxedType = new Box2<EnvisionDatatype, EnvisionObject>(prototype.getDatatype(), prototype);
+		values.put(prototype.getFunctionName(), boxedType);
+		return prototype;
 	}
 	
 	/**

@@ -8,8 +8,8 @@ public class UndefinedFunctionError extends EnvisionError {
 		super("The function: '" + funcName + "' is undefined!");
 	}
 	
-	public UndefinedFunctionError(String funcName, String objectName) {
-		super("The function: '" + funcName + "' is undefined on the object '" + objectName + "'!");
+	public UndefinedFunctionError(String funcName, Object object) {
+		super("The function: '" + funcName + "' is undefined on the object '" + object + "'!");
 	}
 	
 }

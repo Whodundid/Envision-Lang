@@ -63,7 +63,7 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override public EnvisionInt intVal() { return this; }
 	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.newDouble(int_val); }
 	
-	@Override public EnvisionObject get() { return this; }
+	@Override public EnvisionInt get() { return this; }
 	@Override public Object get_i() { return int_val; }
 	
 	@Override

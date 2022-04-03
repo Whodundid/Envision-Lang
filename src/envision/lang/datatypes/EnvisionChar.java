@@ -61,7 +61,7 @@ public class EnvisionChar extends EnvisionVariable {
 	}
 	
 	@Override
-	public EnvisionObject get() {
+	public EnvisionChar get() {
 		return this;
 	}
 	
