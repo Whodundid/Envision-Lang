@@ -6,6 +6,7 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.DuplicateFunctionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.NotAFunctionError;
+import envision.exceptions.errors.NotAPrimitiveError;
 import envision.exceptions.errors.UndefinedFunctionError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
@@ -22,6 +23,7 @@ import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.FunctionPrototype;
 import envision.lang.util.ParameterData;
+import envision.lang.util.PrimitiveFunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -288,8 +290,11 @@ public class ClassInstance extends EnvisionObject {
 		//attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
 		if (obj == null) throw new UndefinedFunctionError(funcName, this);
-		if (obj instanceof FunctionPrototype proto) obj = proto.build(args);
-		if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
+		else if (obj instanceof FunctionPrototype proto) obj = proto.build(args);
+		else if (obj instanceof PrimitiveFunctionPrototype prim_proto) {
+			if (!isPrimitive) throw new NotAPrimitiveError(this);
+		}
+		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
 		//execute and return function result -- even if void
 		EnvisionFunction func = (EnvisionFunction) obj;
