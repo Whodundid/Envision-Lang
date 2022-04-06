@@ -1,13 +1,20 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.BOOLEAN;
+import static envision.lang.util.Primitives.INT;
+import static envision.lang.util.Primitives.LIST;
+import static envision.lang.util.Primitives.STRING;
+import static envision.lang.util.Primitives.VAR;
+import static envision.lang.util.Primitives.VAR_A;
+
+import java.util.List;
 
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
@@ -18,6 +25,42 @@ public class EnvisionListClass extends EnvisionClass {
 	 * objects are derived from.
 	 */
 	public static final EnvisionListClass LIST_CLASS = new EnvisionListClass();
+	
+	private static final IPrototypeHandler LIST_PROTOTYPES = new IPrototypeHandler();
+	
+	static {
+		LIST_PROTOTYPES.addFunction("add", BOOLEAN, VAR);
+		LIST_PROTOTYPES.addFunction("addR", VAR, VAR);
+		LIST_PROTOTYPES.addFunction("addRT", LIST, VAR);
+		LIST_PROTOTYPES.addFunction("clear", LIST);
+		LIST_PROTOTYPES.addFunction("contains", BOOLEAN, VAR);
+		LIST_PROTOTYPES.addFunction("copy", LIST);
+		LIST_PROTOTYPES.addFunction("fill", LIST, VAR_A);
+		LIST_PROTOTYPES.addFunction("flip", LIST);
+		LIST_PROTOTYPES.addFunction("get", VAR, INT);
+		LIST_PROTOTYPES.addFunction("getFirst", VAR);
+		LIST_PROTOTYPES.addFunction("getLast", VAR);
+		LIST_PROTOTYPES.addFunction("getListType", STRING);
+		LIST_PROTOTYPES.addFunction("hasOne", BOOLEAN);
+		LIST_PROTOTYPES.addFunction("isEmpty", BOOLEAN);
+		LIST_PROTOTYPES.addFunction("isNotEmpty", BOOLEAN);
+		LIST_PROTOTYPES.addFunction("isSizeLocked", BOOLEAN);
+		LIST_PROTOTYPES.addFunction("lockSize", LIST);
+		LIST_PROTOTYPES.addFunction("notContains", BOOLEAN);
+		LIST_PROTOTYPES.addFunction("push", LIST, VAR);
+		LIST_PROTOTYPES.addFunction("pop", VAR);
+		LIST_PROTOTYPES.addFunction("remove", VAR, INT);
+		LIST_PROTOTYPES.addFunction("removeFirst", VAR);
+		LIST_PROTOTYPES.addFunction("removeLast", VAR);
+		LIST_PROTOTYPES.addFunction("set", LIST, INT, VAR);
+		LIST_PROTOTYPES.addFunction("setFirst", LIST, VAR);
+		LIST_PROTOTYPES.addFunction("setLast", LIST, VAR);
+		LIST_PROTOTYPES.addFunction("shiftLeft", LIST).addOverload(LIST, INT);
+		LIST_PROTOTYPES.addFunction("shiftRight", LIST).addOverload(LIST, INT);
+		LIST_PROTOTYPES.addFunction("shuffle", LIST);
+		LIST_PROTOTYPES.addFunction("size", INT);
+		LIST_PROTOTYPES.addFunction("swap", LIST, INT, INT);
+	}
 	
 	//--------------
 	// Constructors
@@ -43,6 +86,12 @@ public class EnvisionListClass extends EnvisionClass {
 	public static EnvisionList newList(EnvisionDatatype type) {
 		EnvisionList list = new EnvisionList(type);
 		LIST_CLASS.defineScopeMembers(list);
+		return list;
+	}
+	
+	public static EnvisionList newList(EnvisionDatatype type, List<EnvisionObject> data) {
+		EnvisionList list = newList(type);
+		list.addAll(data);
 		return list;
 	}
 	
@@ -75,47 +124,8 @@ public class EnvisionListClass extends EnvisionClass {
 		//define super object's members
 		super.defineScopeMembers(inst);
 		
-		//cast as EnvisionList
-		EnvisionList l = (EnvisionList) inst;
-		
-		//extract instance scope
-		Scope inst_scope = l.getScope();
-		
 		//define members
-		/*
-		inst_scope.defineFunction(new IFunc_add(l));
-		inst_scope.defineFunction(new IFunc_addR(l));
-		inst_scope.defineFunction(new IFunc_addRT(l));
-		inst_scope.defineFunction(new IFunc_clear(l));
-		inst_scope.defineFunction(new IFunc_contains(l));
-		inst_scope.defineFunction(new IFunc_copy(l));
-		inst_scope.defineFunction(new IFunc_fill(l));
-		inst_scope.defineFunction(new IFunc_flip(l));
-		inst_scope.defineFunction(new IFunc_get(l));
-		inst_scope.defineFunction(new IFunc_getFirst(l));
-		inst_scope.defineFunction(new IFunc_getLast(l));
-		inst_scope.defineFunction(new IFunc_getListType(l));
-		inst_scope.defineFunction(new IFunc_hasOne(l));
-		inst_scope.defineFunction(new IFunc_isEmpty(l));
-		inst_scope.defineFunction(new IFunc_isNotEmpty(l));
-		inst_scope.defineFunction(new IFunc_isSizeLocked(l));
-		inst_scope.defineFunction(new IFunc_lockSize(l));
-		inst_scope.defineFunction(new IFunc_notContains(l));
-		inst_scope.defineFunction(new IFunc_push(l));
-		inst_scope.defineFunction(new IFunc_pop(l));
-		inst_scope.defineFunction(new IFunc_remove(l));
-		inst_scope.defineFunction(new IFunc_removeFirst(l));
-		inst_scope.defineFunction(new IFunc_removeLast(l));
-		inst_scope.defineFunction(new IFunc_set(l));
-		inst_scope.defineFunction(new IFunc_setFirst(l));
-		inst_scope.defineFunction(new IFunc_setLast(l));
-		inst_scope.defineFunction(new IFunc_setSize(l));
-		inst_scope.defineFunction(new IFunc_shiftLeft(l));
-		inst_scope.defineFunction(new IFunc_shiftRight(l));
-		inst_scope.defineFunction(new IFunc_shuffle(l));
-		inst_scope.defineFunction(new IFunc_size(l));
-		inst_scope.defineFunction(new IFunc_swap(l));
-		*/
+		LIST_PROTOTYPES.defineOn(inst);
 	}
 	
 	//---------------------------

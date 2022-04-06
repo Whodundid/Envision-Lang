@@ -1,6 +1,10 @@
 package envision.lang.classes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.BOOLEAN;
+import static envision.lang.util.Primitives.INT;
+import static envision.lang.util.Primitives.LIST;
+import static envision.lang.util.Primitives.STRING;
+import static envision.lang.util.Primitives.VAR;
 
 import envision.exceptions.errors.classErrors.NotAConstructorError;
 import envision.exceptions.errors.classErrors.UndefinedConstructorError;
@@ -15,7 +19,7 @@ import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.util.DataModifier;
 import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.FunctionPrototype;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
@@ -115,18 +119,19 @@ public class EnvisionClass extends EnvisionObject {
 	 */
 	protected EArrayList<Stmt_FuncDef> constructorStatements = new EArrayList();
 	
-	private static final EArrayList<FunctionPrototype> prototypes = new EArrayList<FunctionPrototype>();
+	//private static final EArrayList<FunctionPrototype> prototypes = new EArrayList<FunctionPrototype>();
+	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
 	
 	static {
-		prototypes.add(new FunctionPrototype(IFunc_equals._name_, IFunc_equals.class));
-		prototypes.add(new FunctionPrototype(IFunc_hash._name_, IFunc_hash.class));
-		prototypes.add(new FunctionPrototype(IFunc_hexHash._name_, IFunc_hexHash.class));
-		prototypes.add(new FunctionPrototype(IFunc_isStatic._name_, IFunc_isStatic.class));
-		prototypes.add(new FunctionPrototype(IFunc_isFinal._name_, IFunc_isFinal.class));
-		prototypes.add(new FunctionPrototype(IFunc_toString._name_, IFunc_toString.class));
-		prototypes.add(new FunctionPrototype(IFunc_type._name_, IFunc_type.class));
-		prototypes.add(new FunctionPrototype(IFunc_typeString._name_, IFunc_typeString.class));
-		prototypes.add(new FunctionPrototype(IFunc_functions._name_, IFunc_functions.class));
+		prototypes.addFunction("equals", BOOLEAN, VAR);
+		prototypes.addFunction("hash", INT);
+		prototypes.addFunction("hexHash", STRING);
+		prototypes.addFunction("isStatic", BOOLEAN);
+		prototypes.addFunction("isFinal", BOOLEAN);
+		prototypes.addFunction("toString", STRING);
+		prototypes.addFunction("type", STRING);
+		prototypes.addFunction("typeString", STRING);
+		prototypes.addFunction("functions", LIST);
 	}
 	
 	//--------------
@@ -253,19 +258,15 @@ public class EnvisionClass extends EnvisionObject {
 			constructor.invoke_i(interpreter, args);
 		}
 		
-		//define scope memebers
+		//define scope members
 		defineScopeMembers(instance);
 		
 		return instance;
 	}
 	
 	protected void defineScopeMembers(ClassInstance inst) {
-		Scope instanceScope = inst.getScope();
-		
 		//define instance members
-		for (FunctionPrototype proto : prototypes) {
-			instanceScope.defineFunctionPrototype(proto.setInstance(inst));
-		}
+		prototypes.defineOn(inst);
 	}
 	
 	//---------
@@ -274,7 +275,7 @@ public class EnvisionClass extends EnvisionObject {
 	
 	/**
 	 * Abstract classes cannot be directly instantiated and require
-	 * a non-abstract inherting class to implement.
+	 * a non-abstract inheriting class to implement.
 	 * 
 	 * @return True if this is an abstract class.
 	 */
@@ -357,7 +358,7 @@ public class EnvisionClass extends EnvisionObject {
 	/**
 	 * Assigns this class's static class scope.
 	 * 
-	 * @param in The incomming static scope
+	 * @param in The incoming static scope
 	 * @return This class
 	 */
 	public EnvisionClass setScope(Scope in) {

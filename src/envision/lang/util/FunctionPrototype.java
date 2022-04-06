@@ -32,7 +32,7 @@ public class FunctionPrototype extends EnvisionObject {
 	}
 	
 	/**
-	 * Executed when initally calling the function. The function is built
+	 * Executed when initially calling the function. The function is built
 	 * and replaces the prototype placeholder within the current scope.
 	 * 
 	 * @param interpreter

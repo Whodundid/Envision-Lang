@@ -15,6 +15,7 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionBooleanClass;
+import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
@@ -22,8 +23,8 @@ import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.FunctionPrototype;
+import envision.lang.util.IFunctionPrototype;
 import envision.lang.util.ParameterData;
-import envision.lang.util.PrimitiveFunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -33,7 +34,7 @@ public class ClassInstance extends EnvisionObject {
 	
 	/**
 	 * The scope of this instance. Directly inherited from the calling
-	 * scope and the overarching class's scope from which this instance
+	 * scope and the over-arching class's scope from which this instance
 	 * was defined from.
 	 */
 	protected final Scope instanceScope;
@@ -143,7 +144,7 @@ public class ClassInstance extends EnvisionObject {
 			//to account for scope visibility and naming
 			
 			//if the assignment object is Java:Null, this is an error and must be thrown.
-			//Java:Null should not be directly referencable in Envision, let alone assignable.
+			//Java:Null should not be directly reference-able in Envision, let alone assignable.
 			//EnvisionNull.Null should be used to represent actual Null values within Envision.
 			if (obj == null) throw new EnvisionError("EnvisionObject is Java:Null!");
 			
@@ -291,9 +292,7 @@ public class ClassInstance extends EnvisionObject {
 		EnvisionObject obj = instanceScope.get(funcName);
 		if (obj == null) throw new UndefinedFunctionError(funcName, this);
 		else if (obj instanceof FunctionPrototype proto) obj = proto.build(args);
-		else if (obj instanceof PrimitiveFunctionPrototype prim_proto) {
-			if (!isPrimitive) throw new NotAPrimitiveError(this);
-		}
+		else if (obj instanceof IFunctionPrototype iproto) return (E) handlePrimitive(funcName, args); 
 		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
 		//execute and return function result -- even if void
@@ -308,6 +307,25 @@ public class ClassInstance extends EnvisionObject {
 		//}
 		
 		return result;
+	}
+	
+	protected EnvisionObject handlePrimitive(String funcName, EnvisionObject[] args) {
+		//only allow primitive objects
+		if (!isPrimitive) throw new NotAPrimitiveError(this);
+		//switch on funcName
+		return switch (funcName) {
+		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
+		case "hash" -> EnvisionIntClass.newInt(getObjectHash());
+		case "hexHash" -> EnvisionStringClass.newString(getHexHash());
+		case "isStatic" -> EnvisionBooleanClass.newBoolean(isStatic());
+		case "isFinal" -> EnvisionBooleanClass.newBoolean(isFinal());
+		case "toString" -> EnvisionStringClass.newString(toString());
+		case "type" -> EnvisionStringClass.newString(getDatatype());
+		case "typeString" -> EnvisionStringClass.newString(getTypeString());
+		//case "functions" -> EnvisionListClass.newList(EnvisionDatatype.STRING_TYPE, instanceScope.getMethods());
+		//always error if this point is reached
+		default -> throw new UndefinedFunctionError(funcName, this);
+		};
 	}
 	
 	/**

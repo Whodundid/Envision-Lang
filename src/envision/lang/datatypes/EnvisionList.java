@@ -141,7 +141,7 @@ public class EnvisionList extends ClassInstance {
 		return this;
 	}
 	
-	public EnvisionList addAll(List vals) {
+	public EnvisionList addAll(List<EnvisionObject> vals) {
 		if (sizeLocked) throw lockedError();
 		list.addAll(vals);
 		return this;
