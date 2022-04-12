@@ -10,6 +10,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
@@ -20,6 +21,16 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	 * objects are derived from.
 	 */
 	public static final EnvisionBooleanClass BOOLEAN_CLASS = new EnvisionBooleanClass();
+	
+	/**
+	 * Boolean function prototypes.
+	 */
+	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
+	
+	//statically define function prototypes
+	static {
+		//There are none
+	}
 	
 	//--------------
 	// Constructors

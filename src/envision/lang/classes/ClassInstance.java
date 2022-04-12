@@ -23,7 +23,6 @@ import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.FunctionPrototype;
-import envision.lang.util.IFunctionPrototype;
 import envision.lang.util.ParameterData;
 import envision.tokenizer.Operator;
 
@@ -291,8 +290,11 @@ public class ClassInstance extends EnvisionObject {
 		//attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
 		if (obj == null) throw new UndefinedFunctionError(funcName, this);
-		else if (obj instanceof FunctionPrototype proto) obj = proto.build(args);
-		else if (obj instanceof IFunctionPrototype iproto) return (E) handlePrimitive(funcName, args); 
+		//check if prototype
+		else if (obj instanceof FunctionPrototype iproto) {
+			if (isPrimitive) return (E) handlePrimitive(funcName, args);
+			else return (E) iproto.build().invoke_r(interpreter, args);
+		}
 		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
 		//execute and return function result -- even if void
@@ -337,12 +339,6 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The result of this instance's toString function
 	 */
 	public EnvisionString executeToString(EnvisionInterpreter interpreter) {
-		//if primitive -- simply return the wrapped native toString value
-		if (isPrimitive) {
-			if (this instanceof EnvisionString env_str) return env_str.get();
-			else return EnvisionStringClass.newString(toString());
-		}
-		//otherwise, attempt to execute the 'toString' function
 		return executeFunction("toString", interpreter, new EnvisionObject[0]);
 	}
 	
@@ -355,13 +351,7 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The result of this instance's toString function
 	 */
 	public String executeToString_i(EnvisionInterpreter interpreter) {
-		//if primitive -- simply return the native toString value
-		if (isPrimitive) {
-			if (this instanceof EnvisionString env_str) return env_str.get_i();
-			else return toString();
-		}
-		//otherwise, attempt to execute the 'toString' function and return the internal string value
-		EnvisionObject result = executeFunction("toString", interpreter, new EnvisionObject[0]);
+		EnvisionObject result = executeFunction("toString", interpreter);
 		return result.toString();
 	}
 	
@@ -396,7 +386,11 @@ public class ClassInstance extends EnvisionObject {
 	 * Returns a field value from this instance's scope.
 	 */
 	public EnvisionObject get(String name) {
-		return instanceScope.get(name);
+		EnvisionObject obj = instanceScope.get(name);
+		//if function prototype, build dynamic function
+		if (obj instanceof FunctionPrototype proto) return proto.build();
+		//otherwise, just return scope object
+		return obj;
 	}
 	
 	/**

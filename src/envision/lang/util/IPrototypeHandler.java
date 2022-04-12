@@ -15,7 +15,7 @@ import eutil.datatypes.EArrayList;
  */
 public class IPrototypeHandler {
 
-	private final EArrayList<IFunctionPrototype> prototypes = new EArrayList<>();
+	private final EArrayList<FunctionPrototype> prototypes = new EArrayList<>();
 	
 	//--------------
 	// Constructors
@@ -41,40 +41,40 @@ public class IPrototypeHandler {
 	 * 
 	 * @param func_name The name of the prototype to create
 	 */
-	public IFunctionPrototype addFunction(String func_name) {
+	public FunctionPrototype addFunction(String func_name) {
 		return addFunction(func_name, EnvisionDatatype.VAR_TYPE, new ParameterData());
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, Primitives rType) {
+	public FunctionPrototype addFunction(String func_name, Primitives rType) {
 		return addFunction(func_name, rType.toDatatype(), new ParameterData());
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, EnvisionDatatype rType) {
+	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType) {
 		return addFunction(func_name, rType, new ParameterData());
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, Primitives rType, Primitives... params) {
+	public FunctionPrototype addFunction(String func_name, Primitives rType, Primitives... params) {
 		return addFunction(func_name, rType.toDatatype(), new ParameterData(params));
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, EnvisionDatatype rType, Primitives... params) {
+	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, Primitives... params) {
 		return addFunction(func_name, rType, new ParameterData(params));
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, Primitives rType, EnvisionDatatype... params) {
+	public FunctionPrototype addFunction(String func_name, Primitives rType, EnvisionDatatype... params) {
 		return addFunction(func_name, rType.toDatatype(), new ParameterData(params));
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, EnvisionDatatype rType, EnvisionDatatype... params) {
+	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, EnvisionDatatype... params) {
 		return addFunction(func_name, rType, new ParameterData(params));
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, Primitives rType, ParameterData params) {
+	public FunctionPrototype addFunction(String func_name, Primitives rType, ParameterData params) {
 		return addFunction(func_name, rType.toDatatype(), params);
 	}
 	
-	public IFunctionPrototype addFunction(String func_name, EnvisionDatatype rType, ParameterData params) {
-		var p = new IFunctionPrototype(func_name, rType, params);
+	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, ParameterData params) {
+		var p = new FunctionPrototype(func_name, rType, params);
 		prototypes.add(p);
 		return p;
 	}

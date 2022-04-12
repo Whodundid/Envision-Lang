@@ -122,16 +122,17 @@ public class EnvisionClass extends EnvisionObject {
 	//private static final EArrayList<FunctionPrototype> prototypes = new EArrayList<FunctionPrototype>();
 	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
 	
+	//statically define function prototypes
 	static {
-		prototypes.addFunction("equals", BOOLEAN, VAR);
-		prototypes.addFunction("hash", INT);
-		prototypes.addFunction("hexHash", STRING);
-		prototypes.addFunction("isStatic", BOOLEAN);
-		prototypes.addFunction("isFinal", BOOLEAN);
-		prototypes.addFunction("toString", STRING);
-		prototypes.addFunction("type", STRING);
-		prototypes.addFunction("typeString", STRING);
-		prototypes.addFunction("functions", LIST);
+		prototypes.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
+		prototypes.addFunction("hash", INT).assignDynamicClass(IFunc_hash.class);
+		prototypes.addFunction("hexHash", STRING).assignDynamicClass(IFunc_hexHash.class);
+		prototypes.addFunction("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
+		prototypes.addFunction("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
+		prototypes.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
+		prototypes.addFunction("type", STRING).assignDynamicClass(IFunc_type.class);
+		prototypes.addFunction("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
+		prototypes.addFunction("functions", LIST).assignDynamicClass(IFunc_functions.class);
 	}
 	
 	//--------------
@@ -170,10 +171,8 @@ public class EnvisionClass extends EnvisionObject {
 		
 		//assign primitive class name
 		className = primitiveType.string_type;
-		
 		//assign default empty primitive class scope
 		staticClassScope = new Scope();
-		
 		//assign native class object
 		internalClass = this;
 	}
@@ -182,17 +181,17 @@ public class EnvisionClass extends EnvisionObject {
 	// Methods
 	//---------
 	
-	public EnvisionClass addConstructor(EnvisionFunction constructorIn) {
-		if (constructorIn == null) throw new UndefinedConstructorError();
-		if (!constructorIn.isConstructor()) throw new NotAConstructorError(constructorIn);
+	public EnvisionClass addConstructor(EnvisionFunction conIn) {
+		if (conIn == null) throw new UndefinedConstructorError();
+		if (!conIn.isConstructor()) throw new NotAConstructorError(conIn);
 		
 		//assign this as the parent class
-		constructorIn.assignParentClass(this);
+		conIn.assignParentClass(this);
 		
-		if (constructor == null) constructor = constructorIn;
-		else {
-			constructor.addOverload(constructorIn.getParams(), constructorIn.getBody());
-		}
+		//if there is not a constructor already, assign the constructor to the incoming one.
+		if (constructor == null) constructor = conIn;
+		//otherwise, add the incomming constructor as an overload
+		else constructor.addOverload(conIn);
 		
 		return this;
 	}
@@ -205,6 +204,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return true if the given object is an instance of this class
 	 */
 	public boolean isInstanceof(Object in) {
+		//only care if the incomming object is actually a class instance
 		if (in instanceof ClassInstance inst) {
 			EnvisionClass instClass = inst.getEClass();
 			int instHash = instClass.getObjectHash();
@@ -233,6 +233,14 @@ public class EnvisionClass extends EnvisionObject {
 		return buildInstance(interpreter, args);
 	}
 	
+	/**
+	 * Default class construction procedure. This path will only be taken if a
+	 * ClassConstruct is not present.
+	 * 
+	 * @param interpreter The active working interpreter
+	 * @param args Any arguments to be passed to the new object instance
+	 * @return The newly created object instance
+	 */
 	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		Scope instanceScope = new Scope(staticClassScope);
 		ClassInstance instance = new ClassInstance(this, instanceScope);
@@ -264,6 +272,16 @@ public class EnvisionClass extends EnvisionObject {
 		return instance;
 	}
 	
+	/**
+	 * Internal function used by native object classes to define all static/member
+	 * object functions, variables, etc.
+	 * <p>
+	 * Note: Class object creation can in theory bypass this method but there will
+	 * not be any scope members defined on the child object. Could be useful if a
+	 * specific object member should not have accessible child members.
+	 * 
+	 * @param inst The ClassInstance to define scope members to
+	 */
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define instance members
 		prototypes.defineOn(inst);
