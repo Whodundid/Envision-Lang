@@ -119,7 +119,6 @@ public class EnvisionClass extends EnvisionObject {
 	 */
 	protected EArrayList<Stmt_FuncDef> constructorStatements = new EArrayList();
 	
-	//private static final EArrayList<FunctionPrototype> prototypes = new EArrayList<FunctionPrototype>();
 	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
 	
 	//statically define function prototypes
