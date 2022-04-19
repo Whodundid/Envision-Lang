@@ -55,6 +55,11 @@ import eutil.datatypes.EArrayList;
 public class EnvisionClass extends EnvisionObject {
 	
 	/**
+	 * Denotes whether or not the Envision-Class-Hierarchy has been constructed.
+	 */
+	private static boolean nativesRegistered = false;
+	
+	/**
 	 * The underlying datatype for all class objects.
 	 */
 	public static final EnvisionDatatype CLASS_TYPE = Primitives.CLASS.toDatatype();
@@ -81,7 +86,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * that any values native to that original defining scope are also
 	 * visible to this static class scope in some capacity.
 	 */
-	protected Scope staticClassScope;
+	protected Scope staticScope;
 	
 	/**
 	 * The name of the class from which object instances of the same type
@@ -119,19 +124,19 @@ public class EnvisionClass extends EnvisionObject {
 	 */
 	protected EArrayList<Stmt_FuncDef> constructorStatements = new EArrayList();
 	
-	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
+	private static final IPrototypeHandler OBJ_PROTOS = new IPrototypeHandler();
 	
 	//statically define function prototypes
 	static {
-		prototypes.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
-		prototypes.addFunction("hash", INT).assignDynamicClass(IFunc_hash.class);
-		prototypes.addFunction("hexHash", STRING).assignDynamicClass(IFunc_hexHash.class);
-		prototypes.addFunction("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
-		prototypes.addFunction("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
-		prototypes.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
-		prototypes.addFunction("type", STRING).assignDynamicClass(IFunc_type.class);
-		prototypes.addFunction("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
-		prototypes.addFunction("functions", LIST).assignDynamicClass(IFunc_functions.class);
+		OBJ_PROTOS.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
+		OBJ_PROTOS.addFunction("hash", INT).assignDynamicClass(IFunc_hash.class);
+		OBJ_PROTOS.addFunction("hexHash", STRING).assignDynamicClass(IFunc_hexHash.class);
+		OBJ_PROTOS.addFunction("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
+		OBJ_PROTOS.addFunction("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
+		OBJ_PROTOS.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
+		OBJ_PROTOS.addFunction("type", STRING).assignDynamicClass(IFunc_type.class);
+		OBJ_PROTOS.addFunction("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
+		OBJ_PROTOS.addFunction("members", LIST).assignDynamicClass(IFunc_members.class);
 	}
 	
 	//--------------
@@ -171,7 +176,7 @@ public class EnvisionClass extends EnvisionObject {
 		//assign primitive class name
 		className = primitiveType.string_type;
 		//assign default empty primitive class scope
-		staticClassScope = new Scope();
+		staticScope = new Scope();
 		//assign native class object
 		internalClass = this;
 	}
@@ -180,6 +185,28 @@ public class EnvisionClass extends EnvisionObject {
 	// Methods
 	//---------
 	
+	public void initClassHierarchy() {
+		//prevent re-registration
+		if (nativesRegistered) return;
+		registerStaticNatives();
+		nativesRegistered = true;
+	}
+	
+	/**
+	 * Called at interpreter instantiation to register static class members
+	 * outside of the internal construction phase. This approach prevents
+	 * an infinite instantiation loop
+	 */
+	protected void registerStaticNatives() {}
+	
+	/**
+	 * Adds a specific constructor to this object.
+	 * If no constructor was present before, this new constructor
+	 * will override the default constructor for this class.
+	 * 
+	 * @param conIn
+	 * @return
+	 */
 	public EnvisionClass addConstructor(EnvisionFunction conIn) {
 		if (conIn == null) throw new UndefinedConstructorError();
 		if (!conIn.isConstructor()) throw new NotAConstructorError(conIn);
@@ -241,7 +268,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return The newly created object instance
 	 */
 	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		Scope instanceScope = new Scope(staticClassScope);
+		Scope instanceScope = new Scope(staticScope);
 		ClassInstance instance = new ClassInstance(this, instanceScope);
 		
 		//define 'this'
@@ -283,7 +310,7 @@ public class EnvisionClass extends EnvisionObject {
 	 */
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define instance members
-		prototypes.defineOn(inst);
+		OBJ_PROTOS.defineOn(inst);
 	}
 	
 	//---------
@@ -327,7 +354,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return The static scope of this class.
 	 */
 	public Scope getClassScope() {
-		return staticClassScope;
+		return staticScope;
 	}
 	
 	/**
@@ -379,7 +406,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return This class
 	 */
 	public EnvisionClass setScope(Scope in) {
-		staticClassScope = in;
+		staticScope = in;
 		return this;
 	}
 	
@@ -413,17 +440,14 @@ public class EnvisionClass extends EnvisionObject {
 	//---------------------------
 	
 	public static class IFunc_equals<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "equals";
-		public IFunc_equals(E instIn) { super(instIn, BOOLEAN, _name_, VAR); }
+		public IFunc_equals() { super(BOOLEAN, "equals", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var eq = inst.equals((EnvisionObject) args[0]);
-			ret(EnvisionBooleanClass.newBoolean(eq));
+			ret(EnvisionBooleanClass.newBoolean(inst.equals(args[0])));
 		}
 	}
 	
 	public static class IFunc_hash<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "hash";
-		public IFunc_hash(E instIn) { super(instIn, INT, _name_); }
+		public IFunc_hash() { super(INT, "hash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hash = inst.getObjectHash();
 			ret(EnvisionIntClass.newInt(hash));
@@ -431,8 +455,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_hexHash<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "hexHash";
-		public IFunc_hexHash(E instIn) { super(instIn, STRING, _name_); }
+		public IFunc_hexHash() { super(STRING, "hexHash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hexHash = inst.getHexHash();
 			ret(EnvisionStringClass.newString(hexHash));
@@ -440,8 +463,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_isStatic<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "isStatic";
-		public IFunc_isStatic(E instIn) { super(instIn, BOOLEAN, _name_); }
+		public IFunc_isStatic() { super(BOOLEAN, "isStatic"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isStatic = inst.isStatic();
 			ret(EnvisionBooleanClass.newBoolean(isStatic));
@@ -449,8 +471,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_isFinal<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "isFinal";
-		public IFunc_isFinal(E instIn) { super(instIn, BOOLEAN, _name_); }
+		public IFunc_isFinal() { super(BOOLEAN, "isFinal"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isFinal = inst.isFinal();
 			ret(EnvisionBooleanClass.newBoolean(isFinal));
@@ -458,8 +479,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_toString<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "toString";
-		public IFunc_toString(E instIn) { super(instIn, STRING, _name_); }
+		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var toString = inst.toString();
 			ret(EnvisionStringClass.newString(toString));
@@ -467,8 +487,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_type<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "type";
-		public IFunc_type(E instIn) { super(instIn, STRING, _name_); }
+		public IFunc_type() { super(STRING, "type"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var type = inst.getDatatype().getType();
 			ret(EnvisionStringClass.newString(type));
@@ -476,21 +495,19 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	public static class IFunc_typeString<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "typeString";
-		public IFunc_typeString(E instIn) { super(instIn, STRING, _name_); }
+		public IFunc_typeString() { super(STRING, "typeString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var typeString = inst.getDatatype().getType() + "_" + inst.getHexHash();
 			ret(EnvisionStringClass.newString(typeString));
 		}
 	}
 	
-	public static class IFunc_functions<E extends ClassInstance> extends InstanceFunction<E> {
-		public static final String _name_ = "functions";
-		public IFunc_functions(E instIn) { super(instIn, LIST, _name_); }
+	public static class IFunc_members<E extends ClassInstance> extends InstanceFunction<E> {
+		public IFunc_members() { super(LIST, "members"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionList functions = EnvisionListClass.newList(EnvisionDatatype.FUNC_TYPE);
-			for (var f : inst.getScope().getMethods()) functions.add(f);
-			ret(functions);
+			EnvisionList members = EnvisionListClass.newList();
+			members.addAll(inst.instanceScope.getObjectsAsList());
+			ret(members);
 		}
 	}
 }

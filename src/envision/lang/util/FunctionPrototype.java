@@ -5,7 +5,6 @@ import java.util.HashMap;
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.internal.EnvisionFunction;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -49,6 +48,8 @@ public class FunctionPrototype extends EnvisionObject {
 	 */
 	private final HashMap<EnvisionDatatype, EArrayList<ParameterData>> overloads = new HashMap();
 	
+	private final EArrayList<ParameterData> overload_params = new EArrayList();
+	
 	/**
 	 * Even internal functions must be bound by some pre-declared Java class in and
 	 * subsequently built if needed. In the event that a function is extracted from
@@ -82,7 +83,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Note: this backing class can be intentionally left null in order to prevent
 	 * specific function extractions for internally protected members.
 	 */
-	private Class<? extends EnvisionFunction> func_class;
+	private Class<? extends InstanceFunction> func_class;
 	
 	/**
 	 * Just as a specific object's member function's directly pertain to the object
@@ -101,7 +102,12 @@ public class FunctionPrototype extends EnvisionObject {
 	 * built, this will be the constructed function instance capable of being used
 	 * within Envision.
 	 */
-	private EnvisionFunction built_func;
+	private InstanceFunction built_func;
+	
+	/*
+	 * Unsure if needed for right now
+	 */
+	private InstanceFunction flash_func;
 	
 	/**
 	 * Locally keeps track of whether or not this function prototype has been
@@ -185,7 +191,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @param interpreter
 	 * @return The built function
 	 */
-	public EnvisionFunction build() {
+	public InstanceFunction build(ClassInstance instIn) {
 		//check if already built and return built_func
 		if (built) return built_func;
 		
@@ -197,13 +203,15 @@ public class FunctionPrototype extends EnvisionObject {
 		
 		//otherwise, attempt to build the actual function dynamically
 		try {
-			var pass_args = new Object[]{instance};
-			var con = func_class.getDeclaredConstructor(ClassInstance.class);
+			var con = func_class.getDeclaredConstructor();
 			var acc = con.canAccess(null);
+			
+			if (instIn != null) instance = instIn;
 			
 			//forcibly gain access and assign
 			if (!acc) con.setAccessible(true);
-			built_func = con.newInstance(pass_args);
+			built_func = con.newInstance();
+			built_func.setInst(instance);
 			if (!acc) con.setAccessible(false);
 			
 			//mark as built and return newly created function
@@ -249,6 +257,7 @@ public class FunctionPrototype extends EnvisionObject {
 			overloads.put(rType, bucket = new EArrayList());
 		}
 		bucket.add(params);
+		overload_params.add(params);
 		return this;
 	}
 	
@@ -280,6 +289,33 @@ public class FunctionPrototype extends EnvisionObject {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Checks to see if there is an overload with the given parameters. Does not
+	 * care about return type.
+	 * 
+	 * @param paramsIn
+	 * @return
+	 */
+	public boolean hasOverload(ParameterData paramsIn) {
+		//first compare base function parameters
+		if (params.compare(paramsIn)) return true;
+		//iterate linearly across all parameters in overloads
+		return overload_params.anyMatch(p -> p.compare(paramsIn));
+	}
+	
+	/**
+	 * Converts the incomming arguments to parameters and then checks to see if
+	 * there is an overload with such parameters. Does not care about return type.
+	 * 
+	 * @param argsIn
+	 * @return
+	 */
+	public boolean hasOverload(EnvisionObject[] argsIn) {
+		//convert args to parameterData
+		ParameterData params = new ParameterData(argsIn);
+		return hasOverload(params);
 	}
 	
 	//---------
@@ -341,7 +377,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 *                primitive object's member function within Envision.
 	 * @return This prototype
 	 */
-	public FunctionPrototype assignDynamicClass(Class<? extends EnvisionFunction> classIn) {
+	public FunctionPrototype assignDynamicClass(Class<? extends InstanceFunction> classIn) {
 		func_class = classIn;
 		return this;
 	}

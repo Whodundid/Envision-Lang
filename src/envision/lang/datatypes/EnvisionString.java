@@ -1,14 +1,17 @@
 package envision.lang.datatypes;
 
 import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.lang.util.Primitives;
 import envision.tokenizer.Operator;
 
@@ -163,6 +166,28 @@ public class EnvisionString extends EnvisionVariable {
 		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 	}
 	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
+		case "toString" -> EnvisionStringClass.newString(string_val);
+		case "toList" -> toList();
+		case "isEmpty" -> isEmpty();
+		case "isNotEmpty" -> isNotEmpty();
+		case "isChar" -> isChar();
+		case "get" -> get();
+		case "set" -> set(args[0]);
+		case "toUpperCase" -> toUpperCase();
+		case "toLowerCase" -> toLowerCase();
+		case "substring" -> substring(args);
+		case "compareTo" -> compareTo((EnvisionString) args[0]);
+		default -> super.handlePrimitive(proto, args);
+		};
+	}
+	
 	//---------
 	// Methods
 	//---------
@@ -237,6 +262,12 @@ public class EnvisionString extends EnvisionVariable {
 	
 	public String substring_i(int start) { return substring_i(start, string_val.length()); }
 	public String substring_i(int start, int end) { return string_val.substring(start, end); }
+	
+	public EnvisionString substring(EnvisionObject[] args) {
+		if (args.length == 1) return substring((EnvisionInt) args[0]);
+		else if (args.length == 2) return substring((EnvisionInt) args[0], (EnvisionInt) args[1]);
+		throw new ArgLengthError("substring", 2, args.length);
+	}
 	public EnvisionString substring(EnvisionInt start) { return substring((int) start.int_val); }
 	public EnvisionString substring(EnvisionInt start, EnvisionInt end) { return substring((int) start.int_val, (int) end.int_val); }
 	public EnvisionString substring(int start) { return EnvisionStringClass.newString(substring_i(start)); }

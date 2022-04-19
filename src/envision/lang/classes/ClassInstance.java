@@ -6,7 +6,6 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.DuplicateFunctionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.NotAFunctionError;
-import envision.exceptions.errors.NotAPrimitiveError;
 import envision.exceptions.errors.UndefinedFunctionError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
@@ -66,7 +65,7 @@ public class ClassInstance extends EnvisionObject {
 	protected ClassInstance(EnvisionClass derivingClassIn) {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
-		instanceScope = new Scope(derivingClassIn.staticClassScope);
+		instanceScope = new Scope(derivingClassIn.staticScope);
 		registerNatives();
 	}
 	
@@ -261,6 +260,10 @@ public class ClassInstance extends EnvisionObject {
 	 * Otherwise, if there is an object with the given name but it is not
 	 * a function, a NotAFunctionError is thrown.
 	 * <p>
+	 * The result of this method dynamically casts its output to whatever
+	 * type is specified. Invalid types are not checked and relevant cast
+	 * errors will be thrown.
+	 * <p>
 	 * Note: This method can throw any of the errors involved with
 	 * standard function execution within Envision:Java. As such, it is
 	 * important to fully understand the function being called including
@@ -286,34 +289,36 @@ public class ClassInstance extends EnvisionObject {
 		(String funcName, EnvisionInterpreter interpreter, EnvisionObject[] args)
 			throws UndefinedFunctionError, NotAFunctionError
 	{
-		//System.out.println("\tClassInstance FUNC CALL: " + this + " : " + this.getDatatype() + " : " + funcName);
 		//attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
+		
 		if (obj == null) throw new UndefinedFunctionError(funcName, this);
-		//check if prototype
-		else if (obj instanceof FunctionPrototype iproto) {
-			if (isPrimitive) return (E) handlePrimitive(funcName, args);
-			else return (E) iproto.build().invoke_r(interpreter, args);
-		}
+		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);
 		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
 		//execute and return function result -- even if void
 		EnvisionFunction func = (EnvisionFunction) obj;
-		E result = func.invoke_r(interpreter, args);
-		
-		//check for null values
-		//if (result.getDatatype().equals(EnvisionDatatype.NULL_TYPE)) {
-		//	if (func.getReturnType().equals(EnvisionDatatype.STRING_TYPE)) {
-		//		return (E) EnvisionStringClass.newString(EnvisionDatatype.STRING_TYPE.getType());
-		//	}
-		//}
-		
-		return result;
+		return func.invoke_r(interpreter, args);
 	}
 	
-	protected EnvisionObject handlePrimitive(String funcName, EnvisionObject[] args) {
-		//only allow primitive objects
-		if (!isPrimitive) throw new NotAPrimitiveError(this);
+	protected EnvisionObject handlePrototype(FunctionPrototype proto, EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		if (isPrimitive) return handlePrimitive(proto, args);
+		return proto.build(this).invoke_r(interpreter, args);
+	}
+	
+	/**
+	 * Every native Envision object should directly override this
+	 * method to declare their own specific primitive function names.
+	 * Furthermore, every native Envision object that overrides this
+	 * method should also directly call this method's super in order
+	 * to access inherited function declarations.
+	 * 
+	 * @param proto
+	 * @param args
+	 * @return
+	 */
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
 		//switch on funcName
 		return switch (funcName) {
 		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
@@ -324,7 +329,7 @@ public class ClassInstance extends EnvisionObject {
 		case "toString" -> EnvisionStringClass.newString(toString());
 		case "type" -> EnvisionStringClass.newString(getDatatype());
 		case "typeString" -> EnvisionStringClass.newString(getTypeString());
-		//case "functions" -> EnvisionListClass.newList(EnvisionDatatype.STRING_TYPE, instanceScope.getMethods());
+		//case "members" -> EnvisionListClass.newList(EnvisionDatatype.STRING_TYPE, instanceScope.getMethods());
 		//always error if this point is reached
 		default -> throw new UndefinedFunctionError(funcName, this);
 		};
@@ -388,7 +393,7 @@ public class ClassInstance extends EnvisionObject {
 	public EnvisionObject get(String name) {
 		EnvisionObject obj = instanceScope.get(name);
 		//if function prototype, build dynamic function
-		if (obj instanceof FunctionPrototype proto) return proto.build();
+		if (obj instanceof FunctionPrototype proto) return proto.build(this);
 		//otherwise, just return scope object
 		return obj;
 	}

@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import envision.exceptions.EnvisionError;
+import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.listErrors.EmptyListError;
 import envision.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision.exceptions.errors.listErrors.LockedListError;
@@ -13,6 +15,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.lang.util.Primitives;
 import envision.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
@@ -113,6 +116,46 @@ public class EnvisionList extends ClassInstance {
 		add(obj);
 		
 		return this;
+	}
+	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "add" -> add(args[0]);
+		case "addR" -> addR(args[0]);
+		case "addRT" -> addRT(args[0]);
+		case "clear" -> clear();
+		case "contains" -> contains(args[0]);
+		case "copy" -> copy();
+		case "fill" -> fill(args);
+		case "get" -> get((EnvisionInt) args[0]);
+		case "getFirst" -> getFirst();
+		case "getLast" -> getLast();
+		case "getListType" -> getListType();
+		case "hasOne" -> hasOne();
+		case "isEmpty" -> isEmpty();
+		case "isNotEmpty" -> isNotEmpty();
+		case "isSizeLocked" -> isSizeLocked();
+		case "lockSize" -> lockSize();
+		case "notContains" -> notContains(args[0]);
+		case "push" -> push(args[0]);
+		case "pop" -> pop();
+		case "remove" -> remove((EnvisionInt) args[0]);
+		case "removeFirst" -> removeFirst();
+		case "removeLast" -> removeLast();
+		case "set" -> set((EnvisionInt) args[0], args[1]);
+		case "setFirst" -> setFirst(args[0]);
+		case "setLast" -> setLast(args[0]);
+		case "shiftLeft" -> shiftLeft(args);
+		case "shiftRight" -> shiftRight(args);
+		case "shuffle" -> shuffle();
+		case "size" -> size();
+		case "swap" -> swap((EnvisionInt) args[0], (EnvisionInt) args[1]);
+		default -> super.handlePrimitive(proto, args);
+		};
 	}
 	
 	//---------
@@ -250,6 +293,11 @@ public class EnvisionList extends ClassInstance {
 		return (sizeLocked) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
 	}
 	
+	public EnvisionList lockSize() {
+		sizeLocked = true;
+		return this;
+	}
+	
 	public EnvisionList setSizeLocked(EnvisionBoolean val) {
 		sizeLocked = val.bool_val;
 		return this;
@@ -283,6 +331,11 @@ public class EnvisionList extends ClassInstance {
 		return this;
 	}
 	
+	public EnvisionList shiftLeft(EnvisionObject[] args) {
+		if (args.length == 0) return shiftLeft();
+		if (args.length == 1) return shiftLeft((EnvisionInt) args[0]);
+		else throw new ArgLengthError("shiftLeft", 1, args.length);
+	}
 	public EnvisionList shiftLeft() { return shiftLeft(1); }
 	public EnvisionList shiftLeft(EnvisionInt intIn) { return shiftLeft((int) intIn.int_val); }
 	public EnvisionList shiftLeft(long amount) { return shiftLeft((int) amount); }
@@ -290,6 +343,11 @@ public class EnvisionList extends ClassInstance {
 		return new EnvisionList(this, list.shiftLeft(amount));
 	}
 	
+	public EnvisionList shiftRight(EnvisionObject[] args) {
+		if (args.length == 0) return shiftRight();
+		if (args.length == 1) return shiftRight((EnvisionInt) args[0]);
+		else throw new ArgLengthError("shiftRight", 1, args.length);
+	}
 	public EnvisionList shiftRight() { return shiftRight(1); }
 	public EnvisionList shiftRight(EnvisionInt intIn) { return shiftRight((int) intIn.int_val); }
 	public EnvisionList shiftRight(long amount) { return shiftRight((int) amount); }

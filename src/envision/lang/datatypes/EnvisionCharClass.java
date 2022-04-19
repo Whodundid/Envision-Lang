@@ -1,16 +1,18 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.CHAR;
+import static envision.lang.util.Primitives.INT;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
@@ -21,6 +23,19 @@ public class EnvisionCharClass extends EnvisionClass {
 	 * objects are derived from.
 	 */
 	public static final EnvisionCharClass CHAR_CLASS = new EnvisionCharClass();
+	
+	/**
+	 * Character member function prototypes.
+	 */
+	private static final IPrototypeHandler CHAR_PROTOS = new IPrototypeHandler();
+	
+	//statically define function prototypes
+	static {
+		CHAR_PROTOS.addFunction("get", CHAR).assignDynamicClass(IFunc_get.class);
+		CHAR_PROTOS.addFunction("set", CHAR, CHAR).assignDynamicClass(IFunc_set.class);
+		CHAR_PROTOS.addFunction("toUpperCase", CHAR).assignDynamicClass(IFunc_toUpperCase.class);
+		CHAR_PROTOS.addFunction("toLowerCase", CHAR).assignDynamicClass(IFunc_toLowerCase.class);
+	}
 	
 	//--------------
 	// Constructors
@@ -35,6 +50,11 @@ public class EnvisionCharClass extends EnvisionClass {
 		
 		//set final to prevent user-extension
 		setFinal();
+	}
+	
+	@Override
+	protected void registerStaticNatives() {
+		staticScope.define("NULL_CHAR", EnvisionDatatype.CHAR_TYPE, EnvisionChar.NULL_CHAR);
 	}
 	
 	//---------------------
@@ -98,16 +118,8 @@ public class EnvisionCharClass extends EnvisionClass {
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define super object's members
 		super.defineScopeMembers(inst);
-		
-		//cast to boolean
-		EnvisionChar c = (EnvisionChar) inst;
-		
-		//extract instance scope
-		Scope inst_scope = c.getScope();
-		
-		//define instance members
-		//inst_scope.defineFunction(new IFunc_get(c));
-		//inst_scope.defineFunction(new IFunc_set(c));
+		//define char members
+		CHAR_PROTOS.defineOn(inst);
 	}
 	
 	//---------------------------
@@ -115,17 +127,31 @@ public class EnvisionCharClass extends EnvisionClass {
 	//---------------------------
 	
 	private static class IFunc_get<E extends EnvisionChar> extends InstanceFunction<E> {
-		IFunc_get(E instIn) { super(instIn, CHAR, "get"); }
+		public IFunc_get() { super(CHAR, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionCharClass.newChar(inst.char_val));
 		}
 	}
 	
 	private static class IFunc_set<E extends EnvisionChar> extends InstanceFunction<E> {
-		IFunc_set(E instIn) { super(instIn, CHAR, "set", CHAR); }
+		public IFunc_set() { super(CHAR, "set", CHAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.char_val = ((EnvisionChar) args[0]).char_val;
 			ret(inst);
+		}
+	}
+	
+	private static class IFunc_toUpperCase<E extends EnvisionChar> extends InstanceFunction<E> {
+		public IFunc_toUpperCase() { super(CHAR, "toUpperCase"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(EnvisionCharClass.newChar(Character.toUpperCase(inst.char_val)));
+		}
+	}
+	
+	private static class IFunc_toLowerCase<E extends EnvisionChar> extends InstanceFunction<E> {
+		public IFunc_toLowerCase() { super(CHAR, "toLowerCase"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(EnvisionCharClass.newChar(Character.toLowerCase(inst.char_val)));
 		}
 	}
 	

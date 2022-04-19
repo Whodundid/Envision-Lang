@@ -1,15 +1,16 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.BOOLEAN;
+import static envision.lang.util.Primitives.STRING;
 
 import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
@@ -29,7 +30,8 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		//There are none
+		prototypes.addFunction("get", BOOLEAN).assignDynamicClass(IFunc_get.class);
+		prototypes.addFunction("set", BOOLEAN, BOOLEAN).assignDynamicClass(IFunc_set.class);
 	}
 	
 	//--------------
@@ -43,11 +45,15 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	private EnvisionBooleanClass() {
 		super(Primitives.BOOLEAN);
 		
-		//define static members
-		staticClassScope.defineFunction(new IFunc_static_valueOf());
-		
 		//set final to prevent user-extension
 		setFinal();
+	}
+	
+	@Override
+	protected void registerStaticNatives() {
+		staticScope.defineFunction(new IFunc_static_valueOf());
+		staticScope.define("TRUE", EnvisionDatatype.BOOL_TYPE, EnvisionBoolean.TRUE);
+		staticScope.define("FALSE", EnvisionDatatype.BOOL_TYPE, EnvisionBoolean.FALSE);
 	}
 	
 	//---------------------
@@ -103,7 +109,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		if (bool == null)
 			throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		
-		//define scope memebers
+		//define scope members
 		defineScopeMembers(bool);
 		
 		return bool;
@@ -113,16 +119,8 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define super object's members
 		super.defineScopeMembers(inst);
-		
-		//cast to boolean
-		EnvisionBoolean bool = (EnvisionBoolean) inst;
-		
-		//extract instance scope
-		Scope inst_scope = bool.getScope();
-		
-		//define instance members
-		//inst_scope.defineFunction(new IFunc_get(bool));
-		//inst_scope.defineFunction(new IFunc_set(bool));
+		//define boolean members
+		prototypes.defineOn(inst);
 	}
 	
 	//---------------------------
@@ -130,14 +128,14 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	//---------------------------
 	
 	private static class IFunc_get<E extends EnvisionBoolean> extends InstanceFunction<E> {
-		public IFunc_get(E instIn) { super(instIn, BOOLEAN, "get"); }
+		public IFunc_get() { super(BOOLEAN, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.newBoolean(inst.bool_val));
 		}
 	}
 	
 	private static class IFunc_set<E extends EnvisionBoolean> extends InstanceFunction<E> {
-		IFunc_set(E instIn) { super(instIn, BOOLEAN, "set", BOOLEAN); }
+		public IFunc_set() { super(BOOLEAN, "set", BOOLEAN); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.bool_val = ((EnvisionBoolean) args[0]).bool_val;
 			ret(inst);

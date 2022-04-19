@@ -12,7 +12,7 @@ public class Exception_Class extends EnvisionClass {
 	
 	public Exception_Class(EnvisionInterpreter interpreter) {
 		super("Exception");
-		staticClassScope = new Scope(interpreter.scope());
+		staticScope = new Scope(interpreter.scope());
 		addConstructor(new EnvisionFunction(new ParameterData(STRING)));
 	}
 	/*

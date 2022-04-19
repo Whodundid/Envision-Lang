@@ -3,11 +3,13 @@ package envision.lang.datatypes;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -15,6 +17,9 @@ import envision.tokenizer.Operator;
  * Encoded with Java Longs.
  */
 public class EnvisionInt extends EnvisionNumber {
+	
+	public static final EnvisionInt MIN_VALUE = EnvisionIntClass.newInt(Long.MIN_VALUE);
+	public static final EnvisionInt MAX_VALUE = EnvisionIntClass.newInt(Long.MAX_VALUE);
 	
 	public long int_val;
 	
@@ -170,6 +175,32 @@ public class EnvisionInt extends EnvisionNumber {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "get" -> get();
+		case "set" -> set(args[0]);
+		case "min" -> min((EnvisionInt) args[0], (EnvisionInt) args[1]);
+		case "max" -> max((EnvisionInt) args[0], (EnvisionInt) args[1]);
+		default -> super.handlePrimitive(proto, args);
+		};
+	}
+	
+	//---------
+	// Methods
+	//---------
+	
+	public EnvisionInt min(EnvisionInt a, EnvisionInt b) {
+		return (a.int_val <= b.int_val) ? a : b;
+	}
+	
+	public EnvisionInt max(EnvisionInt a, EnvisionInt b) {
+		return (a.int_val >= b.int_val) ? a : b;
 	}
 	
 }

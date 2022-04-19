@@ -39,7 +39,7 @@ public class EnvisionNumberClass extends EnvisionClass {
 		super(Primitives.NUMBER);
 		
 		//define static members
-		staticClassScope.defineFunction(new IFunc_static_valueOf());
+		staticScope.defineFunction(new IFunc_static_valueOf());
 	}
 	
 	//---------------------

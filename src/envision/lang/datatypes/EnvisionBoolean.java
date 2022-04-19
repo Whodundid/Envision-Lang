@@ -3,10 +3,12 @@ package envision.lang.datatypes;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
+import envision.lang.util.FunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -159,6 +161,18 @@ public class EnvisionBoolean extends EnvisionVariable {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "get" -> get();
+		case "set" -> set(args[0]);
+		default -> super.handlePrimitive(proto, args);
+		};
 	}
 	
 }

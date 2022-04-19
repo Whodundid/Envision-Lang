@@ -3,11 +3,13 @@ package envision.lang.datatypes;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -15,6 +17,9 @@ import envision.tokenizer.Operator;
  * Backed internally by Java:Double values.
  */
 public class EnvisionDouble extends EnvisionNumber {
+	
+	public static final EnvisionDouble MIN_VALUE = EnvisionDoubleClass.newDouble(Double.MIN_VALUE);
+	public static final EnvisionDouble MAX_VALUE = EnvisionDoubleClass.newDouble(Double.MAX_VALUE);
 	
 	public double double_val;
 	
@@ -153,6 +158,32 @@ public class EnvisionDouble extends EnvisionNumber {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "get" -> get();
+		case "set" -> set(args[0]);
+		case "min" -> min((EnvisionDouble) args[0], (EnvisionDouble) args[1]);
+		case "max" -> max((EnvisionDouble) args[0], (EnvisionDouble) args[1]);
+		default -> super.handlePrimitive(proto, args);
+		};
+	}
+	
+	//---------
+	// Methods
+	//---------
+	
+	public EnvisionDouble min(EnvisionDouble a, EnvisionDouble b) {
+		return (a.double_val <= b.double_val) ? a : b;
+	}
+	
+	public EnvisionDouble max(EnvisionDouble a, EnvisionDouble b) {
+		return (a.double_val >= b.double_val) ? a : b;
 	}
 	
 }

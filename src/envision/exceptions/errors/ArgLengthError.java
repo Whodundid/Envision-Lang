@@ -35,5 +35,10 @@ public class ArgLengthError extends EnvisionError {
 		super("Invalid number of arguments for '" + clazz.getClassName() + "': expected ("
 				+ expected + ") but got (" + got + ")!");
 	}
+	
+	public ArgLengthError(String objName, int expected, int got) {
+		super("Invalid number of arguments for '" + objName + "': expected ("
+				+ expected + ") but got (" + got + ")!");
+	}
 
 }

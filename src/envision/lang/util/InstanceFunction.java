@@ -11,44 +11,36 @@ public abstract class InstanceFunction<E extends ClassInstance> extends Envision
 	// Constructors
 	//--------------
 	
-	public InstanceFunction(E instIn, Primitives rt, String nameIn) {
+	public InstanceFunction(Primitives rt, String nameIn) {
 		super(rt.toDatatype(), nameIn, new ParameterData());
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, Primitives rt, String name, Primitives... params) {
+	public InstanceFunction(Primitives rt, String name, Primitives... params) {
 		super(rt.toDatatype(), name, new ParameterData(params));
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, Primitives rt, String name, EnvisionDatatype... params) {
+	public InstanceFunction(Primitives rt, String name, EnvisionDatatype... params) {
 		super(rt.toDatatype(), name, new ParameterData(params));
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, EnvisionDatatype rt, String name, Primitives... params) {
+	public InstanceFunction(EnvisionDatatype rt, String name, Primitives... params) {
 		super(rt, name, new ParameterData(params));
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, EnvisionDatatype rt, String name, EnvisionDatatype... params) {
+	public InstanceFunction(EnvisionDatatype rt, String name, EnvisionDatatype... params) {
 		super(rt, name, new ParameterData(params));
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, Primitives rTypeIn, String nameIn, ParameterData paramsIn) {
+	public InstanceFunction(Primitives rTypeIn, String nameIn, ParameterData paramsIn) {
 		super(rTypeIn, nameIn, paramsIn);
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, EnvisionDatatype rTypeIn, String nameIn) {
+	public InstanceFunction(EnvisionDatatype rTypeIn, String nameIn) {
 		super(rTypeIn, nameIn, new ParameterData());
-		inst = instIn;
 	}
 	
-	public InstanceFunction(E instIn, EnvisionDatatype rTypeIn, String nameIn, ParameterData paramsIn) {
+	public InstanceFunction(EnvisionDatatype rTypeIn, String nameIn, ParameterData paramsIn) {
 		super(rTypeIn, nameIn, paramsIn);
-		inst = instIn;
 	}
 	
 	//---------

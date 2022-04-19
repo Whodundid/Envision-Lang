@@ -1,16 +1,18 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.DOUBLE;
+import static envision.lang.util.Primitives.NUMBER;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
@@ -21,6 +23,18 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	 * objects are derived from.
 	 */
 	public static final EnvisionDoubleClass DOUBLE_CLASS = new EnvisionDoubleClass();
+	
+	/**
+	 * Double member function prototypes.
+	 */
+	private static final IPrototypeHandler DOUBLE_PROTOS = new IPrototypeHandler();
+	
+	static {
+		DOUBLE_PROTOS.addFunction("get", DOUBLE).assignDynamicClass(IFunc_get.class);
+		DOUBLE_PROTOS.addFunction("set", DOUBLE).assignDynamicClass(IFunc_set.class);
+		DOUBLE_PROTOS.addFunction("min", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
+		DOUBLE_PROTOS.addFunction("max", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
+	}
 	
 	//--------------
 	// Constructors
@@ -33,11 +47,15 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	private EnvisionDoubleClass() {
 		super(Primitives.DOUBLE);
 		
-		//define static members
-		staticClassScope.defineFunction(new IFunc_static_valueOf());
-		
 		//set final to prevent user-extension
 		setFinal();
+	}
+	
+	@Override
+	protected void registerStaticNatives() {
+		staticScope.defineFunction(new IFunc_static_valueOf());
+		staticScope.define("MIN_VALUE", EnvisionDatatype.DOUBLE_TYPE, EnvisionDouble.MIN_VALUE);
+		staticScope.define("MAX_VALUE", EnvisionDatatype.DOUBLE_TYPE, EnvisionDouble.MAX_VALUE);
 	}
 	
 	//---------------------
@@ -99,18 +117,8 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define super object's members
 		super.defineScopeMembers(inst);
-		
-		//cast to boolean
-		EnvisionDouble d = (EnvisionDouble) inst;
-		
-		//extract instance scope
-		Scope inst_scope = d.getScope();
-		
-		//define instance members
-		//inst_scope.defineFunction(new IFunc_get(d));
-		//inst_scope.defineFunction(new IFunc_set(d));
-		//inst_scope.defineFunction(new IFunc_min(d));
-		//inst_scope.defineFunction(new IFunc_max(d));
+		//define scope members
+		DOUBLE_PROTOS.defineOn(inst);
 	}
 	
 	//---------------------------
@@ -118,14 +126,14 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	//---------------------------
 	
 	private static class IFunc_get<E extends EnvisionDouble> extends InstanceFunction<E> {
-		IFunc_get(E instIn) { super(instIn, DOUBLE, "get"); }
+		public IFunc_get() { super(DOUBLE, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionDoubleClass.newDouble(inst.double_val));
 		}
 	}
 	
 	private static class IFunc_set<E extends EnvisionDouble> extends InstanceFunction<E> {
-		IFunc_set(E instIn) { super(instIn, DOUBLE, "set", DOUBLE); }
+		public IFunc_set() { super(DOUBLE, "set", DOUBLE); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.double_val = ((EnvisionDouble) args[0]).double_val;
 			ret(inst);
@@ -133,16 +141,20 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	}
 	
 	private static class IFunc_min<E extends EnvisionDouble> extends InstanceFunction<E> {
-		IFunc_min(E instIn) { super(instIn, DOUBLE, "min"); }
+		public IFunc_min() { super(DOUBLE, "min", DOUBLE); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionDoubleClass.newDouble(Double.MIN_VALUE));
+			EnvisionDouble in = (EnvisionDouble) args[0];
+			double min = (inst.double_val <= in.double_val) ? inst.double_val : in.double_val;
+			ret(EnvisionDoubleClass.newDouble(min));
 		}
 	}
 	
 	private static class IFunc_max<E extends EnvisionDouble> extends InstanceFunction<E> {
-		IFunc_max(E instIn) { super(instIn, DOUBLE, "max"); }
+		public IFunc_max() { super(DOUBLE, "max", DOUBLE); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionDoubleClass.newDouble(Double.MAX_VALUE));
+			EnvisionDouble in = (EnvisionDouble) args[0];
+			double max = (inst.double_val >= in.double_val) ? inst.double_val : in.double_val;
+			ret(EnvisionDoubleClass.newDouble(max));
 		}
 	}
 	

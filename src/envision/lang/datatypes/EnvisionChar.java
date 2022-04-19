@@ -3,12 +3,14 @@ package envision.lang.datatypes;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
+import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
 import envision.exceptions.errors.StrongVarReassignmentError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.FunctionPrototype;
 import envision.tokenizer.Operator;
 
 /**
@@ -17,7 +19,7 @@ import envision.tokenizer.Operator;
  */
 public class EnvisionChar extends EnvisionVariable {
 	
-	public static final char NULL_CHAR = '\0';
+	public static final EnvisionChar NULL_CHAR = EnvisionCharClass.newChar('\0');
 	
 	public char char_val;
 	
@@ -25,7 +27,7 @@ public class EnvisionChar extends EnvisionVariable {
 	// Constructors
 	//--------------
 	
-	protected EnvisionChar() { this(NULL_CHAR); }
+	protected EnvisionChar() { this('\0'); }
 	protected EnvisionChar(char val) {
 		super(EnvisionCharClass.CHAR_CLASS);
 		char_val = val;
@@ -164,6 +166,20 @@ public class EnvisionChar extends EnvisionVariable {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	protected EnvisionObject handlePrimitive(FunctionPrototype proto, EnvisionObject[] args) {
+		String funcName = proto.getFunctionName();
+		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
+		
+		return switch (funcName) {
+		case "get" -> get();
+		case "set" -> set(args[0]);
+		case "toUpperCase" -> EnvisionCharClass.newChar(Character.toUpperCase(char_val));
+		case "toLowerCase" -> EnvisionCharClass.newChar(Character.toLowerCase(char_val));
+		default -> super.handlePrimitive(proto, args);
+		};
 	}
 	
 }

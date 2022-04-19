@@ -3,6 +3,7 @@ package envision.interpreter.util.scope;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
@@ -132,25 +133,28 @@ public class Scope {
 		importedValues.clear();
 	}
 	
-	public Stream<EnvisionObject> getObjectsAsStream() {
+	protected Stream<EnvisionObject> getObjectsAsStream() {
 		return values.entrySet().stream().map(b -> b.getValue().getB());
 	}
 	
-	public EArrayList<EnvisionObject> getFields() {
-		return getObjectsAsStream().filter(o -> o.getDatatype().isField())
-								   .collect(EArrayList.toEArrayList());
+	public List<EnvisionObject> getObjectsAsList() {
+		return getObjectsAsStream().toList();
 	}
 	
-	public EArrayList<EnvisionFunction> getMethods() {
+	public List<EnvisionObject> getFields() {
+		return getObjectsAsStream().filter(o -> o.getDatatype().isField()).toList();
+	}
+	
+	public List<EnvisionFunction> getMethods() {
 		return getObjectsAsStream().filter(o -> o.getDatatype().isFunction())
 								   .map(o -> (EnvisionFunction) o)
-				   				   .collect(EArrayList.toEArrayList());
+				   				   .toList();
 	}
 	
-	public EArrayList<EnvisionClass> getClasses() {
+	public List<EnvisionClass> getClasses() {
 		return getObjectsAsStream().filter(o -> o.getDatatype().isClass())
 								   .map(o -> (EnvisionClass) o)
-				   				   .collect(EArrayList.toEArrayList());
+				   				   .toList();
 	}
 	
 	/**

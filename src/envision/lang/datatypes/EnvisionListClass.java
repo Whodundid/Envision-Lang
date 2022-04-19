@@ -29,37 +29,37 @@ public class EnvisionListClass extends EnvisionClass {
 	private static final IPrototypeHandler LIST_PROTOTYPES = new IPrototypeHandler();
 	
 	static {
-		LIST_PROTOTYPES.addFunction("add", BOOLEAN, VAR);
-		LIST_PROTOTYPES.addFunction("addR", VAR, VAR);
-		LIST_PROTOTYPES.addFunction("addRT", LIST, VAR);
-		LIST_PROTOTYPES.addFunction("clear", LIST);
-		LIST_PROTOTYPES.addFunction("contains", BOOLEAN, VAR);
-		LIST_PROTOTYPES.addFunction("copy", LIST);
-		LIST_PROTOTYPES.addFunction("fill", LIST, VAR_A);
-		LIST_PROTOTYPES.addFunction("flip", LIST);
-		LIST_PROTOTYPES.addFunction("get", VAR, INT);
-		LIST_PROTOTYPES.addFunction("getFirst", VAR);
-		LIST_PROTOTYPES.addFunction("getLast", VAR);
-		LIST_PROTOTYPES.addFunction("getListType", STRING);
-		LIST_PROTOTYPES.addFunction("hasOne", BOOLEAN);
-		LIST_PROTOTYPES.addFunction("isEmpty", BOOLEAN);
-		LIST_PROTOTYPES.addFunction("isNotEmpty", BOOLEAN);
-		LIST_PROTOTYPES.addFunction("isSizeLocked", BOOLEAN);
-		LIST_PROTOTYPES.addFunction("lockSize", LIST);
-		LIST_PROTOTYPES.addFunction("notContains", BOOLEAN);
-		LIST_PROTOTYPES.addFunction("push", LIST, VAR);
-		LIST_PROTOTYPES.addFunction("pop", VAR);
-		LIST_PROTOTYPES.addFunction("remove", VAR, INT);
-		LIST_PROTOTYPES.addFunction("removeFirst", VAR);
-		LIST_PROTOTYPES.addFunction("removeLast", VAR);
-		LIST_PROTOTYPES.addFunction("set", LIST, INT, VAR);
-		LIST_PROTOTYPES.addFunction("setFirst", LIST, VAR);
-		LIST_PROTOTYPES.addFunction("setLast", LIST, VAR);
-		LIST_PROTOTYPES.addFunction("shiftLeft", LIST).addOverload(LIST, INT);
-		LIST_PROTOTYPES.addFunction("shiftRight", LIST).addOverload(LIST, INT);
-		LIST_PROTOTYPES.addFunction("shuffle", LIST);
-		LIST_PROTOTYPES.addFunction("size", INT);
-		LIST_PROTOTYPES.addFunction("swap", LIST, INT, INT);
+		LIST_PROTOTYPES.addFunction("add", BOOLEAN, VAR).assignDynamicClass(IFunc_add.class);
+		LIST_PROTOTYPES.addFunction("addR", VAR, VAR).assignDynamicClass(IFunc_addR.class);
+		LIST_PROTOTYPES.addFunction("addRT", LIST, VAR).assignDynamicClass(IFunc_addRT.class);
+		LIST_PROTOTYPES.addFunction("clear", LIST).assignDynamicClass(IFunc_clear.class);
+		LIST_PROTOTYPES.addFunction("contains", BOOLEAN, VAR).assignDynamicClass(IFunc_contains.class);
+		LIST_PROTOTYPES.addFunction("copy", LIST).assignDynamicClass(IFunc_copy.class);
+		LIST_PROTOTYPES.addFunction("fill", LIST, VAR_A).assignDynamicClass(IFunc_fill.class);
+		LIST_PROTOTYPES.addFunction("flip", LIST).assignDynamicClass(IFunc_flip.class);
+		LIST_PROTOTYPES.addFunction("get", VAR, INT).assignDynamicClass(IFunc_get.class);
+		LIST_PROTOTYPES.addFunction("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
+		LIST_PROTOTYPES.addFunction("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
+		LIST_PROTOTYPES.addFunction("getListType", STRING).assignDynamicClass(IFunc_getListType.class);
+		LIST_PROTOTYPES.addFunction("hasOne", BOOLEAN).assignDynamicClass(IFunc_hasOne.class);
+		LIST_PROTOTYPES.addFunction("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
+		LIST_PROTOTYPES.addFunction("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
+		LIST_PROTOTYPES.addFunction("isSizeLocked", BOOLEAN).assignDynamicClass(IFunc_isSizeLocked.class);
+		LIST_PROTOTYPES.addFunction("lockSize", LIST).assignDynamicClass(IFunc_lockSize.class);
+		LIST_PROTOTYPES.addFunction("notContains", BOOLEAN, VAR).assignDynamicClass(IFunc_notContains.class);
+		LIST_PROTOTYPES.addFunction("push", LIST, VAR).assignDynamicClass(IFunc_push.class);
+		LIST_PROTOTYPES.addFunction("pop", VAR).assignDynamicClass(IFunc_pop.class);
+		LIST_PROTOTYPES.addFunction("remove", VAR, INT).assignDynamicClass(IFunc_remove.class);
+		LIST_PROTOTYPES.addFunction("removeFirst", VAR).assignDynamicClass(IFunc_removeFirst.class);
+		LIST_PROTOTYPES.addFunction("removeLast", VAR).assignDynamicClass(IFunc_removeLast.class);
+		LIST_PROTOTYPES.addFunction("set", LIST, INT, VAR).assignDynamicClass(IFunc_set.class);
+		LIST_PROTOTYPES.addFunction("setFirst", LIST, VAR).assignDynamicClass(IFunc_setFirst.class);
+		LIST_PROTOTYPES.addFunction("setLast", LIST, VAR).assignDynamicClass(IFunc_setLast.class);
+		LIST_PROTOTYPES.addFunction("shiftLeft", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftLeft.class);
+		LIST_PROTOTYPES.addFunction("shiftRight", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftRight.class);
+		LIST_PROTOTYPES.addFunction("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
+		LIST_PROTOTYPES.addFunction("size", INT).assignDynamicClass(IFunc_size.class);
+		LIST_PROTOTYPES.addFunction("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
 	}
 	
 	//--------------
@@ -123,8 +123,7 @@ public class EnvisionListClass extends EnvisionClass {
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define super object's members
 		super.defineScopeMembers(inst);
-		
-		//define members
+		//define scope members
 		LIST_PROTOTYPES.defineOn(inst);
 	}
 	
@@ -141,7 +140,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return true if successful
 	 */
 	public static class IFunc_add<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_add(E instIn) { super(instIn, BOOLEAN, "add", VAR); }
+		public IFunc_add() { super(BOOLEAN, "add", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.add(args[0]));
 		}
@@ -156,7 +155,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return the given object
 	 */
 	public static class IFunc_addR<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_addR(E instIn) { super(instIn, VAR, "addR", VAR); }
+		public IFunc_addR() { super(VAR, "addR", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.addR(args[0]));
 		}
@@ -171,7 +170,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return the list being added to
 	 */
 	public static class IFunc_addRT<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_addRT(E instIn) { super(instIn, LIST, "addRT", VAR); }
+		public IFunc_addRT() { super(LIST, "addRT", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.addRT(args[0]));
 		}
@@ -184,7 +183,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return the current list instance
 	 */
 	public static class IFunc_clear<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_clear(E instIn) { super(instIn, LIST, "clear"); }
+		public IFunc_clear() { super(LIST, "clear"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.clear());
 		}
@@ -199,7 +198,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return boolean true if contains
 	 */
 	public static class IFunc_contains<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_contains(E instIn) { super(instIn, BOOLEAN, "contains", VAR); }
+		public IFunc_contains() { super(BOOLEAN, "contains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.contains(args[0]));
 		}
@@ -214,7 +213,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return boolean true if not contains
 	 */
 	public static class IFunc_notContains<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_notContains(E instIn) { super(instIn, BOOLEAN, "notContains", VAR); }
+		public IFunc_notContains() { super(BOOLEAN, "notContains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.notContains(args[0]));
 		}
@@ -227,14 +226,14 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList the shallow list copy
 	 */
 	public static class IFunc_copy<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_copy(E instIn) { super(instIn, LIST, "copy"); }
+		public IFunc_copy() { super(LIST, "copy"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(new EnvisionList(inst));
 		}
 	}
 	
 	public static class IFunc_fill<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_fill(E instIn) { super(instIn, LIST, "fill", VAR_A); }
+		public IFunc_fill() { super(LIST, "fill", VAR_A); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.fill(args);
 			ret(inst);
@@ -248,7 +247,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList the list with elements in reversed order
 	 */
 	public static class IFunc_flip<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_flip(E instIn) { super(instIn, LIST, "flip"); }
+		public IFunc_flip() { super(LIST, "flip"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.flip());
 		}
@@ -263,7 +262,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionObject the object at the given index
 	 */
 	public static class IFunc_get<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_get(E instIn) { super(instIn, VAR, "get", INT); }
+		public IFunc_get() { super(VAR, "get", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.get((EnvisionInt) args[0]));
 		}
@@ -276,7 +275,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionObject the object in the last index
 	 */
 	public static class IFunc_getFirst<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_getFirst(E instIn) { super(instIn, VAR, "getFirst"); }
+		public IFunc_getFirst() { super(VAR, "getFirst"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getFirst());
 		}
@@ -289,14 +288,14 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionObject the object in the last index
 	 */
 	public static class IFunc_getLast<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_getLast(E instIn) { super(instIn, VAR, "getLast"); }
+		public IFunc_getLast() { super(VAR, "getLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getLast());
 		}
 	}
 	
 	public static class IFunc_getListType<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_getListType(E instIn) { super(instIn, STRING, "getListType"); }
+		public IFunc_getListType() { super(STRING, "getListType"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getListType());
 		}
@@ -308,7 +307,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionBoolean true if the list has one element
 	 */
 	public static class IFunc_hasOne<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_hasOne(E instIn) { super(instIn, BOOLEAN, "hasOne"); }
+		public IFunc_hasOne() { super(BOOLEAN, "hasOne"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.hasOne());
 		}
@@ -320,7 +319,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionBoolean true if the list is empty
 	 */
 	public static class IFunc_isEmpty<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_isEmpty(E instIn) { super(instIn, BOOLEAN, "isEmpty"); }
+		public IFunc_isEmpty() { super(BOOLEAN, "isEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isEmpty());
 		}
@@ -332,85 +331,85 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionBoolean true if the list is not empty
 	 */
 	public static class IFunc_isNotEmpty<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_isNotEmpty(E instIn) { super(instIn, BOOLEAN, "isNotEmpty"); }
+		public IFunc_isNotEmpty() { super(BOOLEAN, "isNotEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isNotEmpty());
 		}
 	}
 	
 	public static class IFunc_isSizeLocked<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_isSizeLocked(E instIn) { super(instIn, BOOLEAN, "isSizeLocked"); }
+		public IFunc_isSizeLocked() { super(BOOLEAN, "isSizeLocked"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isSizeLocked());
 		}
 	}
 	
 	public static class IFunc_lockSize<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_lockSize(E instIn) { super(instIn, LIST, "lockSize", BOOLEAN); }
+		public IFunc_lockSize() { super(LIST, "lockSize", BOOLEAN); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setSizeLocked((EnvisionBoolean) args[0]));
 		}
 	}
 	
 	public static class IFunc_push<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_push(E instIn) { super(instIn, LIST, "push", VAR); }
+		public IFunc_push() { super(LIST, "push", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.push(args[0]));
 		}
 	}
 	
 	public static class IFunc_pop<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_pop(E instIn) { super(instIn, VAR, "pop"); }
+		public IFunc_pop() { super(VAR, "pop"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.pop());
 		}
 	}
 	
 	public static class IFunc_remove<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_remove(E instIn) { super(instIn, VAR, "remove", INT); }
+		public IFunc_remove() { super(VAR, "remove", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.remove((EnvisionInt) args[0]));
 		}
 	}
 	
 	public static class IFunc_removeFirst<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_removeFirst(E instIn) { super(instIn, VAR, "removeFirst"); }
+		public IFunc_removeFirst() { super(VAR, "removeFirst"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.removeFirst());
 		}
 	}
 	
 	public static class IFunc_removeLast<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_removeLast(E instIn) { super(instIn, VAR, "removeLast"); }
+		public IFunc_removeLast() { super(VAR, "removeLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.removeLast());
 		}
 	}
 	
 	public static class IFunc_set<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_set(E instIn) { super(instIn, VAR, "set", INT, VAR); }
+		public IFunc_set() { super(VAR, "set", INT, VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.set((EnvisionInt) args[0], args[1]));
 		}
 	}
 	
 	public static class IFunc_setFirst<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_setFirst(E instIn) { super(instIn, VAR, "setFirst", VAR); }
+		public IFunc_setFirst() { super(VAR, "setFirst", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setFirst(args[0]));
 		}
 	}
 	
 	public static class IFunc_setLast<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_setLast(E instIn) { super(instIn, VAR, "setLast", VAR); }
+		public IFunc_setLast() { super(VAR, "setLast", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setLast(args[0]));
 		}
 	}
 	
 	public static class IFunc_setSize<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_setSize(E instIn) {
-			super(instIn, LIST, "setSize", INT);
+		public IFunc_setSize() {
+			super(LIST, "setSize", INT);
 			//allow setSize with default object value
 			addOverload(LIST, INT, VAR);
 		}
@@ -428,8 +427,8 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList the current list instance
 	 */
 	public static class IFunc_shiftLeft<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_shiftLeft(E instIn) {
-			super(instIn, VAR, "shiftLeft");
+		public IFunc_shiftLeft() {
+			super(VAR, "shiftLeft");
 			//allow shiftLeft(int amount)
 			addOverload(LIST, INT);
 		}
@@ -448,8 +447,8 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList the current list instance
 	 */
 	public static class IFunc_shiftRight<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_shiftRight(E instIn) {
-			super(instIn, VAR, "shiftRight");
+		public IFunc_shiftRight() {
+			super(VAR, "shiftRight");
 			//allow shiftLeft(int amount)
 			addOverload(LIST, INT);
 		}
@@ -466,7 +465,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList a shuffled list
 	 */
 	public static class IFunc_shuffle<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_shuffle(E instIn) { super(instIn, LIST, "shuffle"); }
+		public IFunc_shuffle() { super(LIST, "shuffle"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.shuffle());
 		}
@@ -478,7 +477,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return the size of the list
 	 */
 	public static class IFunc_size<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_size(E instIn) { super(instIn, INT, "size"); }
+		public IFunc_size() { super(INT, "size"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.size());
 		}
@@ -494,7 +493,7 @@ public class EnvisionListClass extends EnvisionClass {
 	 * @return EnvisionList the list being modified
 	 */
 	public static class IFunc_swap<E extends EnvisionList> extends InstanceFunction<E> {
-		IFunc_swap(E instIn) { super(instIn, LIST, "swap", INT, INT); }
+		public IFunc_swap() { super(LIST, "swap", INT, INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.swap((EnvisionInt) args[0], (EnvisionInt) args[1]));
 		}

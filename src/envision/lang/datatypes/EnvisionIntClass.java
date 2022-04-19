@@ -1,26 +1,40 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.util.Primitives.INT;
+import static envision.lang.util.Primitives.NUMBER;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.Primitives;
 
 public class EnvisionIntClass extends EnvisionClass {
 
 	/**
-	 * The singular, static Int class for which all Envision:Int
+	 * The singular, static int class for which all EnvisionInt
 	 * objects are derived from.
 	 */
 	public static final EnvisionIntClass INT_CLASS = new EnvisionIntClass();
+	
+	/**
+	 * Integer member function prototypes.
+	 */
+	private static final IPrototypeHandler INT_PROTOS = new IPrototypeHandler();
+	
+	static {
+		INT_PROTOS.addFunction("get", INT).assignDynamicClass(IFunc_get.class);
+		INT_PROTOS.addFunction("set", INT).assignDynamicClass(IFunc_set.class);
+		INT_PROTOS.addFunction("min", INT, INT).assignDynamicClass(IFunc_min.class);
+		INT_PROTOS.addFunction("max", INT, INT).assignDynamicClass(IFunc_min.class);
+	}
 	
 	//--------------
 	// Constructors
@@ -33,11 +47,15 @@ public class EnvisionIntClass extends EnvisionClass {
 	private EnvisionIntClass() {
 		super(Primitives.INT);
 		
-		//define static members
-		staticClassScope.defineFunction(new IFunc_static_valueOf());
-		
 		//set final to prevent user-extension
 		setFinal();
+	}
+	
+	@Override
+	protected void registerStaticNatives() {
+		staticScope.defineFunction(new IFunc_static_valueOf());
+		staticScope.define("MIN_VALUE", EnvisionDatatype.INT_TYPE, EnvisionInt.MIN_VALUE);
+		staticScope.define("MAX_VALUE", EnvisionDatatype.INT_TYPE, EnvisionInt.MAX_VALUE);
 	}
 	
 	//---------------------
@@ -99,16 +117,8 @@ public class EnvisionIntClass extends EnvisionClass {
 	protected void defineScopeMembers(ClassInstance inst) {
 		//define super object's members
 		super.defineScopeMembers(inst);
-		
-		//cast to boolean
-		EnvisionInt i = (EnvisionInt) inst;
-		
-		//extract instance scope
-		Scope inst_scope = i.getScope();
-		
-		//define instance members
-		//inst_scope.defineFunction(new IFunc_get(i));
-		//inst_scope.defineFunction(new IFunc_set(i));
+		//define scope members
+		INT_PROTOS.defineOn(inst);
 	}
 	
 	//---------------------------
@@ -116,17 +126,35 @@ public class EnvisionIntClass extends EnvisionClass {
 	//---------------------------
 	
 	private static class IFunc_get<E extends EnvisionInt> extends InstanceFunction<E> {
-		IFunc_get(E instIn) { super(instIn, INT, "get"); }
+		public IFunc_get() { super(INT, "get"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionIntClass.newInt(inst.int_val));
 		}
 	}
 	
 	private static class IFunc_set<E extends EnvisionInt> extends InstanceFunction<E> {
-		IFunc_set(E instIn) { super(instIn, INT, "set", INT); }
+		public IFunc_set() { super(INT, "set", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.int_val = ((EnvisionInt) args[0]).int_val;
 			ret(inst);
+		}
+	}
+	
+	private static class IFunc_min<E extends EnvisionInt> extends InstanceFunction<E> {
+		public IFunc_min() { super(INT, "min", INT); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			EnvisionInt in = (EnvisionInt) args[0];
+			long min = (inst.int_val <= in.int_val) ? inst.int_val : in.int_val;
+			ret(EnvisionIntClass.newInt(min));
+		}
+	}
+	
+	private static class IFunc_max<E extends EnvisionInt> extends InstanceFunction<E> {
+		public IFunc_max() { super(INT, "max", INT); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			EnvisionInt in = (EnvisionInt) args[0];
+			long max = (inst.int_val >= in.int_val) ? inst.int_val : in.int_val;
+			ret(EnvisionIntClass.newInt(max));
 		}
 	}
 	
