@@ -489,7 +489,7 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction getOverload(ParameterData dataIn) {
 		for (EnvisionFunction overload : overloads) {
-			if (overload.argLength() == dataIn.size()) {
+			if (overload.params.size() == dataIn.size()) {
 				if (overload.params.compare(dataIn)) {
 					return overload;
 				}
@@ -530,7 +530,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * max.
 	 */
 	public int argLength() {
-		return 255;
+		return params.size();
 	}
 	
 	/**
