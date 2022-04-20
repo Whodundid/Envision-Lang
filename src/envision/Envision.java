@@ -17,7 +17,7 @@ public class Envision {
 	/** The current build of the Envision Scripting Language. */
 	public static final String version = "0.0.###";
 	/** The current build's date of the Envision Scripting Language. */
-	public static final String versionDate = "3/1/2022";
+	public static final String versionDate = "4/19/2022";
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
