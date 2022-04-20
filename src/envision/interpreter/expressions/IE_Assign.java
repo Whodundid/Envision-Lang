@@ -66,7 +66,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	public EnvisionObject run(Expr_Assign expression) {
 		Token name_token = expression.name;
 		String name = (name_token != null) ? name_token.lexeme : null;
-		Expr_Assign leftAssign = expression.leftAssign;
+		//Expr_Assign leftAssign = expression.leftAssign;
 		EnvisionObject value = evaluate(expression.value);
 		Operator op = expression.operator;
 		
@@ -163,6 +163,8 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//handle specific assignment_value types
 		if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
 		else assignment_value = value;
+		
+		//System.out.println(var_name + " : " + assignment_value);
 		
 		//grab datatype
 		var_datatype = assignment_value.getDatatype();
