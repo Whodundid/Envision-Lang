@@ -16,8 +16,6 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.internal.EnvisionVoid;
-import envision.lang.util.FunctionPrototype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_FunctionCall;
 
@@ -39,7 +37,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 
 	@Override
 	public EnvisionObject run(Expr_FunctionCall expression) {
-		System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
+		//System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = evaluate(expression.callee);
 		e = expression;
 		name = (e.name != null) ? e.name.lexeme : null;
@@ -104,13 +102,15 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 	
 	//handle class instances
 	private EnvisionObject instanceCall(ClassInstance ci) {
+		return ci.executeFunction(name, interpreter, args);
+		/*
 		EnvisionObject obj = ci.get(name);
 		
 		if (obj instanceof EnvisionClass env_class) return classCall(env_class);
 		if (obj instanceof EnvisionFunction env_func) return functionCall(env_func);
 		//if (obj instanceof EnvisionObject) return objectFunctionCall(obj);
-		
-		throw new InvalidTargetError(name + " is not a function! Instead is: '" + obj + "'!");
+		*/
+		//throw new InvalidTargetError(name + " is not a function! Instead is: '" + obj + "'!");
 	}
 	
 	//handle classes
