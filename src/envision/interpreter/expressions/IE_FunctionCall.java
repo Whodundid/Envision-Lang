@@ -17,6 +17,7 @@ import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionVoid;
+import envision.lang.util.FunctionPrototype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_FunctionCall;
 
@@ -38,7 +39,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 
 	@Override
 	public EnvisionObject run(Expr_FunctionCall expression) {
-		//System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
+		System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = evaluate(expression.callee);
 		e = expression;
 		name = (e.name != null) ? e.name.lexeme : null;
@@ -56,6 +57,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 			
 			//determine the type
 			if (o instanceof EnvisionCodeFile env_code) return importCall(env_code);
+			//if (o instanceof FunctionPrototype env_proto) return protoCall(env_proto);
 			if (o instanceof EnvisionFunction env_func) return functionCall(env_func);
 			//if (o instanceof EnvisionLangPackage env_pkg)  return packageCall(env_pkg);
 			if (o instanceof EnvisionClass env_class) return classCall(env_class);
@@ -67,7 +69,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 			//return run(expression.setCallee(ObjectCreator.createObject(o)));
 		}
 		
-		throw new EnvisionError("TEMP: Invalid method call expression! " + e + " : " + o);
+		throw new EnvisionError("TEMP: Invalid function call expression! " + e + " : " + o);
 	}
 	
 	//-------------------------------------------------------------------------
@@ -147,16 +149,9 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 		throw new InvalidTargetError(name);
 	}
 	
-	//handle methods
+	//handle functions
 	private EnvisionObject functionCall(EnvisionFunction f) {
-		try {
-			f.invoke_i(interpreter, args);
-		}
-		catch (ReturnValue r) {
-			return r.result;
-		}
-		
-		return EnvisionVoid.VOID;
+		return f.invoke_r(interpreter, args);
 	}
 	
 }

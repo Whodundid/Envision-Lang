@@ -1,8 +1,24 @@
 package envision.parser.statements.statementParsers;
 
-import static envision.tokenizer.KeywordType.*;
-import static envision.tokenizer.Operator.*;
-import static envision.tokenizer.ReservedWord.*;
+import static envision.tokenizer.KeywordType.ASSIGNMENT;
+import static envision.tokenizer.KeywordType.DATATYPE;
+import static envision.tokenizer.KeywordType.OPERATOR;
+import static envision.tokenizer.Operator.ARRAY_OP;
+import static envision.tokenizer.Operator.ASSIGN;
+import static envision.tokenizer.Operator.BRACKET_L;
+import static envision.tokenizer.Operator.BRACKET_R;
+import static envision.tokenizer.Operator.COMMA;
+import static envision.tokenizer.Operator.CURLY_L;
+import static envision.tokenizer.Operator.LAMBDA;
+import static envision.tokenizer.Operator.PAREN_L;
+import static envision.tokenizer.Operator.PAREN_R;
+import static envision.tokenizer.Operator.SEMICOLON;
+import static envision.tokenizer.Operator.VARARGS;
+import static envision.tokenizer.ReservedWord.IDENTIFIER;
+import static envision.tokenizer.ReservedWord.INIT;
+import static envision.tokenizer.ReservedWord.NEWLINE;
+import static envision.tokenizer.ReservedWord.NUMBER;
+import static envision.tokenizer.ReservedWord.OPERATOR_;
 
 import envision.lang.util.DataModifier;
 import envision.parser.GenericParser;
@@ -16,7 +32,6 @@ import envision.parser.util.StatementParameter;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import main.Experimental_Envision;
 
 /**
  * Attempts to parse a method declaration statement from tokens.
@@ -100,6 +115,7 @@ public class PS_Function extends GenericParser {
 		
 		//first check if this function should be handled as an operator overload function
 		if (operator) op = getOperator();
+		//if constructor, must declare 'init'
 		else if (constructor) consume(INIT, "Expected 'init' here!");
 		else if (checkType(DATATYPE)) {
 			returnType = consumeType(DATATYPE, "Expected a valid function return type!");
@@ -115,14 +131,9 @@ public class PS_Function extends GenericParser {
 			declaration.applyReturnType(returnType);
 		}
 		
-		/*
-		//if it's not an initializer and it's not an operator then check to see if it could be a variable instead
-		if (!operator && !init) {
-			if (check(LESS_THAN, COMMA, SEMICOLON, NEWLINE, EOF) || checkType(ASSIGNMENT) || checkType(OPERATOR)) {
-				return variableDeclaration(declaration);
-			}
-		}
-		*/
+		//check if local function variable declaration.
+		// EX: func f = object.toString
+		//if (match )
 		
 		//internal value used for error outputs
 		String funcType = (constructor) ? "initializer" : "function";
@@ -172,65 +183,6 @@ public class PS_Function extends GenericParser {
 		else {
 			return consumeType(OPERATOR, "Expected an operator!");
 		}
-	}
-	
-	/**
-	 * Checks if the method name matches an existing class name. If so this is a constructor for the given class.
-	 * This can only possibly return true if the parser is currently parsing a class declaration statement.
-	 * 
-	 * @param nameIn : the name token being comapred
-	 * @param declaration : used to check for invalid modifiers
-	 * @return True if this is a constructor
-	 */
-	private static boolean checkConstructor(Token nameIn, ParserDeclaration declaration) {
-		/*
-		if (ParserStage.curClassName != null) {
-			// if the names match, then this is a constructor
-			if (ParserStage.curClassName.lexeme.equals(nameIn.lexeme)) {
-				//error if the constructor is static, final, or overrided -- 'logically doesn't make any sense'
-				if (declaration.isStatic()) { setPrevious(); error("Constructors cannot be static!"); }
-				if (declaration.isFinal()) { setPrevious(); error("'Constructors cannot be final!"); }
-				if (declaration.isOverriding()) { setPrevious(); error("'Constructors cannot override other constructors!"); }
-				
-				// return true because this is a constructor
-				return true;
-			}
-		}
-		*/
-		//System.out.println("con name: " + current());
-		
-		return false;
-	}
-	
-	/**
-	 * Checks if this method is a modular method declaration.
-	 * If so, the modular association values are gathered and are stored within the parserStage staticly.
-	 * 
-	 * @return True if this is a modular method declaration
-	 */
-	@Experimental_Envision
-	private static boolean checkModular() {
-		/*
-		if (match(BRACKET_LEFT)) {
-			//ParserStage.modularValues = new BoxHolder();
-			
-			do {
-				Token assName = consume(IDENTIFIER, "Expected a valid modular association name!");
-				consume(COLON, "Expected a ':' to indicate an association!");
-				Token assRef = null;
-				if (check(IDENTIFIER)) assRef = consume(IDENTIFIER, "Expected a valid modular association reference!");
-				if (checkType(OPERATOR)) assRef = consumeType(OPERATOR, "Expected a valid modular association reference!");
-				if (assRef == null) error("Invalid modular association reference: '" + current() + "'! Expected either an identifier or an operator!");
-				
-				//ParserStage.modularValues.add(assName, assRef);
-			}
-			while (match(COMMA));
-			
-			consume(BRACKET_RIGHT, "Expected a ']' to conclude modular associations!");
-			return true;
-		}
-		*/
-		return false;
 	}
 	
 	/**

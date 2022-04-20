@@ -175,6 +175,7 @@ public class EnvisionString extends EnvisionVariable {
 		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
 		case "toString" -> EnvisionStringClass.newString(string_val);
 		case "toList" -> toList();
+		case "length" -> length();
 		case "isEmpty" -> isEmpty();
 		case "isNotEmpty" -> isNotEmpty();
 		case "isChar" -> isChar();

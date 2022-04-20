@@ -1,8 +1,47 @@
 package envision.parser.expressions;
 
-import static envision.tokenizer.KeywordType.*;
-import static envision.tokenizer.Operator.*;
-import static envision.tokenizer.ReservedWord.*;
+import static envision.tokenizer.KeywordType.ASSIGNMENT;
+import static envision.tokenizer.KeywordType.DATATYPE;
+import static envision.tokenizer.KeywordType.OPERATOR;
+import static envision.tokenizer.Operator.ADD;
+import static envision.tokenizer.Operator.AND;
+import static envision.tokenizer.Operator.BRACKET_L;
+import static envision.tokenizer.Operator.BRACKET_R;
+import static envision.tokenizer.Operator.COLON;
+import static envision.tokenizer.Operator.COMMA;
+import static envision.tokenizer.Operator.COMPARE;
+import static envision.tokenizer.Operator.DEC;
+import static envision.tokenizer.Operator.DIV;
+import static envision.tokenizer.Operator.GT;
+import static envision.tokenizer.Operator.GTE;
+import static envision.tokenizer.Operator.INC;
+import static envision.tokenizer.Operator.LAMBDA;
+import static envision.tokenizer.Operator.LT;
+import static envision.tokenizer.Operator.LTE;
+import static envision.tokenizer.Operator.MOD;
+import static envision.tokenizer.Operator.MUL;
+import static envision.tokenizer.Operator.NEGATE;
+import static envision.tokenizer.Operator.NOT_EQUALS;
+import static envision.tokenizer.Operator.OR;
+import static envision.tokenizer.Operator.PAREN_L;
+import static envision.tokenizer.Operator.PAREN_R;
+import static envision.tokenizer.Operator.PERIOD;
+import static envision.tokenizer.Operator.SUB;
+import static envision.tokenizer.Operator.TERNARY;
+import static envision.tokenizer.ReservedWord.BY;
+import static envision.tokenizer.ReservedWord.CHAR_LITERAL;
+import static envision.tokenizer.ReservedWord.FALSE;
+import static envision.tokenizer.ReservedWord.IDENTIFIER;
+import static envision.tokenizer.ReservedWord.INIT;
+import static envision.tokenizer.ReservedWord.IS;
+import static envision.tokenizer.ReservedWord.NEWLINE;
+import static envision.tokenizer.ReservedWord.NULL;
+import static envision.tokenizer.ReservedWord.NUMBER_LITERAL;
+import static envision.tokenizer.ReservedWord.STRING_LITERAL;
+import static envision.tokenizer.ReservedWord.SUPER;
+import static envision.tokenizer.ReservedWord.THIS;
+import static envision.tokenizer.ReservedWord.TO;
+import static envision.tokenizer.ReservedWord.TRUE;
 
 import envision.parser.GenericParser;
 import envision.parser.expressions.expression_types.Expr_Assign;
@@ -23,8 +62,8 @@ import envision.parser.expressions.expression_types.Expr_Ternary;
 import envision.parser.expressions.expression_types.Expr_This;
 import envision.parser.expressions.expression_types.Expr_TypeOf;
 import envision.parser.expressions.expression_types.Expr_Unary;
-import envision.parser.expressions.expression_types.Expr_VarDef;
 import envision.parser.expressions.expression_types.Expr_Var;
+import envision.parser.expressions.expression_types.Expr_VarDef;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -220,57 +259,25 @@ public class ExpressionParser extends GenericParser {
 	public static Expression functionCall() {
 		Expression e = primary();
 		
-		//System.out.println("PRIMARY : " + e + " : " + e.getClass());
-		
 		while (true) {
+			//check if standard function call
 			if (check(PAREN_L)) {
-				e = finishCall(e);
+				e = new Expr_FunctionCall(e, collectFuncArgs());
 			}
+			//check if accessing array element
 			else if (match(BRACKET_L)) {
 				Expression index = parseExpression();
 				consume(BRACKET_R, "Expected ']' after list index!");
 				e = new Expr_ListIndex(e, index);
 			}
+			//check if accessing member object
 			else if (match(PERIOD)) {
+				//grab the name of the member being accessed
 				Token name = consume("Expected property name after '.'!", IDENTIFIER);
 				
-				//System.out.println("HERE: " + name + " : " + next());
-				
-				//check if function call
-				if (match(PAREN_L)) {
-					//MethodCallExpression next = null;
-					EArrayList<Expression> args = new EArrayList();
-					
-					if (!check(PAREN_R)) {
-						do args.add(parseExpression());
-						while (match(COMMA));
-					}
-					
-					consume(PAREN_R, "Expected a ')' to end function arguments!");
-					/*
-					Expr_FunctionCall mce = new Expr_FunctionCall(e, name, args);
-					
-					while (match(PERIOD)) {
-						Token nextName = consume("Expected property name after '.'!", IDENTIFIER);
-						//System.out.println("next name: " + nextName);
-						EArrayList<Expression> nextArgs = new EArrayList();
-						
-						if (match(PAREN_L)) {
-							if (!check(PAREN_R)) {
-								do {
-									nextArgs.add(parseExpression());
-								}
-								while (match(COMMA));
-							}
-							consume(PAREN_R, "Expected a ')' to end function arguments!");
-						}
-						
-						mce.addNext(new Expr_FunctionCall(null, nextName, nextArgs));
-					}
-					
-					e = mce;
-					*/
-				}
+				//check if member function call
+				if (check(PAREN_L)) e = new Expr_FunctionCall(e, name, collectFuncArgs());
+				//otherwise, create a member 'get' call
 				else e = new Expr_Get(e, name);
 			}
 			else break;
@@ -279,16 +286,14 @@ public class ExpressionParser extends GenericParser {
 		return e;
 	}
 	
-	public static Expression finishCall(Expression callee) {
+	public static EArrayList<Expression> collectFuncArgs() {
 		EArrayList<Expression> args = new EArrayList();
 		
 		//arguments
 		consume(PAREN_L, "Expected '(' to begin arguments!");
 		if (!check(PAREN_R)) {
 			do {
-				if (args.size() >= 255) {
-					error("Can't have more than 255 args!");
-				}
+				if (args.size() >= 255) error("Can't have more than 255 args!");
 				Expression exp = parseExpression();
 				args.add(exp);
 			}
@@ -297,8 +302,7 @@ public class ExpressionParser extends GenericParser {
 		//conclude args/params
 		consume(PAREN_R, "Expected ')' after arguments!");
 		
-		Expr_FunctionCall e = new Expr_FunctionCall(callee, args);
-		return e;
+		return args;
 	}
 	
 	//-----------------------------------------------------------------------------------------------------

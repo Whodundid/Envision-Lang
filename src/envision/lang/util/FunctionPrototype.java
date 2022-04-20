@@ -192,6 +192,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @return The built function
 	 */
 	public InstanceFunction build(ClassInstance instIn) {
+		System.out.println("ENTERING BUILD: " + this.func_name);
 		//check if already built and return built_func
 		if (built) return built_func;
 		

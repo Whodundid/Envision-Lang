@@ -38,6 +38,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		STRING_PROTOS.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
 		STRING_PROTOS.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
 		STRING_PROTOS.addFunction("toList", LIST).assignDynamicClass(IFunc_toList.class);
+		STRING_PROTOS.addFunction("length", INT).assignDynamicClass(IFunc_length.class);
 		STRING_PROTOS.addFunction("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
 		STRING_PROTOS.addFunction("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
 		STRING_PROTOS.addFunction("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
