@@ -33,8 +33,9 @@ public class IE_ListIndex extends ExpressionExecutor<Expr_ListIndex> {
 		EnvisionObject theList = evaluate(list);
 		EnvisionObject theIndex = evaluate(index);
 		
+		System.out.println(theIndex.getDatatype() + " : " + EnvisionDatatype.INT_TYPE);
 		//only allow integers to be used for the array index
-		if (theIndex.getDatatype() != EnvisionDatatype.INT_TYPE)
+		if (!EnvisionDatatype.INT_TYPE.compareType(theIndex.getDatatype()))
 			throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, theIndex.getDatatype());
 		
 		EnvisionInt int_index = (EnvisionInt) theIndex;
