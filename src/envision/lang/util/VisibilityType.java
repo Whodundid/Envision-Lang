@@ -9,8 +9,9 @@ public enum VisibilityType {
 	PUBLIC,
 	PROTECTED,
 	PRIVATE,
+	/** Assigned by not specifying explicit visibility. */
 	SCOPE,
-	/** Permitted to for special cases. IE: a field wrapping a Java object. */
+	/** Strictly internal. Cannot be explicitly assigned within Envision. */
 	RESTRICTED;
 	
 	public static VisibilityType parse(Token t) {

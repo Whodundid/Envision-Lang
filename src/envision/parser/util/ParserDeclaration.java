@@ -93,7 +93,6 @@ public class ParserDeclaration {
 	public boolean isFinal() { return modifiers.contains(DataModifier.FINAL); }
 	public boolean isStatic() { return modifiers.contains(DataModifier.STATIC); }
 	public boolean isAbstract() { return modifiers.contains(DataModifier.ABSTRACT); }
-	public boolean isOverriding() { return modifiers.contains(DataModifier.OVERRIDE); }
 	public boolean isStrong() { return modifiers.contains(DataModifier.STRONG); }
 	public boolean isPublic() { return vis == VisibilityType.PUBLIC; }
 	public boolean isPrivate() { return vis == VisibilityType.PRIVATE; }

@@ -65,7 +65,7 @@ public enum ReservedWord implements IKeyword {
 	FINAL("final", KeywordType.DATA_MODIFIER), //Prevents a variable value from being changed.
 	STRONG("strong", KeywordType.DATA_MODIFIER), //Locks a datatype to the original type it was initialized with (prevents dynamic type changes).
 	ABSTRACT("abstract", KeywordType.DATA_MODIFIER), //Defines a class as an abstract base type.
-	OVERRIDE("override", KeywordType.DATA_MODIFIER), //Overrides functionality of a method from an inherited parent.
+	//OVERRIDE("override", KeywordType.DATA_MODIFIER), //Overrides functionality of a method from an inherited parent.
 	
 	//---------------
 	// operator type
