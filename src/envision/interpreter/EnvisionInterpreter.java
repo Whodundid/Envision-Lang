@@ -9,6 +9,7 @@ import envision.exceptions.errors.StatementError;
 import envision.exceptions.errors.UndefinedValueError;
 import envision.interpreter.expressions.IE_Assign;
 import envision.interpreter.expressions.IE_Binary;
+import envision.interpreter.expressions.IE_Cast;
 import envision.interpreter.expressions.IE_Compound;
 import envision.interpreter.expressions.IE_Domain;
 import envision.interpreter.expressions.IE_Enum;
@@ -69,6 +70,7 @@ import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Cast;
 import envision.parser.expressions.expression_types.Expr_Compound;
 import envision.parser.expressions.expression_types.Expr_Domain;
 import envision.parser.expressions.expression_types.Expr_Enum;
@@ -630,6 +632,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	@Override public EnvisionObject handleAssign_E(Expr_Assign e) { return IE_Assign.run(this, e); }
 	@Override public EnvisionObject handleBinary_E(Expr_Binary e) { return IE_Binary.run(this, e); }
+	@Override public EnvisionObject handleCast_E(Expr_Cast e) { return IE_Cast.run(this, e); }
 	@Override public EnvisionObject handleCompound_E(Expr_Compound e) { return IE_Compound.run(this, e); }
 	@Override public EnvisionObject handleDomain_E(Expr_Domain e) { return IE_Domain.run(this, e); }
 	@Override public EnvisionObject handleEnum_E(Expr_Enum e) { return IE_Enum.run(this, e); }

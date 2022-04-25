@@ -3,6 +3,7 @@ package envision.parser.expressions;
 import envision.lang.EnvisionObject;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Cast;
 import envision.parser.expressions.expression_types.Expr_Compound;
 import envision.parser.expressions.expression_types.Expr_Domain;
 import envision.parser.expressions.expression_types.Expr_Enum;
@@ -32,6 +33,7 @@ public interface ExpressionHandler {
 	
 	public EnvisionObject handleAssign_E(Expr_Assign e);
 	public EnvisionObject handleBinary_E(Expr_Binary e);
+	public EnvisionObject handleCast_E(Expr_Cast e);
 	public EnvisionObject handleCompound_E(Expr_Compound e);
 	public EnvisionObject handleDomain_E(Expr_Domain e);
 	public EnvisionObject handleEnum_E(Expr_Enum e);
