@@ -1,13 +1,21 @@
 package envision.interpreter.util;
 
-import envision.exceptions.EnvisionError;
-import envision.exceptions.EnvisionWarning;
-import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDatatype;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+
+import envision.exceptions.EnvisionError;
+import envision.exceptions.EnvisionWarning;
+import envision.lang.classes.EnvisionClass;
+import envision.lang.datatypes.EnvisionBooleanClass;
+import envision.lang.datatypes.EnvisionCharClass;
+import envision.lang.datatypes.EnvisionDoubleClass;
+import envision.lang.datatypes.EnvisionIntClass;
+import envision.lang.datatypes.EnvisionListClass;
+import envision.lang.datatypes.EnvisionNumberClass;
+import envision.lang.datatypes.EnvisionStringClass;
+import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.Primitives;
 
 /**
  * Interpreter Utility to help keep track of user-defined types.
@@ -24,7 +32,15 @@ public class TypeManager {
 	
 	public TypeManager() {
 		//load primitive types
-		//types.put(Primitives.INT.string_type, new EnvisionInt());
+		
+		types.put(EnvisionDatatype.BOOL_TYPE.getType(), EnvisionBooleanClass.BOOLEAN_CLASS);
+		types.put(EnvisionDatatype.INT_TYPE.getType(), EnvisionIntClass.INT_CLASS);
+		types.put(EnvisionDatatype.DOUBLE_TYPE.getType(), EnvisionDoubleClass.DOUBLE_CLASS);
+		types.put(EnvisionDatatype.CHAR_TYPE.getType(), EnvisionCharClass.CHAR_CLASS);
+		types.put(EnvisionDatatype.STRING_TYPE.getType(), EnvisionStringClass.STRING_CLASS);
+		types.put(EnvisionDatatype.LIST_TYPE.getType(), EnvisionListClass.LIST_CLASS);
+		types.put(EnvisionDatatype.NUMBER_TYPE.getType(), EnvisionNumberClass.NUMBER_CLASS);
+		
 	}
 	
 	/**
@@ -78,6 +94,23 @@ public class TypeManager {
 	public HashSet<EnvisionDatatype> getTypes() {
 		var mapped_types = types.keySet().stream().map(t -> new EnvisionDatatype(t)).collect(Collectors.toList());
 		return new HashSet<EnvisionDatatype>(mapped_types);
+	}
+	
+	/*
+	 * Returns the EnvisionClass associated with the given datatype.
+	 */
+	public static EnvisionClass getPrimitiveClass(EnvisionDatatype type) {
+		Primitives pType = type.getPrimitiveType();
+		return switch (pType) {
+		case BOOLEAN -> EnvisionBooleanClass.BOOLEAN_CLASS;
+		case CHAR -> EnvisionCharClass.CHAR_CLASS;
+		case INT -> EnvisionIntClass.INT_CLASS;
+		case DOUBLE -> EnvisionDoubleClass.DOUBLE_CLASS;
+		case NUMBER -> EnvisionNumberClass.NUMBER_CLASS;
+		case STRING -> EnvisionStringClass.STRING_CLASS;
+		case LIST -> EnvisionListClass.LIST_CLASS;
+		default -> null;
+		};
 	}
 	
 }

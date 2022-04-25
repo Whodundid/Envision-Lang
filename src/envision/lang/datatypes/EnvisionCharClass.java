@@ -86,27 +86,22 @@ public class EnvisionCharClass extends EnvisionClass {
 		
 		//if no args, return default char instance
 		if (args.length == 0) char_val = new EnvisionChar();
-		
-		//otherwise, attempt to create from passed args
-		
 		//ensure there is at most 1 argument being passed
-		if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
-		
-		Object arg_val = false;
-		if (args.length == 1) {
-			arg_val = args[0];
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
+			
+			//check for invalid argument constructor datatypes
+			if (arg_val instanceof EnvisionInt i) 		char_val = new EnvisionChar((char) i.int_val);
+			if (arg_val instanceof EnvisionBoolean b)	char_val = new EnvisionChar((b.bool_val) ? 'T' : 'F');
+			
+			if (char_val == null)
+				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		}
-		
-		//don't accept null arguments
-		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
-		
-		//check for invalid argument constructor datatypes
-		if (arg_val instanceof Integer i) 	char_val = new EnvisionChar((char) arg_val);
-		if (arg_val instanceof Long l) 		char_val = new EnvisionChar((char) arg_val);
-		if (arg_val instanceof Boolean b) 	char_val = new EnvisionChar((b) ? 'T' : 'F');
-		
-		if (char_val == null)
-			throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		
 		//define scope members
 		defineScopeMembers(char_val);

@@ -45,9 +45,6 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		Token token_returntype = statement_declaration.getReturnType();
 		EnvisionDatatype var_dec_datatype = new EnvisionDatatype(token_returntype);
 		
-		//if the rType correspondes to a specific user defined type, grab its class
-		EnvisionClass typeClass = typeMan.getTypeClass(var_dec_datatype);
-		
 		//---------------------------------------------------------------------------------------------------------------
 		
 		//throw error if the type is either null, isn't a primitive type, or isn't defined within the interpreter
@@ -57,6 +54,9 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		else if (!typeMan.isTypeDefined(var_dec_datatype)) {
 			throw new UndefinedTypeError("The type '" + var_dec_datatype + "' is undefined within the current scope!");
 		}
+		
+		//if the rType correspondes to a specific user defined type, grab its class
+		EnvisionClass typeClass = typeMan.getTypeClass(var_dec_datatype);
 		
 		//---------------------------------------------------------------------------------------------------------------
 		
@@ -68,7 +68,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			//the name of the variable to be declared
 			String var_name = d.getName();
 			//this is the evaluated result of the assignment value -- if there is one
-			Object assignment_value = null;
+			EnvisionObject assignment_value = null;
 			//dynamically determine type for type checking
 			EnvisionDatatype assignment_value_datatype = null;
 			
@@ -88,14 +88,13 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
 
 				//determine the type of the assignment value
-				if (assignment_value instanceof EnvisionObject env_obj) assignment_value_datatype = env_obj.getDatatype();
-				else assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
+				assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
 				
 				//check that the assignment value actually matches the variable type being created
 				CastingUtil.assert_expected_datatype(var_dec_datatype, assignment_value_datatype);
 				
 				//convert variable type to primitive Java types
-				if (assignment_value instanceof EnvisionVariable v) assignment_value = v.get();
+				//if (assignment_value instanceof EnvisionVariable v) assignment_value = v.get();
 			}
 			
 			
@@ -111,22 +110,18 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				if (assignment_value instanceof EnvisionList env_list) {
 					obj = env_list;
 				}
+				//handle primitive class instance creation separately
+				else if (typeClass != null && typeClass.isPrimitive()) {
+					EnvisionObject[] args = { assignment_value };
+					obj = typeClass.newInstance(interpreter, args);
+				}
 				//if it's a class instance, assign the instance name
 				else if (assignment_value instanceof ClassInstance env_class_inst) {
 					//env_class_inst.setName(var_name);
 					obj = env_class_inst;
 				}
-				//check for standard object type
-				else if (assignment_value instanceof EnvisionObject env_obj) {
-					obj = env_obj;
-					
-					//if typeClass isn't null, check that the types match
-					checkClassType(typeClass, assignment_value);
-				}
 				//otherwise, create new object with the given assignment_value
-				else {
-					obj = ObjectCreator.createObject(var_dec_datatype, assignment_value, false, false);
-				}
+
 			}
 			//the assignment_value is null -- handle as if class defined type
 			else {

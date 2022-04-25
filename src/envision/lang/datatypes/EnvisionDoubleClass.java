@@ -88,24 +88,22 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		
 		//if no args, return default char instance
 		if (args.length == 0) double_val = new EnvisionDouble();
-		
-		//otherwise, attempt to create from passed args
-		
 		//ensure there is at most 1 argument being passed
-		if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
-		
-		Object arg_val = false;
-		if (args.length == 1) arg_val = args[0];
-		
-		//don't accept null arguments
-		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
-		
-		//check for invalid argument constructor datatypes
-		if (arg_val instanceof Number n) double_val = new EnvisionDouble(n.doubleValue());
-		if (arg_val instanceof Boolean b) double_val = new EnvisionDouble((b) ? 1.0 : 0.0);
-		
-		if (double_val == null)
-			throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);		
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
+			
+			//check for invalid argument constructor datatypes
+			if (arg_val instanceof EnvisionNumber n) double_val = n.doubleVal();
+			if (arg_val instanceof EnvisionBoolean b) double_val = new EnvisionDouble((b.bool_val) ? 1.0 : 0.0);
+			
+			if (double_val == null)
+				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
+		}
 		
 		//define scope memebers
 		defineScopeMembers(double_val);

@@ -105,7 +105,7 @@ public class EnvisionDouble extends EnvisionNumber {
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
-		case GT, LT, GTE, LTE -> true;
+		case NOT_EQUALS, GT, LT, GTE, LTE -> true;
 		case ADD, SUB, MUL, DIV, MOD -> true;
 		case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> true;
 		case NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
@@ -131,6 +131,7 @@ public class EnvisionDouble extends EnvisionNumber {
 		
 		switch (op) {
 		//relational operators
+		case NOT_EQUALS:		return EnvisionBooleanClass.newBoolean(double_val != num.doubleVal_i());
 		case GT:				return EnvisionBooleanClass.newBoolean(double_val > num.doubleVal_i());
 		case LT:				return EnvisionBooleanClass.newBoolean(double_val < num.doubleVal_i());
 		case GTE:				return EnvisionBooleanClass.newBoolean(double_val >= num.doubleVal_i());

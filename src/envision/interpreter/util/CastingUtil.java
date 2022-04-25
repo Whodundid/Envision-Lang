@@ -96,7 +96,7 @@ public class CastingUtil {
 		if (expected_ptype == STRING && toCheck_ptype == CHAR) return;
 		
 		//check if an int or double is going into number
-		if (expected_ptype == NUMBER && toCheck_ptype.isNumber()) return;
+		if (expected_ptype == NUMBER && toCheck_ptype.isNumber() || toCheck_ptype == BOOLEAN) return;
 		
 		//check if an int is going into a double
 		if (expected_ptype == DOUBLE && toCheck_ptype == INT) return;

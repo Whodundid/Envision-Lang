@@ -37,7 +37,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 
 	@Override
 	public EnvisionObject run(Expr_FunctionCall expression) {
-		//System.out.println("IE_FUNCCALL RUN: " + expression + " : " + expression.callee);
+		//System.out.println("IE_FUNC_CALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = evaluate(expression.callee);
 		e = expression;
 		name = (e.name != null) ? e.name.lexeme : null;

@@ -174,19 +174,17 @@ public class EnvisionStringClass extends EnvisionClass {
 		
 		//if no args, return default string instance
 		if (args.length == 0) str = new EnvisionString();
-		
-		//otherwise, attempt to create from passed args
-		
 		//ensure there is at most 1 argument being passed
-		if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
-		
-		Object arg_val = false;
-		if (args.length == 1) arg_val = args[0];
-		
-		//don't accept null arguments
-		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
-		
-		str = new EnvisionString(arg_val);
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
+			
+			str = new EnvisionString(arg_val);
+		}
 		
 		//define scope members
 		defineScopeMembers(str);

@@ -85,29 +85,24 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		
 		//if no args, return default boolean instance
 		if (args.length == 0) bool = new EnvisionBoolean();
-		
-		//otherwise, attempt to create from passed args
-		
 		//ensure there is at most 1 argument being passed
-		if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
-		
-		Object arg_val = false;
-		if (args.length == 1) {
-			arg_val = args[0];
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
+			
+			//check for invalid argument constructor datatypes
+			if (arg_val instanceof EnvisionInt i)		bool = new EnvisionBoolean(i.int_val != 0);
+			if (arg_val instanceof EnvisionBoolean b)	bool = new EnvisionBoolean(b.bool_val);
+			if (arg_val instanceof EnvisionString s)	bool = new EnvisionBoolean(s.string_val.equals("true"));
+			
+			//if null, creation failed!
+			if (bool == null)
+				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		}
-		
-		//don't accept null arguments
-		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
-		
-		//check for invalid argument constructor datatypes
-		if (arg_val instanceof Integer i) 	bool = new EnvisionBoolean(i != 0);
-		if (arg_val instanceof Long l) 		bool = new EnvisionBoolean(l != 0);
-		if (arg_val instanceof Boolean b) 	bool = new EnvisionBoolean(b);
-		if (arg_val instanceof String s) 	bool = new EnvisionBoolean(arg_val.equals("true"));
-		
-		//if null, creation failed!
-		if (bool == null)
-			throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		
 		//define scope members
 		defineScopeMembers(bool);
