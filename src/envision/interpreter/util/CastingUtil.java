@@ -102,7 +102,7 @@ public class CastingUtil {
 		if (expected_ptype == DOUBLE && toCheck_ptype == INT) return;
 		
 		//if none of above, check for exact datatype match
-		if (!expected.compareType(toCheck)) {
+		if (!expected.compare(toCheck)) {
 			throw new InvalidDatatypeError("Invalid type: '" + toCheck + "' expected '" + expected + "'!");
 		}
 	}

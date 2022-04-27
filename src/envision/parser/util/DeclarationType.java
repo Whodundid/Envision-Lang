@@ -13,6 +13,7 @@ import envision.tokenizer.Token;
  * @author Hunter Bragg
  */
 public enum DeclarationType {
+	CAST_DEF,
 	VAR_DEF,
 	FUNC_DEF,
 	INIT_DEF,
@@ -27,7 +28,6 @@ public enum DeclarationType {
 	;
 	
 	public static DeclarationType parseType(Token t) {
-		
 		//check for specific keywords
 		IKeyword k = t.getKeyword();
 		

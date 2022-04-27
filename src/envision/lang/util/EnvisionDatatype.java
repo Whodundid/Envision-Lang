@@ -118,7 +118,7 @@ public class EnvisionDatatype {
 	 * @param typeIn The type to be compared
 	 * @return true if the types match
 	 */
-	public boolean compareType(EnvisionDatatype typeIn) {
+	public boolean compare(EnvisionDatatype typeIn) {
 		//null always is false
 		if (typeIn == null) return false;
 		

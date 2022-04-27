@@ -5,6 +5,7 @@ import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
+import envision.exceptions.errors.objects.ClassCastError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
@@ -176,6 +177,23 @@ public class EnvisionInt extends EnvisionNumber {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+		//determine specific cast types
+		if (EnvisionDatatype.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.newBoolean(int_val != 0);
+		if (EnvisionDatatype.DOUBLE_TYPE.compare(castType)) return doubleVal();
+		if (EnvisionDatatype.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(int_val);
+		if (EnvisionDatatype.CHAR_TYPE.compare(castType)) return EnvisionCharClass.newChar(int_val);
+		if (EnvisionDatatype.LIST_TYPE.compare(castType)) {
+			EnvisionList list = EnvisionListClass.newList(EnvisionDatatype.CHAR_TYPE);
+			String str = String.valueOf(int_val);
+			for (int i = 0; i < str.length(); i++) list.add(new EnvisionChar(str.charAt(i)));
+			return list;
+		}
+		
+		return super.handleObjectCasts(castType);
 	}
 	
 	@Override

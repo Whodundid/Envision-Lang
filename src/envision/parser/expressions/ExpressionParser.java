@@ -46,6 +46,7 @@ import static envision.tokenizer.ReservedWord.TRUE;
 import envision.parser.GenericParser;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
+import envision.parser.expressions.expression_types.Expr_Cast;
 import envision.parser.expressions.expression_types.Expr_Compound;
 import envision.parser.expressions.expression_types.Expr_FunctionCall;
 import envision.parser.expressions.expression_types.Expr_Get;
@@ -389,6 +390,17 @@ public class ExpressionParser extends GenericParser {
 				}
 			}
 			consume(PAREN_R, "Expected ')' after expression!");
+			
+			//check for cast expressions
+			if (e instanceof Expr_VarDef var_def) {
+				Token type = var_def.type;
+				//can only be a cast expression if either a datatype or a object type
+				if (type.isDatatype() || type.isReference()) {
+					Expression target = parseExpression();
+					e = new Expr_Cast(type, target);
+					return e;
+				}
+			}
 			
 			/*if (e == null && !check(LAMBDA)) {
 				error("An empty expression can only be followed with a lambda expression!");

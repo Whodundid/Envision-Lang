@@ -29,24 +29,7 @@ public class IE_Logical extends ExpressionExecutor<Expr_Logic> {
 		if (a instanceof ClassInstance a_inst && a_inst.supportsOperator(op))
 			return OperatorOverloadHandler.handleOverload(interpreter, null, op, a_inst, b);
 		
-		//otherwise check for direct
-		/*
-		switch (op) {
-		case AND:
-			return (!isTrue(a)) ? EnvisionBoolean.FALSE : EnvisionBooleanClass.newBoolean(isTrue(b));
-		case OR:
-			return (isTrue(a)) ? EnvisionBoolean.TRUE : EnvisionBooleanClass.newBoolean(isTrue(b));
-		case BW_AND:
-		case BW_OR:
-		case BW_XOR:
-		//case BITWISE_NOT:
-		default: //ERROR
-		}
-		*/
-		
 		throw new InvalidDatatypeError("The given objects '" + a + "' and '" + b + "' cannot be logically evaluated!");
-		
-		//return EnvisionNull.NULL;
 	}
 	
 }

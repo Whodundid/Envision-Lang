@@ -86,6 +86,18 @@ public class TypeManager {
 	}
 	
 	/**
+	 * Retured the associated EnvisionClass for the given
+	 * user-defined type.
+	 * If the type is not defined, null is returned instead.
+	 * 
+	 * @param typeIn the type to grab
+	 * @return the EnvisionClass of the user-defined type
+	 */
+	public EnvisionClass getTypeClass(String typeIn) {
+		return types.get(typeIn);
+	}
+	
+	/**
 	 * Returns a hashset of all user defined datatypes within this
 	 * TypeManager.
 	 * 

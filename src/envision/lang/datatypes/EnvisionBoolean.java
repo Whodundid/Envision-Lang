@@ -5,9 +5,11 @@ import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.NoOverloadError;
 import envision.exceptions.errors.NullVariableError;
+import envision.exceptions.errors.objects.ClassCastError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
+import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.FunctionPrototype;
 import envision.tokenizer.Operator;
 
@@ -161,6 +163,17 @@ public class EnvisionBoolean extends EnvisionVariable {
 		//throw error if this point is reached
 		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		}
+	}
+	
+	@Override
+	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+		//determine specific cast types
+		if (EnvisionDatatype.BOOL_TYPE.compare(castType)) return this;
+		if (EnvisionDatatype.INT_TYPE.compare(castType)) return EnvisionIntClass.newInt(bool_val);
+		if (EnvisionDatatype.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.newDouble(bool_val);
+		if (EnvisionDatatype.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(bool_val);
+		
+		throw new ClassCastError(this, castType);
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ import envision.exceptions.errors.DuplicateFunctionError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.NotAFunctionError;
 import envision.exceptions.errors.UndefinedFunctionError;
+import envision.exceptions.errors.objects.ClassCastError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.CastingUtil;
@@ -165,7 +166,7 @@ public class ClassInstance extends EnvisionObject {
 			
 			//check for exact type matches
 			//this approach does not require value overwriting within the scope
-			if (this_type.compareType(asgn_type) && this instanceof EnvisionVariable env_var) {
+			if (this_type.compare(asgn_type) && this instanceof EnvisionVariable env_var) {
 				env_var.set(obj);
 				return this;
 			}
@@ -193,6 +194,14 @@ public class ClassInstance extends EnvisionObject {
 		}
 		
 		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+	}
+	
+	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+		//check for self type cast
+		if (getDatatype().compare(castType)) return this;
+		
+		//otherwise, not supported -- throw cast error
+		throw new ClassCastError(this, castType);
 	}
 	
 	/**

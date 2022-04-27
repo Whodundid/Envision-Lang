@@ -37,9 +37,6 @@ public class IE_Var extends ExpressionExecutor<Expr_Var> {
 		//get name from interpreter
 		EnvisionObject obj = interpreter.lookUpVariable(e.name.lexeme);
 		
-		//convert primitive variable values to their object value
-		//if (obj instanceof EnvisionVariable env_var) return ObjectCreator.wrap(env_var.get_i());
-		
 		return obj;
 	}
 	

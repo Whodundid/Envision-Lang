@@ -63,6 +63,9 @@ public class EnvisionCharClass extends EnvisionClass {
 	
 	public static EnvisionChar newChar() { return newChar('\0'); }
 	public static EnvisionChar newChar(boolean value) { return newChar(value ? 'T' : 'F'); }
+	public static EnvisionChar newChar(int value) { return newChar((char) value); }
+	public static EnvisionChar newChar(long value) { return newChar((char) value); }
+	public static EnvisionChar newChat(EnvisionInt value) { return newChar((char) value.int_val); }
 	public static EnvisionChar newChar(EnvisionChar value) { return newChar(value.char_val); }
 	public static EnvisionChar newChar(char value) {
 		EnvisionChar c = new EnvisionChar(value);

@@ -652,7 +652,7 @@ public class EnvisionFunction extends ClassInstance {
 					EnvisionDatatype scope_var_type = scopeValue.getA();
 					EnvisionDatatype incomming_type = arg_obj.getDatatype();
 					
-					if (scope_var_type.compareType(incomming_type)) {
+					if (scope_var_type.compare(incomming_type)) {
 						ps.set(arg_name, arg_obj);
 					}
 					else if (EnvisionDatatype.isNumber(scopeValue.getA())) {

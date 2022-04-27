@@ -116,7 +116,7 @@ public class ParameterData implements Iterable<Parameter> {
 			for (int i = 0; i < size(); i++) {
 				Parameter b = dataIn.get(i);
 				if (base == Primitives.NUMBER && b.isNumber()) return true;
-				if (!type.compareType(b.datatype)) return false;
+				if (!type.compare(b.datatype)) return false;
 			}
 			
 			return true;

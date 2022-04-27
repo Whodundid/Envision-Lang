@@ -89,6 +89,7 @@ public class Token {
 	public boolean isLiteral() { return (keyword != null && keyword.isLiteral()); }
 	public boolean isEOF() { return keyword == ReservedWord.EOF; }
 	public boolean isNewLine() { return keyword == ReservedWord.NEWLINE; }
+	public boolean isDatatype() { return (keyword != null && keyword.isDataType()); }
 	
 	public boolean checkID(int idIn) { return id == idIn; }
 	public boolean compareLexeme(Token t) { return lexeme.equals(t.lexeme); }
