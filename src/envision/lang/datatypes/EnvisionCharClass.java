@@ -99,6 +99,7 @@ public class EnvisionCharClass extends EnvisionClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
+			if (arg_val instanceof EnvisionChar c)		char_val = new EnvisionChar(c.char_val);
 			if (arg_val instanceof EnvisionInt i) 		char_val = new EnvisionChar((char) i.int_val);
 			if (arg_val instanceof EnvisionBoolean b)	char_val = new EnvisionChar((b.bool_val) ? 'T' : 'F');
 			
