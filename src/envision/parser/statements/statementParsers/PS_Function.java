@@ -276,6 +276,9 @@ public class PS_Function extends GenericParser {
 	public static EArrayList<Statement> getFunctionBody(boolean constructor) {
 		EArrayList<Statement> body = null;
 		
+		//consume newlines
+		//while (match(NEWLINE));
+		
 		//constructors do not necessarily need to specify a body
 		if (!constructor) {
 			if (match(LAMBDA)) {
