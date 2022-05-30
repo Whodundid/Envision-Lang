@@ -42,6 +42,10 @@ public class OperatorOverloadHandler {
 			//if the operator function is null -- skip this and jump to throwing error
 			if (op_func != null) return op_func.invoke_r(interpreter, obj);
 		}
+		//natively support '=='
+		else if (op == Operator.EQUALS) return interpreter.isEqual(a, obj);
+		//natively support '!='
+		else if (op == Operator.NOT_EQUALS) return interpreter.isEqual(a, obj).negate();
 		
 		//otherwise, throw error
 		String errorMsg = (obj != null) ? obj.getDatatype() + ":" + obj : "";

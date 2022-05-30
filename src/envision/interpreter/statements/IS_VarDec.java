@@ -86,7 +86,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				
 				//convert variable objects to their primitives
 				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
-
+				
 				//determine the type of the assignment value
 				assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
 				

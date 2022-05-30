@@ -101,7 +101,7 @@ public class Tokenizer {
 		case '?': addToken(TERNARY); break;											// '?'
 		
 		case '.': addToken((matchInOrder('.', '.') ? VARARGS : PERIOD)); break;		// '...', '.'
-		case '=': addToken((match('=') ? COMPARE : ASSIGN)); break;					// '==', '='
+		case '=': addToken((match('=') ? EQUALS : ASSIGN)); break;					// '==', '='
 		case '!': addToken((match('=') ? NOT_EQUALS : NEGATE)); break;				// '!=', '!'
 		case '&':
 			if (match('&')) addToken(AND);											// '&&'

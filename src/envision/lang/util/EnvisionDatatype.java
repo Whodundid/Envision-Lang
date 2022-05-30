@@ -1,5 +1,6 @@
 package envision.lang.util;
 
+import envision.lang.EnvisionObject;
 import envision.tokenizer.Token;
 
 /**
@@ -292,6 +293,7 @@ public class EnvisionDatatype {
 	 * @return The dynamically determined datatype of the given object
 	 */
 	public static EnvisionDatatype dynamicallyDetermineType(Object obj) {
+		if (obj instanceof EnvisionObject o) return o.getDatatype();
 		Primitives type = Primitives.getDataType(obj);
 		return new EnvisionDatatype(type);
 	}

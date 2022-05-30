@@ -122,9 +122,15 @@ public class EnvisionBoolean extends EnvisionVariable {
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
+		//unary
 		case NEGATE -> true;
+		//relational
+		case EQUALS, NOT_EQUALS -> true;
+		//logical
 		case AND, OR -> true;
+		//bit-wise
 		case BW_AND, BW_OR, BW_XOR -> true;
+		//bit-wise assignment
 		case BW_AND_ASSIGN, BW_OR_ASSIGN, BW_XOR_ASSIGN -> true;
 		default -> false;
 		};
@@ -147,21 +153,23 @@ public class EnvisionBoolean extends EnvisionVariable {
 		//only support '!', '&&' and '||', '&', '|', '^', '&=', '|=', '^='
 		
 		switch (op) {
-		case NEGATE:	return EnvisionBooleanClass.newBoolean(!bool_val);
+		//unary operators
+		case NEGATE:		return EnvisionBooleanClass.newBoolean(!bool_val);
 		//logical operators
-		case AND:		return EnvisionBooleanClass.newBoolean(bool_val && in.bool_val);
-		case OR:		return EnvisionBooleanClass.newBoolean(bool_val || in.bool_val);
+		case AND:			return EnvisionBooleanClass.newBoolean(bool_val && in.bool_val);
+		case OR:			return EnvisionBooleanClass.newBoolean(bool_val || in.bool_val);
 		//bit-wise operators
-		case BW_AND:	return EnvisionBooleanClass.newBoolean(bool_val & in.bool_val);
-		case BW_OR:		return EnvisionBooleanClass.newBoolean(bool_val | in.bool_val);
-		case BW_XOR:	return EnvisionBooleanClass.newBoolean(bool_val ^ in.bool_val);
+		case BW_AND:		return EnvisionBooleanClass.newBoolean(bool_val & in.bool_val);
+		case BW_OR:			return EnvisionBooleanClass.newBoolean(bool_val | in.bool_val);
+		case BW_XOR:		return EnvisionBooleanClass.newBoolean(bool_val ^ in.bool_val);
 		//bit-wise assignment operators
 		case BW_AND_ASSIGN:		bool_val &= in.bool_val; return this;
 		case BW_OR_ASSIGN:		bool_val |= in.bool_val; return this;
 		case BW_XOR_ASSIGN:		bool_val ^= in.bool_val; return this;
 			
 		//throw error if this point is reached
-		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}
 	
@@ -186,6 +194,15 @@ public class EnvisionBoolean extends EnvisionVariable {
 		case "set" -> set(args[0]);
 		default -> super.handlePrimitive(proto, args);
 		};
+	}
+	
+	//---------
+	// Methods
+	//---------
+	
+	public EnvisionBoolean negate() {
+		bool_val = !bool_val;
+		return this;
 	}
 	
 }

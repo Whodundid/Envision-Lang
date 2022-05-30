@@ -63,6 +63,7 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.datatypes.EnvisionBoolean;
+import envision.lang.datatypes.EnvisionBooleanClass;
 import envision.lang.internal.EnvisionNull;
 import envision.lang.util.EnvisionDatatype;
 import envision.packages.env.EnvPackage;
@@ -264,7 +265,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param b
 	 * @return
 	 */
-	public boolean isEqual(EnvisionObject a, EnvisionObject b) {
+	public boolean isEqual_i(EnvisionObject a, EnvisionObject b) {
 		//do not allow null objects!
 		if (a == null) throw new NullVariableError(a);
 		if (b == null) throw new NullVariableError(b);
@@ -282,6 +283,10 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		else if (b instanceof ClassInstance b_inst) return false;
 		//otherwise check for direct object equivalence
 		return a.equals(b);
+	}
+	
+	public EnvisionBoolean isEqual(EnvisionObject a, EnvisionObject b) {
+		return EnvisionBooleanClass.newBoolean(isEqual_i(a, b));
 	}
 	
 	/**

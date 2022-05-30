@@ -30,7 +30,7 @@ public abstract class InterpreterExecutor {
 	public void executeBlock(EArrayList<Statement> statements, Scope env) { interpreter.executeBlock(statements, env); }
 	
 	public boolean isTrue(EnvisionObject obj) { return interpreter.isTrue(obj); }
-	public boolean isEqual(EnvisionObject a, EnvisionObject b) { return interpreter.isEqual(a, b); }
+	public boolean isEqual(EnvisionObject a, EnvisionObject b) { return interpreter.isEqual_i(a, b); }
 	
 	public WorkingDirectory workingDir() { return interpreter.workingDir(); }
 	public Scope global() { return interpreter.internalScope(); }

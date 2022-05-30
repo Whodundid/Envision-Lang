@@ -61,7 +61,9 @@ public class EnvisionString extends EnvisionVariable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof EnvisionString env_string && env_string.equals(env_string));
+		if (!(obj instanceof EnvisionString)) return false;
+		//because 'string_val' is a StringBuilder, must convert to string type first
+		return ((EnvisionString) obj).toString().equals(toString());
 	}
 	
 	@Override
@@ -163,7 +165,8 @@ public class EnvisionString extends EnvisionVariable {
 		}
 			
 		//throw error if this point is reached
-		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		//throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 	}
 	
 	@Override

@@ -227,6 +227,7 @@ public enum Primitives {
 		case DOUBLE:
 		case STRING:
 		case NUMBER:
+		case LIST:
 			return true;
 		default:
 			return false;

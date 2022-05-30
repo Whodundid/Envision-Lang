@@ -180,7 +180,7 @@ public class ClassInstance extends EnvisionObject {
 		}
 		
 		//natively support comparison '=='
-		if (op == Operator.COMPARE) {
+		if (op == Operator.EQUALS) {
 			//each native primitive type should have their own method 
 			//of 'equals' to account for cross language design barriers
 			return EnvisionBooleanClass.newBoolean(equals(obj));

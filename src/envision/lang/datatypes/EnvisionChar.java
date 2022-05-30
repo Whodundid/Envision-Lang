@@ -96,6 +96,7 @@ public class EnvisionChar extends EnvisionVariable {
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
+		case EQUALS, NOT_EQUALS -> true;
 		case ADD, MUL -> true;
 		default -> false;
 		};
@@ -165,7 +166,8 @@ public class EnvisionChar extends EnvisionVariable {
 		}
 		
 		//throw error if this point is reached
-		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}
 	

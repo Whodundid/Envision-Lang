@@ -82,7 +82,7 @@ public enum Operator implements IKeyword {
 	// logical operators
 	//-------------------
 	
-	COMPARE("==", KeywordType.OPERATOR),
+	EQUALS("==", KeywordType.OPERATOR),
 	NOT_EQUALS("!=", KeywordType.OPERATOR),
 	NEGATE("!", KeywordType.OPERATOR),
 	AND("&&", KeywordType.OPERATOR),

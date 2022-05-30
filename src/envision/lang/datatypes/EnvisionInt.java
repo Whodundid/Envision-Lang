@@ -100,12 +100,17 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
-		case NOT_EQUALS, GT, LT, GTE, LTE -> true;
+		//unary
+		case NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+		//relational
+		case EQUALS, NOT_EQUALS, GT, LT, GTE, LTE -> true;
+		//arithmetic
 		case ADD, SUB, MUL, DIV, MOD -> true;
+		//binary
 		case SHL, SHR, SHR_AR, BW_AND, BW_OR, BW_XOR -> true;
+		//assignment
 		case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> true;
 		case SHL_ASSIGN, SHR_ASSIGN, SHR_AR_ASSIGN, BW_AND_ASSIGN, BW_OR_ASSIGN, BW_XOR_ASSIGN -> true;
-		case NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
 		default -> false;
 		};
 	}
@@ -138,6 +143,7 @@ public class EnvisionInt extends EnvisionNumber {
 		//only allow numbers
 		if (!obj.getPrimitiveType().isNumber())
 			throw new InvalidDatatypeError(EnvisionDatatype.NUMBER_TYPE, obj.getDatatype());
+		
 		EnvisionNumber num = (EnvisionNumber) obj;
 		
 		switch (op) {
@@ -175,7 +181,8 @@ public class EnvisionInt extends EnvisionNumber {
 		case BW_XOR_ASSIGN:		int_val ^= num.intVal_i(); return this;
 		
 		//throw error if this point is reached
-		default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}
 	

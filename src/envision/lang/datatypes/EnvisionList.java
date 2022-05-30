@@ -96,6 +96,7 @@ public class EnvisionList extends ClassInstance {
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
+		case EQUALS, NOT_EQUALS -> true;
 		case ADD -> true;
 		default -> false;
 		};
@@ -109,8 +110,9 @@ public class EnvisionList extends ClassInstance {
 		//Special case -- EnvisionLists do natively support null additions
 		
 		//only support '+=' operator
-		if (op != Operator.ADD_ASSIGN)
-			throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		if (op != Operator.ADD_ASSIGN) {
+			return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
+		}
 		
 		//attempt to add the incomming object to this list
 		add(obj);

@@ -11,14 +11,22 @@ import eutil.datatypes.EArrayList;
  * A low-level function placeholder that is intended to be handled
  * natively within primitive object types.
  * <p>
- * Due to the fact that internal Envision objects can actually never
- * be directly overwritten, there is no reason to have actual
- * EnvisionFunctions directly backing the internal primitive member
- * functions.
+ * Effectively, a function pototype is a placeholder for an actual
+ * EnvisionFunction while still offering the same end-behavior. Given
+ * the fact that an object's member functions aren't even guaranteed
+ * to be called in the first place (let alone referenced), it can
+ * potentially be a significant waste of processing time and resources
+ * to actually create full-on EnvisionFunctions for every object.
  * <p>
- * This design choice is intended to provide a significant performance
- * optimization by removing the need to create actual internal member
- * function instances.
+ * Prototypes, upon being called however, will actually go through the
+ * process of building a complete EnvisionFunction. Once built, the
+ * constructed EnvisionFunction will then be used moving forward.
+ * <p>
+ * Another instance in which a prototype will actually build into an
+ * EnvisionFunction is when it is extracted into a variable. Given
+ * that variables must be actual EnvisionObjects, this prototype must
+ * be built into an actual EnvisionFunction so that it can be used
+ * within the language.
  * 
  * @author Hunter Bragg
  */
@@ -75,7 +83,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Given the above example: the function 'toUpperCase' is extracted from the
 	 * 'hello' string. This function needs to be dynamically built into an actual
 	 * EnvisionFunction instance because it is now being referenced directly within
-	 * Envision. Normally, primitive objects will not need to dynamically built
+	 * Envision. Normally, primitive objects will not need to dynamically build
 	 * their primitive functions as they are intended to be executed internally by
 	 * Java, translated into Envision wrapper objects, and subsequently returned to
 	 * the Envision scope.
@@ -103,11 +111,6 @@ public class FunctionPrototype extends EnvisionObject {
 	 * within Envision.
 	 */
 	private InstanceFunction built_func;
-	
-	/*
-	 * Unsure if needed for right now
-	 */
-	private InstanceFunction flash_func;
 	
 	/**
 	 * Locally keeps track of whether or not this function prototype has been
@@ -192,7 +195,6 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @return The built function
 	 */
 	public InstanceFunction build(ClassInstance instIn) {
-		System.out.println("ENTERING BUILD: " + this.func_name);
 		//check if already built and return built_func
 		if (built) return built_func;
 		

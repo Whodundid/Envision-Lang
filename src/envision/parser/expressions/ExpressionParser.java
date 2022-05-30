@@ -9,7 +9,7 @@ import static envision.tokenizer.Operator.BRACKET_L;
 import static envision.tokenizer.Operator.BRACKET_R;
 import static envision.tokenizer.Operator.COLON;
 import static envision.tokenizer.Operator.COMMA;
-import static envision.tokenizer.Operator.COMPARE;
+import static envision.tokenizer.Operator.EQUALS;
 import static envision.tokenizer.Operator.DEC;
 import static envision.tokenizer.Operator.DIV;
 import static envision.tokenizer.Operator.GT;
@@ -140,7 +140,7 @@ public class ExpressionParser extends GenericParser {
 	public static Expression equality() {
 		Expression e = lambda();
 		
-		if (match(NOT_EQUALS, COMPARE, GT, GTE, LT, LTE)) {
+		if (match(NOT_EQUALS, EQUALS, GT, GTE, LT, LTE)) {
 			Operator operator = previous().asOperator();
 			Expression right = lambda();
 			e = new Expr_Binary(e, operator, right);

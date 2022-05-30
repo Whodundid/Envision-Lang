@@ -1,11 +1,11 @@
 package envision.parser.statements.statementParsers;
 
-import static envision.tokenizer.ReservedWord.*;
 import static envision.tokenizer.Operator.*;
-import static envision.tokenizer.KeywordType.*;
+import static envision.tokenizer.ReservedWord.*;
+
+import java.util.Iterator;
 
 import envision.parser.GenericParser;
-import envision.parser.expressions.expression_types.Expr_Var;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Block;
 import envision.parser.statements.statement_types.Stmt_Class;
@@ -15,8 +15,6 @@ import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.ReservedWord;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-
-import java.util.Iterator;
 
 public class PS_Class extends GenericParser {
 	
@@ -30,15 +28,20 @@ public class PS_Class extends GenericParser {
 		Token name = consume(IDENTIFIER, "Expected a valid class name!");
 		//ParserStage.curClassName = name;
 		
+		//removing class parameter parsing for now
 		//check for parameters
+		/*
 		if (check(LT)) {
 			for (Token t : getParameters()) {
 				declaration.addParameter(t);
 			}
 		}
+		*/
 		
 		Stmt_Class cs = new Stmt_Class(name, declaration);
 		
+		//removing parent class parsing for now
+		/*
 		if (match(COLON)) {
 			do {
 				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
@@ -48,6 +51,7 @@ public class PS_Class extends GenericParser {
 			}
 			while (match(COMMA));
 		}
+		*/
 		
 		//read in class body
 		consume(CURLY_L, "Expected '{' after class declaration!");
