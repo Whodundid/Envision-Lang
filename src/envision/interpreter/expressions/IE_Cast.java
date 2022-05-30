@@ -30,8 +30,8 @@ public class IE_Cast extends ExpressionExecutor<Expr_Cast> {
 		TypeManager typeMan = interpreter.getTypeManager();
 		EnvisionClass typeClass = typeMan.getTypeClass(toType);
 		
-		System.out.println("CAST: " + typeClass);
-		System.out.println("TARGET: " + target_expr);
+		//System.out.println("CAST: " + typeClass);
+		//System.out.println("TARGET: " + target_expr);
 		
 		//ensure the type to cast to actually exists
 		if (typeClass == null) throw UndefinedTypeError.badType(toType);
