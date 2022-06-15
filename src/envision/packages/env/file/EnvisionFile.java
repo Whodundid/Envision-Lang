@@ -3,9 +3,12 @@ package envision.packages.env.file;
 import java.io.File;
 
 import envision.exceptions.errors.file.NoSuchFileError;
+import envision.interpreter.EnvisionInterpreter;
 import envision.lang.classes.ClassInstance;
 import envision.lang.internal.JavaObjectWrapper;
+import eutil.EUtil;
 import eutil.datatypes.EArrayList;
+import eutil.strings.StringUtil;
 
 public class EnvisionFile extends ClassInstance {
 	
@@ -18,7 +21,22 @@ public class EnvisionFile extends ClassInstance {
 	
 	public EnvisionFile(String pathIn) {
 		super(EnvisionFileClass.FILE_CLASS);
-		iFile = new File(pathIn);
+		iFile = createWrapFile(pathIn);
+	}
+	
+	private File createWrapFile(String pathIn) {
+		String dirPath = EnvisionInterpreter.topDir().getDirFile().getAbsolutePath();
+		String argPath = (pathIn != null) ? pathIn : null;
+		
+		// first determine if the given path is null
+		if (argPath == null) return new File(dirPath);
+		
+		// next, determine if this file is a relative file path off of the base program's default directory
+		if (EUtil.contains(new File(dirPath).list(), StringUtil.subStringToString(argPath, "\\", "/"))) {
+			return new File(dirPath, argPath);
+		}
+		
+		return new File(argPath);
 	}
 	
 	//---------
@@ -37,7 +55,7 @@ public class EnvisionFile extends ClassInstance {
 	//-----------------------------------------
 	
 	public static boolean isFile(Object in) {
-		if (in instanceof ClassInstance) return isFile((ClassInstance) in);
+		if (in instanceof ClassInstance ci) return isFile(ci);
 		return false;
 	}
 	

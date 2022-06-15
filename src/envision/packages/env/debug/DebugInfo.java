@@ -7,12 +7,12 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class DebugInfo extends EnvisionFunction {
 		
 	public DebugInfo() {
-		super(Primitives.VOID, "info");
+		super(StaticTypes.VOID_TYPE, "info");
 	}
 	
 	@Override

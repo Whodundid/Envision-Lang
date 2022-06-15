@@ -1,17 +1,17 @@
 package main;
 
-import static envision.EnvisionSettings.LaunchArgs.*;
+import static envision._launch.EnvisionSettings.LaunchArgs.*;
 
 import envision.Envision;
-import envision.EnvisionErrorCallback;
-import envision.EnvisionSettings;
-import envision.EnvisionSettings.LaunchArgs;
+import envision._launch.EnvisionErrorCallBack;
+import envision._launch.EnvisionSettings;
+import envision._launch.EnvisionSettings.LaunchArgs;
 import envision.exceptions.EnvisionError;
 import eutil.random.RandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
-public class LangLauncher extends EnvisionErrorCallback {
+public class DefaultLangLauncher implements EnvisionErrorCallBack {
 	
 	public static void main(String[] args) throws Exception {
 		TracingPrintStream.enableTrace();
@@ -28,10 +28,11 @@ public class LangLauncher extends EnvisionErrorCallback {
 		}
 		System.out.println(System.currentTimeMillis() - start);
 		*/
-		new LangLauncher();
+		
+		new DefaultLangLauncher();
 	}
 	
-	public LangLauncher() throws Exception {
+	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
 		
 		Envision env = null;

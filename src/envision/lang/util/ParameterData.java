@@ -6,6 +6,8 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidParameterError;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionNull;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
 
 public class ParameterData implements Iterable<Parameter> {
@@ -26,12 +28,8 @@ public class ParameterData implements Iterable<Parameter> {
 		add(paramsIn);
 	}
 	
-	public ParameterData(Primitives... typesIn) {
-		for (Primitives s : typesIn) add(s.toDatatype(), "");
-	}
-	
-	public ParameterData(EnvisionDatatype... typesIn) {
-		for (var t : typesIn) add(t, "");
+	public ParameterData(IDatatype... typesIn) {
+		for (var t : typesIn) add(t.toDatatype(), "");
 	}
 	
 	public ParameterData(EnvisionObject... objsIn) {
@@ -71,12 +69,8 @@ public class ParameterData implements Iterable<Parameter> {
 	// Methods
 	//---------
 	
-	public void add(Primitives type, String name) {
+	public void add(IDatatype type, String name) {
 		params.add(new Parameter(type.toDatatype(), name));
-	}
-	
-	public void add(EnvisionDatatype type, String name) {
-		params.add(new Parameter(type, name));
 	}
 	
 	public void add(Parameter... in) {
@@ -99,7 +93,7 @@ public class ParameterData implements Iterable<Parameter> {
 				Parameter a = get(i);
 				Parameter b = dataIn.get(i);
 				//System.out.println("the param compare: " + a.datatype + " : " + b.datatype + " : " + a.isNumber() + " : " + b.isNumber());
-				if (a.datatype.getPrimitiveType() == Primitives.NUMBER && b.isNumber()) return true;
+				if (a.datatype.getPrimitive() == Primitives.NUMBER && b.isNumber()) return true;
 				if (a.datatype.isVar()) continue;
 				if (!a.compare(b)) return false;
 			}
@@ -107,8 +101,8 @@ public class ParameterData implements Iterable<Parameter> {
 		}
 		//handle array types
 		else if (params.isNotEmpty() && get(0).datatype.isArrayType()) {
-			EnvisionDatatype type = get(0).datatype;
-			Primitives base = type.getPrimitiveType().getNonArrayType();
+			IDatatype type = get(0).datatype;
+			Primitives base = type.getPrimitive().getNonArrayType();
 			
 			if (base == null) throw new EnvisionError("Parameter type parsing failed! '" + get(0) + "'");
 			if (base == Primitives.VAR) return true;
@@ -130,7 +124,7 @@ public class ParameterData implements Iterable<Parameter> {
 	
 	public Parameter get(int i) { return params.get(i); }
 	
-	public EArrayList<EnvisionDatatype> getDataTypes() { return params.map(p -> p.datatype); }
+	public EArrayList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
 	public EArrayList<String> getNames() { return params.map(p -> p.name); }
 	
 	//---------
@@ -149,9 +143,9 @@ public class ParameterData implements Iterable<Parameter> {
 	
 	public static ParameterData empty() { return new ParameterData(); }
 	
-	public static ParameterData fromTypes(Primitives... types) {
+	public static ParameterData fromTypes(IDatatype... types) {
 		ParameterData d = new ParameterData();
-		for (Primitives t : types) {
+		for (IDatatype t : types) {
 			d.add(t.toDatatype(), "");
 		}
 		return d;

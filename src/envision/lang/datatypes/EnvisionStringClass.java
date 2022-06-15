@@ -1,11 +1,11 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.BOOLEAN;
-import static envision.lang.util.Primitives.CHAR;
-import static envision.lang.util.Primitives.INT;
-import static envision.lang.util.Primitives.LIST;
-import static envision.lang.util.Primitives.STRING;
-import static envision.lang.util.Primitives.VAR;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.CHAR;
+import static envision.lang.natives.Primitives.INT;
+import static envision.lang.natives.Primitives.LIST;
+import static envision.lang.natives.Primitives.STRING;
+import static envision.lang.natives.Primitives.VAR;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
@@ -16,9 +16,9 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
 
 public class EnvisionStringClass extends EnvisionClass {
 
@@ -35,19 +35,19 @@ public class EnvisionStringClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		STRING_PROTOS.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
-		STRING_PROTOS.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
-		STRING_PROTOS.addFunction("toList", LIST).assignDynamicClass(IFunc_toList.class);
-		STRING_PROTOS.addFunction("length", INT).assignDynamicClass(IFunc_length.class);
-		STRING_PROTOS.addFunction("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
-		STRING_PROTOS.addFunction("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
-		STRING_PROTOS.addFunction("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
-		STRING_PROTOS.addFunction("get", STRING).assignDynamicClass(IFunc_get.class);
-		STRING_PROTOS.addFunction("set", STRING, STRING).assignDynamicClass(IFunc_set.class);
-		STRING_PROTOS.addFunction("toUpperCase", STRING).assignDynamicClass(IFunc_toUpperCase.class);
-		STRING_PROTOS.addFunction("toLowerCase", STRING).assignDynamicClass(IFunc_toLowerCase.class);
-		STRING_PROTOS.addFunction("substring", STRING, INT).addOverload(STRING, INT, INT).assignDynamicClass(IFunc_substring.class);
-		STRING_PROTOS.addFunction("compareTo", INT, STRING).assignDynamicClass(IFunc_compareTo.class);
+		STRING_PROTOS.define("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
+		STRING_PROTOS.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
+		STRING_PROTOS.define("toList", LIST).assignDynamicClass(IFunc_toList.class);
+		STRING_PROTOS.define("length", INT).assignDynamicClass(IFunc_length.class);
+		STRING_PROTOS.define("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
+		STRING_PROTOS.define("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
+		STRING_PROTOS.define("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
+		STRING_PROTOS.define("get", STRING).assignDynamicClass(IFunc_get.class);
+		STRING_PROTOS.define("set", STRING, STRING).assignDynamicClass(IFunc_set.class);
+		STRING_PROTOS.define("toUpperCase", STRING).assignDynamicClass(IFunc_toUpperCase.class);
+		STRING_PROTOS.define("toLowerCase", STRING).assignDynamicClass(IFunc_toLowerCase.class);
+		STRING_PROTOS.define("substring", STRING, INT).addOverload(STRING, INT, INT).assignDynamicClass(IFunc_substring.class);
+		STRING_PROTOS.define("compareTo", INT, STRING).assignDynamicClass(IFunc_compareTo.class);
 	}
 	
 	//--------------

@@ -1,6 +1,8 @@
 package envision.packages.env.file;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.LIST;
+import static envision.lang.natives.Primitives.STRING;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,11 +26,10 @@ import envision.lang.datatypes.EnvisionListClass;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.NativeTypeManager;
 import envision.lang.util.InstanceFunction;
 import envision.lang.util.ParameterData;
-import eutil.EUtil;
-import eutil.strings.StringUtil;
 
 public class EnvisionFileClass extends EnvisionClass {
 
@@ -36,7 +37,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Constant file datatype reference. Use throughout.
 	 * Do not redefine.
 	 */
-	public static final EnvisionDatatype FILE_DATATYPE = new EnvisionDatatype("File");
+	public static final IDatatype FILE_DATATYPE = NativeTypeManager.datatypeOf("File");
 	
 	public static final EnvisionFileClass FILE_CLASS = new EnvisionFileClass();
 	
@@ -70,41 +71,25 @@ public class EnvisionFileClass extends EnvisionClass {
 	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionFile file = null;
 		
-		if (args.length != 1) throw new InvalidArgumentError("Expected exactly one argument passed!");
+		if (args.length != 1) throw InvalidArgumentError.expectedExactlyOne();
 		
 		EnvisionObject arg_val = args[0];
 		
 		//don't accept null arguments
-		if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
+		if (arg_val == null) throw InvalidArgumentError.nullArgument();
 		
 		//attempt creation from arg
 		if (arg_val instanceof EnvisionString env_str) file = new EnvisionFile(env_str.toString());
 		else if (arg_val instanceof EnvisionFile env_file) file = new EnvisionFile(env_file.iFile.getAbsolutePath());
 		
 		//if null, creation failed!
-		if (file == null)
-			throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
+		if (file == null) throw InvalidArgumentError.conversionError(arg_val, getDatatype());
 		
 		//define scope members
 		defineScopeMembers(file);
 				
 		//return built list instance
 		return file;
-	}
-	
-	private File createWrapFile(EnvisionInterpreter interpreter, EnvisionString pathIn) {
-		String dirPath = interpreter.workingDir().getDirFile().getAbsolutePath();
-		String argPath = (pathIn != null) ? (String) convert(pathIn) : null;
-		
-		// first determine if the given path is null
-		if (argPath == null) return new File(dirPath);
-		
-		// next, determine if this file is a relative file path off of the base program's default directory
-		if (EUtil.contains(new File(dirPath).list(), StringUtil.subStringToString(argPath, "\\", "/"))) {
-			return new File(dirPath, argPath);
-		}
-		
-		return new File(argPath);
 	}
 	
 	@Override

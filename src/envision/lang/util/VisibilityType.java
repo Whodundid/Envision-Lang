@@ -6,13 +6,19 @@ import envision.tokenizer.Token;
 
 public enum VisibilityType {
 	
-	PUBLIC,
-	PROTECTED,
-	PRIVATE,
+	PUBLIC("+"),
+	PROTECTED("_"),
+	PRIVATE("-"),
 	/** Assigned by not specifying explicit visibility. */
-	SCOPE,
+	SCOPE(""),
 	/** Strictly internal. Cannot be explicitly assigned within Envision. */
-	RESTRICTED;
+	RESTRICTED("###_");
+	
+	public final String lexeme;
+	
+	private VisibilityType(String lexemeIn) {
+		lexeme = lexemeIn;
+	}
 	
 	public static VisibilityType parse(Token t) {
 		return parse(t.keyword);
@@ -43,13 +49,7 @@ public enum VisibilityType {
 	
 	@Override
 	public String toString() {
-		return switch (this) {
-		case PUBLIC -> "+";
-		case PROTECTED -> "_";
-		case PRIVATE -> "-";
-		case SCOPE -> "";
-		default -> "";
-		};
+		return lexeme;
 	}
 	
 }

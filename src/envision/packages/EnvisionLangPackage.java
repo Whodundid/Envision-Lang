@@ -3,7 +3,7 @@ package envision.packages;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 
 /**
  * A special type of package that is natively imported at program
@@ -31,7 +31,7 @@ public abstract class EnvisionLangPackage extends EnvisionPackage implements Bui
 		Scope incomming_scope = interpreter.internalScope();
 		for (var obj : packageScope.values.entrySet()) {
 			String import_val_name = obj.getKey();
-			EnvisionDatatype import_val_type = obj.getValue().getA();
+			IDatatype import_val_type = obj.getValue().getA();
 			EnvisionObject import_val_obj = obj.getValue().getB();
 			
 			incomming_scope.define(import_val_name, import_val_type, import_val_obj);

@@ -1,6 +1,6 @@
 package envision.interpreter.expressions;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArithmeticError;
 import envision.exceptions.errors.FinalVarReassignmentError;
@@ -19,8 +19,8 @@ import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.util.StaticTypes;
 import envision.packages.EnvisionPackage;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
@@ -154,7 +154,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//the new value to be assigned the the variable
 		EnvisionObject assignment_value = value;
 		//the datatype of the new assignment value
-		EnvisionDatatype var_datatype = null;
+		IDatatype var_datatype = null;
 		//the existing variable -- if present
 		EnvisionObject var_obj = obj;
 		
@@ -192,7 +192,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			}
 			
 			//define as 'var' type variable
-			s.define(var_name, EnvisionDatatype.VAR_TYPE, var_obj);
+			s.define(var_name, StaticTypes.VAR_TYPE, var_obj);
 		}
 		//if the object does exist, attemt to assign the new value to it
 		else {
@@ -762,11 +762,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	
 	//---------------------------------------------------------------------------
 	
-	private void assert_number(EnvisionDatatype type) {
-		assert_number(type.getPrimitiveType());
-	}
-	
-	private void assert_number(Primitives type) {
+	private void assert_number(IDatatype type) {
 		if (!type.isNumber()) {
 			throw new ArithmeticError("Invalid operation: '" + type + "'! Can only operate on numbers!'");
 		}

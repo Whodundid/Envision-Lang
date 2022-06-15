@@ -1,7 +1,7 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.DOUBLE;
-import static envision.lang.util.Primitives.NUMBER;
+import static envision.lang.natives.Primitives.DOUBLE;
+import static envision.lang.natives.Primitives.NUMBER;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
@@ -11,10 +11,10 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class EnvisionDoubleClass extends EnvisionClass {
 
@@ -30,10 +30,10 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	private static final IPrototypeHandler DOUBLE_PROTOS = new IPrototypeHandler();
 	
 	static {
-		DOUBLE_PROTOS.addFunction("get", DOUBLE).assignDynamicClass(IFunc_get.class);
-		DOUBLE_PROTOS.addFunction("set", DOUBLE).assignDynamicClass(IFunc_set.class);
-		DOUBLE_PROTOS.addFunction("min", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
-		DOUBLE_PROTOS.addFunction("max", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
+		DOUBLE_PROTOS.define("get", DOUBLE).assignDynamicClass(IFunc_get.class);
+		DOUBLE_PROTOS.define("set", DOUBLE).assignDynamicClass(IFunc_set.class);
+		DOUBLE_PROTOS.define("min", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
+		DOUBLE_PROTOS.define("max", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
 	}
 	
 	//--------------
@@ -54,8 +54,8 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	@Override
 	protected void registerStaticNatives() {
 		staticScope.defineFunction(new IFunc_static_valueOf());
-		staticScope.define("MIN_VALUE", EnvisionDatatype.DOUBLE_TYPE, EnvisionDouble.MIN_VALUE);
-		staticScope.define("MAX_VALUE", EnvisionDatatype.DOUBLE_TYPE, EnvisionDouble.MAX_VALUE);
+		staticScope.define("MIN_VALUE", StaticTypes.DOUBLE_TYPE, EnvisionDouble.MIN_VALUE);
+		staticScope.define("MAX_VALUE", StaticTypes.DOUBLE_TYPE, EnvisionDouble.MAX_VALUE);
 	}
 	
 	//---------------------

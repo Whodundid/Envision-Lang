@@ -9,8 +9,9 @@ import envision.exceptions.errors.objects.ClassCastError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.FunctionPrototype;
+import envision.lang.util.StaticTypes;
 import envision.tokenizer.Operator;
 
 /**
@@ -174,12 +175,12 @@ public class EnvisionBoolean extends EnvisionVariable {
 	}
 	
 	@Override
-	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (EnvisionDatatype.BOOL_TYPE.compare(castType)) return this;
-		if (EnvisionDatatype.INT_TYPE.compare(castType)) return EnvisionIntClass.newInt(bool_val);
-		if (EnvisionDatatype.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.newDouble(bool_val);
-		if (EnvisionDatatype.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(bool_val);
+		if (StaticTypes.BOOL_TYPE.compare(castType)) return this;
+		if (StaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.newInt(bool_val);
+		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.newDouble(bool_val);
+		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(bool_val);
 		
 		throw new ClassCastError(this, castType);
 	}

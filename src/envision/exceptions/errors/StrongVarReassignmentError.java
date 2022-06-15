@@ -2,7 +2,7 @@ package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 public class StrongVarReassignmentError extends EnvisionError {
 	

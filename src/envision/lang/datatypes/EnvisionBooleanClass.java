@@ -1,7 +1,7 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.BOOLEAN;
-import static envision.lang.util.Primitives.STRING;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.STRING;
 
 import envision.exceptions.errors.ArgLengthError;
 import envision.exceptions.errors.InvalidArgumentError;
@@ -10,10 +10,10 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class EnvisionBooleanClass extends EnvisionClass {
 	
@@ -30,8 +30,8 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		prototypes.addFunction("get", BOOLEAN).assignDynamicClass(IFunc_get.class);
-		prototypes.addFunction("set", BOOLEAN, BOOLEAN).assignDynamicClass(IFunc_set.class);
+		prototypes.define("get", BOOLEAN).assignDynamicClass(IFunc_get.class);
+		prototypes.define("set", BOOLEAN, BOOLEAN).assignDynamicClass(IFunc_set.class);
 	}
 	
 	//--------------
@@ -52,13 +52,17 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	@Override
 	protected void registerStaticNatives() {
 		staticScope.defineFunction(new IFunc_static_valueOf());
-		staticScope.define("TRUE", EnvisionDatatype.BOOL_TYPE, EnvisionBoolean.TRUE);
-		staticScope.define("FALSE", EnvisionDatatype.BOOL_TYPE, EnvisionBoolean.FALSE);
+		staticScope.define("TRUE", StaticTypes.BOOL_TYPE, EnvisionBoolean.TRUE);
+		staticScope.define("FALSE", StaticTypes.BOOL_TYPE, EnvisionBoolean.FALSE);
 	}
 	
 	//---------------------
 	// Static Constructors
 	//---------------------
+	
+	public static EnvisionBoolean defaultValue() {
+		return EnvisionBoolean.FALSE;
+	}
 	
 	public static EnvisionBoolean newBoolean() { return newBoolean(false); }
 	public static EnvisionBoolean newBoolean(EnvisionBoolean val) { return newBoolean(val.bool_val); }
@@ -97,7 +101,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 			//check for invalid argument constructor datatypes
 			if (arg_val instanceof EnvisionInt i)		bool = new EnvisionBoolean(i.int_val != 0);
 			if (arg_val instanceof EnvisionBoolean b)	bool = new EnvisionBoolean(b.bool_val);
-			if (arg_val instanceof EnvisionString s)	bool = new EnvisionBoolean(s.string_val.equals("true"));
+			if (arg_val instanceof EnvisionString s)	bool = new EnvisionBoolean(s.string_val.toString().equals("true"));
 			
 			//if null, creation failed!
 			if (bool == null)

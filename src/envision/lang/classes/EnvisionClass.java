@@ -1,10 +1,10 @@
 package envision.lang.classes;
 
-import static envision.lang.util.Primitives.BOOLEAN;
-import static envision.lang.util.Primitives.INT;
-import static envision.lang.util.Primitives.LIST;
-import static envision.lang.util.Primitives.STRING;
-import static envision.lang.util.Primitives.VAR;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.INT;
+import static envision.lang.natives.Primitives.LIST;
+import static envision.lang.natives.Primitives.STRING;
+import static envision.lang.natives.Primitives.VAR;
 
 import envision.exceptions.errors.classErrors.NotAConstructorError;
 import envision.exceptions.errors.classErrors.UndefinedConstructorError;
@@ -17,11 +17,11 @@ import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionListClass;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.natives.NativeTypeManager;
+import envision.lang.natives.Primitives;
 import envision.lang.util.DataModifier;
-import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
@@ -39,7 +39,7 @@ import eutil.datatypes.EArrayList;
  * <p>
  * Classes contain their own static scopes which can house their own
  * static fields/methods/classes/etc. This scope is ultimately derived
- * from the overarching scope from which this class was originally
+ * from the over-arching scope from which this class was originally
  * declared within. This means that any values native to the original
  * defining scope are also visible to this class's static scope in
  * some capacity.
@@ -58,11 +58,6 @@ public class EnvisionClass extends EnvisionObject {
 	 * Denotes whether or not the Envision-Class-Hierarchy has been constructed.
 	 */
 	private static boolean nativesRegistered = false;
-	
-	/**
-	 * The underlying datatype for all class objects.
-	 */
-	public static final EnvisionDatatype CLASS_TYPE = Primitives.CLASS.toDatatype();
 	
 	/**
 	 * Instance creation optimization tool.
@@ -128,15 +123,15 @@ public class EnvisionClass extends EnvisionObject {
 	
 	//statically define function prototypes
 	static {
-		OBJ_PROTOS.addFunction("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
-		OBJ_PROTOS.addFunction("hash", INT).assignDynamicClass(IFunc_hash.class);
-		OBJ_PROTOS.addFunction("hexHash", STRING).assignDynamicClass(IFunc_hexHash.class);
-		OBJ_PROTOS.addFunction("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
-		OBJ_PROTOS.addFunction("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
-		OBJ_PROTOS.addFunction("toString", STRING).assignDynamicClass(IFunc_toString.class);
-		OBJ_PROTOS.addFunction("type", STRING).assignDynamicClass(IFunc_type.class);
-		OBJ_PROTOS.addFunction("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
-		OBJ_PROTOS.addFunction("members", LIST).assignDynamicClass(IFunc_members.class);
+		OBJ_PROTOS.define("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
+		OBJ_PROTOS.define("hash", INT).assignDynamicClass(IFunc_hash.class);
+		OBJ_PROTOS.define("hexHash", STRING).assignDynamicClass(IFunc_hexHash.class);
+		OBJ_PROTOS.define("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
+		OBJ_PROTOS.define("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
+		OBJ_PROTOS.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
+		OBJ_PROTOS.define("type", STRING).assignDynamicClass(IFunc_type.class);
+		OBJ_PROTOS.define("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
+		OBJ_PROTOS.define("members", LIST).assignDynamicClass(IFunc_members.class);
 	}
 	
 	//--------------
@@ -152,7 +147,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @param classNameIn
 	 */
 	public EnvisionClass(String classNameIn) {
-		super(new EnvisionDatatype(classNameIn));
+		super(NativeTypeManager.datatypeOf(classNameIn));
 		
 		//assign class name
 		className = classNameIn;
@@ -216,7 +211,7 @@ public class EnvisionClass extends EnvisionObject {
 		
 		//if there is not a constructor already, assign the constructor to the incoming one.
 		if (constructor == null) constructor = conIn;
-		//otherwise, add the incomming constructor as an overload
+		//otherwise, add the incoming constructor as an overload
 		else constructor.addOverload(conIn);
 		
 		return this;
@@ -230,7 +225,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return true if the given object is an instance of this class
 	 */
 	public boolean isInstanceof(Object in) {
-		//only care if the incomming object is actually a class instance
+		//only care if the incoming object is actually a class instance
 		if (in instanceof ClassInstance inst) {
 			EnvisionClass instClass = inst.getEClass();
 			int instHash = instClass.getObjectHash();

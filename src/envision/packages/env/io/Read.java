@@ -1,20 +1,18 @@
 package envision.packages.env.io;
 
+import java.util.Scanner;
+
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import eutil.datatypes.util.DataTypeUtil;
-
-import java.util.Scanner;
 
 public class Read extends EnvisionFunction {
 	
-	//I might need to use Strings to handle internal object types..
-	
 	public Read() {
-		super(Primitives.STRING, "read");
+		super(StaticTypes.STRING_TYPE, "read");
 	}
 	
 	@Override

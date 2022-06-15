@@ -32,7 +32,8 @@ public class IE_Var extends ExpressionExecutor<Expr_Var> {
 	@Override
 	public EnvisionObject run(Expr_Var e) {
 		Token name = e.name;
-		if (name == null) throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
+		if (name == null)
+			throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
 		
 		//get name from interpreter
 		EnvisionObject obj = interpreter.lookUpVariable(e.name.lexeme);

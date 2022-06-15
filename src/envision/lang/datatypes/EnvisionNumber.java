@@ -3,6 +3,12 @@ package envision.lang.datatypes;
 import envision.exceptions.errors.ArithmeticError;
 import envision.lang.classes.EnvisionClass;
 
+/**
+ * An abstract script variable representing a number with or without a decimal
+ * point.
+ * 
+ * @author Hunter Bragg
+ */
 public abstract class EnvisionNumber extends EnvisionVariable {
 	
 	//--------------

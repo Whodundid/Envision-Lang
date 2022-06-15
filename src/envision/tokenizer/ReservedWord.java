@@ -1,18 +1,18 @@
 package envision.tokenizer;
 
-import envision.lang.util.Primitives;
 import eutil.EUtil;
 
 import java.util.HashMap;
 
+import envision.lang.natives.Primitives;
+
 /**
  *  The complete set of Envision reserved keywords and operators.
- *  
  *  <p>
  *  Keyword and operator lookup is performed in a constant 'O(1)'
  *  time for speedy tokenization.
  *  
- *  
+ *  @author Hunter Bragg
  */
 public enum ReservedWord implements IKeyword {
 	
@@ -161,11 +161,11 @@ public enum ReservedWord implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	public final String chars;
+	public final String typeString;
 	private final int types;
 	
 	private ReservedWord(String keywordIn, KeywordType... typeIn) {
-		chars = keywordIn;
+		typeString = keywordIn;
 		
 		int m = 0b00000000;
 		for (var t : typeIn) m |= t.byte_val;
@@ -177,7 +177,7 @@ public enum ReservedWord implements IKeyword {
 	private static HashMap<String, ReservedWord> keywords = new HashMap();
 	
 	static {
-		for (var k : values()) keywords.put(k.chars, k);
+		for (var k : values()) keywords.put(k.typeString, k);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------

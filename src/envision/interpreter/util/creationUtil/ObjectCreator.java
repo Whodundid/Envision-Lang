@@ -12,8 +12,8 @@ import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionListClass;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
 import eutil.math.NumberUtil;
 
@@ -27,7 +27,7 @@ public class ObjectCreator {
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	/** Wraps the given set of arguments in coresponding EnvisionObjects for internal language data communication. */
+	/** Wraps the given set of arguments in corresponding EnvisionObjects for internal language data communication. */
 	public static EArrayList<EnvisionObject> createArgs(Object... args) {
 		EArrayList<EnvisionObject> callArgs = new EArrayList();
 		
@@ -46,32 +46,32 @@ public class ObjectCreator {
 	public static EnvisionObject wrap(Object in) {
 		if (in instanceof EnvisionObject env_obj) return env_obj;
 		
-		EnvisionDatatype type = EnvisionDatatype.dynamicallyDetermineType(in);
+		IDatatype type = IDatatype.dynamicallyDetermineType(in);
 		//create object with determined type -- not strong -- not default
 		return createObject(type, in, false, false);
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	public static EnvisionObject createDefault(EnvisionDatatype typeIn, boolean strongIn) {
+	public static EnvisionObject createDefault(IDatatype typeIn, boolean strongIn) {
 		return createObject(typeIn, null, strongIn, true);
 	}
 	
-	public static EnvisionObject createObject(EnvisionDatatype typeIn, Object valueIn) {
+	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn) {
 		return createObject(typeIn, valueIn, false, false);
 	}
 	
-	public static EnvisionObject createObject(EnvisionDatatype typeIn, Object valueIn, boolean strongIn) {
+	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn) {
 		return createObject(typeIn, valueIn, strongIn, false);
 	}
 	
-	public static EnvisionObject createObject(EnvisionDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
+	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
 		if (typeIn == null) return EnvisionNull.NULL;
 		
 		//format incomming arguments
 		//convert var type to definitive type
-		if (typeIn.isVar()) typeIn = EnvisionDatatype.dynamicallyDetermineType(valueIn);
-		Primitives p_type = typeIn.getPrimitiveType();
+		if (typeIn.isVar()) typeIn = IDatatype.dynamicallyDetermineType(valueIn);
+		Primitives p_type = typeIn.getPrimitive();
 		
 		//the object to be created
 		EnvisionObject obj = null;
@@ -80,7 +80,7 @@ public class ObjectCreator {
 		if (p_type.isVariableType()) {
 			if (defaultIn) {
 				switch (p_type) {
-				case BOOLEAN: return EnvisionBooleanClass.newBoolean();
+				case BOOLEAN: return EnvisionBooleanClass.newBoolean(defaultIn);
 				case CHAR: return EnvisionCharClass.newChar();
 				case INT: return EnvisionIntClass.newInt();
 				case NUMBER:
@@ -133,9 +133,8 @@ public class ObjectCreator {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	public static EnvisionList createList() { return EnvisionListClass.newList(); }
-	public static EnvisionList createList(Primitives typeIn) { return EnvisionListClass.newList(typeIn); }
-	public static EnvisionList createList(EnvisionDatatype listType) { return EnvisionListClass.newList(listType); }
-	public static EnvisionList createList(EnvisionDatatype listType, List data) { return EnvisionListClass.newList(listType).addAll(data); }
+	public static EnvisionList createList(IDatatype listType) { return EnvisionListClass.newList(listType); }
+	public static EnvisionList createList(IDatatype listType, List data) { return EnvisionListClass.newList(listType).addAll(data); }
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	

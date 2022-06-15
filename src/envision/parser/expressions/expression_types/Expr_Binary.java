@@ -22,7 +22,7 @@ public class Expr_Binary implements Expression	{
 	@Override
 	public String toString() {
 		String m = (modular) ? "~" : "";
-		return left + " " + m + operator.chars + " " + right;
+		return left + " " + m + operator.typeString + " " + right;
 	}
 	
 	@Override

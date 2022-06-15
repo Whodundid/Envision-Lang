@@ -1,10 +1,10 @@
 package envision.lang.internal;
 
-import static envision.lang.util.Primitives.BOOLEAN;
-import static envision.lang.util.Primitives.LIST;
-import static envision.lang.util.Primitives.STRING;
-import static envision.lang.util.Primitives.VAR;
-import static envision.lang.util.Primitives.VAR_A;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.LIST;
+import static envision.lang.natives.Primitives.STRING;
+import static envision.lang.natives.Primitives.VAR;
+import static envision.lang.natives.Primitives.VAR_A;
 
 import envision.exceptions.EnvisionError;
 import envision.interpreter.EnvisionInterpreter;
@@ -16,9 +16,9 @@ import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionListClass;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
 
 /**
  * The parent class for all Envision Functions. This is a special
@@ -49,12 +49,12 @@ public class EnvisionFunctionClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		FUNC_PROTOS.addFunction("invoke", VAR, VAR_A).assignDynamicClass(IFunc_invoke.class);
-		FUNC_PROTOS.addFunction("hasOverloads", BOOLEAN).assignDynamicClass(IFunc_hasOverloads.class);
-		FUNC_PROTOS.addFunction("getOverloads", LIST).assignDynamicClass(IFunc_getOverloads.class);
-		FUNC_PROTOS.addFunction("getReturnType", STRING).assignDynamicClass(IFunc_getReturnType.class);
-		FUNC_PROTOS.addFunction("getParamTypes", LIST).assignDynamicClass(IFunc_getParamTypes.class);
-		FUNC_PROTOS.addFunction("getParamNames", LIST).assignDynamicClass(IFunc_getParamNames.class);
+		FUNC_PROTOS.define("invoke", VAR, VAR_A).assignDynamicClass(IFunc_invoke.class);
+		FUNC_PROTOS.define("hasOverloads", BOOLEAN).assignDynamicClass(IFunc_hasOverloads.class);
+		FUNC_PROTOS.define("getOverloads", LIST).assignDynamicClass(IFunc_getOverloads.class);
+		FUNC_PROTOS.define("getReturnType", STRING).assignDynamicClass(IFunc_getReturnType.class);
+		FUNC_PROTOS.define("getParamTypes", LIST).assignDynamicClass(IFunc_getParamTypes.class);
+		FUNC_PROTOS.define("getParamNames", LIST).assignDynamicClass(IFunc_getParamNames.class);
 	}
 	
 	//--------------

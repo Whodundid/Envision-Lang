@@ -1,11 +1,11 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.BOOLEAN;
-import static envision.lang.util.Primitives.INT;
-import static envision.lang.util.Primitives.LIST;
-import static envision.lang.util.Primitives.STRING;
-import static envision.lang.util.Primitives.VAR;
-import static envision.lang.util.Primitives.VAR_A;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.INT;
+import static envision.lang.natives.Primitives.LIST;
+import static envision.lang.natives.Primitives.STRING;
+import static envision.lang.natives.Primitives.VAR;
+import static envision.lang.natives.Primitives.VAR_A;
 
 import java.util.List;
 
@@ -13,10 +13,11 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class EnvisionListClass extends EnvisionClass {
 
@@ -29,37 +30,37 @@ public class EnvisionListClass extends EnvisionClass {
 	private static final IPrototypeHandler LIST_PROTOTYPES = new IPrototypeHandler();
 	
 	static {
-		LIST_PROTOTYPES.addFunction("add", BOOLEAN, VAR).assignDynamicClass(IFunc_add.class);
-		LIST_PROTOTYPES.addFunction("addR", VAR, VAR).assignDynamicClass(IFunc_addR.class);
-		LIST_PROTOTYPES.addFunction("addRT", LIST, VAR).assignDynamicClass(IFunc_addRT.class);
-		LIST_PROTOTYPES.addFunction("clear", LIST).assignDynamicClass(IFunc_clear.class);
-		LIST_PROTOTYPES.addFunction("contains", BOOLEAN, VAR).assignDynamicClass(IFunc_contains.class);
-		LIST_PROTOTYPES.addFunction("copy", LIST).assignDynamicClass(IFunc_copy.class);
-		LIST_PROTOTYPES.addFunction("fill", LIST, VAR_A).assignDynamicClass(IFunc_fill.class);
-		LIST_PROTOTYPES.addFunction("flip", LIST).assignDynamicClass(IFunc_flip.class);
-		LIST_PROTOTYPES.addFunction("get", VAR, INT).assignDynamicClass(IFunc_get.class);
-		LIST_PROTOTYPES.addFunction("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
-		LIST_PROTOTYPES.addFunction("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
-		LIST_PROTOTYPES.addFunction("getListType", STRING).assignDynamicClass(IFunc_getListType.class);
-		LIST_PROTOTYPES.addFunction("hasOne", BOOLEAN).assignDynamicClass(IFunc_hasOne.class);
-		LIST_PROTOTYPES.addFunction("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
-		LIST_PROTOTYPES.addFunction("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
-		LIST_PROTOTYPES.addFunction("isSizeLocked", BOOLEAN).assignDynamicClass(IFunc_isSizeLocked.class);
-		LIST_PROTOTYPES.addFunction("lockSize", LIST).assignDynamicClass(IFunc_lockSize.class);
-		LIST_PROTOTYPES.addFunction("notContains", BOOLEAN, VAR).assignDynamicClass(IFunc_notContains.class);
-		LIST_PROTOTYPES.addFunction("push", LIST, VAR).assignDynamicClass(IFunc_push.class);
-		LIST_PROTOTYPES.addFunction("pop", VAR).assignDynamicClass(IFunc_pop.class);
-		LIST_PROTOTYPES.addFunction("remove", VAR, INT).assignDynamicClass(IFunc_remove.class);
-		LIST_PROTOTYPES.addFunction("removeFirst", VAR).assignDynamicClass(IFunc_removeFirst.class);
-		LIST_PROTOTYPES.addFunction("removeLast", VAR).assignDynamicClass(IFunc_removeLast.class);
-		LIST_PROTOTYPES.addFunction("set", LIST, INT, VAR).assignDynamicClass(IFunc_set.class);
-		LIST_PROTOTYPES.addFunction("setFirst", LIST, VAR).assignDynamicClass(IFunc_setFirst.class);
-		LIST_PROTOTYPES.addFunction("setLast", LIST, VAR).assignDynamicClass(IFunc_setLast.class);
-		LIST_PROTOTYPES.addFunction("shiftLeft", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftLeft.class);
-		LIST_PROTOTYPES.addFunction("shiftRight", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftRight.class);
-		LIST_PROTOTYPES.addFunction("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
-		LIST_PROTOTYPES.addFunction("size", INT).assignDynamicClass(IFunc_size.class);
-		LIST_PROTOTYPES.addFunction("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
+		LIST_PROTOTYPES.define("add", BOOLEAN, VAR).assignDynamicClass(IFunc_add.class);
+		LIST_PROTOTYPES.define("addR", VAR, VAR).assignDynamicClass(IFunc_addR.class);
+		LIST_PROTOTYPES.define("addRT", LIST, VAR).assignDynamicClass(IFunc_addRT.class);
+		LIST_PROTOTYPES.define("clear", LIST).assignDynamicClass(IFunc_clear.class);
+		LIST_PROTOTYPES.define("contains", BOOLEAN, VAR).assignDynamicClass(IFunc_contains.class);
+		LIST_PROTOTYPES.define("copy", LIST).assignDynamicClass(IFunc_copy.class);
+		LIST_PROTOTYPES.define("fill", LIST, VAR_A).assignDynamicClass(IFunc_fill.class);
+		LIST_PROTOTYPES.define("flip", LIST).assignDynamicClass(IFunc_flip.class);
+		LIST_PROTOTYPES.define("get", VAR, INT).assignDynamicClass(IFunc_get.class);
+		LIST_PROTOTYPES.define("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
+		LIST_PROTOTYPES.define("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
+		LIST_PROTOTYPES.define("getListType", STRING).assignDynamicClass(IFunc_getListType.class);
+		LIST_PROTOTYPES.define("hasOne", BOOLEAN).assignDynamicClass(IFunc_hasOne.class);
+		LIST_PROTOTYPES.define("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
+		LIST_PROTOTYPES.define("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
+		LIST_PROTOTYPES.define("isSizeLocked", BOOLEAN).assignDynamicClass(IFunc_isSizeLocked.class);
+		LIST_PROTOTYPES.define("lockSize", LIST).assignDynamicClass(IFunc_lockSize.class);
+		LIST_PROTOTYPES.define("notContains", BOOLEAN, VAR).assignDynamicClass(IFunc_notContains.class);
+		LIST_PROTOTYPES.define("push", LIST, VAR).assignDynamicClass(IFunc_push.class);
+		LIST_PROTOTYPES.define("pop", VAR).assignDynamicClass(IFunc_pop.class);
+		LIST_PROTOTYPES.define("remove", VAR, INT).assignDynamicClass(IFunc_remove.class);
+		LIST_PROTOTYPES.define("removeFirst", VAR).assignDynamicClass(IFunc_removeFirst.class);
+		LIST_PROTOTYPES.define("removeLast", VAR).assignDynamicClass(IFunc_removeLast.class);
+		LIST_PROTOTYPES.define("set", LIST, INT, VAR).assignDynamicClass(IFunc_set.class);
+		LIST_PROTOTYPES.define("setFirst", LIST, VAR).assignDynamicClass(IFunc_setFirst.class);
+		LIST_PROTOTYPES.define("setLast", LIST, VAR).assignDynamicClass(IFunc_setLast.class);
+		LIST_PROTOTYPES.define("shiftLeft", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftLeft.class);
+		LIST_PROTOTYPES.define("shiftRight", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftRight.class);
+		LIST_PROTOTYPES.define("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
+		LIST_PROTOTYPES.define("size", INT).assignDynamicClass(IFunc_size.class);
+		LIST_PROTOTYPES.define("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
 	}
 	
 	//--------------
@@ -81,15 +82,14 @@ public class EnvisionListClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionList newList() { return newList(EnvisionDatatype.VAR_TYPE); }
-	public static EnvisionList newList(Primitives type) { return newList(type.toDatatype()); }
-	public static EnvisionList newList(EnvisionDatatype type) {
+	public static EnvisionList newList() { return newList(StaticTypes.VAR_TYPE); }
+	public static EnvisionList newList(IDatatype type) {
 		EnvisionList list = new EnvisionList(type);
 		LIST_CLASS.defineScopeMembers(list);
 		return list;
 	}
 	
-	public static EnvisionList newList(EnvisionDatatype type, List<EnvisionObject> data) {
+	public static EnvisionList newList(IDatatype type, List<EnvisionObject> data) {
 		EnvisionList list = newList(type);
 		list.addAll(data);
 		return list;
@@ -297,7 +297,7 @@ public class EnvisionListClass extends EnvisionClass {
 	public static class IFunc_getListType<E extends EnvisionList> extends InstanceFunction<E> {
 		public IFunc_getListType() { super(STRING, "getListType"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst.getListType());
+			ret(inst.getListTypeString());
 		}
 	}
 	

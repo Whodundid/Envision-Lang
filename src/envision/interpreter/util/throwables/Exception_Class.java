@@ -1,6 +1,6 @@
 package envision.interpreter.util.throwables;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.natives.Primitives.*;
 
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;

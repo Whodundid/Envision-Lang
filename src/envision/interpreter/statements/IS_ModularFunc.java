@@ -4,6 +4,7 @@ import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.AlreadyDefinedError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
+import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Assign;
 import envision.parser.expressions.expression_types.Expr_Binary;
@@ -14,11 +15,11 @@ import envision.parser.statements.statement_types.Stmt_ModularFuncDef;
 import envision.parser.statements.statement_types.Stmt_Return;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
+import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxList;
-import main.Experimental_Envision;
+import eutil.debug.Experimental;
 
-@Experimental_Envision
+@Experimental
 public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 
 	public IS_ModularFunc(EnvisionInterpreter in) {
@@ -41,7 +42,7 @@ public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 			//String methName = refName.lexeme;
 			
 			//attempt to find any already existing base method within the given scope
-			Object base = scope().get(s.name.lexeme);
+			EnvisionObject base = scope().get(s.name.lexeme);
 			
 			//if there is already an existing method of the same name, this is invalid!
 			if (base != null) {

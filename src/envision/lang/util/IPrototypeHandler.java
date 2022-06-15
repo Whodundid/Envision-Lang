@@ -2,6 +2,7 @@ package envision.lang.util;
 
 import envision.interpreter.util.scope.Scope;
 import envision.lang.classes.ClassInstance;
+import envision.lang.natives.IDatatype;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -41,39 +42,19 @@ public class IPrototypeHandler {
 	 * 
 	 * @param func_name The name of the prototype to create
 	 */
-	public FunctionPrototype addFunction(String func_name) {
-		return addFunction(func_name, EnvisionDatatype.VAR_TYPE, new ParameterData());
+	public FunctionPrototype define(String func_name) {
+		return define(func_name, StaticTypes.VAR_TYPE, new ParameterData());
 	}
 	
-	public FunctionPrototype addFunction(String func_name, Primitives rType) {
-		return addFunction(func_name, rType.toDatatype(), new ParameterData());
+	public FunctionPrototype define(String func_name, IDatatype rType) {
+		return define(func_name, rType, new ParameterData());
 	}
 	
-	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType) {
-		return addFunction(func_name, rType, new ParameterData());
+	public FunctionPrototype define(String func_name, IDatatype rType, IDatatype... params) {
+		return define(func_name, rType, new ParameterData(params));
 	}
 	
-	public FunctionPrototype addFunction(String func_name, Primitives rType, Primitives... params) {
-		return addFunction(func_name, rType.toDatatype(), new ParameterData(params));
-	}
-	
-	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, Primitives... params) {
-		return addFunction(func_name, rType, new ParameterData(params));
-	}
-	
-	public FunctionPrototype addFunction(String func_name, Primitives rType, EnvisionDatatype... params) {
-		return addFunction(func_name, rType.toDatatype(), new ParameterData(params));
-	}
-	
-	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, EnvisionDatatype... params) {
-		return addFunction(func_name, rType, new ParameterData(params));
-	}
-	
-	public FunctionPrototype addFunction(String func_name, Primitives rType, ParameterData params) {
-		return addFunction(func_name, rType.toDatatype(), params);
-	}
-	
-	public FunctionPrototype addFunction(String func_name, EnvisionDatatype rType, ParameterData params) {
+	public FunctionPrototype define(String func_name, IDatatype rType, ParameterData params) {
 		var p = new FunctionPrototype(func_name, rType, params);
 		prototypes.add(p);
 		return p;
@@ -95,7 +76,7 @@ public class IPrototypeHandler {
 	 * @param scope The scope for which this handler is defining on
 	 */
 	public void defineOn(Scope scope) {
-		prototypes.forEach(p -> scope.define(p.getFunctionName(), EnvisionDatatype.FUNC_TYPE, p));
+		prototypes.forEach(p -> scope.define(p.getFunctionName(), StaticTypes.FUNC_TYPE, p));
 	}
 	
 }

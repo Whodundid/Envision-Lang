@@ -8,9 +8,10 @@ import envision.interpreter.util.scope.Scope;
 import envision.lang.classes.ClassConstruct;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.NativeTypeManager;
+import envision.lang.natives.Primitives;
 import envision.lang.util.DataModifier;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Block;
 import envision.parser.statements.statement_types.Stmt_Class;
@@ -33,8 +34,9 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 	public void run(Stmt_Class statement) {
 		ParserDeclaration dec = statement.declaration;
 		
-		EnvisionDatatype name = new EnvisionDatatype(statement.name.lexeme);
-		//EArrayList<VarExpression> supers = statement.parentclasses;
+		IDatatype name = NativeTypeManager.datatypeOf(statement.name.lexeme);
+		//@InDevelopment
+		//EArrayList<Expr_Var> supers = statement.parentclasses;
 		EArrayList<Statement> body = statement.body;
 		EArrayList<Statement> staticMembers = statement.staticMembers;
 		EArrayList<Stmt_FuncDef> constructors = statement.initializers;
@@ -56,12 +58,12 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//}
 		
 		//set modifiers
-		//theClass.setVisibility(dec.getVisibility());
-		for (DataModifier d : dec.getMods()) { theClass.setModifier(d, true); }
+		theClass.setVisibility(dec.getVisibility());
+		for (DataModifier d : dec.getMods()) theClass.setModifier(d, true);
 		
 		//go through statements and process valid ones (Variable declarations, Method declarations, Objects)
 		for (Statement s : body) checkValid(s);
-		//for (Statement s : staticMembers) { checkValid(s); }
+		//for (Statement s : staticMembers) checkValid(s);
 		
 		//gather visible parent members
 		/*
@@ -86,9 +88,9 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//execute the static members against the class's scope
 		executeBlock(staticMembers, classScope);
 		
-		//build constructor methods -- inherently static
+		//build constructor functions -- inherently static
 		for (Stmt_FuncDef constructor : constructors) {
-			EnvisionFunction con = FunctionCreator.buildMethod(interpreter, constructor, classScope);
+			EnvisionFunction con = FunctionCreator.buildFunction(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
 			//define the constructor as a static member on the class scope
 			classScope.define("init", Primitives.FUNCTION, con);

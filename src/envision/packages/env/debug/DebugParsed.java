@@ -1,18 +1,18 @@
 package envision.packages.env.debug;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.errors.ArgLengthError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Expression;
 
 public class DebugParsed extends EnvisionFunction {
 		
 	public DebugParsed() {
-		super(Primitives.VOID, "parsed");
+		super(StaticTypes.VOID_TYPE, "parsed");
 	}
 	
 	@Override

@@ -1,7 +1,7 @@
 package envision.lang.internal;
 
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 
 /**
  * A void object cannot be created by any normal means but is used to
@@ -28,7 +28,7 @@ public class EnvisionVoid extends EnvisionObject {
 	 * Private to prevent outside instantiation.
 	 */
 	private EnvisionVoid() {
-		super(EnvisionDatatype.VOID_TYPE);
+		super(StaticTypes.VOID_TYPE);
 	}
 	
 	//-----------

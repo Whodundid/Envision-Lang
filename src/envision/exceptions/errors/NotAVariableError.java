@@ -2,7 +2,9 @@ package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
+import eutil.debug.Unused;
 
+@Unused
 public class NotAVariableError extends EnvisionError {
 	
 	public NotAVariableError(Object o) { this(String.valueOf(o)); }

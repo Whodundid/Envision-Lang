@@ -1,7 +1,7 @@
 package envision.lang.internal;
 
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 import envision.lang.util.VisibilityType;
 
 /**
@@ -44,7 +44,7 @@ public class JavaObjectWrapper extends EnvisionObject {
 	//--------------
 	
 	public JavaObjectWrapper(Object javaObjectIn) {
-		super(EnvisionDatatype.VAR_TYPE);
+		super(StaticTypes.VAR_TYPE);
 		javaObject = javaObjectIn;
 	}
 	

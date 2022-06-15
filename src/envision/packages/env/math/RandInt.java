@@ -6,7 +6,7 @@ import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 import eutil.random.RandomUtil;
 
 public class RandInt extends EnvisionFunction {

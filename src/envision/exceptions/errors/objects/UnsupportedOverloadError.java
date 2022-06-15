@@ -7,16 +7,16 @@ import envision.tokenizer.IKeyword;
 public class UnsupportedOverloadError extends EnvisionError {
 	
 	public UnsupportedOverloadError(EnvisionObject in, IKeyword operator) {
-		super("Unsupported Operator: [" + in + "': '" + operator.chars() + "']!");
+		super("Unsupported Operator: [" + in + "': '" + operator.typeString() + "']!");
 	}
 	
 	public UnsupportedOverloadError(EnvisionObject in, IKeyword operator, String other) {
-		super("Unsupported Operator! [" + in + ": '" + operator.chars() + "' and '" + other
+		super("Unsupported Operator! [" + in + ": '" + operator.typeString() + "' and '" + other
 				+ "']!");
 	}
 	
 	public UnsupportedOverloadError(EnvisionObject in, IKeyword operator, EnvisionObject other) {
-		super("Unsupported Operator! [" + in + ": '" + operator.chars() + "' and '" + "["
+		super("Unsupported Operator! [" + in + ": '" + operator.typeString() + "' and '" + "["
 				+ other.getDatatype() + ":" + other + "]]!");
 	}
 	

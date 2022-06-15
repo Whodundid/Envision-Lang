@@ -53,7 +53,7 @@ public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 					else caseNameValue = scope().get(caseName.lexeme);
 					
 					//not sure how to handle yet
-					if (isNull(caseNameValue)) { System.out.println("NULL SWITCH CASE"); }
+					if (isNull(caseNameValue)) System.out.println("NULL SWITCH CASE");
 					
 					//if the case matched -- set the matched state to true and execute each case block from here on out
 					if (isEqual(exprObj, caseNameValue)) caseMatched = true;

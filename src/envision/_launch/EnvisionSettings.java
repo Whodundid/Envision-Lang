@@ -1,24 +1,28 @@
-package envision;
+package envision._launch;
 
 import envision.exceptions.errors.launch.InvalidLaunchArgumentError;
 import eutil.datatypes.EArrayList;
+import eutil.debug.Broken;
+import eutil.debug.Unused;
 
 /**
- * A collection of valid launch parameters to be given as arguments to the 
- * Envision language and its executing programs during runtime.
+ * A collection of valid launch arguments to be given to either the Envision
+ * language as parameters or to user programs executing during runtime.
  * 
  * @author Hunter Bragg
- *
  */
 public class EnvisionSettings {
 	
 	/** All passed arguments to be processed. */
 	private final String[] launchArgs;
-	
 	/** Arguments passed to the Envision Language. */
 	private final EArrayList<LaunchArgs> envArgs = new EArrayList();
 	/** Arguments passed to programs running on the Envision Language. */
 	private final EArrayList<String> userArgs = new EArrayList();
+	
+	//--------------
+	// Constructors
+	//--------------
 	
 	public EnvisionSettings(String[] in) {
 		parseArgs(in);
@@ -29,6 +33,10 @@ public class EnvisionSettings {
 		launchArgs = new String[0];
 		envArgs.addIfNotContains(argsIn);
 	}
+	
+	//---------
+	// Methods
+	//---------
 	
 	/** Separates valid launch arguments from standard user program arguments. */
 	private void parseArgs(String[] in) {
@@ -53,14 +61,23 @@ public class EnvisionSettings {
 	//-----------------
 	
 	public static enum LaunchArgs {
+		@Unused
 		CLASS_FILE_STATEMENTS("allowClassFileStatements"),
+		@Unused
 		CLASS_BODY_STATEMENTS("allowClassBodyStatements"),
-		PRELOAD_LANGUAGE("preloadLang"), /* Loads primary Envision system classes upfront before executing Envision code. */
-		DEBUG_MODE("enableDebugMode"), /* Displays various debug outputs from the language. 'Very poorly defined!' */
-		LIVE_MODE("enableLiveMode"), /* Talk directly to the interpreter. VERY BUGGY! */
-		TOKENIZE("tokenize"), /** Prints out tokenized values, File by File. */
-		PARSE_STATEMENTS("parse_statements"), /* Prints out parsed statements, File by File. */
-		DONT_EXECUTE("dont_execute"), /* Does not allow Envision code execution to commence. */
+		/** Loads primary Envision system classes up-front before executing Envision code. */
+		@Broken
+		PRELOAD_LANGUAGE("preloadLang"),
+		/** Displays various debug outputs from the language. 'Very poorly defined!' */
+		DEBUG_MODE("enableDebugMode"),
+		/** 'Talk' directly to the interpreter. VERY BUGGY! */
+		LIVE_MODE("enableLiveMode"),
+		/** Prints out tokenized values, File by File. */
+		TOKENIZE("tokenize"),
+		/** Prints out parsed statements, File by File. */
+		PARSE_STATEMENTS("parse_statements"),
+		/** Does not allow Envision code execution to commence. */
+		DONT_EXECUTE("dont_execute"),
 		//PRINTLN_AS_KEYWORD("println_as_keyword"),
 		;
 		

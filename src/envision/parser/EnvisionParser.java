@@ -1,6 +1,6 @@
 package envision.parser;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.EnvisionError;
 import envision.parser.statements.Statement;
 import envision.tokenizer.IKeyword;

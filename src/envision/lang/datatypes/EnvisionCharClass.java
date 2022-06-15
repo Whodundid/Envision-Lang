@@ -1,7 +1,7 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.CHAR;
-import static envision.lang.util.Primitives.INT;
+import static envision.lang.natives.Primitives.CHAR;
+import static envision.lang.natives.Primitives.INT;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.ArgLengthError;
@@ -11,10 +11,10 @@ import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.IPrototypeHandler;
 import envision.lang.util.InstanceFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class EnvisionCharClass extends EnvisionClass {
 
@@ -31,10 +31,10 @@ public class EnvisionCharClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		CHAR_PROTOS.addFunction("get", CHAR).assignDynamicClass(IFunc_get.class);
-		CHAR_PROTOS.addFunction("set", CHAR, CHAR).assignDynamicClass(IFunc_set.class);
-		CHAR_PROTOS.addFunction("toUpperCase", CHAR).assignDynamicClass(IFunc_toUpperCase.class);
-		CHAR_PROTOS.addFunction("toLowerCase", CHAR).assignDynamicClass(IFunc_toLowerCase.class);
+		CHAR_PROTOS.define("get", CHAR).assignDynamicClass(IFunc_get.class);
+		CHAR_PROTOS.define("set", CHAR, CHAR).assignDynamicClass(IFunc_set.class);
+		CHAR_PROTOS.define("toUpperCase", CHAR).assignDynamicClass(IFunc_toUpperCase.class);
+		CHAR_PROTOS.define("toLowerCase", CHAR).assignDynamicClass(IFunc_toLowerCase.class);
 	}
 	
 	//--------------
@@ -54,7 +54,7 @@ public class EnvisionCharClass extends EnvisionClass {
 	
 	@Override
 	protected void registerStaticNatives() {
-		staticScope.define("NULL_CHAR", EnvisionDatatype.CHAR_TYPE, EnvisionChar.NULL_CHAR);
+		staticScope.define("NULL_CHAR", StaticTypes.CHAR_TYPE, EnvisionChar.NULL_CHAR);
 	}
 	
 	//---------------------

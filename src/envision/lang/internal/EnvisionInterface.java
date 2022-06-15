@@ -1,12 +1,12 @@
 package envision.lang.internal;
 
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 
 public class EnvisionInterface extends EnvisionObject {
 
 	protected EnvisionInterface() {
-		super(EnvisionDatatype.INTERFACE_TYPE);
+		super(StaticTypes.INTERFACE_TYPE);
 	}
 	
 }

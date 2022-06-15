@@ -3,7 +3,7 @@ package envision.packages.env.base;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 /**
  * Returns true if the given class instance supports the given operator overload.
@@ -12,7 +12,7 @@ import envision.lang.util.Primitives;
 public class SupportsOP extends EnvisionFunction {
 	
 	public SupportsOP() {
-		super(Primitives.BOOLEAN, "supportsOP");
+		super(StaticTypes.BOOL_TYPE, "supportsOP");
 	}
 	
 	@Override

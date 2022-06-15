@@ -1,19 +1,19 @@
 package envision.packages.env.debug;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.util.StaticTypes;
 
 public class DebugScope extends EnvisionFunction {
 	
 	public DebugScope() {
-		super(Primitives.VOID, "scope");
+		super(StaticTypes.VOID_TYPE, "scope");
 	}
 	
 	@Override
@@ -28,13 +28,13 @@ public class DebugScope extends EnvisionFunction {
 			System.out.println(header);
 		}
 		else {
-			Object o = args[0];
+			EnvisionObject o = args[0];
 			if (o instanceof EnvisionClass) {
 				System.out.println("\nSCOPE DEBUG: Cannot show the scope of classes, pass a class instance instead!");
 			}
 			if (o instanceof ClassInstance) {
 				ClassInstance inst = (ClassInstance) o;
-				EnvisionDatatype type = inst.getDatatype();
+				IDatatype type = inst.getDatatype();
 				Scope inst_scope = inst.getScope();
 				String header = "\n";
 				header += "------------------------------------------------------------";

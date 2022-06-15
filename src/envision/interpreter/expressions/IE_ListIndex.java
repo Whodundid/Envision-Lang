@@ -10,7 +10,7 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionString;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_ListIndex;
 import envision.tokenizer.Operator;
@@ -35,8 +35,8 @@ public class IE_ListIndex extends ExpressionExecutor<Expr_ListIndex> {
 		
 		//System.out.println(theIndex.getDatatype() + " : " + EnvisionDatatype.INT_TYPE);
 		//only allow integers to be used for the array index
-		if (!EnvisionDatatype.INT_TYPE.compare(theIndex.getDatatype()))
-			throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, theIndex.getDatatype());
+		if (!StaticTypes.INT_TYPE.compare(theIndex.getDatatype()))
+			throw new InvalidDatatypeError(StaticTypes.INT_TYPE, theIndex.getDatatype());
 		
 		EnvisionInt int_index = (EnvisionInt) theIndex;
 		

@@ -1,6 +1,6 @@
-package envision;
+package envision._launch;
 
-/** Loads the language ahead of time to speed up runtimes. */
+/** Loads the language ahead of time to speed up program execution times. */
 public class EnvisionLoader {
 	
 	public static void loadLang() throws ClassNotFoundException {

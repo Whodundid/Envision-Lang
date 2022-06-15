@@ -5,8 +5,8 @@ import envision.parser.statements.StatementHandler;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.Token;
+import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxList;
 
 public class Stmt_ModularFuncDef implements Statement {
 	

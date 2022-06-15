@@ -7,7 +7,11 @@ import envision.interpreter.util.throwables.Continue;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Try;
+import eutil.debug.Broken;
+import eutil.debug.InDevelopment;
 
+@Broken
+@InDevelopment
 public class IS_Try extends StatementExecutor<Stmt_Try> {
 
 	public IS_Try(EnvisionInterpreter in) {

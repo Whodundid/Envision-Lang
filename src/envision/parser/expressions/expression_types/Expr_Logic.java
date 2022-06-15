@@ -18,7 +18,7 @@ public class Expr_Logic implements Expression {
 	
 	@Override
 	public String toString() {
-		return left + " " + operator.chars + " " + right;
+		return left + " " + operator.typeString + " " + right;
 	}
 	
 	@Override

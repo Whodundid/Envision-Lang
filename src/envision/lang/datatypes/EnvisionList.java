@@ -14,13 +14,19 @@ import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.FunctionPrototype;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import envision.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
+/**
+ * A script variable that represents a grouping of multiple objects in the form
+ * of an expandable list. Internally backed by a Java::ArrayList.
+ * 
+ * @author Hunter Bragg
+ */
 public class EnvisionList extends ClassInstance {
 	
 	/**
@@ -31,7 +37,7 @@ public class EnvisionList extends ClassInstance {
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
 	 */
-	private final EnvisionDatatype list_type;
+	private final IDatatype list_type;
 	
 	/**
 	 * Prevents size modifications to this list.
@@ -42,20 +48,13 @@ public class EnvisionList extends ClassInstance {
 	// Constructors
 	//--------------
 	
-	protected EnvisionList() { this(EnvisionDatatype.VAR_TYPE); }
-	protected EnvisionList(Primitives typeIn) { this(typeIn.toDatatype()); }
-	protected EnvisionList(EnvisionDatatype typeIn) {
+	protected EnvisionList() { this(StaticTypes.VAR_TYPE); }
+	protected EnvisionList(IDatatype typeIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
 	}
 	
-	protected EnvisionList(Primitives typeIn, EArrayList listIn) {
-		super(EnvisionListClass.LIST_CLASS);
-		list_type = typeIn.toDatatype();
-		list.addAll(listIn);
-	}
-	
-	protected EnvisionList(EnvisionDatatype typeIn, EArrayList listIn) {
+	protected EnvisionList(IDatatype typeIn, EArrayList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
 		list.addAll(listIn);
@@ -136,7 +135,7 @@ public class EnvisionList extends ClassInstance {
 		case "get" -> get((EnvisionInt) args[0]);
 		case "getFirst" -> getFirst();
 		case "getLast" -> getLast();
-		case "getListType" -> getListType();
+		case "getListType" -> getListTypeString();
 		case "hasOne" -> hasOne();
 		case "isEmpty" -> isEmpty();
 		case "isNotEmpty" -> isNotEmpty();
@@ -164,7 +163,7 @@ public class EnvisionList extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EArrayList getList() { return list; }
+	public EArrayList<EnvisionObject> getList() { return list; }
 	
 	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
 	public long size_i() { return list.size(); }
@@ -172,7 +171,8 @@ public class EnvisionList extends ClassInstance {
 	public EnvisionBoolean hasOne() { return (list.hasOne()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	public EnvisionBoolean isNotEmpty() { return (list.isNotEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	
-	public EnvisionString getListType() { return EnvisionStringClass.newString(list_type); }
+	public IDatatype getListType() { return list_type; }
+	public EnvisionString getListTypeString() { return EnvisionStringClass.newString(list_type); }
 	public EnvisionBoolean contains(EnvisionObject o) { return (list.contains(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	public EnvisionBoolean notContains(EnvisionObject o) { return list.notContains(o) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	
@@ -405,7 +405,7 @@ public class EnvisionList extends ClassInstance {
 	 * @param type The datatype of the list
 	 * @return The new list
 	 */
-	public static EnvisionList empty(EnvisionDatatype type) {
+	public static EnvisionList empty(IDatatype type) {
 		return new EnvisionList(type);
 	}
 	
@@ -415,7 +415,7 @@ public class EnvisionList extends ClassInstance {
 		return list;
 	}
 	
-	public static <E extends EnvisionObject> EnvisionList of(EnvisionDatatype typeIn, E... vals) {
+	public static <E extends EnvisionObject> EnvisionList of(IDatatype typeIn, E... vals) {
 		EnvisionList list = new EnvisionList(typeIn);
 		list.add(vals);
 		return list;

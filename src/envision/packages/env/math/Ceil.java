@@ -6,12 +6,12 @@ import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class Ceil extends EnvisionFunction {
 	
 	public Ceil() {
-		super(Primitives.INT, "ceil", Primitives.NUMBER);
+		super(StaticTypes.INT_TYPE, "ceil", StaticTypes.NUMBER_TYPE);
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ public class Expr_Unary implements Expression {
 	
 	@Override
 	public String toString() {
-		String r = (right != null) ? operator.chars + right : left + operator.chars;
+		String r = (right != null) ? operator.typeString + right : left + operator.typeString;
 		return r;
 	}
 	

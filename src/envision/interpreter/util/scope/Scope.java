@@ -16,20 +16,20 @@ import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionChar;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.FunctionPrototype;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import envision.tokenizer.Token;
 import eutil.datatypes.Box2;
+import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxList;
 
 public class Scope {
 	
 	//private EnvisionInterpreter interpreter;
 	protected Scope parentScope = null;
-	public final Map<String, Box2<EnvisionDatatype, EnvisionObject>> values = new HashMap();
-	public final Map<String, Box2<EnvisionDatatype, EnvisionObject>> importedValues = new HashMap();
+	public final Map<String, Box2<IDatatype, EnvisionObject>> values = new HashMap();
+	public final Map<String, Box2<IDatatype, EnvisionObject>> importedValues = new HashMap();
 	
 	//--------------
 	// Constructors
@@ -84,8 +84,7 @@ public class Scope {
 			if (!importedValues.isEmpty()) {
 				out.append("   Imported:\n");
 				int i = 0;
-				for (Map.Entry<String, Box2<EnvisionDatatype, EnvisionObject>> o : importedValues
-						.entrySet()) {
+				for (Map.Entry<String, Box2<IDatatype, EnvisionObject>> o : importedValues.entrySet()) {
 					out.append("      " + i++ + ": " + o.getKey() + " = " + o.getValue() + "\n");
 				}
 			}
@@ -94,14 +93,14 @@ public class Scope {
 		return out.append("}").toString();
 	}
 	
-	private Comparator<? super Entry<String, Box2<EnvisionDatatype, EnvisionObject>>> name_sorter =
+	private Comparator<? super Entry<String, Box2<IDatatype, EnvisionObject>>> name_sorter =
 		(a, b) -> a.getKey().compareTo(b.getKey())
 	;
 	
-	private String convertMapping(String tab, String catName, Iterator<Entry<String, Box2<EnvisionDatatype, EnvisionObject>>> objects) {
+	private String convertMapping(String tab, String catName, Iterator<Entry<String, Box2<IDatatype, EnvisionObject>>> objects) {
 		String out = tab + catName + ":\n";
 		for (int i = 0; objects.hasNext(); i++) {
-			Entry<String, Box2<EnvisionDatatype, EnvisionObject>> o = objects.next();
+			Entry<String, Box2<IDatatype, EnvisionObject>> o = objects.next();
 			EnvisionObject obj = o.getValue().getB();
 			StringBuilder objS = new StringBuilder();
 			if (obj != null) {
@@ -110,11 +109,11 @@ public class Scope {
 				if (obj.isStatic()) objS.append("_static");
 				if (obj.isStrong()) objS.append("_strong");
 			}
-			Box2<EnvisionDatatype, EnvisionObject> box = o.getValue();
-			String obj_output = null;
-			if (obj instanceof EnvisionString) obj_output = "\"" + obj_output + "\"";
-			else if (obj instanceof EnvisionChar) obj_output = "'" + obj_output + "'";
-			else obj_output = String.valueOf(obj);
+			Box2<IDatatype, EnvisionObject> box = o.getValue();
+			String obj_output = obj.getVisibility().lexeme;
+			if (obj instanceof EnvisionString) obj_output += "\"" + obj_output + "\"";
+			else if (obj instanceof EnvisionChar) obj_output += "'" + obj_output + "'";
+			else obj_output += String.valueOf(obj);
 			out += tab + tab + i + ": " + o.getKey() + " = [" + box.getA() + ", " + obj_output + objS + "]\n";
 		}
 		return out;
@@ -163,7 +162,7 @@ public class Scope {
 	 */
 	public EArrayList<EnvisionObject> values() {
 		return values.entrySet().stream().map(b -> b.getValue().getB())
-				.collect(EArrayList.toEArrayList());
+								.collect(EArrayList.toEArrayList());
 	}
 	
 	/**
@@ -172,8 +171,8 @@ public class Scope {
 	 */
 	public EArrayList<EnvisionObject> fields() {
 		return values.entrySet().stream()
-				.filter(b -> !b.getValue().getB().getDatatype().isFunction())
-				.map(b -> b.getValue().getB()).collect(EArrayList.toEArrayList());
+								.filter(b -> !b.getValue().getB().getDatatype().isFunction())
+								.map(b -> b.getValue().getB()).collect(EArrayList.toEArrayList());
 	}
 	
 	public BoxList<String, EnvisionObject> named_fields() {
@@ -196,15 +195,11 @@ public class Scope {
 	}
 	
 	public EnvisionObject define(String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : EnvisionDatatype.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : StaticTypes.NULL_TYPE;
 		return define(name, type, object);
 	}
 	
-	public EnvisionObject define(String name, Primitives typeIn, EnvisionObject object) {
-		return define(name, new EnvisionDatatype(typeIn), object);
-	}
-	
-	public EnvisionObject define(String name, EnvisionDatatype type, EnvisionObject obj) {
+	public EnvisionObject define(String name, IDatatype type, EnvisionObject obj) {
 		/*
 		if (interpreter.codeFile().getFileName().equals(name) && !(obj instanceof EnvisionClass)) {
 			throw new EnvisionError(
@@ -212,7 +207,7 @@ public class Scope {
 							+ name + ")");
 		}
 		*/
-		values.put(name, new Box2<EnvisionDatatype, EnvisionObject>(type, obj));
+		values.put(name, new Box2<IDatatype, EnvisionObject>(type, obj));
 		return obj;
 	}
 	
@@ -223,7 +218,7 @@ public class Scope {
 	 * @return The defined function
 	 */
 	public EnvisionFunction defineFunction(EnvisionFunction func) {
-		values.put(func.getFunctionName(), new Box2<EnvisionDatatype, EnvisionObject>(func.getDatatype(), func));
+		values.put(func.getFunctionName(), new Box2<IDatatype, EnvisionObject>(func.getDatatype(), func));
 		return func;
 	}
 	
@@ -234,7 +229,7 @@ public class Scope {
 	 * @return The defined prototype
 	 */
 	public FunctionPrototype defineFunctionPrototype(FunctionPrototype prototype) {
-		var boxedType = new Box2<EnvisionDatatype, EnvisionObject>(prototype.getDatatype(), prototype);
+		var boxedType = new Box2<IDatatype, EnvisionObject>(prototype.getDatatype(), prototype);
 		values.put(prototype.getFunctionName(), boxedType);
 		return prototype;
 	}
@@ -246,7 +241,7 @@ public class Scope {
 	 * @return The class being defined
 	 */
 	public EnvisionClass defineClass(EnvisionClass the_class) {
-		Box2<EnvisionDatatype, EnvisionObject> typedObject = new Box2();
+		Box2<IDatatype, EnvisionObject> typedObject = new Box2();
 		typedObject.set(the_class.getDatatype(), the_class);
 		values.put(the_class.getClassName(), typedObject);
 		return the_class;
@@ -256,31 +251,24 @@ public class Scope {
 	 * Defines an object at a specific depth.
 	 */
 	public EnvisionObject defineAt(int dist, String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : EnvisionDatatype.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : StaticTypes.NULL_TYPE;
 		return defineAt(dist, name, type, object);
 	}
 	
 	/**
 	 * Defines an object at a specific depth.
 	 */
-	public EnvisionObject defineAt(int dist, String name, Primitives typeIn, EnvisionObject object) {
-		var type = (typeIn != null) ? new EnvisionDatatype(typeIn) : EnvisionDatatype.NULL_TYPE;
-		return defineAt(dist, name, type, object);
-	}
-	
-	/**
-	 * Defines an object at a specific depth.
-	 */
-	public EnvisionObject defineAt(int dist, String name, EnvisionDatatype typeIn, EnvisionObject object) {
-		var type = (typeIn != null) ? typeIn : EnvisionDatatype.NULL_TYPE;
-		parentAt(dist).values.put(name, new Box2<EnvisionDatatype, EnvisionObject>(type, object));
+	public EnvisionObject defineAt(int dist, String name, IDatatype typeIn, EnvisionObject object) {
+		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
+		parentAt(dist).values.put(name, new Box2<IDatatype, EnvisionObject>(type, object));
 		return object;
 	}
 	
 	/**
 	 * Defines an imported variable on this scope.
 	 */
-	public EnvisionObject defineImportVal(String name, EnvisionDatatype type, EnvisionObject object) {
+	public EnvisionObject defineImportVal(String name, IDatatype typeIn, EnvisionObject object) {
+		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
 		importedValues.put(name, new Box2(type, object));
 		return object;
 	}
@@ -320,11 +308,11 @@ public class Scope {
 		return (box != null) ? box.getB() : null;
 	}
 	
-	public Box2<EnvisionDatatype, EnvisionObject> getTyped(Token name) {
+	public Box2<IDatatype, EnvisionObject> getTyped(Token name) {
 		return getI(name.lexeme);
 	}
 	
-	public Box2<EnvisionDatatype, EnvisionObject> getTyped(String name) {
+	public Box2<IDatatype, EnvisionObject> getTyped(String name) {
 		return getI(name);
 	}
 	
@@ -332,7 +320,7 @@ public class Scope {
 	 * Attempts to return an object of the same name from this scope as
 	 * well as any encompassing parent scopes.
 	 */
-	private Box2<EnvisionDatatype, EnvisionObject> getI(String name) throws EnvisionError {
+	private Box2<IDatatype, EnvisionObject> getI(String name) throws EnvisionError {
 		var obj = values.getOrDefault(name, importedValues.get(name));
 		
 		if (obj == null) {
@@ -352,7 +340,7 @@ public class Scope {
 	/**
 	 * Returns the internal datatype associated with the given identifier.
 	 */
-	public EnvisionDatatype getInternalType(String name) throws EnvisionError {
+	public IDatatype getInternalType(String name) throws EnvisionError {
 		EnvisionObject o = get(name);
 		return o.getDatatype();
 	}
@@ -362,16 +350,11 @@ public class Scope {
 		set(name, value.getDatatype(), value);
 	}
 	
-	public void set(String name, Primitives type, EnvisionObject value) {
-		if (value == null) throw new NullVariableError();
-		set(name, type.toDatatype(), value);
-	}
-	
 	/**
 	 * Modifies the value of an already existing object within this scope.
 	 * If the object is not actually defined, and error is thrown instead.
 	 */
-	public void set(String name, EnvisionDatatype type, EnvisionObject value) {
+	public void set(String name, IDatatype type, EnvisionObject value) {
 		var b = getI(name);
 		if (b == null) throw new UndefinedValueError(name);
 		if (value == null) throw new NullVariableError();
@@ -418,11 +401,11 @@ public class Scope {
 	 * @param name The name of a variable to be searched for
 	 * @return A variable and its type under the given name
 	 */
-	public Box2<EnvisionDatatype, EnvisionObject> getTypedLocal(String name) {
+	public Box2<IDatatype, EnvisionObject> getTypedLocal(String name) {
 		return values.get(name);
 	}
 	
-	public EnvisionObject modifyDatatype(String name, EnvisionDatatype newType) {
+	public EnvisionObject modifyDatatype(String name, IDatatype newType) {
 		var typedBox = getI(name);
 		
 		//assign new type

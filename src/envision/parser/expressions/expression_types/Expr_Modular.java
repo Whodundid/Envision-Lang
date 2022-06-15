@@ -4,7 +4,7 @@ import envision.lang.EnvisionObject;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.tokenizer.Token;
-import eutil.datatypes.util.BoxList;
+import eutil.datatypes.BoxList;
 
 public class Expr_Modular implements Expression {
 	

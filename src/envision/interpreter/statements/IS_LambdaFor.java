@@ -3,7 +3,6 @@ package envision.interpreter.statements;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.ObjectCreator;
 import envision.interpreter.util.creationUtil.NumberUtil;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
@@ -11,10 +10,9 @@ import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionString;
-import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Compound;
 import envision.parser.expressions.expression_types.Expr_Lambda;
@@ -99,8 +97,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 					VariableDeclaration varDec = vars.get(i);
 					String name = varDec.getName();
 					Expression var_assignment = varDec.assignment_value;
-					Object assignment_val = (var_assignment != null) ? evaluate(var_assignment) : null;
-					Object value = EnvisionVariable.convert(assignment_val);
+					EnvisionObject value = (var_assignment != null) ? evaluate(var_assignment) : null;
 					
 					//first check if the variable is already defined
 					EnvisionObject obj = scope().get(name);
@@ -111,27 +108,24 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 						if (obj != null) {
 							if (obj instanceof EnvisionInt env_int) {
 								index = env_int;
-								if (value != null) index.set_i(value);
+								if (value != null) index.set(value);
 							}
 							else throw new InvalidDatatypeError("The object '"+obj+"' is invalid for the expected type (int)!");
 						}
 						//if not, check if the variable's assignment value is potentially an int
 						else if (value != null) {
-							if (value instanceof Long l_value) {
-								EnvisionInt new_int = EnvisionIntClass.newInt(l_value);
-								index = new_int;
-								scope().define(name, EnvisionDatatype.INT_TYPE, new_int);
+							if (value instanceof EnvisionInt l_value) {
+								index = l_value;
+								scope().define(name, StaticTypes.INT_TYPE, index);
 							}
-							//define the variable anyways but also define the index
+							//define the variable anyways but also automatically define the index
 							else {
 								//define index
 								EnvisionInt new_int = EnvisionIntClass.newInt();
 								index = new_int;
-								scope().define(name, EnvisionDatatype.INT_TYPE, new_int);
+								scope().define(name, StaticTypes.INT_TYPE, new_int);
 								//define variable
-								EnvisionDatatype creation_type = EnvisionDatatype.dynamicallyDetermineType(value);
-								EnvisionObject created_obj = ObjectCreator.createObject(creation_type, value, false, false);
-								scope().define(name, creation_type, created_obj);
+								scope().define(name, value.getDatatype(), value);
 								//throw new InvalidDataTypeError("invilsuqird");
 							}
 						}
@@ -140,19 +134,13 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 						else {
 							EnvisionInt new_int = EnvisionIntClass.newInt();
 							index = new_int;
-							scope().define(name, EnvisionDatatype.INT_TYPE, new_int);
+							scope().define(name, StaticTypes.INT_TYPE, new_int);
 						}
 					}
 					//this is not the first object, attempt to create new loop-level variable
 					else if (obj != null) {
-						if (obj instanceof EnvisionVariable env_var) {
-							env_var.set_i(value);
-						}
-						else {
-							EnvisionDatatype val_type = EnvisionDatatype.dynamicallyDetermineType(value);
-							EnvisionObject val_obj = ObjectCreator.createObject(val_type, value, false, false);
-							scope().set(name, val_obj);
-						}
+						if (obj instanceof EnvisionVariable env_var) env_var.set_i(value);
+						else scope().set(name, value);
 					}
 					else if (value != null) {
 						//because EnvisionVariables natively support copying, attempt to cast as such
@@ -160,9 +148,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 							scope().define(name, env_var.getDatatype(), env_var.copy());
 						}
 						else {
-							EnvisionDatatype creation_type = EnvisionDatatype.dynamicallyDetermineType(value);
-							EnvisionObject created_obj = ObjectCreator.createObject(creation_type, value, false, false);
-							scope().define(name, creation_type, created_obj);
+							scope().define(name, value.getDatatype(), value);
 						}
 					}
 					else {
@@ -188,13 +174,13 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 				
 				if (e instanceof Expr_Var var_expr) {
 					String name = var_expr.getName();
-					Object cur_obj = iterable.get(i);
-					
+					EnvisionObject cur_obj = iterable.get(i);
 					EnvisionObject created_obj = null;
+					
 					if (cur_obj instanceof EnvisionVariable env_var) {
 						created_obj = env_var.copy();
 					}
-					else created_obj = (EnvisionObject) cur_obj;
+					else created_obj = cur_obj;
 					
 					scope().define(name, created_obj.getDatatype(), created_obj);
 				}
@@ -215,7 +201,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 	
 	private static class Iterable {
 		
-		private EArrayList vals;
+		private EArrayList<EnvisionObject> vals;
 		
 		/**
 		 * Determines what the iterable object will actually be created from.
@@ -225,10 +211,9 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 		 * 
 		 * @param objIn The potential iterable object
 		 */
-		public Iterable(Object objIn) {
-			if (objIn instanceof EnvisionList l) vals = new EArrayList(l.getList());
-			else if (objIn instanceof EnvisionString str) vals = new EArrayList(str.toList().getList());
-			else if (objIn instanceof String str) vals = EnvisionStringClass.newString(str).toList().getList();
+		public Iterable(EnvisionObject objIn) {
+			if (objIn instanceof EnvisionList l) vals = new EArrayList<>(l.getList());
+			else if (objIn instanceof EnvisionString str) vals = new EArrayList<>(str.toList_i());
 			else throw new InvalidTargetError("'" + objIn + "' is not a valid iterable object!");
 		}
 		
@@ -237,8 +222,8 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 			return vals.toString();
 		}
 		
-		public Object get(long i) { return vals.get((int) i); }
-		public Object get(int i) { return vals.get(i); }
+		public EnvisionObject get(long i) { return vals.get((int) i); }
+		public EnvisionObject get(int i) { return vals.get(i); }
 		public int size() { return vals.size(); }
 		
 	}

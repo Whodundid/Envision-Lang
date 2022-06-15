@@ -6,12 +6,12 @@ import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class Floor extends EnvisionFunction {
 	
 	public Floor() {
-		super(Primitives.INT, "floor", Primitives.NUMBER);
+		super(StaticTypes.INT_TYPE, "floor", StaticTypes.NUMBER_TYPE);
 	}
 	
 	@Override

@@ -1,7 +1,7 @@
 package envision.exceptions.errors;
 
 import envision.exceptions.EnvisionError;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.Parameter;
 
 public class InvalidDatatypeError extends EnvisionError {
@@ -10,7 +10,7 @@ public class InvalidDatatypeError extends EnvisionError {
 		super("Expected a '" + expected.datatype + "' but expected '" + got.datatype + "' !");
 	}
 	
-	public InvalidDatatypeError(EnvisionDatatype expected, EnvisionDatatype got) {
+	public InvalidDatatypeError(IDatatype expected, IDatatype got) {
 		super("Expected a '" + expected + "' but got '" + got + "' instead!");
 	}
 	

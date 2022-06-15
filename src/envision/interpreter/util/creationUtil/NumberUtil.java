@@ -4,7 +4,7 @@ import envision.exceptions.errors.ArithmeticError;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.datatypes.EnvisionNumberClass;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 public final class NumberUtil {
 	

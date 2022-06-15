@@ -21,7 +21,7 @@ package envision.tokenizer;
  * 	statements depending on the statement it forms.
  *  </pre>
  * 
- * @author Hunter
+ * @author Hunter Bragg
  */
 public enum KeywordType {
 	LITERAL					(0b00000001),

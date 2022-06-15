@@ -1,5 +1,6 @@
-package envision;
+package envision._launch;
 
+import envision.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision.exceptions.errors.workingDirectory.MultipleMainsError;
 import envision.packages.EnvisionLangPackage;
 import eutil.EUtil;
@@ -30,10 +31,14 @@ public class WorkingDirectory {
 	public WorkingDirectory() { this(new File(System.getProperty("user.dir"))); }
 	/** Creates a new WorkingDirectory from the given string file path. */
 	public WorkingDirectory(String in) { this(new File(in)); }
-	/** Creates a new WorkingDirectory from the given file. If the file is not a directory, then the parent directory will be used instead. */
+	
+	/**
+	 * Creates a new WorkingDirectory from the given file. If the file is not a
+	 * directory, then the parent directory will be used instead.
+	 */
 	public WorkingDirectory(File in) {
 		isValid = EUtil.fileExists(in);
-		if (!in.isDirectory()) { in = in.getParentFile(); }
+		if (!in.isDirectory()) in = in.getParentFile();
 		dir = in;
 	}
 	
@@ -41,72 +46,81 @@ public class WorkingDirectory {
 	// Methods
 	//---------
 	
-	/** Searches through top and child directories for envision code files. */
+	/**
+	 * Searches through top and child directories for envision code files.
+	 */
 	public void discoverFiles() {
-		if (dir.isDirectory()) {
-			EArrayList<File> start = EUtil.toList(dir.listFiles());
-			EArrayList<File> found = new EArrayList<>();
-			EArrayList<File> directories = new EArrayList<>();
-			EArrayList<File> workList = new EArrayList<>();
-			
-			//add all envision code files to be found
-			found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
-			//gather all directories from the top level directory
-			directories.addAll(start.filter(f -> !f.getName().endsWith(".nvis")));
-			//load the work list with every file found on each directory
-			directories.filterForEach(f -> f.list() != null, f -> workList.addA(f.listFiles()));
-			
-			while (workList.isNotEmpty()) {
-				found.addAll(workList.filter(f -> f.getName().endsWith(".nvis")));
-				
-				directories.clear();
-				workList.filterForEach(f -> f.list() != null, directories::add);
-				
-				workList.clear();
-				directories.forEach(f -> workList.addA(f.listFiles()));
-			}
-			
-			//wrap each found file within an EnvisionCodeFile object
-			for (File f : found) { wrapFile(f); }
-		}
-		//if dir was not a directory
-		else {
+		if (!dir.isDirectory()) {
 			wrapFile(dir);
+			return;
 		}
+		
+		EArrayList<File> start = EUtil.toList(dir.listFiles());
+		EArrayList<File> found = new EArrayList<>();
+		EArrayList<File> directories = new EArrayList<>();
+		EArrayList<File> workList = new EArrayList<>();
+		
+		//add all envision code files to be found
+		found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
+		//gather all directories from the top level directory
+		directories.addAll(start.filter(f -> !f.getName().endsWith(".nvis")));
+		//load the work list with every file found on each directory
+		directories.filterForEach(f -> f.list() != null, f -> workList.addA(f.listFiles()));
+		
+		while (workList.isNotEmpty()) {
+			found.addAll(workList.filter(f -> f.getName().endsWith(".nvis")));
+			
+			directories.clear();
+			workList.filterForEach(f -> f.list() != null, directories::add);
+			
+			workList.clear();
+			directories.forEach(f -> workList.addA(f.listFiles()));
+		}
+		
+		//wrap each found file within an EnvisionCodeFile object
+		for (File f : found) wrapFile(f);
 	}
 	
-	/** Wraps the given file into an EnvisionCodeFile. */
+	/**
+	 * Wraps the given file into an EnvisionCodeFile.
+	 */
 	private void wrapFile(File in) {
 		EnvisionCodeFile codeFile = new EnvisionCodeFile(in);
-		if (codeFile.isValid()) {
-			if (codeFile.isMain()) {
-				//if there is already a main, throw an error
-				if (main != null) { throw new MultipleMainsError(this); }
-				main = codeFile;
-			}
-			codeFiles.add(codeFile);
+		if (!codeFile.isValid()) throw new InvalidCodeFileError(codeFile);
+		if (codeFile.isMain()) {
+			//if there is already a main, throw an error
+			if (main != null) throw new MultipleMainsError(this);
+			main = codeFile;
 		}
+		codeFiles.add(codeFile);
 	}
 	
-	/** Attempts to return a code file of the given name (if it exists). */
+	/**
+	 * Attempts to return a code file of the given name (if it exists).
+	 */
 	public EnvisionCodeFile getFile(String name) {
 		for (EnvisionCodeFile f : codeFiles) {
-			if (f.getFileName().equals(name)) { return f; }
+			if (f.getFileName().equals(name)) return f;
 		}
 		return null;
 	}
 	
-	public WorkingDirectory addBuildPackage(EnvisionLangPackage pIn) { packages.add(pIn); return this; }
+	public WorkingDirectory addBuildPackage(EnvisionLangPackage pIn) {
+		packages.add(pIn);
+		return this;
+	}
 	
 	/**
-	 * This will print out the tokenized version of each code file without actually executing any code.
+	 * This will print out the tokenized version of each code file without actually
+	 * executing any code.
 	 */
 	public void debugTokenize() throws IOException {
 		for (EnvisionCodeFile f : codeFiles) f.displayTokens();
 	}
 	
 	/**
-	 * This will print out the parsed statements of each code file without actually executing any code.
+	 * This will print out the parsed statements of each code file without actually
+	 * executing any code.
 	 */
 	public void debugParsedStatements() throws Exception {
 		for (EnvisionCodeFile f : codeFiles) f.displayParsedStatements();

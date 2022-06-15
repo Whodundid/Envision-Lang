@@ -1,6 +1,6 @@
 package envision.exceptions.errors;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.EnvisionError;
 
 /** Error thrown when import statement is attempting to reference itself. */

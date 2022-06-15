@@ -25,13 +25,13 @@ public class IS_LoopControl extends StatementExecutor<Stmt_LoopControl> {
 		//only break/continue if true
 		if (condition != null) {
 			if (isTrue(evaluate(condition))) {
-				if (s.isBreak) throw new Break();
-				else throw new Continue();
+				if (s.isBreak) throw Break.instance;
+				else throw Continue.instance;
 			}
 		}
 		//if there's no condition, just break/continue
-		else if (s.isBreak) throw new Break();
-		else throw new Continue();
+		else if (s.isBreak) throw Break.instance;
+		else throw Continue.instance;
 	}
 	
 }

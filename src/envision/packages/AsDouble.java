@@ -4,7 +4,7 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 public class AsDouble extends EnvisionFunction {
 	

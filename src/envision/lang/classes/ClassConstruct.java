@@ -7,14 +7,15 @@ import envision.interpreter.util.scope.Scope;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
+import envision.lang.util.StaticTypes;
 import eutil.datatypes.Box2;
+import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.BoxList;
 
 /**
  * ClassConstructs are intended to optimize class instance creation by
- * caching relavant static and instance based members during
+ * caching relevant static and instance based members during
  * interpretation. This process reduces instance creation time by
  * removing the need to re-interpret the class's body every time a new
  * instance is built. Ultimately, this means that instance members are
@@ -46,10 +47,10 @@ public class ClassConstruct {
 	
 	private EnvisionFunction constructor;
 	private BoxList<String, EnvisionObject> fields;
-	private EArrayList<EnvisionFunction> methods;
+	private EArrayList<EnvisionFunction> functions;
 	
 	/** Pulling scope map out for fast reference. */
-	private Map<String, Box2<EnvisionDatatype, EnvisionObject>> internal_scope_values;
+	private Map<String, Box2<IDatatype, EnvisionObject>> internal_scope_values;
 	
 	//--------------
 	// Constructors
@@ -74,19 +75,20 @@ public class ClassConstruct {
 		
 		//extract members from scope
 		fields = internalScope.named_fields();
-		methods = internalScope.functions();
+		functions = internalScope.functions();
 	}
 	
 	//------------------
 	// Instance Builder
 	//------------------
 	
-	public void call(EnvisionInterpreter interpreter, EnvisionObject[] args) {	
-		throw new ReturnValue(buildInstance(interpreter, args));
+	public void call(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		throw ReturnValue.create(buildInstance(interpreter, args));
+		//throw new ReturnValue(buildInstance(interpreter, args));
 	}
 	
 	/**
-	 * Builds and returns an instnace of this class.
+	 * Builds and returns an instance of this class.
 	 * IF CALLED FROM A METHOD CALL, USE THE 'CALL' METHOD INSTEAD!
 	 * 
 	 * @param interpreter
@@ -106,18 +108,17 @@ public class ClassConstruct {
 			buildScope.define(field_name, the_field.getDatatype(), the_field.copy());
 		}
 		
-		//define scope memebers
+		//define scope members
 		theClass.defineScopeMembers(inst);
 		
-		//create copies of methods
-		for (EnvisionFunction m : methods) {
-			EnvisionFunction copy = m.copy().setScope(buildScope);
-			
+		//create copies of functions
+		for (EnvisionFunction f : functions) {
+			EnvisionFunction copy = f.copy().setScope(buildScope);
 			//extract operators
-			if (m.isOperator()) inst.addOperatorOverload(m.getOperator(), copy);
+			if (f.isOperator()) inst.addOperatorOverload(f.getOperator(), copy);
 			
 			//copy the method
-			buildScope.define(m.getFunctionName(), EnvisionDatatype.FUNC_TYPE, copy);
+			buildScope.define(f.getFunctionName(), StaticTypes.FUNC_TYPE, copy);
 		}
 		
 		//init constructor

@@ -3,7 +3,7 @@ package envision.lang.classes;
 import java.util.HashMap;
 
 import envision.exceptions.EnvisionError;
-import envision.exceptions.errors.DuplicateFunctionError;
+import envision.exceptions.errors.DuplicateOverloadError;
 import envision.exceptions.errors.FinalVarReassignmentError;
 import envision.exceptions.errors.NotAFunctionError;
 import envision.exceptions.errors.UndefinedFunctionError;
@@ -21,7 +21,7 @@ import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionFunction;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.FunctionPrototype;
 import envision.lang.util.ParameterData;
 import envision.tokenizer.Operator;
@@ -158,8 +158,8 @@ public class ClassInstance extends EnvisionObject {
 			}
 			
 			//start by determining object types for assignment compatibility
-			EnvisionDatatype this_type = getDatatype();
-			EnvisionDatatype asgn_type = obj.getDatatype();
+			IDatatype this_type = getDatatype();
+			IDatatype asgn_type = obj.getDatatype();
 			
 			//check for type mismatch
 			if (isStrong()) CastingUtil.assert_expected_datatype(this_type, asgn_type);
@@ -196,7 +196,7 @@ public class ClassInstance extends EnvisionObject {
 		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 	}
 	
-	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//check for self type cast
 		if (getDatatype().compare(castType)) return this;
 		
@@ -429,7 +429,7 @@ public class ClassInstance extends EnvisionObject {
 	/**
 	 * Assigns a field value within this instance's scope.
 	 */
-	public EnvisionObject set(String name, EnvisionDatatype type, EnvisionObject in) {
+	public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
 		instanceScope.set(name, type, in);
 		return in;
 	}
@@ -450,7 +450,7 @@ public class ClassInstance extends EnvisionObject {
 			ParameterData incoming_params = op.getParams();
 			
 			//prevent duplicate overload
-			if (opFunc.hasOverload(incoming_params)) throw new DuplicateFunctionError(funcName, incoming_params);
+			if (opFunc.hasOverload(incoming_params)) throw new DuplicateOverloadError(funcName, incoming_params);
 			
 			opFunc.addOverload(op);
 		}

@@ -1,16 +1,28 @@
 package envision.tokenizer;
 
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
+/**
+ * A programmatic building block from which logical code statements can be
+ * parsed together from.
+ * 
+ * @author Hunter Bragg
+ */
 public class Token {
 	
+	/** The total number of tokens created. */
 	public static int total = 0;
-	
+	/** The specific ID of this token. */
 	public int id;
+	/** The string representation of this token. */
 	public String lexeme;
+	/** The literal object value that this token holds (if applicable). */
 	public Object literal;
+	/** The internal keyword that represents this token. */
 	public IKeyword keyword;
+	/** The line number that this token was found on. */
 	public int line;
+	/** True if the keyword representing this token is a reservedWord instead of an Operator. */
 	private boolean isReservedWord;
 	
 	//---------------------------------------------------------------------------
@@ -76,8 +88,8 @@ public class Token {
 	
 	@Override
 	public boolean equals(Object in) {
-		if (in instanceof Integer) { return in.equals(in); }
-		if (in instanceof String) { return lexeme.equals(in); }
+		if (in instanceof Integer i) return i == id;
+		if (in instanceof String s) return lexeme.equals(s);
 		return keyword == in;
 	}
 	
@@ -97,18 +109,16 @@ public class Token {
 	public String getToken() { return lexeme; }
 	public IKeyword getKeyword() { return keyword; }
 	
-	public Primitives getPrimitiveDataType() {
-		return Primitives.getDataType(this);
-	}
+	public Primitives getPrimitiveDataType() { return Primitives.getDataType(this); }
 	
 	//---------------------------------------------------------------------------
 	
 	public static Token EOF(int lineIn) {
-		return new Token(ReservedWord.EOF, ReservedWord.EOF.chars, null, lineIn);
+		return new Token(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn);
 	}
 	
 	public static Token newLine(int lineIn) {
-		return new Token(ReservedWord.NEWLINE, ReservedWord.NEWLINE.chars, null, lineIn);
+		return new Token(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn);
 	}
 	
 	public static Token create(String lexemeIn, int lineIn) {
@@ -124,7 +134,7 @@ public class Token {
 	}
 	
 	public static Token create(IKeyword keywordIn, int lineIn) {
-		return new Token(keywordIn, keywordIn.chars(), null, lineIn);
+		return new Token(keywordIn, keywordIn.typeString(), null, lineIn);
 	}
 	
 	public static Token create(IKeyword keywordIn, Token in) {

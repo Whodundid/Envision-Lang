@@ -3,7 +3,7 @@ package envision.tokenizer;
 import static envision.tokenizer.ReservedWord.*;
 import static envision.tokenizer.Operator.*;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.EnvisionError;
 import eutil.datatypes.EArrayList;
 import eutil.strings.EStringBuilder;
@@ -60,7 +60,7 @@ public class Tokenizer {
 		cur = 0;
 		
 		//check for basic comment
-		if (source.startsWith(COMMENT_SINGLE.chars)) return createdTokens;
+		if (source.startsWith(COMMENT_SINGLE.typeString)) return createdTokens;
 		
 		while (!atEnd()) {
 			start = cur;

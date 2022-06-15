@@ -1,8 +1,6 @@
-package envision.lang.util;
+package envision.lang.natives;
 
-import java.util.HashMap;
-
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionList;
@@ -29,7 +27,7 @@ import eutil.datatypes.util.DataTypeUtil;
  * 
  * @author Hunter Bragg
  */
-public enum Primitives {
+public enum Primitives implements IDatatype {
 	
 	// required language types
 	
@@ -78,11 +76,6 @@ public enum Primitives {
 	 */
 	public final String string_type;
 	
-	/**
-	 * Stores every primitive type for fast O(1) type retrieval time.
-	 */
-	private static final HashMap<String, Primitives> mappedTypes = new HashMap();
-	
 	//--------------
 	// Constructors
 	//--------------
@@ -93,28 +86,17 @@ public enum Primitives {
 	
 	//---------------------------------------
 	
-	static {
-		for (var d : values()) mappedTypes.put(d.string_type, d);
-	}
+	//-----------
+	// Overrides
+	//-----------
 	
-	//---------------------------------------
+	@Override public Primitives getPrimitive() { return this; }
+	@Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(string_type); }
+	@Override public String getType() { return string_type; }
 	
 	//---------
 	// Methods
 	//---------
-	
-	/**
-	 * Wraps this primitive type within an EnvisionDatatype.
-	 * 
-	 * @return EnvisionDatatype
-	 */
-	public EnvisionDatatype toDatatype() {
-		return new EnvisionDatatype(this);
-	}
-	
-	public boolean compare(EnvisionDatatype typeIn) {
-		return (typeIn != null) ? typeIn.getPrimitiveType() == this : false;
-	}
 	
 	/**
 	 * @return true if the given primitive type can take on object
@@ -125,16 +107,7 @@ public enum Primitives {
 	}
 	
 	/**
-	 * Returns true if this primitive is an array type (varargs).
-	 * @param in
-	 * @return
-	 */
-	public static boolean isArrayType(Primitives t) {
-		return (t != null) ? t.isArrayType() : false;
-	}
-	
-	/**
-	 * Returns true if this datatype is a varaible argument type.
+	 * Returns true if this datatype is a variable argument type.
 	 */
 	public boolean isArrayType() {
 		switch (this) {
@@ -156,26 +129,17 @@ public enum Primitives {
 	 * If this type is a varags type, return the non varags type.
 	 */
 	public Primitives getNonArrayType() {
-		switch (this) {
-		case VAR_A:
-			return VAR;
-		case BOOLEAN_A:
-			return BOOLEAN;
-		case CHAR_A:
-			return CHAR;
-		case INT_A:
-			return INT;
-		case DOUBLE_A:
-			return DOUBLE;
-		case STRING_A:
-			return STRING;
-		case NUMBER_A:
-			return NUMBER;
-		case LIST_A:
-			return LIST;
-		default:
-			return this;
-		}
+		return switch (this) {
+		case VAR_A -> VAR;
+		case BOOLEAN_A -> BOOLEAN;
+		case CHAR_A -> CHAR;
+		case INT_A -> INT;
+		case DOUBLE_A -> DOUBLE;
+		case STRING_A -> STRING;
+		case NUMBER_A -> NUMBER;
+		case LIST_A -> LIST;
+		default -> this;
+		};
 	}
 	
 	/**
@@ -183,14 +147,10 @@ public enum Primitives {
 	 * I.E. int, double, number.
 	 */
 	public boolean isNumber() {
-		switch (this) {
-		case INT:
-		case DOUBLE:
-		case NUMBER:
-			return true;
-		default:
-			return false;
-		}
+		return switch (this) {
+		case INT, DOUBLE, NUMBER -> true;
+		default -> false;
+		};
 	}
 	
 	/**
@@ -245,6 +205,15 @@ public enum Primitives {
 	// Static Methods
 	//----------------
 	
+	/**
+	 * Returns true if this primitive is an array type (varargs).
+	 * @param in
+	 * @return
+	 */
+	public static boolean isArrayType(Primitives t) {
+		return (t != null) ? t.isArrayType() : false;
+	}
+	
 	public static boolean isNumber(Primitives typeIn) {
 		return typeIn.isNumber();
 	}
@@ -282,44 +251,26 @@ public enum Primitives {
 	
 	public static Primitives getDataType(String typeIn) {
 		if (typeIn == null) return null;
-		switch (typeIn) {
-		case "var":
-			return VAR;
-		case "[var":
-			return VAR_A;
-		case "boolean":
-			return BOOLEAN;
-		case "[boolean":
-			return BOOLEAN_A;
-		case "char":
-			return CHAR;
-		case "[char":
-			return CHAR_A;
-		case "int":
-			return INT;
-		case "[int":
-			return INT_A;
-		case "double":
-			return DOUBLE;
-		case "[double":
-			return DOUBLE_A;
-		case "number":
-			return NUMBER;
-		case "[number":
-			return NUMBER_A;
-		case "string":
-			return STRING;
-		case "[string":
-			return STRING_A;
-		case "list":
-			return LIST;
-		case "[list":
-			return LIST_A;
-		case "package":
-			return PACKAGE;
-		default:
-			return null;
-		}
+		return switch (typeIn) {
+		case "var" -> VAR;
+		case "[var" -> VAR_A;
+		case "boolean" -> BOOLEAN;
+		case "[boolean" -> BOOLEAN_A;
+		case "char" -> CHAR;
+		case "[char" -> CHAR_A;
+		case "int" -> INT;
+		case "[int" -> INT_A;
+		case "double" -> DOUBLE;
+		case "[double" -> DOUBLE_A;
+		case "number" -> NUMBER;
+		case "[number" -> NUMBER_A;
+		case "string" -> STRING;
+		case "[string" -> STRING_A;
+		case "list" -> LIST;
+		case "[list" -> LIST_A;
+		case "package" -> PACKAGE;
+		default -> null;
+		};
 	}
 	
 	public static Primitives getDataType(ReservedWord keyIn) {
@@ -370,7 +321,7 @@ public enum Primitives {
 		//if (obj instanceof EnumValue env_enum_val) return ENUM_TYPE;
 		if (obj instanceof EnvisionCodeFile env_code) return CODE_FILE;
 		if (obj instanceof EnvisionPackage env_pkg) return PACKAGE;
-		return (obj != null) ? obj.getDatatype().getPrimitiveType() : null;	
+		return (obj != null) ? obj.getDatatype().getPrimitive() : null;
 	}
 	
 	public static Primitives getDataType(Object in) {
@@ -397,76 +348,26 @@ public enum Primitives {
 	 * type.
 	 */
 	public boolean canBeAssignedFrom(Primitives type) {
-		switch (this) {
+		return switch (this) {
 		//these are wildcard values so they should be able to take on any type and any value
-		case VAR:
-			return true;
+		case VAR -> true;
 		//these types can only ever be assigned by their respective type
-		case ENUM:
-			return this == ENUM;
-		case FUNCTION:
-			return this == FUNCTION;
-		case CLASS:
-			return this == CLASS;
+		case ENUM -> this == ENUM;
+		case FUNCTION -> this == FUNCTION;
+		case CLASS -> this == CLASS;
 		//case EXCEPTION: return this == EXCEPTION;
 		//these can never be assigned
-		case VOID:
-		case NULL:
-			return false;
+		case VOID, NULL -> false;
 		//variable types
-		case BOOLEAN:
-			switch (type) {
-			case BOOLEAN:
-				return true;
-			default:
-				return false;
-			}
-		case CHAR:
-			switch (type) {
-			case CHAR:
-				return true;
-			default:
-				return false;
-			}
-		case INT:
-			switch (type) {
-			case NUMBER:
-			case INT:
-				return true;
-			default:
-				return false;
-			}
-		case DOUBLE:
-			switch (type) {
-			case NUMBER:
-			case INT:
-			case DOUBLE:
-				return true;
-			default:
-				return false;
-			}
-		case STRING:
-			switch (type) {
-			case CHAR:
-			case STRING:
-				return true;
-			default:
-				return false;
-			}
-		case NUMBER:
-			switch (type) {
-			case NUMBER:
-			case INT:
-			case DOUBLE:
-			case CHAR:
-				return true;
-			default:
-				return false;
-			}
-			//assume false by default
-		default:
-			return false;
-		}
+		case BOOLEAN -> type == BOOLEAN;
+		case CHAR -> type == CHAR;
+		case INT -> type == NUMBER || type == INT;
+		case DOUBLE -> type == NUMBER || type == INT || type == DOUBLE;
+		case STRING -> type == CHAR || type == STRING;
+		case NUMBER -> type == NUMBER || type == INT || type == DOUBLE || type == CHAR;
+		//assume false by default
+		default -> false;
+		};
 	}
 	
 	public boolean isObject() {

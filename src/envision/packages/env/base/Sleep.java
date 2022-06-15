@@ -4,12 +4,12 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class Sleep extends EnvisionFunction {
 	
 	public Sleep() {
-		super(Primitives.VOID, "sleep");
+		super(StaticTypes.VOID_TYPE, "sleep");
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package envision.tokenizer;
 
 /**
  * Envision String escape codes.
+ * 
+ * @author Hunter Bragg
  */
 public enum EscapeCode {
 	

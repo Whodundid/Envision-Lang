@@ -1,6 +1,6 @@
 package envision.tokenizer;
 
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 public interface IKeyword {
 	
@@ -10,9 +10,9 @@ public interface IKeyword {
 	default boolean isOperator() { return Operator.class.isInstance(this); }
 	default boolean isReservedWord() { return ReservedWord.class.isInstance(this); }
 	
-	default String chars() {
-		if (isOperator()) return asOperator().chars;
-		else return asReservedWord().chars;
+	default String typeString() {
+		if (isOperator()) return asOperator().typeString;
+		else return asReservedWord().typeString;
 	}
 	
 	/**

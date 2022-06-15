@@ -1,13 +1,14 @@
 package envision.interpreter.util.interpreterBase;
 
-import envision.WorkingDirectory;
+import envision.Envision;
+import envision._launch.WorkingDirectory;
 import envision.exceptions.errors.NullVariableError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.Statement;
 import envision.tokenizer.Token;
@@ -32,6 +33,7 @@ public abstract class InterpreterExecutor {
 	public boolean isTrue(EnvisionObject obj) { return interpreter.isTrue(obj); }
 	public boolean isEqual(EnvisionObject a, EnvisionObject b) { return interpreter.isEqual_i(a, b); }
 	
+	public Envision envision() { return interpreter.envision(); }
 	public WorkingDirectory workingDir() { return interpreter.workingDir(); }
 	public Scope global() { return interpreter.internalScope(); }
 	public Scope scope() { return interpreter.scope(); }
@@ -55,7 +57,7 @@ public abstract class InterpreterExecutor {
 		return interpreter.forceDefine(name, object);
 	}
 	
-	protected EnvisionObject forceDefine(String name, EnvisionDatatype type, EnvisionObject object) {
+	protected EnvisionObject forceDefine(String name, IDatatype type, EnvisionObject object) {
 		return interpreter.forceDefine(name, type, object);
 	}
 	
@@ -63,7 +65,7 @@ public abstract class InterpreterExecutor {
 		return interpreter.defineIfNot(name, obj);
 	}
 	
-	protected EnvisionObject defineIfNot(String name, EnvisionDatatype typeIn, EnvisionObject obj) {
+	protected EnvisionObject defineIfNot(String name, IDatatype typeIn, EnvisionObject obj) {
 		return interpreter.defineIfNot(name, typeIn, obj);
 	}
 	
@@ -71,7 +73,7 @@ public abstract class InterpreterExecutor {
 		return interpreter.updateOrDefine(name, obj);
 	}
 	
-	protected EnvisionObject updateOrDefine(String name, EnvisionDatatype type, EnvisionObject obj) {
+	protected EnvisionObject updateOrDefine(String name, IDatatype type, EnvisionObject obj) {
 		return interpreter.updateOrDefine(name, type, obj);
 	}
 
@@ -95,20 +97,8 @@ public abstract class InterpreterExecutor {
 	 * @param typeIn The datatype being compared to null
 	 * @return true if the given datatype is in fact null
 	 */
-	public static boolean isNull(Primitives typeIn) {
-		return (typeIn == null || typeIn == Primitives.NULL);
-	}
-	
-	/**
-	 * Returns true if the given datatype is either null by Java terms,
-	 * or is equivalent to the static EnvisionDataType.NULL by Envision
-	 * terms.
-	 * 
-	 * @param typeIn The datatype being compared to null
-	 * @return true if the given datatype is in fact null
-	 */
-	public static boolean isNull(EnvisionDatatype typeIn) {
-		return (typeIn == null || typeIn == EnvisionDatatype.NULL_TYPE);
+	public static boolean isNull(IDatatype typeIn) {
+		return (typeIn == null || typeIn == StaticTypes.NULL_TYPE);
 	}
 	
 	/**

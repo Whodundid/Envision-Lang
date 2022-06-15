@@ -1,13 +1,14 @@
-package envision;
+package envision._launch;
 
 import java.io.File;
 import java.io.IOException;
 
+import envision.Envision;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 import envision.parser.EnvisionParser;
 import envision.parser.statements.Statement;
 import envision.parser.statements.statement_types.Stmt_Expression;
@@ -17,10 +18,16 @@ import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
 /**
- * A special type of EnvisionObject which bundles the data comprising
- * a code file along with its statement contents.
+ * A special type of EnvisionObject which bundles the data composing a code
+ * file along with its statement contents.
+ * 
+ * @author Hunter Bragg
  */
 public class EnvisionCodeFile extends EnvisionObject {
+	
+	//--------
+	// Fields
+	//--------
 	
 	/** The name of the code file itself. */
 	private final String fileName;
@@ -118,7 +125,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	 * @return true if successfully loaded
 	 * @throws Exception
 	 */
-	public boolean load(WorkingDirectory dir) throws Exception {
+	public boolean load(Envision instance, WorkingDirectory dir) throws Exception {
 		isLoaded = false;
 		
 		//if not tokenized, attempt to tokenize
@@ -136,7 +143,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		//prep interpreter
 		try {
 			workingDir = dir;
-			interpreter = new EnvisionInterpreter(this);
+			interpreter = new EnvisionInterpreter(instance, this);
 			dir.getBuildPackages().forEach(p -> p.defineOn(interpreter));
 			isLoaded = true;
 		}

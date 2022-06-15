@@ -7,7 +7,7 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionListClass;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.parser.expressions.expression_types.Expr_ListInitializer;
 
 public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer> {
@@ -27,7 +27,7 @@ public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer>
 		
 		//add initializer expression values
 		for (var e : expression.values) {
-			EnvisionDatatype type = EnvisionDatatype.dynamicallyDetermineType(e);
+			IDatatype type = IDatatype.dynamicallyDetermineType(e);
 			EnvisionClass typeClass = interpreter.getTypeManager().getTypeClass(type);
 			EnvisionObject[] args = { evaluate(e) };
 			ClassInstance obj = typeClass.newInstance(interpreter, args);

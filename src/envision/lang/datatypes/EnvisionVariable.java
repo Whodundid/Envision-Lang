@@ -21,7 +21,7 @@ import envision.lang.classes.EnvisionClass;
  * superclass structure for which other specific datatype models are
  * built from. While Envision:java does directly support generic 'var'
  * values for both variable instantiation and assignment, these are
- * not truly generic values on the backend of things. As such, even
+ * not truly generic values on the back-end of things. As such, even
  * 'var' value types are still directly mapped to a specific, strongly
  * typed Java datatype under the hood. Due to this fact, generic 'var'
  * values are not technically generic at all in nature. However, any
@@ -34,7 +34,8 @@ import envision.lang.classes.EnvisionClass;
  * Every EnvisionVariable is intended to wrap some Envision primitive
  * datatype.
  * <ul>
- * For instance:
+ * The following are examples of native EnvisionVariables:
+ * <p>
  * <li>EnvisionBoolean
  * <li>EnvisionChar
  * <li>EnvisionInt
@@ -49,9 +50,11 @@ import envision.lang.classes.EnvisionClass;
  * inherits is the static scope of the class it is derived from. This
  * ensures that the primitive object instance still maintains access
  * to all internal member fields and functions. Furthermore, unlike a
- * class instance created from a user-defiend class, the internal
- * variable value is manged using Java:Objects instead of Envision for
+ * class instance created from a user-defined class, the internal
+ * variable value is managed using Java:Objects instead of Envision for
  * improved performance.
+ * 
+ * @author Hunter Bragg
  */
 public abstract class EnvisionVariable extends ClassInstance {
 	
@@ -60,7 +63,7 @@ public abstract class EnvisionVariable extends ClassInstance {
 	//--------------
 	
 	/**
-	 * Native variable types do not have any discernable instance scope
+	 * Native variable types do not have any discernible instance scope
 	 * and will simply utilize the deriving class's static class scope for
 	 * access to all internal member fields and functions.
 	 * 
@@ -74,7 +77,6 @@ public abstract class EnvisionVariable extends ClassInstance {
 	// Getters
 	//---------
 	
-
 	/**
 	 * Returns the Envision Object wrapping some underlying Java object.
 	 * Used for in-language passes.

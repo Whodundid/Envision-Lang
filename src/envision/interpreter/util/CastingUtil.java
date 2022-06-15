@@ -1,6 +1,11 @@
 package envision.interpreter.util;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.natives.Primitives.BOOLEAN;
+import static envision.lang.natives.Primitives.CHAR;
+import static envision.lang.natives.Primitives.DOUBLE;
+import static envision.lang.natives.Primitives.INT;
+import static envision.lang.natives.Primitives.NUMBER;
+import static envision.lang.natives.Primitives.STRING;
 
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidDatatypeError;
@@ -13,8 +18,8 @@ import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 
 /**
  * Contains functions which pertain to object types and potential
@@ -22,11 +27,7 @@ import envision.lang.util.Primitives;
  */
 public class CastingUtil {
 	
-	public static EnvisionObject castToNumber(EnvisionObject in, Primitives toType) {
-		return castToNumber(in, new EnvisionDatatype(toType));
-	}
-	
-	public static EnvisionObject castToNumber(EnvisionObject in, EnvisionDatatype toType) {
+	public static EnvisionObject castToNumber(EnvisionObject in, IDatatype toType) {
 		final class errC {
 			static String err(Object in) { return "Invalid type: '" + in + "' expected a number!"; }
 		}
@@ -48,7 +49,7 @@ public class CastingUtil {
 		if (n.getDatatype() == toType) return in;
 		
 		//check what the type is being cast to
-		return switch (toType.getPrimitiveType()) {
+		return switch (toType.getPrimitive()) {
 		case INT, DOUBLE, NUMBER -> castVariable(n, toType);
 		default -> throw new InvalidDatatypeError(errC.err(toType));
 		};
@@ -65,14 +66,14 @@ public class CastingUtil {
 	 * @param expected
 	 * @param toCheck
 	 */
-	public static void assert_expected_datatype(EnvisionDatatype expected, EnvisionDatatype toCheck) {
+	public static void assert_expected_datatype(IDatatype expected, IDatatype toCheck) {
 		if (expected == null || toCheck == null) {
 			throw new EnvisionError("CastingUtil checkType: null type!");
 		}
 		
 		//grab primitive types
-		Primitives expected_ptype = expected.getPrimitiveType();
-		Primitives toCheck_ptype = toCheck.getPrimitiveType();
+		Primitives expected_ptype = expected.getPrimitive();
+		Primitives toCheck_ptype = toCheck.getPrimitive();
 		
 		//check for null passes
 		if (toCheck_ptype == Primitives.NULL) {
@@ -112,12 +113,12 @@ public class CastingUtil {
 	 * <p>
 	 * Note: this method is not intended for class casting!
 	 */
-	public static EnvisionVariable castVariable(EnvisionVariable varIn, EnvisionDatatype typeIn) {
+	public static EnvisionVariable castVariable(EnvisionVariable varIn, IDatatype typeIn) {
 		//ignore if varIn is null
 		if (varIn == null) return varIn;
 		
-		Primitives from = varIn.getDatatype().getPrimitiveType();
-		Primitives to = typeIn.getPrimitiveType();
+		Primitives from = varIn.getDatatype().getPrimitive();
+		Primitives to = typeIn.getPrimitive();
 		
 		//check for non-primitive type casts
 		if (from == null || to == null) return varIn;

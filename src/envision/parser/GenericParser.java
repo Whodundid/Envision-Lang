@@ -38,7 +38,7 @@ import static envision.tokenizer.ReservedWord.TRUE;
 import static envision.tokenizer.ReservedWord.TRY;
 import static envision.tokenizer.ReservedWord.WHILE;
 
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionParser;
 import envision.parser.expressions.expression_types.Expr_Literal;

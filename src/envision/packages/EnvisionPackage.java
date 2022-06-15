@@ -2,8 +2,8 @@ package envision.packages;
 
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 
 /**
  * A package is a structure within Envision which bundles a scope of
@@ -27,7 +27,7 @@ public class EnvisionPackage extends EnvisionObject {
 	//--------------
 	
 	public EnvisionPackage(String packageNameIn) {
-		super(Primitives.PACKAGE.toDatatype());
+		super(Primitives.PACKAGE);
 		packageName = packageNameIn;
 		packageScope = new Scope();
 	}
@@ -51,7 +51,7 @@ public class EnvisionPackage extends EnvisionObject {
 		Scope incomming_scope = pkg.packageScope;
 		for (var obj : incomming_scope.values.entrySet()) {
 			String import_val_name = obj.getKey();
-			EnvisionDatatype import_val_type = obj.getValue().getA();
+			IDatatype import_val_type = obj.getValue().getA();
 			EnvisionObject import_val_obj = obj.getValue().getB();
 			
 			packageScope.define(import_val_name, import_val_type, import_val_obj);

@@ -10,12 +10,17 @@ import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.FunctionPrototype;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import envision.tokenizer.Operator;
+import eutil.datatypes.EArrayList;
 
-/** A script variable representing a list of characters. */
+/**
+ * A script variable representing a list of characters.
+ * 
+ * @author Hunter Bragg
+ */
 public class EnvisionString extends EnvisionVariable {
 	
 	/**
@@ -149,7 +154,7 @@ public class EnvisionString extends EnvisionVariable {
 			
 			//convert incomming object to an integer representation
 			if (obj instanceof EnvisionInt env_int) multiply_val = env_int.int_val;
-			else throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, obj.getDatatype());
+			else throw new InvalidDatatypeError(StaticTypes.INT_TYPE, obj.getDatatype());
 			
 			//repeat current string 'x' number of times
 			StringBuilder new_val = new StringBuilder();
@@ -205,6 +210,7 @@ public class EnvisionString extends EnvisionVariable {
 		return c;
 	}
 	
+	public EArrayList<EnvisionObject> toList_i() { return toList().getList(); }
 	public EnvisionList toList() {
 		EnvisionList list = EnvisionListClass.newList(Primitives.CHAR);
 		for (int i = 0; i < string_val.length(); i++) {
@@ -224,7 +230,7 @@ public class EnvisionString extends EnvisionVariable {
 		return EnvisionBooleanClass.newBoolean(matches_i(in));
 	}
 	
-	public int length_i() { return string_val.length(); }
+	public long length_i() { return string_val.length(); }
 	public EnvisionInt length() {
 		return EnvisionIntClass.newInt(length_i());
 	}

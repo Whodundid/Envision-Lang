@@ -3,7 +3,11 @@ package envision.interpreter.statements;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.statements.statement_types.Stmt_Exception;
+import eutil.debug.Broken;
+import eutil.debug.InDevelopment;
 
+@Broken
+@InDevelopment
 public class IS_Exception extends StatementExecutor<Stmt_Exception> {
 
 	public IS_Exception(EnvisionInterpreter in) {

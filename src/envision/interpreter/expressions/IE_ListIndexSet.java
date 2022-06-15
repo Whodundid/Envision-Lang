@@ -7,7 +7,7 @@ import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
 import envision.lang.datatypes.EnvisionList;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_ListIndex;
 import envision.parser.expressions.expression_types.Expr_SetListIndex;
@@ -43,7 +43,7 @@ public class IE_ListIndexSet extends ExpressionExecutor<Expr_SetListIndex> {
 		
 		//only allow integers for array indexes
 		if (!(listIndex instanceof EnvisionInt))
-			throw new InvalidDatatypeError(EnvisionDatatype.INT_TYPE, listIndex.getDatatype());
+			throw new InvalidDatatypeError(StaticTypes.INT_TYPE, listIndex.getDatatype());
 		
 		//get index as long
 		i = ((EnvisionInt) listIndex).int_val;

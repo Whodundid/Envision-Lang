@@ -1,6 +1,6 @@
 package envision.exceptions.errors.workingDirectory;
 
-import envision.WorkingDirectory;
+import envision._launch.WorkingDirectory;
 import envision.exceptions.EnvisionError;
 
 public class MultipleMainsError extends EnvisionError {

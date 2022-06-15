@@ -1,10 +1,11 @@
 package envision.lang.util;
 
 import envision.lang.EnvisionObject;
+import envision.lang.natives.IDatatype;
 
 public class Parameter {
 	
-	public final EnvisionDatatype datatype;
+	public final IDatatype datatype;
 	public final String name;
 	public final Object defaultValue;
 	public final boolean hasDefault;
@@ -13,14 +14,14 @@ public class Parameter {
 	// Constructors
 	//--------------
 	
-	public Parameter(EnvisionDatatype typeIn, String nameIn) {
+	public Parameter(IDatatype typeIn, String nameIn) {
 		datatype = typeIn;
 		name = nameIn;
 		defaultValue = null;
 		hasDefault = false;
 	}
 	
-	public Parameter(EnvisionDatatype typeIn, String nameIn, Object defaultValueIn) {
+	public Parameter(IDatatype typeIn, String nameIn, Object defaultValueIn) {
 		datatype = typeIn;
 		name = nameIn;
 		defaultValue = defaultValueIn;

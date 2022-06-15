@@ -4,12 +4,12 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class Millis extends EnvisionFunction {
 	
 	public Millis() {
-		super(Primitives.INT, "millis");
+		super(StaticTypes.INT_TYPE, "millis");
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package envision.interpreter.statements;
 
+import envision.exceptions.errors.InvalidDatatypeError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.creationUtil.NumberUtil;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
@@ -11,7 +12,7 @@ import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionVariable;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Range;
 import envision.parser.expressions.expression_types.Expr_Var;
@@ -49,50 +50,47 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 			//System.out.println(left + " : " + right + " : " + by);
 			//System.out.println(right.getClass());
 			
-			Object left = handleLeft(left_expr);
-			Object right = evaluate(right_expr);
-			Object by = (by_expr != null) ? evaluate(by_expr) : (long) 1;
+			EnvisionObject left = handleLeft(left_expr);
+			EnvisionObject right = evaluate(right_expr);
+			EnvisionObject by = (by_expr != null) ? evaluate(by_expr) : EnvisionIntClass.newInt(1);
 			
 			EnvisionVariable leftObject = null;
 			
+			long right_val = 0;
+			long by_val = 1;
+			
 			try {
 				//handle left value
-				if (left instanceof Number num) {
-					//ensure that the number being used is an integer
-					if (!(left instanceof Integer) && !(left instanceof Long)) throw new Exception();
-					leftObject = EnvisionIntClass.newInt(num);
-				}
-				else if (left instanceof EnvisionVariable env_var) {
+				if (left instanceof EnvisionVariable env_var) {
 					//ensure that the variable being used is an integer
 					if (!(env_var instanceof EnvisionInt)) throw new Exception();
 					leftObject = env_var;
 				}
 				else throw new Exception();
 				
-				//right and 'by' values
-				//right = EnvisionObject.convert(right);
-				//by = EnvisionObject.convert(by);
-				
+				{
 				//handle right
-				if (right instanceof EnvisionList env_list) 		right = (long) env_list.size_i();
-				else if (right instanceof String str) 				right = (long) str.length();
-				else if (right instanceof EnvisionString env_str) 	right = (long) env_str.length_i();
-				else if (right instanceof EnvisionInt env_int) 		right = (long) env_int.int_val;
-				else 												right = ((Number) right).longValue();
-				
+				if (right instanceof EnvisionList env_list) 		right_val = env_list.size_i();
+				else if (right instanceof EnvisionString env_str) 	right_val = env_str.length_i();
+				else if (right instanceof EnvisionInt env_int) 		right_val = env_int.int_val;
+				else throw new InvalidDatatypeError("Expected a valid int conversion target but got '" +
+													right + "' instead!");
+				}
+				{
 				//handle by
-				if (by instanceof EnvisionList env_list) 			by = (long) env_list.size_i();
-				else if (by instanceof String str) 					by = (long) str.length();
-				else if (by instanceof EnvisionString env_str) 		by = (long) env_str.length_i();
-				else if (by instanceof EnvisionInt env_int) 		by = (long) env_int.int_val;
-				else 												by = ((Number) by).longValue();
+				if (by instanceof EnvisionList env_list) 			by_val = env_list.size_i();
+				else if (by instanceof EnvisionString env_str) 		by_val = env_str.length_i();
+				else if (by instanceof EnvisionInt env_int) 		by_val = env_int.int_val;
+				else throw new InvalidDatatypeError("Expected a valid int conversion target but got '" +
+													right + "' instead!");
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				throw new RuntimeException("Range expression must use integer based numbers.");
+				throw new InvalidDatatypeError("Range expression must use integer based numbers.");
 			}
 			
-			rangeValues.add(new Box3(leftObject, right, by));
+			rangeValues.add(new Box3(leftObject, right_val, by_val));
 		}
 		
 		//ripple carry across ranges
@@ -167,15 +165,15 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 		return (long) box.a.get_i() < box.b;
 	}
 	
-	private Object handleLeft(Expression left) {
+	private EnvisionObject handleLeft(Expression left) {
 		if (left instanceof Expr_Var var) {
-			return defineIfNot(var.getName(), EnvisionDatatype.INT_TYPE, EnvisionIntClass.newInt());
+			return defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionIntClass.newInt());
 		}
 		return evaluate(left);
 	}
 	
 	private boolean checkKeepGoing(EArrayList<Box3<EnvisionVariable, Long, Long>> list) {
-		//cacluate if the loop is done
+		//calculate whether or not the loop is done
 		for (var box : list) {
 			long a = (long) box.a.get_i();
 			long b = box.b;

@@ -3,7 +3,9 @@ package envision.interpreter.statements;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.statements.statement_types.Stmt_Generic;
+import eutil.debug.Unused;
 
+@Unused
 public class IS_Generic extends StatementExecutor<Stmt_Generic> {
 
 	public IS_Generic(EnvisionInterpreter in) {

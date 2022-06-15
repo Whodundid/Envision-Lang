@@ -12,7 +12,11 @@ import envision.parser.statements.statement_types.Stmt_GetSet;
 import envision.parser.statements.statement_types.Stmt_Return;
 import envision.parser.util.ParserDeclaration;
 import envision.tokenizer.Token;
+import eutil.debug.Broken;
+import eutil.debug.InDevelopment;
 
+@Broken
+@InDevelopment
 public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 
 	public IS_GetSet(EnvisionInterpreter in) {

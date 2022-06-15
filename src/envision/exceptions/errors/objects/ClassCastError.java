@@ -2,7 +2,7 @@ package envision.exceptions.errors.objects;
 
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 
 /**
  * An error thrown in the event that an object, attempting to be
@@ -12,7 +12,7 @@ import envision.lang.util.EnvisionDatatype;
  */
 public class ClassCastError extends EnvisionError {
 	
-	public ClassCastError(EnvisionObject obj, EnvisionDatatype castType) {
+	public ClassCastError(EnvisionObject obj, IDatatype castType) {
 		super("Invalid Cast! Cannot cast '" + obj + "' to a '" + castType + "'!");
 	}
 	

@@ -7,7 +7,7 @@ import envision.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.expression_types.Expr_Cast;
 
@@ -36,7 +36,7 @@ public class IE_Cast extends ExpressionExecutor<Expr_Cast> {
 		//ensure the type to cast to actually exists
 		if (typeClass == null) throw UndefinedTypeError.badType(toType);
 		
-		EnvisionDatatype cast_type = typeClass.getDatatype();
+		IDatatype cast_type = typeClass.getDatatype();
 		EnvisionObject target_obj = evaluate(target_expr);
 		
 		//attempt to handle cast

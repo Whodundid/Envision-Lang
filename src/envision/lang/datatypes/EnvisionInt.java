@@ -9,13 +9,16 @@ import envision.exceptions.errors.objects.ClassCastError;
 import envision.exceptions.errors.objects.UnsupportedOverloadError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.FunctionPrototype;
+import envision.lang.util.StaticTypes;
 import envision.tokenizer.Operator;
 
 /**
  * A script variable representing a number without a decimal place.
  * Encoded with Java Longs.
+ * 
+ * @author Hunter Bragg
  */
 public class EnvisionInt extends EnvisionNumber {
 	
@@ -142,7 +145,7 @@ public class EnvisionInt extends EnvisionNumber {
 		
 		//only allow numbers
 		if (!obj.getPrimitiveType().isNumber())
-			throw new InvalidDatatypeError(EnvisionDatatype.NUMBER_TYPE, obj.getDatatype());
+			throw new InvalidDatatypeError(StaticTypes.NUMBER_TYPE, obj.getDatatype());
 		
 		EnvisionNumber num = (EnvisionNumber) obj;
 		
@@ -187,14 +190,14 @@ public class EnvisionInt extends EnvisionNumber {
 	}
 	
 	@Override
-	public EnvisionObject handleObjectCasts(EnvisionDatatype castType) throws ClassCastError {
+	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (EnvisionDatatype.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.newBoolean(int_val != 0);
-		if (EnvisionDatatype.DOUBLE_TYPE.compare(castType)) return doubleVal();
-		if (EnvisionDatatype.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(int_val);
-		if (EnvisionDatatype.CHAR_TYPE.compare(castType)) return EnvisionCharClass.newChar(int_val);
-		if (EnvisionDatatype.LIST_TYPE.compare(castType)) {
-			EnvisionList list = EnvisionListClass.newList(EnvisionDatatype.CHAR_TYPE);
+		if (StaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.newBoolean(int_val != 0);
+		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return doubleVal();
+		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(int_val);
+		if (StaticTypes.CHAR_TYPE.compare(castType)) return EnvisionCharClass.newChar(int_val);
+		if (StaticTypes.LIST_TYPE.compare(castType)) {
+			EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
 			String str = String.valueOf(int_val);
 			for (int i = 0; i < str.length(); i++) list.add(new EnvisionChar(str.charAt(i)));
 			return list;

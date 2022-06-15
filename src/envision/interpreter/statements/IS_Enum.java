@@ -3,7 +3,13 @@ package envision.interpreter.statements;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.parser.statements.statement_types.Stmt_EnumDef;
+import eutil.debug.Broken;
+import eutil.debug.InDevelopment;
+import eutil.debug.Unused;
 
+@Unused
+@Broken
+@InDevelopment
 public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 
 	public IS_Enum(EnvisionInterpreter in) {

@@ -1,6 +1,6 @@
 package envision.interpreter.expressions;
 
-import envision.EnvisionCodeFile;
+import envision._launch.EnvisionCodeFile;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.InvalidTargetError;
 import envision.exceptions.errors.UndefinedValueError;

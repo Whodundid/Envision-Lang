@@ -6,7 +6,7 @@ import envision.lang.datatypes.EnvisionDouble;
 import envision.lang.datatypes.EnvisionDoubleClass;
 import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 public class Pow extends EnvisionFunction {
 	

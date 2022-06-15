@@ -1,7 +1,7 @@
 package envision.lang.internal;
 
 import envision.exceptions.errors.ArgLengthError;
-import envision.exceptions.errors.DuplicateFunctionError;
+import envision.exceptions.errors.DuplicateOverloadError;
 import envision.exceptions.errors.InvalidArgumentError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.InvalidTargetError;
@@ -14,10 +14,10 @@ import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
 import envision.lang.classes.EnvisionClass;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.lang.util.Parameter;
 import envision.lang.util.ParameterData;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 import envision.parser.statements.Statement;
 import envision.tokenizer.Operator;
 import eutil.datatypes.Box2;
@@ -33,7 +33,7 @@ public class EnvisionFunction extends ClassInstance {
 	/**
 	 * The return type of this function.
 	 */
-	protected EnvisionDatatype returnType;
+	protected IDatatype returnType;
 	
 	/**
 	 * The parameter datatypes that this function accepts.
@@ -105,7 +105,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param nameIn The function name
 	 */
 	protected EnvisionFunction(String nameIn) {
-		this(EnvisionDatatype.VAR_TYPE, nameIn, new ParameterData());
+		this(StaticTypes.VAR_TYPE, nameIn, new ParameterData());
 	}
 	
 	/**
@@ -115,22 +115,11 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param rt
 	 * @param funcNameIn
 	 */
-	public EnvisionFunction(Primitives rt, String nameIn) {
+	public EnvisionFunction(IDatatype rt, String nameIn) {
 		this(rt.toDatatype(), nameIn, new ParameterData());
 	}
 	
 	/**
-	 * Creates a new function defintion with the given return type and
-	 * function name. Parameters are set to empty by default.
-	 * 
-	 * @param rt     The return type of the function
-	 * @param nameIn The name of the function
-	 */
-	public EnvisionFunction(EnvisionDatatype rt, String nameIn) {
-		this(rt, nameIn, new ParameterData());
-	}
-	
-	/**
 	 * Creates a new function definition with the given return type,
 	 * function name, and given parameters.
 	 * 
@@ -138,7 +127,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param nameIn   The function's name
 	 * @param paramsIn The function's parameters
 	 */
-	public EnvisionFunction(Primitives rt, String nameIn, Primitives... paramsIn) {
+	public EnvisionFunction(IDatatype rt, String nameIn, IDatatype... paramsIn) {
 		this(rt, nameIn, new ParameterData(paramsIn));
 	}
 	
@@ -150,55 +139,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param nameIn   The function's name
 	 * @param paramsIn The function's parameters
 	 */
-	public EnvisionFunction(Primitives rt, String nameIn, EnvisionDatatype... paramsIn) {
-		this(rt, nameIn, new ParameterData(paramsIn));
-	}
-	
-	/**
-	 * Creates a new function definition with the given return type,
-	 * function name, and given parameters.
-	 * 
-	 * @param rt       The function's return type
-	 * @param nameIn   The function's name
-	 * @param paramsIn The function's parameters
-	 */
-	public EnvisionFunction(Primitives rt, String nameIn, ParameterData paramsIn) {
-		this(rt.toDatatype(), nameIn, paramsIn);
-	}
-	
-	/**
-	 * Creates a new function definition with the given return type,
-	 * function name, and given parameters.
-	 * 
-	 * @param rt       The function's return type
-	 * @param nameIn   The function's name
-	 * @param paramsIn The function's parameters
-	 */
-	public EnvisionFunction(EnvisionDatatype rt, String nameIn, Primitives... paramsIn) {
-		this(rt, nameIn, new ParameterData(paramsIn));
-	}
-	
-	/**
-	 * Creates a new function definition with the given return type,
-	 * function name, and given parameters.
-	 * 
-	 * @param rt       The function's return type
-	 * @param nameIn   The function's name
-	 * @param paramsIn The function's parameters
-	 */
-	public EnvisionFunction(EnvisionDatatype rt, String nameIn, EnvisionDatatype... paramsIn) {
-		this(rt, nameIn, new ParameterData(paramsIn));
-	}
-	
-	/**
-	 * Creates a new function definition with the given return type,
-	 * function name, and given parameters.
-	 * 
-	 * @param rt       The function's return type
-	 * @param nameIn   The function's name
-	 * @param paramsIn The function's parameters
-	 */
-	public EnvisionFunction(EnvisionDatatype rt, String nameIn, ParameterData paramsIn) {
+	public EnvisionFunction(IDatatype rt, String nameIn, ParameterData paramsIn) {
 		super(EnvisionFunctionClass.FUNC_CLASS);
 		returnType = rt;
 		functionName = nameIn;
@@ -238,7 +179,7 @@ public class EnvisionFunction extends ClassInstance {
 	public EnvisionFunction(Operator operatorIn, ParameterData paramsIn) {
 		super(EnvisionFunctionClass.FUNC_CLASS);
 		setParams(paramsIn);
-		functionName = "OPERATOR_" + operatorIn.chars;
+		functionName = "OPERATOR_" + operatorIn.typeString;
 		operatorOverload = operatorIn;
 		isOperatorOverload = true;
 	}
@@ -301,22 +242,9 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(Primitives rt, Primitives... paramsIn) {
-		return addOverload(rt.toDatatype(), paramsIn);
-	}
-	
-	/**
-	 * Adds a new function overload with the given return type and
-	 * parameter types.
-	 * 
-	 * @param rt       The overload function's return type
-	 * @param paramsIn The overloaded parameters
-	 * 
-	 * @return The new overload function
-	 */
-	public EnvisionFunction addOverload(EnvisionDatatype rt, Primitives... paramsIn) {
+	public EnvisionFunction addOverload(IDatatype rt, IDatatype... paramsIn) {
 		ParameterData params = new ParameterData(paramsIn);
-		if (hasOverload(params)) throw new DuplicateFunctionError(functionName, params);
+		if (hasOverload(params)) throw new DuplicateOverloadError(functionName, params);
 		overloads.add(makeOverload(rt, params, statements));
 		return this;
 	}
@@ -330,39 +258,8 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(EnvisionDatatype rt, EnvisionDatatype... paramsIn) {
-		ParameterData params = new ParameterData(paramsIn);
-		if (hasOverload(params)) throw new DuplicateFunctionError(functionName, params);
-		overloads.add(makeOverload(rt, params, statements));
-		return this;
-	}
-	
-	/**
-	 * Adds a new function overload with the given return type and
-	 * parameter types.
-	 * 
-	 * @param rt       The overload function's return type
-	 * @param paramsIn The overloaded parameters
-	 * 
-	 * @return The new overload function
-	 */
-	public EnvisionFunction addOverload(Primitives rt, ParameterData paramsIn) {
-		return addOverload(rt.toDatatype(), paramsIn);
-	}
-	
-	/**
-	 * Adds a new function overload with the given return type and
-	 * parameter types.
-	 * 
-	 * @param rt       The overload function's return type
-	 * @param paramsIn The overloaded parameters
-	 * 
-	 * @return The new overload function
-	 */
-	public EnvisionFunction addOverload(EnvisionDatatype rt, ParameterData paramsIn) {
-		if (hasOverload(params)) throw new DuplicateFunctionError(functionName, params);
-		overloads.add(makeOverload(rt, params, statements));
-		return this;
+	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn) {
+		return addOverload(rt, paramsIn);
 	}
 	
 	/**
@@ -389,24 +286,8 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(Primitives rt, ParameterData paramsIn,
-			EArrayList<Statement> bodyIn) {
-		return addOverload(rt.toDatatype(), paramsIn, bodyIn);
-	}
-	
-	/**
-	 * Adds a new function overload with the given return type, parameter
-	 * data, and function body statements.
-	 * 
-	 * @param rt       The overload function's return type
-	 * @param paramsIn The overloaded parameters
-	 * @param bodyIn   The overload function's body
-	 * 
-	 * @return The new overload function
-	 */
-	public EnvisionFunction addOverload(EnvisionDatatype rt, ParameterData paramsIn,
-			EArrayList<Statement> bodyIn) {
-		if (hasOverload(paramsIn)) throw new DuplicateFunctionError(functionName, paramsIn);
+	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EArrayList<Statement> bodyIn) {
+		if (hasOverload(paramsIn)) throw new DuplicateOverloadError(functionName, paramsIn);
 		overloads.add(makeOverload(rt, paramsIn, bodyIn));
 		return this;
 	}
@@ -421,8 +302,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction makeOverload(EnvisionDatatype rt, ParameterData paramsIn,
-			EArrayList<Statement> bodyIn) {
+	public EnvisionFunction makeOverload(IDatatype rt, ParameterData paramsIn, EArrayList<Statement> bodyIn) {
 		EnvisionFunction overload = new EnvisionFunction(rt, functionName, paramsIn);
 		overload.setBody(bodyIn);
 		return overload;
@@ -445,7 +325,7 @@ public class EnvisionFunction extends ClassInstance {
 					+ " is not valid as an overload function of" + this + "!");
 		//don't allow if already existing overloads
 		if (hasOverload(overload.params))
-			throw new DuplicateFunctionError(functionName, overload.params);
+			throw new DuplicateOverloadError(functionName, overload.params);
 		
 		//add the overload
 		overloads.add(overload);
@@ -460,7 +340,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return True if an overload with the given parameters exists
 	 */
 	public boolean hasOverload(ParameterData dataIn) {
-		return (getOverload(dataIn) != null);
+		return getOverload(dataIn) != null;
 	}
 	
 	/**
@@ -489,11 +369,9 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction getOverload(ParameterData dataIn) {
 		for (EnvisionFunction overload : overloads) {
-			if (overload.params.size() == dataIn.size()) {
-				if (overload.params.compare(dataIn)) {
-					return overload;
-				}
-			}
+			if (overload.params.size() != dataIn.size()) continue;
+			if (!overload.params.compare(dataIn)) continue;
+			return overload;
 		}
 		return null;
 	}
@@ -646,25 +524,21 @@ public class EnvisionFunction extends ClassInstance {
 				String arg_name = m.params.getNames().get(i);
 				EnvisionObject arg_obj = callArgs.get(i);
 				
-				Box2<EnvisionDatatype, EnvisionObject> scopeValue = ps.getTyped(arg_name);
+				Box2<IDatatype, EnvisionObject> scopeValue = ps.getTyped(arg_name);
 				
 				if (scopeValue != null) {
-					EnvisionDatatype scope_var_type = scopeValue.getA();
-					EnvisionDatatype incomming_type = arg_obj.getDatatype();
+					IDatatype scope_var_type = scopeValue.getA();
+					IDatatype incomming_type = arg_obj.getDatatype();
 					
 					if (scope_var_type.compare(incomming_type)) {
 						ps.set(arg_name, arg_obj);
 					}
-					else if (EnvisionDatatype.isNumber(scopeValue.getA())) {
+					else if (IDatatype.isNumber(scopeValue.getA())) {
 						EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getA());
 						ps.set(arg_name, obj);
 					}
-					else {
-						throw new InvalidArgumentError(functionName, scope_var_type,
-								incomming_type);
-					}
+					else throw new InvalidArgumentError(functionName, scope_var_type, incomming_type);
 				}
-				
 			}
 		}
 		
@@ -672,11 +546,13 @@ public class EnvisionFunction extends ClassInstance {
 			interpreter.executeBlock(m.statements, scope);
 		}
 		catch (ReturnValue r) {
-			if (isConstructor) throw new ReturnValue(scope.get("this"));
+			if (isConstructor) ret(scope.get("this"));
+			//if (isConstructor) throw new ReturnValue(scope.get("this"));
 			throw r;
 		}
 		
-		if (isConstructor) throw new ReturnValue(scope.get("this"));
+		if (isConstructor) ret(scope.get("this"));
+		//if (isConstructor) throw new ReturnValue(scope.get("this"));
 	}
 	
 	public EnvisionFunction addStatement(Statement statementIn) {
@@ -690,57 +566,21 @@ public class EnvisionFunction extends ClassInstance {
 	/**
 	 * @return The name of this function
 	 */
-	public String getFunctionName() {
-		return functionName;
-	}
+	public String getFunctionName() { return functionName; }
+	public Scope getScope() { return functionScope; }
+	public ParameterData getParams() { return params; }
+	public EArrayList<Statement> getStatements() { return statements; }
+	public EArrayList<EnvisionFunction> getOverloads() { return overloads; }
+	public EArrayList<Statement> getBody() { return statements; }
+	public EArrayList<IDatatype> getParamTypes() { return params.getDataTypes(); }
+	public EArrayList<String> getParamNames() { return params.getNames(); }
 	
-	public Scope getScope() {
-		return functionScope;
-	}
+	public IDatatype getReturnType() { return returnType; }
+	public boolean isVoid() { return returnType.isVoid(); }
 	
-	public ParameterData getParams() {
-		return params;
-	}
-	
-	public EArrayList<Statement> getStatements() {
-		return statements;
-	}
-	
-	public EArrayList<EnvisionFunction> getOverloads() {
-		return overloads;
-	}
-	
-	public EArrayList<Statement> getBody() {
-		return statements;
-	}
-	
-	public EArrayList<EnvisionDatatype> getParamTypes() {
-		return params.getDataTypes();
-	}
-	
-	public EArrayList<String> getParamNames() {
-		return params.getNames();
-	}
-	
-	public EnvisionDatatype getReturnType() {
-		return returnType;
-	}
-	
-	public boolean isVoid() {
-		return Primitives.getDataType(returnType) == Primitives.VOID;
-	}
-	
-	public boolean isConstructor() {
-		return isConstructor;
-	}
-	
-	public boolean isOperator() {
-		return isOperatorOverload;
-	}
-	
-	public Operator getOperator() {
-		return operatorOverload;
-	}
+	public boolean isConstructor() { return isConstructor; }
+	public boolean isOperator() { return isOperatorOverload; }
+	public Operator getOperator() { return operatorOverload; }
 	
 	//---------
 	// Setters

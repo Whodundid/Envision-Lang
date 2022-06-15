@@ -17,8 +17,9 @@ import envision.lang.datatypes.EnvisionList;
 import envision.lang.datatypes.EnvisionVariable;
 import envision.lang.internal.EnvisionNull;
 import envision.lang.internal.EnvisionVoid;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.NativeTypeManager;
 import envision.lang.util.DataModifier;
-import envision.lang.util.EnvisionDatatype;
 import envision.parser.statements.statement_types.Stmt_VarDef;
 import envision.parser.util.ParserDeclaration;
 import envision.parser.util.VariableDeclaration;
@@ -43,7 +44,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		ParserDeclaration statement_declaration = statement.getDeclaration();
 		EArrayList<VariableDeclaration> unprocessed_var_declarations = statement.vars;
 		Token token_returntype = statement_declaration.getReturnType();
-		EnvisionDatatype var_dec_datatype = new EnvisionDatatype(token_returntype);
+		IDatatype var_dec_datatype = NativeTypeManager.datatypeOf(token_returntype);
 		
 		//---------------------------------------------------------------------------------------------------------------
 		
@@ -70,7 +71,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			//this is the evaluated result of the assignment value -- if there is one
 			EnvisionObject assignment_value = null;
 			//dynamically determine type for type checking
-			EnvisionDatatype assignment_value_datatype = null;
+			IDatatype assignment_value_datatype = null;
 			
 			//---------------------------------------------------------
 			
@@ -88,7 +89,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
 				
 				//determine the type of the assignment value
-				assignment_value_datatype = EnvisionDatatype.dynamicallyDetermineType(assignment_value);
+				assignment_value_datatype = IDatatype.dynamicallyDetermineType(assignment_value);
 				
 				//check that the assignment value actually matches the variable type being created
 				CastingUtil.assert_expected_datatype(var_dec_datatype, assignment_value_datatype);
@@ -137,7 +138,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			//obj.setName(var_name);
 			
 			//Set visibility
-			//obj.setVisibility(statement_declaration.getVisibility());
+			obj.setVisibility(statement_declaration.getVisibility());
 			
 			//Set data modifiers
 			for (DataModifier m : statement_declaration.getMods()) {

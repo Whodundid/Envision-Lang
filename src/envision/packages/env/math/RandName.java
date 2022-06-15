@@ -5,7 +5,7 @@ import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionString;
 import envision.lang.datatypes.EnvisionStringClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 import eutil.random.RandomUtil;
 
 public class RandName extends EnvisionFunction {

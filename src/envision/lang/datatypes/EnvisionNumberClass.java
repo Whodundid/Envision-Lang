@@ -1,13 +1,13 @@
 package envision.lang.datatypes;
 
-import static envision.lang.util.Primitives.*;
+import static envision.lang.natives.Primitives.*;
 
 import envision.exceptions.errors.objects.AbstractInstantiationError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.natives.Primitives;
 
 /**
  * The primary class for which all EnvisionNumbers are derived from.

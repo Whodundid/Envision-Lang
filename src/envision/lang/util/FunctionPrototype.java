@@ -5,13 +5,14 @@ import java.util.HashMap;
 import envision.exceptions.EnvisionError;
 import envision.lang.EnvisionObject;
 import envision.lang.classes.ClassInstance;
+import envision.lang.natives.IDatatype;
 import eutil.datatypes.EArrayList;
 
 /**
  * A low-level function placeholder that is intended to be handled
  * natively within primitive object types.
  * <p>
- * Effectively, a function pototype is a placeholder for an actual
+ * Effectively, a function prototype is a placeholder for an actual
  * EnvisionFunction while still offering the same end-behavior. Given
  * the fact that an object's member functions aren't even guaranteed
  * to be called in the first place (let alone referenced), it can
@@ -40,7 +41,7 @@ public class FunctionPrototype extends EnvisionObject {
 	/**
 	 * The return type of this function.
 	 */
-	private final EnvisionDatatype returnType;
+	private final IDatatype returnType;
 	
 	/**
 	 * The accepted parameters of this function.
@@ -54,7 +55,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Stores overloads in the form of 'return type', '[ParameterData]*'.
 	 * Note: Parameter data can be empty -- hence *.
 	 */
-	private final HashMap<EnvisionDatatype, EArrayList<ParameterData>> overloads = new HashMap();
+	private final HashMap<IDatatype, EArrayList<ParameterData>> overloads = new HashMap();
 	
 	private final EArrayList<ParameterData> overload_params = new EArrayList();
 	
@@ -126,39 +127,19 @@ public class FunctionPrototype extends EnvisionObject {
 	//--------------
 	
 	public FunctionPrototype(String nameIn) {
-		this(nameIn, EnvisionDatatype.VAR_TYPE, new ParameterData());
+		this(nameIn, StaticTypes.VAR_TYPE, new ParameterData());
 	}
 	
-	public FunctionPrototype(String nameIn, Primitives rType) {
-		this(nameIn, rType.toDatatype(), new ParameterData());
-	}
-	
-	public FunctionPrototype(String nameIn, EnvisionDatatype rType) {
+	public FunctionPrototype(String nameIn, IDatatype rType) {
 		this(nameIn, rType, new ParameterData());
 	}
 	
-	public FunctionPrototype(String nameIn, Primitives rType, Primitives... paramsIn) {
-		this(nameIn, rType.toDatatype(), new ParameterData(paramsIn));
-	}
-	
-	public FunctionPrototype(String nameIn, EnvisionDatatype rType, Primitives... paramsIn) {
+	public FunctionPrototype(String nameIn, IDatatype rType, IDatatype... paramsIn) {
 		this(nameIn, rType, new ParameterData(paramsIn));
 	}
 	
-	public FunctionPrototype(String nameIn, Primitives rType, EnvisionDatatype... paramsIn) {
-		this(nameIn, rType.toDatatype(), new ParameterData(paramsIn));
-	}
-	
-	public FunctionPrototype(String nameIn, EnvisionDatatype rType, EnvisionDatatype... paramsIn) {
-		this(nameIn, rType, new ParameterData(paramsIn));
-	}
-	
-	public FunctionPrototype(String nameIn, Primitives rType, ParameterData paramsIn) {
-		this(nameIn, rType.toDatatype(), paramsIn);
-	}
-	
-	public FunctionPrototype(String nameIn, EnvisionDatatype rType, ParameterData paramsIn) {
-		super(EnvisionDatatype.FUNC_TYPE);
+	public FunctionPrototype(String nameIn, IDatatype rType, ParameterData paramsIn) {
+		super(StaticTypes.FUNC_TYPE);
 		func_name = nameIn;
 		returnType = rType;
 		params = paramsIn;
@@ -232,27 +213,11 @@ public class FunctionPrototype extends EnvisionObject {
 	// Overloads
 	//-----------
 	
-	public FunctionPrototype addOverload(Primitives rType, Primitives... params) {
-		return addOverload(rType.toDatatype(), new ParameterData(params));
-	}
-	
-	public FunctionPrototype addOverload(EnvisionDatatype rType, Primitives... params) {
+	public FunctionPrototype addOverload(IDatatype rType, IDatatype... params) {
 		return addOverload(rType, new ParameterData(params));
 	}
 	
-	public FunctionPrototype addOverload(Primitives rType, EnvisionDatatype... params) {
-		return addOverload(rType.toDatatype(), new ParameterData(params));
-	}
-	
-	public FunctionPrototype addOverload(EnvisionDatatype rType, EnvisionDatatype... params) {
-		return addOverload(rType, new ParameterData(params));
-	}
-	
-	public FunctionPrototype addOverload(Primitives rType, ParameterData params) {
-		return addOverload(rType.toDatatype(), params);
-	}
-	
-	public FunctionPrototype addOverload(EnvisionDatatype rType, ParameterData params) {
+	public FunctionPrototype addOverload(IDatatype rType, ParameterData params) {
 		//check if there is a bucket made for the given return type
 		EArrayList<ParameterData> bucket = overloads.get(rType);
 		//if there is no bucket, make one first
@@ -280,7 +245,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @param params The overload's parameters
 	 * @return True if there is an overload with the same return type and parameters
 	 */
-	public boolean hasOverload(EnvisionDatatype rType, ParameterData params) {
+	public boolean hasOverload(IDatatype rType, ParameterData params) {
 		EArrayList<ParameterData> bucket = overloads.get(rType);
 		//if there's no bucket, then there's no overload -- return false
 		if (bucket == null) return false;
@@ -339,7 +304,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * 
 	 * @return The return type of this function
 	 */
-	public EnvisionDatatype getReturnType() {
+	public IDatatype getReturnType() {
 		return returnType;
 	}
 	

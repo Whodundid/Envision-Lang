@@ -1,20 +1,24 @@
 package envision.interpreter.statements;
 
-import envision.EnvisionCodeFile;
-import envision.WorkingDirectory;
+import envision._launch.EnvisionCodeFile;
+import envision._launch.WorkingDirectory;
 import envision.exceptions.EnvisionError;
 import envision.exceptions.errors.SelfImportError;
 import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
+import envision.lang.natives.IDatatype;
+import envision.lang.util.StaticTypes;
 import envision.packages.env.EnvPackage;
 import envision.parser.expressions.expression_types.Expr_Import;
 import envision.parser.statements.statement_types.Stmt_Import;
 import envision.tokenizer.Token;
 import eutil.EUtil;
+import eutil.debug.Broken;
+import eutil.debug.InDevelopment;
 
+@Broken
+@InDevelopment
 public class IS_Import extends StatementExecutor<Stmt_Import> {
 
 	public IS_Import(EnvisionInterpreter in) {
@@ -29,8 +33,6 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 		String obj = impE.object;
 		String as = (asName != null) ? asName.lexeme : null;
 		
-		
-		
 		//determine logical file path name
 		path = (path == null) ? obj : path;
 		//the def_name will be: 'as' if as is not null, OR will be 'obj' is obj is not null
@@ -39,9 +41,7 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 		//the object being imported
 		EnvisionObject def_obj = (obj != null) ? scope().get(obj) : null;
 		//import object type == the type of the object being imported
-		EnvisionDatatype def_type = (def_obj != null) ? def_obj.getDatatype() : null;
-		
-		
+		IDatatype def_type = (def_obj != null) ? def_obj.getDatatype() : null;
 		
 		//check for self importing -- causes infinite recursion
 		if (interpreter.fileName.equals(path)) throw new SelfImportError(interpreter.codeFile());
@@ -57,8 +57,9 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 			EnvisionCodeFile imp = dir.getFile(path);
 			
 			try {
-				imp.load(dir);
-				//EnvisionInterpreter impInterpreter = imp.getInterpreter();
+				imp.load(envision(), dir);
+				imp.execute();
+				EnvisionInterpreter impInterpreter = imp.getInterpreter();
 				
 				//Importing a value merely grants local visibility from one file
 				//to another. This is simply stating that any object being imported
@@ -71,19 +72,32 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 				//If the path is the same as the object being imported,
 				//import the whole file.
 				if (EUtil.isEqual(path, obj)) {
+					//define the top level object
+					scope().define(def_name, imp);
+					//define scope level members
+					for (var<?,?> b : impInterpreter.scope().values.entrySet()) {
+						var box = b.getValue();
+						var n = b.getKey();
+						var t = box.getA();
+						var o = box.getB();
+						System.out.println("IMPORTING: " + n + " : " + o.isPublic());
+						if (o.isPublic()) {
+							scope().define(n, t, o);
+						}
+					}
 					//can't fully implement at the moment because of the way that
 					//importing currently creates separate interpreters each with their
 					//own respective base lang packages.
 					//Not to mention this could lead to a world of potential recursive
 					//definitions. IE: 2 files importing each other.
-					scope().defineImportVal(def_name, def_type, def_obj);
+					//scope().defineImportVal(def_name, def_type, def_obj);
 				}
 				//Otherwise, import a specific object from the given file.
 				else if (obj != null) {
 					scope().defineImportVal(def_name, def_type, def_obj);
 				}
 				else {
-					scope().defineImportVal(def_name, Primitives.CODE_FILE.toDatatype(), imp);
+					scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
 				}
 				
 				// don't do this!

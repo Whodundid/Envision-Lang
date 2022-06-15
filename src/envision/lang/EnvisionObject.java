@@ -4,9 +4,9 @@ import envision.exceptions.errors.objects.CopyNotSupportedError;
 import envision.interpreter.util.throwables.ReturnValue;
 import envision.lang.classes.EnvisionClass;
 import envision.lang.datatypes.EnvisionVariable;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.Primitives;
 import envision.lang.util.DataModifier;
-import envision.lang.util.EnvisionDatatype;
-import envision.lang.util.Primitives;
 import envision.lang.util.VisibilityType;
 
 /**
@@ -33,7 +33,7 @@ public abstract class EnvisionObject {
 	 * Java does not. As such, every dynamic type must be converted down
 	 * to an exact reference-able datatype.
 	 */
-	protected final EnvisionDatatype internalType;
+	protected final IDatatype internalType;
 	
 	/**
 	 * A byte-representation of all active modifiers for this specific
@@ -60,7 +60,7 @@ public abstract class EnvisionObject {
 	 * 
 	 * @param internalTypeIn
 	 */
-	protected EnvisionObject(EnvisionDatatype internalTypeIn) {
+	protected EnvisionObject(IDatatype internalTypeIn) {
 		internalType = internalTypeIn;
 		
 		//assign primitive flag
@@ -127,14 +127,23 @@ public abstract class EnvisionObject {
 	/**
 	 * @return The underlying datatype of this object.
 	 */
-	public EnvisionDatatype getDatatype() {
-		return internalType;
-	}
+	public IDatatype getDatatype() { return internalType; }
+	public Primitives getPrimitiveType() { return internalType.getPrimitive(); }
+	public String getTypeString() { return internalType.getType(); }
 	
 	public int getObjectHash() { return hashCode(); }
 	public String getHexHash() { return Integer.toHexString(hashCode()); }
-	public Primitives getPrimitiveType() { return internalType.getPrimitiveType(); }
-	public String getTypeString() { return internalType.getType(); }
+	
+	/**
+	 * @return This object's visibility
+	 */
+	public VisibilityType getVisibility() {
+		if (isRestricted()) return VisibilityType.RESTRICTED;
+		if (isPublic()) return VisibilityType.PUBLIC;
+		if (isProtected()) return VisibilityType.PROTECTED;
+		if (isPrivate()) return VisibilityType.PRIVATE;
+		return VisibilityType.SCOPE;
+	}
 	
 	/**
 	 * In the event that this object represents a primitive object type such as an
@@ -239,7 +248,8 @@ public abstract class EnvisionObject {
 	 * @param obj The object to return
 	 */
 	protected static void ret(EnvisionObject obj) {
-		throw new ReturnValue(obj);
+		throw ReturnValue.create(obj);
+		//throw new ReturnValue(obj);
 	}
 	
 }

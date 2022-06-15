@@ -15,7 +15,7 @@ public class OperatorOverloadHandler {
 	/**
 	 * Performs top-level class instance operator overload handles.
 	 * If the base class instance natively supports the given operator overload,
-	 * then attempt to directely run the given operator overload function.
+	 * then attempt to directly run the given operator overload function.
 	 * 
 	 * @param interpreter
 	 * @param a_scopeName
@@ -38,7 +38,7 @@ public class OperatorOverloadHandler {
 		
 		//if the base object directly supports the operator, grab the operator function and execute it
 		if (a.supportsOperator(op)) {
-			EnvisionFunction op_func = getOperatorMethod(a, op, obj);
+			EnvisionFunction op_func = getOperatorFunc(a, op, obj);
 			//if the operator function is null -- skip this and jump to throwing error
 			if (op_func != null) return op_func.invoke_r(interpreter, obj);
 		}
@@ -56,7 +56,7 @@ public class OperatorOverloadHandler {
 	// Private Methods
 	//-----------------
 	
-	private static EnvisionFunction getOperatorMethod(ClassInstance c, Operator op, EnvisionObject b) {
+	private static EnvisionFunction getOperatorFunc(ClassInstance c, Operator op, EnvisionObject b) {
 		// first check if the class even has support for the given operator
 		EnvisionFunction op_func = c.getOperator(op);
 		if (op_func == null) return null;

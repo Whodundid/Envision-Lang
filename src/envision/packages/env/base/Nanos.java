@@ -4,12 +4,12 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionIntClass;
 import envision.lang.internal.EnvisionFunction;
-import envision.lang.util.Primitives;
+import envision.lang.util.StaticTypes;
 
 public class Nanos extends EnvisionFunction {
 	
 	public Nanos() {
-		super(Primitives.INT, "nanos");
+		super(StaticTypes.INT_TYPE, "nanos");
 	}
 	
 	@Override

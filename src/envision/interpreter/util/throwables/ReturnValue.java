@@ -12,6 +12,8 @@ import envision.lang.internal.EnvisionNull;
  */
 public class ReturnValue extends RuntimeException {
 	
+	private static final ReturnValue instance = new ReturnValue();
+	
 	//--------
 	// Fields
 	//--------
@@ -19,16 +21,30 @@ public class ReturnValue extends RuntimeException {
 	/**
 	 * The object being returned.
 	 */
-	public final EnvisionObject result;
+	public EnvisionObject result;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
+	private ReturnValue() { this(EnvisionNull.NULL); }
+	private ReturnValue(EnvisionObject objIn) {
+		result = objIn;
+	}
+	
+	public static ReturnValue create() { return create(EnvisionNull.NULL); }
+	public static ReturnValue create(EnvisionObject objIn) {
+		instance.result = objIn;
+		return instance;
+		//return new ReturnValue(objIn);
+	}
+	
+	/*
 	public ReturnValue() { this(EnvisionNull.NULL); }
 	public ReturnValue(EnvisionObject objIn) {
 		result = objIn;
 	}
+	*/
 	
 	//---------
 	// Methods

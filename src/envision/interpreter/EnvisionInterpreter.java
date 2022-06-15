@@ -1,7 +1,8 @@
 package envision.interpreter;
 
-import envision.EnvisionCodeFile;
-import envision.WorkingDirectory;
+import envision.Envision;
+import envision._launch.EnvisionCodeFile;
+import envision._launch.WorkingDirectory;
 import envision.exceptions.errors.ExpressionError;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.NullVariableError;
@@ -65,7 +66,7 @@ import envision.lang.classes.ClassInstance;
 import envision.lang.datatypes.EnvisionBoolean;
 import envision.lang.datatypes.EnvisionBooleanClass;
 import envision.lang.internal.EnvisionNull;
-import envision.lang.util.EnvisionDatatype;
+import envision.lang.natives.IDatatype;
 import envision.packages.env.EnvPackage;
 import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
@@ -137,44 +138,75 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	//--------
 	// Fields
 	//--------
+
+	/**
+	 * The Envision Language instance from which this interpreter was created.
+	 */
+	private final Envision envisionInstance;
 	
 	/**
-	 * Internal scope intended for language packages and internal functions.
+	 * The initial (and primary) working directory for which all Envision code executions
+	 * will have originated from.
 	 */
-	private final Scope internal = new Scope();
+	private static WorkingDirectory topDir;
+	
+	/**
+	 * Lowest scope level intended exclusively for language packages and internal functions.
+	 */
+	private final Scope internalScope = new Scope();
 	
 	/**
 	 * The scope intended for actual user program execution.
 	 */
-	private final Scope programScope = new Scope(internal);
+	private final Scope programScope = new Scope(internalScope);
 	
 	/**
 	 * The primary working interpreter scope.
 	 */
 	private Scope working_scope = programScope;
 	
-	private WorkingDirectory directory;
+	/**
+	 * The active working file directory for which this interpreter has been created
+	 * from. This working directory contains all of the related codeFiles enclosed
+	 * within the given directory.
+	 */
+	private WorkingDirectory active_dir;
+	
+	/**
+	 * The specific codeFile that this interpreter was created from.
+	 */
 	private EnvisionCodeFile startingFile;
+	
+	/**
+	 * The name of the file that this interpreter was created from.
+	 */
 	public final String fileName;
+	
+	/**
+	 * Keeps track and manages all user-defined datatypes during instance creation
+	 * for any object that is created within this interpreter.
+	 * <p>
+	 * A user-defined type is any datatype (class) that has been defined by Envision
+	 * code executed at runtime. This includes any types defined by any internal or
+	 * user-defined EnvisionPackages.
+	 */
 	private final TypeManager typeManager = new TypeManager();
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public EnvisionInterpreter(EnvisionCodeFile codeFileIn) {
+	public EnvisionInterpreter(Envision instance, EnvisionCodeFile codeFileIn) {
+		envisionInstance = instance;
 		startingFile = codeFileIn;
 		fileName = startingFile.getFileName();
 	}
 	
 	//---------------------------------------------------------------------------------
 	
-	//public static EnvisionInterpreter interpret(EnvisionCodeFile codeFile, WorkingDirectory dir) throws Exception {
-	//	return new EnvisionInterpreter(codeFile, dir).interpretI();
-	//}
-	
 	public EnvisionInterpreter interpret(WorkingDirectory dirIn) throws Exception {
-		directory = dirIn;
+		if (topDir == null) topDir = dirIn;
+		active_dir = dirIn;
 		
 		EnvPackage.ENV_PACKAGE.defineOn(this);
 		EArrayList<Statement> statements = startingFile.getStatements();
@@ -290,13 +322,29 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	}
 	
 	/**
+	 * Returns the Envision Language instance from which this interpreter was
+	 * created.
+	 *
+	 * @return The primary Envision Language instance
+	 */
+	public Envision envision() { return envisionInstance; }
+	
+	/**
 	 * Returns the active working file directory for which this
 	 * interpreter has been created from. This working directory contains
 	 * all of the related codeFiles enclosed within the given directory.
 	 * 
 	 * @return The working directory of this interpreter
 	 */
-	public WorkingDirectory workingDir() { return directory; }
+	public WorkingDirectory workingDir() { return active_dir; }
+	
+	/**
+	 * Returns the initial (and primary) working directory for which all Envision
+	 * code executions will have originated from.
+	 * 
+	 * @return The initial, top-level working directory
+	 */
+	public static WorkingDirectory topDir() { return topDir; }
 	
 	/**
 	 * Returns the specific codeFile that this interpreter was created from.
@@ -313,7 +361,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * 
 	 * @return The internal scope of this interpreter
 	 */
-	public Scope internalScope() { return internal; }
+	public Scope internalScope() { return internalScope; }
 	
 	/**
 	 * Returns the current working scope that is actively bound.
@@ -389,7 +437,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * 
 	 * @param name   The name of the object which will either be defined
 	 *               or overwritten
-	 * @param object The object being storred at the given 'name'
+	 * @param object The object being stored at the given 'name'
 	 *               location.
 	 * @return The defined object
 	 */
@@ -434,11 +482,11 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * 
 	 * @param name   The name of the object which will either be defined
 	 *               or overwritten
-	 * @param object The object being storred at the given 'name'
+	 * @param object The object being stored at the given 'name'
 	 *               location.
 	 * @return The defined object
 	 */
-	public EnvisionObject forceDefine(String name, EnvisionDatatype type, Object object) {
+	public EnvisionObject forceDefine(String name, IDatatype type, Object object) {
 		EnvisionObject toDefine = ObjectCreator.createObject(type, object, false, false);
 		EnvisionObject existing = null;
 		
@@ -502,7 +550,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param object The object to be defined if not already present
 	 * @return The defined object
 	 */
-	public EnvisionObject defineIfNot(String name, EnvisionDatatype type, EnvisionObject object) {
+	public EnvisionObject defineIfNot(String name, IDatatype type, EnvisionObject object) {
 		EnvisionObject o = EnvisionNull.NULL;
 		
 		try {
@@ -565,8 +613,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 *               present
 	 * @return The defined object
 	 */
-	public EnvisionObject updateOrDefine(String name, EnvisionDatatype type, EnvisionObject object) {
-		Box2<EnvisionDatatype, EnvisionObject> o = null;
+	public EnvisionObject updateOrDefine(String name, IDatatype type, EnvisionObject object) {
+		Box2<IDatatype, EnvisionObject> o = null;
 		
 		//return the typed variable (if it exists)
 		try {
@@ -590,7 +638,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * Java:null is returned instead.
 	 * 
 	 * @param name The variable name for which to retrieve an object from
-	 * @return The objet if it is defined or null if it is not
+	 * @return The object if it is defined or null if it is not
 	 */
 	public EnvisionObject getIfDefined(String name) {
 		EnvisionObject o = EnvisionNull.NULL;

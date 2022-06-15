@@ -5,7 +5,7 @@ import envision.parser.expressions.Expression;
 import envision.parser.expressions.ExpressionHandler;
 import envision.tokenizer.Operator;
 import envision.tokenizer.Token;
-import eutil.datatypes.util.BoxList;
+import eutil.datatypes.BoxList;
 
 public class Expr_Assign implements Expression {
 
@@ -41,7 +41,7 @@ public class Expr_Assign implements Expression {
 		if (name != null) n = name.lexeme;
 		else if (modulars != null) n = modulars + "";
 		else n = leftAssign + "";
-		return n + " " + operator.chars() + " " + value;
+		return n + " " + operator.typeString() + " " + value;
 	}
 	
 	@Override

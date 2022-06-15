@@ -4,17 +4,19 @@ import envision.interpreter.EnvisionInterpreter;
 import envision.interpreter.util.scope.Scope;
 import envision.lang.EnvisionObject;
 import envision.lang.internal.EnvisionFunction;
+import envision.lang.natives.IDatatype;
+import envision.lang.natives.NativeTypeManager;
 import envision.lang.util.DataModifier;
-import envision.lang.util.EnvisionDatatype;
 import envision.lang.util.Parameter;
 import envision.lang.util.ParameterData;
+import envision.lang.util.StaticTypes;
 import envision.parser.expressions.Expression;
 import envision.parser.statements.statement_types.Stmt_FuncDef;
 import envision.parser.util.StatementParameter;
 import envision.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-/** Utility class designed to help with method creation and overloading. */
+/** Utility class designed to help with function creation and overloading. */
 public class FunctionCreator {
 	
 	//hide the constructor
@@ -22,24 +24,27 @@ public class FunctionCreator {
 	
 	//----------------------------------------------------------------------
 	
-	/** Returns a new EnvisionMethod built from the given method declaration statement with the given scope as its base of reference. */
-	public static EnvisionFunction buildMethod(EnvisionInterpreter in, Stmt_FuncDef s, Scope scopeIn) {
+	/**
+	 * Returns a new EnvisionMethod built from the given function declaration
+	 * statement with the given scope as its base of reference.
+	 */
+	public static EnvisionFunction buildFunction(EnvisionInterpreter in, Stmt_FuncDef s, Scope scopeIn) {
 		
 		//---------------------------------------------------------
 		
 		
 		boolean isConstructor = s.isConstructor;
 		boolean isOperator = s.isOperator;
-		EnvisionDatatype function_return_datatype = null;
+		IDatatype function_return_datatype = null;
 		
 		//constructors don't have return types
 		if (isConstructor) function_return_datatype = null;
 		else {
 			var dec_return_type = s.declaration.getReturnType();
 			//wrap the return type if not null
-			if (dec_return_type != null) function_return_datatype = new EnvisionDatatype(dec_return_type);
+			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
 			//otherwise, assign var as retun type
-			else function_return_datatype = EnvisionDatatype.VAR_TYPE;
+			else function_return_datatype = StaticTypes.VAR_TYPE;
 		}
 		
 		
@@ -49,22 +54,23 @@ public class FunctionCreator {
 		//build the parameters
 		ParameterData data = buildParameters(in, s.methodParams);
 		//the function being created
-		EnvisionFunction m = null;
+		EnvisionFunction f = null;
 		
 		//create operator overload function if operator
-		if (isOperator) 		m = new EnvisionFunction(s.operator.keyword.asOperator(), data);
-		else if (isConstructor) m = new EnvisionFunction(data);
-		else 					m = new EnvisionFunction(function_return_datatype, s.name.lexeme, data);
+		if (isOperator) 		f = new EnvisionFunction(s.operator.keyword.asOperator(), data);
+		else if (isConstructor) f = new EnvisionFunction(data);
+		else 					f = new EnvisionFunction(function_return_datatype, s.name.lexeme, data);
 		
 		
 		//---------------------------------------------------------
 		
 		
-		m.setScope(scopeIn);
-		for (DataModifier mod : s.declaration.getMods()) m.setModifier(mod, true);
-		if (s.body != null) m.setBody(s.body);
+		f.setScope(scopeIn);
+		f.setVisibility(s.declaration.getVisibility());
+		for (DataModifier mod : s.declaration.getMods()) f.setModifier(mod, true);
+		if (s.body != null) f.setBody(s.body);
 		
-		return m;
+		return f;
 	}
 	
 	/** Returns a new EnvisionMethod built from the given method declaration statement with the given scope as its base of reference. */
@@ -107,7 +113,7 @@ public class FunctionCreator {
 			Token type = p.type;
 			
 			String theName = name.lexeme;
-			EnvisionDatatype theType = (type != null) ? new EnvisionDatatype(type) : EnvisionDatatype.VAR_TYPE;
+			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : StaticTypes.VAR_TYPE;
 			
 			Expression assign = p.assignment;
 			
@@ -122,13 +128,13 @@ public class FunctionCreator {
 	}
 	
 	/** Attempts to find a method of the same name within the given scope. */
-	public static EnvisionFunction getBaseMethod(Token name, Token operator, Scope scopeIn) {
+	public static EnvisionFunction getBaseFunction(Token name, Token operator, Scope scopeIn) {
 		String n = (name != null) ? name.lexeme : "OP(" + operator.lexeme + ")";
 		
 		//placeholder variable check
 		EnvisionObject o = scopeIn.get(n);
 		
-		//check if a method with that name is already defined
+		//check if a function with that name is already defined
 		if (o instanceof EnvisionFunction) return (EnvisionFunction) o;
 		
 		return null;
