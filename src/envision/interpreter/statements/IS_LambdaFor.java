@@ -3,7 +3,7 @@ package envision.interpreter.statements;
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.exceptions.errors.InvalidTargetError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.NumberUtil;
+import envision.interpreter.util.creationUtil.NumberHelper;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.lang.EnvisionObject;
 import envision.lang.datatypes.EnvisionInt;
@@ -75,7 +75,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 			popScope();
 			
 			if (!hasPostArgs) {
-				NumberUtil.increment(index, false);
+				NumberHelper.increment(index, false);
 			}
 			else {
 				for (Expression postExp : s.post) evaluate(postExp);

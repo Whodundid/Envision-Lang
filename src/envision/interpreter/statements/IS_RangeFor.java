@@ -2,7 +2,7 @@ package envision.interpreter.statements;
 
 import envision.exceptions.errors.InvalidDatatypeError;
 import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.creationUtil.NumberUtil;
+import envision.interpreter.util.creationUtil.NumberHelper;
 import envision.interpreter.util.interpreterBase.StatementExecutor;
 import envision.interpreter.util.throwables.Break;
 import envision.interpreter.util.throwables.Continue;
@@ -131,7 +131,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 					
 					//if the next most position is less than it's respective limit, increment it
 					if (checkLess(next)) {
-						NumberUtil.increment(next.a, next.c, true);
+						NumberHelper.increment(next.a, next.c, true);
 						carrying = false;
 					}
 					//otherwise, zero it out then continue until a range is found that is not at the end
@@ -158,7 +158,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	//-------------------------------
 	
 	private void inc(EnvisionObject obj, Number amount) {
-		NumberUtil.increment(obj, amount, true);
+		NumberHelper.increment(obj, amount, true);
 	}
 	
 	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) {

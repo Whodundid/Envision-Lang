@@ -6,7 +6,7 @@ import envision.lang.datatypes.EnvisionNumber;
 import envision.lang.datatypes.EnvisionNumberClass;
 import envision.lang.natives.Primitives;
 
-public final class NumberUtil {
+public final class NumberHelper {
 	
 	/**
 	 * Performs number negation on the given object.
