@@ -222,7 +222,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		}
 		catch (Exception error) {
 			//such professional error handler
-			System.out.println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
+			envisionInstance.getConsoleReceiver()
+				.onEnvisionPrintln("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
 			//error.printStackTrace();
 			throw error;
 		}
@@ -509,7 +510,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * <p>
 	 * This method will not attempt to check for inconsistent datatypes
 	 * between existing and incomming values. Simply put, this method only
-	 * chcks if a value of the same 'name' is currently defined within the
+	 * checks if a value of the same 'name' is currently defined within the
 	 * current interpreter scope or not. Because of this, it must be
 	 * understood that just because a value under the same name exists
 	 * within the current interpreter scope, it may not be the variable
@@ -517,7 +518,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * 
 	 * @param name   The name for which to define the given object on
 	 * @param object The object to be defined if not already present
-	 * @return The defined objet
+	 * @return The defined object
 	 */
 	public EnvisionObject defineIfNot(String name, EnvisionObject object) {
 		EnvisionObject o = EnvisionNull.NULL;
@@ -540,7 +541,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * <p>
 	 * This method will not attempt to check for inconsistent datatypes
 	 * between existing and incomming values. Simply put, this method only
-	 * chcks if a value of the same 'name' is currently defined within the
+	 * checks if a value of the same 'name' is currently defined within the
 	 * current interpreter scope or not. Because of this, it must be
 	 * understood that just because a value under the same name exists
 	 * within the current interpreter scope, it may not be the variable

@@ -117,7 +117,7 @@ public abstract class EnvisionObject {
 	 * Removes the given modifier from this object.
 	 */
 	public void removeModifier(DataModifier mod) {
-		modifiers ^= mod.byteVal;
+		modifiers &= ~mod.byteVal;
 	}
 	
 	//---------
@@ -203,6 +203,7 @@ public abstract class EnvisionObject {
 		//*scope visibility does not assign bitwise mods*
 		default: 													break;
 		}
+		
 		return this;
 	}
 	

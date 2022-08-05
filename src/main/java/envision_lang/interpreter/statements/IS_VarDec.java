@@ -56,7 +56,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			throw new UndefinedTypeError("The type '" + var_dec_datatype + "' is undefined within the current scope!");
 		}
 		
-		//if the rType correspondes to a specific user defined type, grab its class
+		//if the rType corresponds to a specific user defined type, grab its class
 		EnvisionClass typeClass = typeMan.getTypeClass(var_dec_datatype);
 		
 		//---------------------------------------------------------------------------------------------------------------

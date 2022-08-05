@@ -3,14 +3,17 @@ package envision_lang;
 import java.io.File;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.EnvisionLangConsoleOutputHandler;
 import envision_lang._launch.EnvisionLangConsoleReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLangSettings;
+import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.WorkingDirectory;
-import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError;
@@ -48,11 +51,13 @@ public class EnvisionLang {
 	/** The current build of the Envision Scripting Language. */
 	public static final String version = "0.0.###";
 	/** The current build's date of the Envision Scripting Language. */
-	public static final String versionDate = "6/12/2022";
+	public static final String versionDate = "8/5/2022";
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
 	private static boolean liveMode = false;
+	
+	public static final Logger envisionLogger = LoggerFactory.getLogger(EnvisionLang.class);
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
@@ -242,7 +247,7 @@ public class EnvisionLang {
 			dir.discoverFiles();
 		}
 		catch (Exception err) {
-			err.printStackTrace();
+			envisionLogger.error("Failed to build program!", err);
 			//throw e;
 			//handle working directory error
 		}
@@ -303,8 +308,8 @@ public class EnvisionLang {
 			if (errorCallback != null) errorCallback.handleException(e);
 		}
 		finally {
-			//display the logged running time
-			System.out.println("ENVISION-END: " + (System.currentTimeMillis() - start_time) + " ms");
+			//debug log the program's total running time
+			envisionLogger.debug("ENVISION-END: " + (System.currentTimeMillis() - start_time) + " ms");
 		}
 	}
 	
