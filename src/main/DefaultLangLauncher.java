@@ -1,17 +1,17 @@
 package main;
 
-import static envision._launch.EnvisionSettings.LaunchArgs.*;
+import static envision_lang._launch.EnvisionLangSettings.LaunchArgs.*;
 
-import envision.Envision;
-import envision._launch.EnvisionErrorCallBack;
-import envision._launch.EnvisionSettings;
-import envision._launch.EnvisionSettings.LaunchArgs;
-import envision.exceptions.EnvisionError;
+import envision_lang.EnvisionLang;
+import envision_lang._launch.EnvisionLangErrorCallBack;
+import envision_lang._launch.EnvisionLangSettings;
+import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
+import envision_lang.exceptions.EnvisionLangError;
 import eutil.random.RandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
-public class DefaultLangLauncher implements EnvisionErrorCallBack {
+public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 	
 	public static void main(String[] args) throws Exception {
 		TracingPrintStream.enableTrace();
@@ -21,8 +21,8 @@ public class DefaultLangLauncher implements EnvisionErrorCallBack {
 		/*
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < 100000; i++) {
-			Thing a = new Thing(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
-			Thing b = new Thing(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
+			var a = new Java_Performance_Reference(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
+			var b = new Java_Performance_Reference(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
 			
 			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
 		}
@@ -35,8 +35,8 @@ public class DefaultLangLauncher implements EnvisionErrorCallBack {
 	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
 		
-		Envision env = null;
-		env = new Envision();
+		EnvisionLang env = null;
+		env = new EnvisionLang();
 		//env = new Envision(PRELOAD_LANGUAGE);
 		//env = new Envision(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
 		//env = new Envision(PARSE_STATEMENTS, TOKENIZE);
@@ -62,7 +62,7 @@ public class DefaultLangLauncher implements EnvisionErrorCallBack {
 	}
 
 	@Override
-	public void handleError(EnvisionError e) {
+	public void handleError(EnvisionLangError e) {
 		handleException(e);
 	}
 
