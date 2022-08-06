@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>whodundid.libraries</groupId>
+	<groupId>whodundid</groupId>
 	<artifactId>Envision_Java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Envision_Java</name>
+	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,7 +14,6 @@
 	</properties>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -22,12 +22,20 @@
 					<release>18</release>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M7</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
 		<dependency>
-			<groupId>whodundid.libraries</groupId>
+			<groupId>whodundid</groupId>
 			<artifactId>EUtil</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
@@ -55,13 +63,5 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub Whodundid Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/Whodundid/EUtil</url>
-		</repository>
-	</distributionManagement>
 
 </project>

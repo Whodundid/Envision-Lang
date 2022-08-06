@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import __test_util__.VariableTest;
+import __test_util__.VariableTests;
 import envision_lang.lang.datatypes.EnvisionDouble;
 import envision_lang.lang.util.VisibilityType;
 
-public class DoubleTests extends VariableTest {
+public class DoubleTests extends VariableTests {
 	
 	//----------------
 	// Tests : Strong

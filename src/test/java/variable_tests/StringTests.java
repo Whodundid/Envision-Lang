@@ -2,11 +2,11 @@ package variable_tests;
 
 import org.junit.jupiter.api.Test;
 
-import __test_util__.VariableTest;
+import __test_util__.VariableTests;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.util.VisibilityType;
 
-public class StringTests extends VariableTest {
+public class StringTests extends VariableTests {
 	
 	@Test
 	public void create_no_value() throws Exception {

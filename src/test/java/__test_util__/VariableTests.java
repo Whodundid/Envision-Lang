@@ -16,15 +16,15 @@ import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.util.VisibilityType;
 
-public class VariableTest {
+public class VariableTests {
 	
 	//---------------
 	// Shared Fields
 	//---------------
 	
 	protected static EnvisionLang lang = new EnvisionLang();
-	protected static Path testDir = Paths.get("test_program");
-	protected static Path testMain = Paths.get("test_program/main.nvis");
+	protected static Path testDir;
+	protected static Path testMain;
 	protected static String mainFile;
 	protected static EnvisionCodeFile main;
 	protected static Scope scope;
@@ -37,7 +37,8 @@ public class VariableTest {
 	
 	@BeforeEach
 	public void setupWorkspace() throws Exception {
-		Files.createDirectory(testDir);
+		testDir = Files.createTempDirectory("envision_test");
+		testMain = Paths.get(testDir.toAbsolutePath() + "/main.nvis");
 	}
 	
 	@AfterEach
