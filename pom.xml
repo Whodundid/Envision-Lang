@@ -2,9 +2,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>valakan</groupId>
-	<artifactId>EnvisionLang</artifactId>
+	<artifactId>Envision-Lang</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>EnvisionLang</name>
+	<name>Envision-Lang</name>
 	<packaging>jar</packaging>
 
 	<properties>
