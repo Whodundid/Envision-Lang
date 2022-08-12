@@ -13,11 +13,11 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.internal.IPrototypeHandler;
+import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.IPrototypeHandler;
-import envision_lang.lang.util.InstanceFunction;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
@@ -497,6 +497,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_members() { super(LIST, "members"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList members = EnvisionListClass.newList();
+			System.out.println(inst + " : " + inst.instanceScope);
 			members.addAll(inst.instanceScope.getObjectsAsList());
 			ret(members);
 		}

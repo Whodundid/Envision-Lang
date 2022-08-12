@@ -56,10 +56,10 @@ public class ExpressionParser extends GenericParser {
 			Expression value = assignment();
 			
 			if (e instanceof Expr_Var v) return new Expr_Assign(v.name, operator, value);
-			//else if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
-			else if (e instanceof Expr_Get g) return new Expr_Set(g.object, g.name, value);
-			else if (e instanceof Expr_ListIndex lie) return new Expr_SetListIndex(lie, value);
-			else if (e instanceof Expr_Assign ae) return new Expr_Assign(ae, operator, value);
+			//if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
+			if (e instanceof Expr_Get g) return new Expr_Set(g.object, g.name, value);
+			if (e instanceof Expr_ListIndex lie) return new Expr_SetListIndex(lie, value);
+			if (e instanceof Expr_Assign ae) return new Expr_Assign(ae, operator, value);
 			
 			setPrevious();
 			error("'" + e + "' Invalid assignment target.");

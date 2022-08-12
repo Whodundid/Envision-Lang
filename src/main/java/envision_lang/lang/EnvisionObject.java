@@ -96,7 +96,7 @@ public abstract class EnvisionObject {
 	 * Returns true if this object has the given data modifier.
 	 */
 	public boolean hasModifier(DataModifier mod) {
-		return (getModifiers() & mod.byteVal) != 0;
+		return ((modifiers & (1L << mod.byteVal))) != 0;
 	}
 	
 	/**

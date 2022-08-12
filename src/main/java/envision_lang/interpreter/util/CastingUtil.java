@@ -76,7 +76,7 @@ public class CastingUtil {
 		}
 		
 		//-----------------------------------------------------------------------------
-		// While this system works, it does not account for these kinds of situtations
+		// While this system works, it does not account for these kinds of situations
 		//
 		// i = 5
 		// int x = i

@@ -112,7 +112,8 @@ public class ClassConstruct {
 		
 		//create copies of functions
 		for (EnvisionFunction f : functions) {
-			EnvisionFunction copy = f.copy().setScope(buildScope);
+			EnvisionFunction copy = f.copy();
+			copy.setScope(buildScope);
 			//extract operators
 			if (f.isOperator()) inst.addOperatorOverload(f.getOperator(), copy);
 			

@@ -55,7 +55,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * function's scope was derived from will be visible to this function
 	 * in some capacity.
 	 */
-	protected Scope functionScope;
+	//protected Scope functionScope;
 	
 	/**
 	 * If declared inside of a class, this is the class that houses this
@@ -164,7 +164,7 @@ public class EnvisionFunction extends ClassInstance {
 		isConstructor = mIn.isConstructor;
 		isOperatorOverload = mIn.isOperatorOverload;
 		operatorOverload = mIn.operatorOverload;
-		functionScope = mIn.functionScope;
+		instanceScope = mIn.instanceScope;
 	}
 	
 	/** Exclusive to class constructors. */
@@ -199,7 +199,7 @@ public class EnvisionFunction extends ClassInstance {
 		isConstructor = toCopy.isConstructor;
 		isOperatorOverload = toCopy.isOperatorOverload;
 		operatorOverload = toCopy.operatorOverload;
-		functionScope = toCopy.functionScope;
+		instanceScope = toCopy.instanceScope;
 		
 		for (EnvisionFunction overload : toCopy.overloads) {
 			overloads.add(copy(overload));
@@ -503,7 +503,7 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		//create a new scope derived from this function's scope
-		Scope scope = new Scope(functionScope);
+		Scope scope = new Scope(instanceScope);
 		
 		EArrayList<EnvisionObject> callArgs = new EArrayList<EnvisionObject>().addA(args);
 		EnvisionFunction m = getOverloadFromArgs(callArgs);
@@ -567,7 +567,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return The name of this function
 	 */
 	public String getFunctionName() { return functionName; }
-	public Scope getScope() { return functionScope; }
+//	public Scope getScope() { return functionScope; }
 	public ParameterData getParams() { return params; }
 	public EArrayList<Statement> getStatements() { return statements; }
 	public EArrayList<EnvisionFunction> getOverloads() { return overloads; }
@@ -586,10 +586,10 @@ public class EnvisionFunction extends ClassInstance {
 	// Setters
 	//---------
 	
-	public EnvisionFunction setScope(Scope scopeIn) {
-		functionScope = scopeIn;
-		return this;
-	}
+//	public EnvisionFunction setScope(Scope scopeIn) {
+//		functionScope = scopeIn;
+//		return this;
+//	}
 	
 	public EnvisionFunction setBody(EArrayList<Statement> in) {
 		statements.clear();

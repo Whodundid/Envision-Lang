@@ -8,6 +8,7 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.parser.expressions.expression_types.Expr_ListInitializer;
 
 public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer> {
@@ -27,11 +28,8 @@ public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer>
 		
 		//add initializer expression values
 		for (var e : expression.values) {
-			IDatatype type = IDatatype.dynamicallyDetermineType(e);
-			EnvisionClass typeClass = interpreter.getTypeManager().getTypeClass(type);
-			EnvisionObject[] args = { evaluate(e) };
-			ClassInstance obj = typeClass.newInstance(interpreter, args);
-			l.add(obj);
+			
+			l.add(evaluate(e));
 		}
 		
 		return l;

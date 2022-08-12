@@ -24,9 +24,9 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.util.InstanceFunction;
 import envision_lang.lang.util.ParameterData;
 
 public class EnvisionFileClass extends EnvisionClass {

@@ -21,8 +21,8 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.FunctionPrototype;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.tokenizer.Operator;
 
@@ -36,7 +36,7 @@ public class ClassInstance extends EnvisionObject {
 	 * scope and the over-arching class's scope from which this instance
 	 * was defined from.
 	 */
-	protected final Scope instanceScope;
+	protected Scope instanceScope;
 	
 	/**
 	 * Used for operator overloading. In the event that a class defines
@@ -417,6 +417,10 @@ public class ClassInstance extends EnvisionObject {
 	//---------
 	// Setters
 	//---------
+	
+	public void setScope(Scope in) {
+		instanceScope = in;
+	}
 	
 	/**
 	 * Assigns a field value within this instance's scope.

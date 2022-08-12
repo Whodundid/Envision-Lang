@@ -13,8 +13,6 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.IPrototypeHandler;
-import envision_lang.lang.util.InstanceFunction;
 
 /**
  * The parent class for all Envision Functions. This is a special

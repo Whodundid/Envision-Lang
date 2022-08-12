@@ -222,8 +222,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		}
 		catch (Exception error) {
 			//such professional error handler
-			envisionInstance.getConsoleReceiver()
-				.onEnvisionPrintln("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
+			envisionInstance.getConsoleHandler().println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
 			//error.printStackTrace();
 			throw error;
 		}

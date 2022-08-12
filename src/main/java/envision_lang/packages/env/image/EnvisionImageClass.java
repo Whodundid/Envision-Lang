@@ -11,9 +11,9 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionString;
+import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.util.IPrototypeHandler;
 import envision_lang.packages.env.file.EnvisionFile;
 
 public class EnvisionImageClass extends EnvisionClass {

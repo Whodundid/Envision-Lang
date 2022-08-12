@@ -36,7 +36,7 @@ import eutil.datatypes.EArrayList;
  * As parsing can be broken into either parsing for statements or expressions,
  * the generic parser is the abstract parent of both.
  * <p>
- * Many of the EnvisionParser's token retrival/comparison/navigation methods
+ * Many of the EnvisionParser's token retrieval/comparison/navigation methods
  * are mapped directly into this class for child convenience.
  * 
  * @author Hunter Bragg
@@ -86,7 +86,7 @@ public abstract class GenericParser {
 		
 		
 		//prevent invalid statement declarations inside of methods
-		//these restions are in place due to the fact that the resulting statement declaration
+		//these restrictions are in place due to the fact that the resulting statement declaration
 		//would simply not make sense being declared inside of a method
 		if (inMethod) {
 			errorIf(checkType(VISIBILITY_MODIFIER), "Statements with visibility modifiers cannot be defined inside of a method!");

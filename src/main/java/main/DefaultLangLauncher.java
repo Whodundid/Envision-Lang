@@ -36,10 +36,10 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//Thread.sleep(20000);
 		
 		EnvisionLang env = null;
-		env = new EnvisionLang();
-		//env = new Envision(PRELOAD_LANGUAGE);
-		//env = new Envision(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
-		//env = new Envision(PARSE_STATEMENTS, TOKENIZE);
+		//env = new EnvisionLang();
+		//env = new EnvisionLang(PRELOAD_LANGUAGE);
+		//env = new EnvisionLang(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
+		env = new EnvisionLang(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
 		//long preStart = System.currentTimeMillis();

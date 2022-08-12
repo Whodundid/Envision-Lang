@@ -79,7 +79,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	}
 	
 	/**
-	 * Attempts to parse a visibility modifer from tokens.
+	 * Attempts to parse a visibility modifier from tokens.
 	 */
 	public static void parseVisibility(ParserDeclaration dec) {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
@@ -104,7 +104,7 @@ public class PS_ParseDeclaration extends GenericParser {
 		if (type == VAR_DEF) {
 			//check for method calls or class member references
 			if (checkNext(PAREN_L, PERIOD)) type = OTHER;
-			//check for typeless var assignment
+			//check for type-less var assignment
 			else if (dec.hasDataMods()) type = VAR_DEF;
 			//check for expression calls
 			else if (checkNextType(ARITHMETIC)) type = EXPR;
@@ -113,7 +113,8 @@ public class PS_ParseDeclaration extends GenericParser {
 		dec.setDeclarationType(type);
 		
 		//if the keyword is a datatype, immediately set return type
-		if (t.keyword.isDataType()) dec.applyReturnType(t);
+		//if (t.keyword.isDataType()) dec.applyReturnType(t);
+		dec.applyReturnType(t);
 	}
 	
 	/**

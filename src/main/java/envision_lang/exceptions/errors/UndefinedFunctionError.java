@@ -2,10 +2,6 @@ package envision_lang.exceptions.errors;
 
 import envision_lang.exceptions.EnvisionLangError;
 
-@Deprecated
-/**
- * @deprecated UndefinedValueError can simply be used instead.
- */
 public class UndefinedFunctionError extends EnvisionLangError {
 	
 	public UndefinedFunctionError(String funcName) {

@@ -49,8 +49,9 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 		
 		//check if the object is actually visible
 		if (object.isPrivate() || object.isProtected()) {
+			System.out.println("IN: " + in);
 			//if the current scope is not the same as the instance's scope, throw an error
-			if (scope() != in.getScope()) { throw new NotVisibleError(object); }
+			if (scope() != in.getScope()) throw new NotVisibleError(object);
 		}
 		
 		return object;

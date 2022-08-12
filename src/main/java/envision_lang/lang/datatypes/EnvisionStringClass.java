@@ -11,9 +11,9 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.internal.IPrototypeHandler;
+import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.IPrototypeHandler;
-import envision_lang.lang.util.InstanceFunction;
 
 public class EnvisionStringClass extends EnvisionClass {
 

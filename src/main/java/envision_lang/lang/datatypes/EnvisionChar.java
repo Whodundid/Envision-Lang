@@ -10,8 +10,8 @@ import envision_lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.FunctionPrototype;
 import envision_lang.lang.util.StaticTypes;
 import envision_lang.tokenizer.Operator;
 

@@ -1,4 +1,4 @@
-package envision_lang.lang.util;
+package envision_lang.lang.internal;
 
 import java.util.HashMap;
 
@@ -6,6 +6,8 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -195,6 +197,7 @@ public class FunctionPrototype extends EnvisionObject {
 			//forcibly gain access and assign
 			if (!acc) con.setAccessible(true);
 			built_func = con.newInstance();
+			EnvisionFunctionClass.FUNC_CLASS.defineFunctionScopeMembers(built_func);
 			built_func.setInst(instance);
 			if (!acc) con.setAccessible(false);
 			

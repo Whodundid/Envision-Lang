@@ -1,8 +1,10 @@
-package envision_lang.lang.util;
+package envision_lang.lang.internal;
 
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.EArrayList;
 
 /**

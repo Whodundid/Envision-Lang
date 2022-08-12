@@ -96,7 +96,7 @@ public class EnvisionLangParser {
 	 * Parses a single line as opposed to an entire file.
 	 * This method is useful when the interpreter is being executed in a 'live'
 	 * mode of operation. In that, the user is able to continuously enter new
-	 * lines of code which are parsed independantly from one another.
+	 * lines of code which are parsed independently from one another.
 	 * <p>
 	 * Invalid statements are caught during parsing and displayed as an error
 	 * to the user.
@@ -393,7 +393,7 @@ public class EnvisionLangParser {
 	 * This method formats the current token line so that an '^' arrow is
 	 * displayed directly below the problematic token in question.
 	 * 
-	 * @param message The error message to be dispalyed
+	 * @param message The error message to be displayed
 	 * @return The generated error message
 	 */
 	public String getErrorMessage(String message) {

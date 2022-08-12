@@ -1,8 +1,8 @@
-package envision_lang.lang.util;
+package envision_lang.lang.internal;
 
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.util.ParameterData;
 
 public abstract class InstanceFunction<E extends ClassInstance> extends EnvisionFunction {
 	

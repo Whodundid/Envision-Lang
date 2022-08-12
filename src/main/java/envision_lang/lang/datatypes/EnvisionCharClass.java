@@ -10,9 +10,9 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.internal.IPrototypeHandler;
+import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.IPrototypeHandler;
-import envision_lang.lang.util.InstanceFunction;
 import envision_lang.lang.util.StaticTypes;
 
 public class EnvisionCharClass extends EnvisionClass {

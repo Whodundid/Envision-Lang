@@ -4,6 +4,7 @@ import java.util.List;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
@@ -75,6 +76,13 @@ public class ObjectCreator {
 		
 		//the object to be created
 		EnvisionObject obj = null;
+		
+		//if not primitive, check for default value and furthermore matching datatype
+		if (p_type == null)
+			if (valueIn == null) return EnvisionNull.NULL;
+			else if (valueIn instanceof ClassInstance ci && typeIn.compare(ci.getDatatype())) {
+				return ci;
+			}
 		
 		//check if creating a variable type
 		if (p_type.isVariableType()) {

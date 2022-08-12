@@ -32,12 +32,12 @@ public enum Primitives implements IDatatype {
 	// required language types
 	
 	VOID("void"),
-	NULL("_null_"),
+	NULL("//_null_"),
 	CLASS("//class"),
 	CLASS_INSTANCE("//class_inst"),
 	INTERFACE("//interface"),
 	PACKAGE("package"),
-	CODE_FILE("code_file"),
+	CODE_FILE("//code_file"),
 	FUNCTION("//function"),
 	//OPERATOR("operator"),
 	//EXCEPTION("exception"),
@@ -54,20 +54,20 @@ public enum Primitives implements IDatatype {
 	
 	// dynamic object types
 	
-	VAR("var"),
+	VAR("//var_type"),
 	ENUM("enum"),
 	ENUM_TYPE("//enum_type"),
 	
 	// vararg types
 	
-	BOOLEAN_A("[boolean"),
-	CHAR_A("[char"),
-	INT_A("[int"),
-	DOUBLE_A("[double"),
-	STRING_A("[string"),
-	NUMBER_A("[number"),
-	LIST_A("[list"),
-	VAR_A("[var"),
+	BOOLEAN_A("//[boolean"),
+	CHAR_A("//[char"),
+	INT_A("//[int"),
+	DOUBLE_A("//[double"),
+	STRING_A("//[string"),
+	NUMBER_A("//[number"),
+	LIST_A("//[list"),
+	VAR_A("//[var"),
 	
 	;
 	
