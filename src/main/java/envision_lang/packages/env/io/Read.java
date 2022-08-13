@@ -7,7 +7,7 @@ import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.StaticTypes;
-import eutil.datatypes.util.DataTypeUtil;
+import eutil.datatypes.util.EDataType;
 
 public class Read extends EnvisionFunction {
 	
@@ -23,7 +23,7 @@ public class Read extends EnvisionFunction {
 		
 		Object rVal = input;
 		
-		switch (DataTypeUtil.getStringDataType(input)) {
+		switch (EDataType.getStringDataType(input)) {
 		case NULL: rVal = null; break;
 		case BOOLEAN: rVal = Boolean.parseBoolean(input); break;
 		case CHAR: rVal = input.charAt(0); break;

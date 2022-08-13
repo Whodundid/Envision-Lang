@@ -9,7 +9,7 @@ import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.packages.EnvisionPackage;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.util.DataTypeUtil;
+import eutil.datatypes.util.EDataType;
 
 /**
  * An enum outlining all primitive datatypes to be associated with the
@@ -292,7 +292,7 @@ public enum Primitives implements IDatatype {
 		};
 	}
 	
-	public static Primitives getDataType(DataTypeUtil typeIn) {
+	public static Primitives getDataType(EDataType typeIn) {
 		return (typeIn == null) ? null : switch (typeIn) {
 		case VOID -> VOID;
 		case OBJECT -> VAR;
@@ -327,15 +327,15 @@ public enum Primitives implements IDatatype {
 	public static Primitives getDataType(Object in) {
 		//if (in instanceof IKeyword k && k.isOperator()) return OPERATOR;
 		if (in instanceof EnvisionObject env_obj) return getDataType(env_obj);
-		return getDataType(DataTypeUtil.getDataType(in));
+		return getDataType(EDataType.getDataType(in));
 	}
 	
 	public static Primitives getNumberType(String in) {
-		return getDataType(DataTypeUtil.getNumberType(in));
+		return getDataType(EDataType.getNumberType(in));
 	}
 	
 	public static Primitives getNumberType(Number in) {
-		return getDataType(DataTypeUtil.getNumberType(in));
+		return getDataType(EDataType.getNumberType(in));
 	}
 	
 	public static String getTypeString(Object in) {
