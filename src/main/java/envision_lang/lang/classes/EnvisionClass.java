@@ -497,7 +497,6 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_members() { super(LIST, "members"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList members = EnvisionListClass.newList();
-			System.out.println("MEMBERS FROM: " + inst);
 			members.addAll(inst.instanceScope.getObjectsAsList());
 			ret(members);
 		}

@@ -178,9 +178,10 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @return The built function
 	 */
 	public InstanceFunction build(ClassInstance instIn) {
-		System.out.println("proto '" + func_name + "@" + getHexHash() + "' isBuilt " + built);
+		//NOTE: building needs to take into account the scope that it is coming from
+		
 		//check if already built and return built_func
-		if (built) return built_func;
+		//if (built) return built_func;
 		
 		//check if there is even a dynamic class to build from
 		if (func_class == null) {
@@ -198,7 +199,6 @@ public class FunctionPrototype extends EnvisionObject {
 			//forcibly gain access and assign
 			if (!acc) con.setAccessible(true);
 			built_func = con.newInstance();
-			System.out.println("PROTO INST: " + instance + " : " + instIn + "\n");
 			EnvisionFunctionClass.FUNC_CLASS.defineFunctionScopeMembers(built_func);
 			built_func.setInst(instance);
 			if (!acc) con.setAccessible(false);
