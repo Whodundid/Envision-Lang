@@ -1,57 +1,67 @@
 package envision_lang.lang.natives;
 
+import envision_lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.util.DataModifier;
+import envision_lang.lang.util.DataModifierHandler;
 
+/**
+ * A field that marks a datatype and modifiers within a scope.
+ * 
+ * @author Hunter Bragg
+ */
 public class EnvisionField {
 	
-	private int modifiers;
-	private IDatatype datatype;
-	private EnvisionObject value;
+	//--------
+	// Fields
+	//--------
 	
-	public EnvisionField() { this(Primitives.VAR, EnvisionNull.NULL); }
-	public EnvisionField(IDatatype typeIn) { this(typeIn, EnvisionNull.NULL); }
-	public EnvisionField(IDatatype typeIn, EnvisionObject valueIn) {
+	private String fieldName;
+	private IDatatype datatype = Primitives.VAR; // defaults to VAR
+	private EnvisionObject value = EnvisionNull.NULL; // defaults to NULL
+	
+	private final DataModifierHandler modifierHandler = new DataModifierHandler();
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	public EnvisionField(String nameIn) { this(nameIn, Primitives.VAR, EnvisionNull.NULL); }
+	public EnvisionField(String nameIn, IDatatype typeIn) { this(nameIn, typeIn, EnvisionNull.NULL); }
+	public EnvisionField(String nameIn, IDatatype typeIn, EnvisionObject valueIn) {
+		fieldName = nameIn;
 		datatype = typeIn;
 		value = valueIn;
-	}
-	
-	/**
-	 * Returns true if this object has the given data modifier.
-	 */
-	public boolean hasModifier(DataModifier mod) {
-		return ((modifiers & (1L << mod.byteVal))) != 0;
-	}
-	
-	/**
-	 * Returns the integer containing all byte modifiers on this specific object.
-	 */
-	public int getModifiers() {
-		return modifiers;
-	}
-	
-	/**
-	 * Applies the given modifier to this object.
-	 */
-	public void addModifier(DataModifier mod) {
-		modifiers |= mod.byteVal;
-	}
-	
-	/**
-	 * Removes the given modifier from this object.
-	 */
-	public void removeModifier(DataModifier mod) {
-		modifiers &= ~mod.byteVal;
 	}
 	
 	//---------
 	// Getters
 	//---------
 	
-	public void setModifiers(int modifiersIn) {
-		modifiers = modifiersIn;
+	public EnvisionObject get() {
+		return value;
 	}
 	
-	//System.out.println("HAS " + this.getHexHash() + " : " + String.format("0b%8s", Integer.toBinaryString(modifiers)).replace(" ", "0"));
+	//---------
+	// Setters
+	//---------
+	
+	public void set(EnvisionObject valueIn) {
+		//error on null values -- this should never be Java::Null in Envision!
+		if (valueIn == null) throw new NullVariableError();
+		
+		//always allow Envision::Null
+		if (valueIn == EnvisionNull.NULL) {
+			value = valueIn;
+			return;
+		}
+		
+		//make sure that the type coming in matches the expected type
+		IDatatype in = valueIn.getDatatype();
+		if (!datatype.compare(in)) throw new InvalidDatatypeError(datatype, in);
+		
+		value = valueIn;
+	}
+	
 }

@@ -17,7 +17,6 @@ import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.DataModifier;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
@@ -315,7 +314,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @return True if this is an abstract class.
 	 */
 	public boolean isAbstract() {
-		return hasModifier(DataModifier.ABSTRACT);
+		return modifierHandler.isAbstract();
 	}
 	
 	/**

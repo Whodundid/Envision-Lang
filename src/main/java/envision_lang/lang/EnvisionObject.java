@@ -7,6 +7,7 @@ import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifier;
+import envision_lang.lang.util.DataModifierHandler;
 import envision_lang.lang.util.VisibilityType;
 
 /**
@@ -42,7 +43,7 @@ public abstract class EnvisionObject {
 	 * 
 	 * @see DataModifier
 	 */
-	protected int modifiers = 0b00000000;	// 0000-0000
+	protected final DataModifierHandler modifierHandler = new DataModifierHandler();	// 0000-0000
 	
 	/**
 	 * True if this object is a primitive object class.
@@ -92,34 +93,6 @@ public abstract class EnvisionObject {
 		throw new CopyNotSupportedError();
 	}
 	
-	/**
-	 * Returns true if this object has the given data modifier.
-	 */
-	public boolean hasModifier(DataModifier mod) {
-		return ((modifiers & (1L << mod.byteVal))) != 0;
-	}
-	
-	/**
-	 * Returns the integer containing all byte modifiers on this specific object.
-	 */
-	public int getModifiers() {
-		return modifiers;
-	}
-	
-	/**
-	 * Applies the given modifier to this object.
-	 */
-	public void addModifier(DataModifier mod) {
-		modifiers |= mod.byteVal;
-	}
-	
-	/**
-	 * Removes the given modifier from this object.
-	 */
-	public void removeModifier(DataModifier mod) {
-		modifiers &= ~mod.byteVal;
-	}
-	
 	//---------
 	// Getters
 	//---------
@@ -135,17 +108,6 @@ public abstract class EnvisionObject {
 	public String getHexHash() { return Integer.toHexString(hashCode()); }
 	
 	/**
-	 * @return This object's visibility
-	 */
-	public VisibilityType getVisibility() {
-		if (isRestricted()) return VisibilityType.RESTRICTED;
-		if (isPublic()) return VisibilityType.PUBLIC;
-		if (isProtected()) return VisibilityType.PROTECTED;
-		if (isPrivate()) return VisibilityType.PRIVATE;
-		return VisibilityType.SCOPE;
-	}
-	
-	/**
 	 * In the event that this object represents a primitive object type such as an
 	 * int, double, string, etc. The object should be created using the specific
 	 * Envision type class.
@@ -154,35 +116,29 @@ public abstract class EnvisionObject {
 	 */
 	public boolean isPrimitive() { return isPrimitive; }
 	
-	public boolean isStatic() { return hasModifier(DataModifier.STATIC); }
-	public boolean isFinal() { return hasModifier(DataModifier.FINAL); }
-	public boolean isStrong() { return hasModifier(DataModifier.STRONG); }
+	/**
+	 * @return This object's visibility
+	 */
+	public VisibilityType getVisibility() { return modifierHandler.getVisibility(); }
 	
-	public boolean isRestricted() { return hasModifier(DataModifier.RESTRICTED); }
-	public boolean isPrivate() { return hasModifier(DataModifier.PRIVATE); }
-	public boolean isProtected() { return hasModifier(DataModifier.PROTECTED); }
-	public boolean isPublic() { return hasModifier(DataModifier.PUBLIC); }
+	public boolean isStatic() { return modifierHandler.isStatic(); }
+	public boolean isFinal() { return modifierHandler.isFinal(); }
+	public boolean isStrong() { return modifierHandler.isStrong(); }
+	
+	public boolean isRestricted() { return modifierHandler.isRestricted(); }
+	public boolean isPrivate() { return modifierHandler.isPrivate(); }
+	public boolean isProtected() { return modifierHandler.isProtected(); }
+	public boolean isPublic() { return modifierHandler.isPublic(); }
 	/** Returns true if there are no visibility modifiers set. */
-	public boolean isScopeVisibility() { return ((modifiers >> 4) & 0xf) == 0; }
+	public boolean isScopeVisibility() { return modifierHandler.isScopeVisibility(); }
 
 	//---------
 	// Setters
 	//---------
 	
 	public EnvisionObject setModifier(DataModifier mod, boolean val) {
-		if (val) addModifier(mod);
-		else removeModifier(mod);
+		modifierHandler.setModifier(mod, val);
 		return this;
-	}
-	
-	/**
-	 * Sets all bitwise visibility modifiers to zero.
-	 */
-	private void resetVisibility() {
-		removeModifier(DataModifier.RESTRICTED);
-		removeModifier(DataModifier.PRIVATE);
-		removeModifier(DataModifier.PROTECTED);
-		removeModifier(DataModifier.PUBLIC);
 	}
 	
 	/**
@@ -192,30 +148,19 @@ public abstract class EnvisionObject {
 	 * @return This EnvisionObject
 	 */
 	public EnvisionObject setVisibility(VisibilityType visIn) {
-		//clear out current visibility bitwise mods
-		resetVisibility();
-		//assign specific visibility bitwise mods from visibility type
-		switch (visIn) {
-		case RESTRICTED: 	addModifier(DataModifier.RESTRICTED); 	break;
-		case PRIVATE: 		addModifier(DataModifier.PRIVATE);		break;
-		case PROTECTED: 	addModifier(DataModifier.PROTECTED);	break;
-		case PUBLIC: 		addModifier(DataModifier.PUBLIC);		break;
-		//*scope visibility does not assign bitwise mods*
-		default: 													break;
-		}
-		
+		modifierHandler.setVisibility(visIn);
 		return this;
 	}
 	
-	public EnvisionObject setStatic() { addModifier(DataModifier.STATIC); return this; }
-	public EnvisionObject setFinal() { addModifier(DataModifier.FINAL); return this; }
-	public EnvisionObject setStrong() { addModifier(DataModifier.STRONG); return this; }
+	public EnvisionObject setStatic() { modifierHandler.setStatic(); return this; }
+	public EnvisionObject setFinal() { modifierHandler.setFinal(); return this; }
+	public EnvisionObject setStrong() { modifierHandler.setStrong(); return this; }
 	
-	public EnvisionObject setRestricted() { return setVisibility(VisibilityType.RESTRICTED); }
-	public EnvisionObject setPrivate() { return setVisibility(VisibilityType.PRIVATE); }
-	public EnvisionObject setProtected() { return setVisibility(VisibilityType.PROTECTED); }
-	public EnvisionObject setPublic() { return setVisibility(VisibilityType.PUBLIC); }
-	public EnvisionObject setScopeVisibility() { return setVisibility(VisibilityType.SCOPE); }
+	public EnvisionObject setRestricted() { modifierHandler.setRestricted(); return this; }
+	public EnvisionObject setPrivate() { modifierHandler.setPrivate(); return this; }
+	public EnvisionObject setProtected() { modifierHandler.setProtected(); return this; }
+	public EnvisionObject setPublic() { modifierHandler.setPublic(); return this; }
+	public EnvisionObject setScopeVisibility() { modifierHandler.setScopeVisibility(); return this; }
 	
 	//----------------
 	// Static Methods

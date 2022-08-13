@@ -15,7 +15,7 @@ public class InvalidDatatypeError extends EnvisionLangError {
 	}
 	
 	/**
-	 * Custom message construtor.
+	 * Custom message constructor.
 	 * 
 	 * @param in Custom message
 	 */
