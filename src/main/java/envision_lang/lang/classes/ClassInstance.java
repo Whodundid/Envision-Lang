@@ -402,6 +402,7 @@ public class ClassInstance extends EnvisionObject {
 	public EnvisionObject get(String name) {
 		EnvisionObject obj = instanceScope.get(name);
 		//if function prototype, build dynamic function
+		System.out.println("GETTING '" + name + "' from '" + this + "' isProto '" + (obj instanceof FunctionPrototype) + "'");
 		if (obj instanceof FunctionPrototype proto) return proto.build(this);
 		//otherwise, just return scope object
 		return obj;
