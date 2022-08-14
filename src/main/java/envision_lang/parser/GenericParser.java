@@ -31,6 +31,7 @@ import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 /**
  * As parsing can be broken into either parsing for statements or expressions,
@@ -164,9 +165,9 @@ public abstract class GenericParser {
 	 * Collects the statements inside of a { } block.
 	 * @return EArrayList<Statement>
 	 */
-	public static EArrayList<Statement> getBlock() { return getBlock(false); }
-	public static EArrayList<Statement> getBlock(boolean inMethod) {
-		EArrayList<Statement> statements = new EArrayList();
+	public static EList<Statement> getBlock() { return getBlock(false); }
+	public static EList<Statement> getBlock(boolean inMethod) {
+		EList<Statement> statements = new EArrayList<>();
 		
 		while (!check(CURLY_R) && !atEnd()) {
 			Statement s = declaration(inMethod);
@@ -186,7 +187,7 @@ public abstract class GenericParser {
 	 */
 	public static Token[] getParameters() { return getParameters(null); }
 	public static Token[] getParameters(Token typeIn) {
-		EArrayList<Token> params = new EArrayList();
+		EList<Token> params = new EArrayList<>();
 		
 		//check type
 		if (typeIn != null) {

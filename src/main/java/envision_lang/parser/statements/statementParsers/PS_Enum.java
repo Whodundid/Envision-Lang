@@ -14,6 +14,7 @@ import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class PS_Enum extends GenericParser {
 	
@@ -43,7 +44,7 @@ public class PS_Enum extends GenericParser {
 			if (match(SEMICOLON, CURLY_R)) { break; }
 			
 			Token valueName = consume(IDENTIFIER, "Expected an enum value name!");
-			EArrayList<Expression> valueArgs = new EArrayList();
+			EList<Expression> valueArgs = new EArrayList<>();
 			
 			if (match(PAREN_L)) {
 				if (!check(PAREN_R)) {

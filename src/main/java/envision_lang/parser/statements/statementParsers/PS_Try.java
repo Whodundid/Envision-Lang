@@ -10,6 +10,7 @@ import envision_lang.parser.statements.statement_types.Stmt_Catch;
 import envision_lang.parser.statements.statement_types.Stmt_Try;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class PS_Try extends GenericParser {
 	
@@ -17,7 +18,7 @@ public class PS_Try extends GenericParser {
 		consume(CURLY_L, "Expected block start after try declaration!");
 		Stmt_Block tryBlock = new Stmt_Block(getBlock());
 		
-		EArrayList<Stmt_Catch> catches = new EArrayList();
+		EList<Stmt_Catch> catches = new EArrayList<>();
 		
 		consumeEmptyLines();
 		

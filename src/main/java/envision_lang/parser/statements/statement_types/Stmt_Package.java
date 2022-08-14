@@ -4,15 +4,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Stmt_Package implements Statement {
 	
 	public final ParserDeclaration declaration;
 	public final Token name;
-	public final EArrayList<Statement> body;
+	public final EList<Statement> body;
 	
-	public Stmt_Package(ParserDeclaration declarationIn, Token nameIn, EArrayList<Statement> bodyIn) {
+	public Stmt_Package(ParserDeclaration declarationIn, Token nameIn, EList<Statement> bodyIn) {
 		declaration = declarationIn;
 		name = nameIn;
 		body = bodyIn;

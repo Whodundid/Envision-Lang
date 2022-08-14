@@ -5,14 +5,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Stmt_InterfaceDef implements Statement {
 	
 	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Generic> generics = new EArrayList();
+	public final EList<Expr_Generic> generics = new EArrayList<>();
 	
 	public Stmt_InterfaceDef(ParserDeclaration declarationIn) { declaration = declarationIn; }
-	public Stmt_InterfaceDef(ParserDeclaration declarationIn, EArrayList<Expr_Generic> genericsIn) {
+	public Stmt_InterfaceDef(ParserDeclaration declarationIn, EList<Expr_Generic> genericsIn) {
 		declaration = declarationIn;
 		generics.addAll(genericsIn);
 	}

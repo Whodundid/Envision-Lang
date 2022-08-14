@@ -4,19 +4,20 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 /** A grouping of multiple expressions to be executed together. */
 public class Expr_Compound implements Expression {
 	
-	public final EArrayList<Expression> expressions;
+	public final EList<Expression> expressions;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public Expr_Compound() { this(new EArrayList<Expression>()); }
-	public Expr_Compound(EArrayList<Expression> expressionsIn) {
+	public Expr_Compound() { this(new EArrayList<>()); }
+	public Expr_Compound(EList<Expression> expressionsIn) {
 		expressions = expressionsIn;
 	}
 	

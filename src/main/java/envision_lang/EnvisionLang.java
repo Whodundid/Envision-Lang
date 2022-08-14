@@ -21,6 +21,7 @@ import envision_lang.exceptions.errors.workingDirectory.NoMainError;
 import envision_lang.packages.EnvisionLangPackage;
 import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.debug.Broken;
 import eutil.debug.Experimental;
 import eutil.debug.InDevelopment;
@@ -154,7 +155,7 @@ public class EnvisionLang {
 	/**
 	 * Packages to be loaded upon program compilation.
 	 */
-	private final EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
+	private final EList<EnvisionLangPackage> packages = new EArrayList<>();
 	
 	/**
 	 * A handler which is referenced when an EnvisionError is thrown.

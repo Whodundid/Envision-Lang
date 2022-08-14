@@ -9,6 +9,7 @@ import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 /**
  * Parses return statements and its conditional counterpart.
@@ -55,7 +56,7 @@ public class PS_Return extends GenericParser {
 		}
 		
 		//get return values
-		EArrayList<Expression> retVals = new EArrayList();
+		EList<Expression> retVals = new EArrayList<>();
 		if (!check(SEMICOLON, NEWLINE)) {
 			do {
 				retVals.add(ExpressionParser.parseExpression());

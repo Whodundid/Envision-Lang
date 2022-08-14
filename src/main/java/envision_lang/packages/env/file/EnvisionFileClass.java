@@ -63,7 +63,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	@Override
 	/**
 	 * Goes through the process of physically creating the Envision class
-	 * structure backend as well as producing a wrapped Java File object
+	 * structure back-end as well as producing a wrapped Java File object
 	 * which can be internally referenced.
 	 */
 	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

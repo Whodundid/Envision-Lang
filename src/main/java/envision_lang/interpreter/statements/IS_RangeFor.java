@@ -20,6 +20,7 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	
@@ -29,8 +30,8 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 	
 	@Override
 	public void run(Stmt_RangeFor statement) {
-		EArrayList<Expr_Range> ranges = statement.ranges;
-		EArrayList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList();
+		EList<Expr_Range> ranges = statement.ranges;
+		EList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList<>();
 		Statement body = statement.body;
 		pushScope();
 		
@@ -172,7 +173,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 		return evaluate(left);
 	}
 	
-	private boolean checkKeepGoing(EArrayList<Box3<EnvisionVariable, Long, Long>> list) {
+	private boolean checkKeepGoing(EList<Box3<EnvisionVariable, Long, Long>> list) {
 		//calculate whether or not the loop is done
 		for (var box : list) {
 			long a = (long) box.a.get_i();

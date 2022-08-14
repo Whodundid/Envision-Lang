@@ -3,6 +3,7 @@ package envision_lang.lang.util;
 import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import eutil.datatypes.BoxList;
+import eutil.debug.Unused;
 
 /**
  * Applied to any function that is intended to be initially created as a
@@ -10,6 +11,7 @@ import eutil.datatypes.BoxList;
  * 
  * @author Hunter Bragg
  */
+@Unused
 public interface PrototypeTarget {
 
 	/** The name of the prototype function. */

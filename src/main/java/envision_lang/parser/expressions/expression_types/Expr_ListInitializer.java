@@ -4,13 +4,14 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Expr_ListInitializer implements Expression {
 
-	public final EArrayList<Expression> values;
+	public final EList<Expression> values;
 	
-	public Expr_ListInitializer() { this(new EArrayList<Expression>()); }
-	public Expr_ListInitializer(EArrayList<Expression> valuesIn) {
+	public Expr_ListInitializer() { this(new EArrayList<>()); }
+	public Expr_ListInitializer(EList<Expression> valuesIn) {
 		values = valuesIn;
 	}
 	

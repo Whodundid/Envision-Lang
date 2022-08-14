@@ -125,7 +125,7 @@ import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.statements.statement_types.Stmt_While;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.Box2;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 /**
  * The primary class responsible for executing parsed Envision script
@@ -209,7 +209,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		active_dir = dirIn;
 		
 		EnvPackage.ENV_PACKAGE.defineOn(this);
-		EArrayList<Statement> statements = startingFile.getStatements();
+		EList<Statement> statements = startingFile.getStatements();
 		
 		int cur = 0;
 		try {
@@ -266,7 +266,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param statements The list of statements to be executed
 	 * @param scopeIn      The scope for which to execute the statements on
 	 */
-	public void executeBlock(EArrayList<Statement> statements, Scope scopeIn) {
+	public void executeBlock(EList<Statement> statements, Scope scopeIn) {
 		Scope prev = working_scope;
 		try {
 			working_scope = scopeIn;

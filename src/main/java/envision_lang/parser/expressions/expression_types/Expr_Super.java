@@ -4,16 +4,16 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 public class Expr_Super implements Expression {
 	
 	public final Token target;
-	public final EArrayList<Expression> args;
+	public final EList<Expression> args;
 	
 	public Expr_Super(Token methodIn) { this(methodIn, null); }
-	public Expr_Super(Token methodIn, EArrayList<Expression> argsIn) {
+	public Expr_Super(Token methodIn, EList<Expression> argsIn) {
 		target = methodIn;
 		args = argsIn;
 	}

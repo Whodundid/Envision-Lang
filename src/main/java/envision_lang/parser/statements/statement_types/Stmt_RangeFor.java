@@ -6,11 +6,12 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Stmt_RangeFor implements Statement {
 	
 	public final Statement init;
-	public final EArrayList<Expr_Range> ranges = new EArrayList();
+	public final EList<Expr_Range> ranges = new EArrayList<>();
 	public final Statement body;
 	
 	public Stmt_RangeFor(Statement initIn, Statement bodyIn) {
@@ -43,8 +44,8 @@ public class Stmt_RangeFor implements Statement {
 		return this;
 	}
 	
-	public Stmt_RangeFor addAll(EArrayList<Expr_Range> rangesIn) {
-		if (rangesIn != null) { ranges.addAll(rangesIn); }
+	public Stmt_RangeFor addAll(EList<Expr_Range> rangesIn) {
+		if (rangesIn != null) ranges.addAll(rangesIn);
 		return this;
 	}
 	

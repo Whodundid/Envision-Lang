@@ -10,7 +10,7 @@ public enum VisibilityType {
 	PROTECTED("_"),
 	PRIVATE("-"),
 	/** Assigned by not specifying explicit visibility. */
-	SCOPE(""),
+	SCOPE("$"),
 	/** Strictly internal. Cannot be explicitly assigned within Envision. */
 	RESTRICTED("###_");
 	

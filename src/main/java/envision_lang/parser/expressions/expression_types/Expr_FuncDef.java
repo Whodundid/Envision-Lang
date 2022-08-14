@@ -9,13 +9,13 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Expr_FuncDef implements Expression {
 	
 	public final Stmt_FuncDef declaration;
 	
-	public Expr_FuncDef(Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
+	public Expr_FuncDef(Token nameIn, EList<StatementParameter> paramsIn, EList<Statement> bodyIn) {
 		ParserDeclaration d = new ParserDeclaration();
 		d.applyReturnType(Token.create(ReservedWord.VAR, "var", nameIn.line));
 		declaration = new Stmt_FuncDef(nameIn, null, paramsIn, bodyIn, d, false, false);

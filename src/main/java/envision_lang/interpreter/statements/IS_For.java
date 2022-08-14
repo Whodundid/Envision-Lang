@@ -5,7 +5,7 @@ import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_For;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class IS_For extends StatementExecutor<Stmt_For> {
 
@@ -22,7 +22,7 @@ public class IS_For extends StatementExecutor<Stmt_For> {
 		Statement init = statement.init;
 		Statement body = statement.body;
 		Expression cond = statement.cond;
-		EArrayList<Expression> post = statement.post;
+		EList<Expression> post = statement.post;
 		
 		pushScope();
 		

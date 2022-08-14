@@ -6,11 +6,12 @@ import envision_lang.parser.GenericParser;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class PS_Block extends GenericParser {
 	
-	public static EArrayList<Statement> handleBlock() {
-		EArrayList<Statement> b = new EArrayList();
+	public static EList<Statement> handleBlock() {
+		EList<Statement> b = new EArrayList<>();
 		
 		consume(CURLY_L, "Expected a '}' to start scope block!");
 		

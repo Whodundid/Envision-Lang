@@ -23,6 +23,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Scope {
 	
@@ -160,7 +161,7 @@ public class Scope {
 	 * Returns a list of all values on this immediate scope. Does not
 	 * check parents.
 	 */
-	public EArrayList<EnvisionObject> values() {
+	public EList<EnvisionObject> values() {
 		return values.entrySet().stream().map(b -> b.getValue().getB())
 								.collect(EArrayList.toEArrayList());
 	}
@@ -169,7 +170,7 @@ public class Scope {
 	 * Returns a list of all fields on this immediate scope. Does not
 	 * check parents.
 	 */
-	public EArrayList<EnvisionObject> fields() {
+	public EList<EnvisionObject> fields() {
 		return values.entrySet().stream()
 								.filter(b -> !b.getValue().getB().getDatatype().isFunction())
 								.map(b -> b.getValue().getB()).collect(EArrayList.toEArrayList());
@@ -187,9 +188,10 @@ public class Scope {
 	 * Returns a list of all methods on this immediate scope. Does not
 	 * check parents.
 	 */
-	public EArrayList<EnvisionFunction> functions() {
+	public EList<EnvisionFunction> functions() {
 		return values.entrySet().stream()
 				.filter(b -> b.getValue().getB().getDatatype().isFunction())
+				.filter(b -> !(b.getValue().getB() instanceof FunctionPrototype))
 				.map(b -> b.getValue().getB()).map(b -> (EnvisionFunction) b)
 				.collect(EArrayList.toEArrayList());
 	}

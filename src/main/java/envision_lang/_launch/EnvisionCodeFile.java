@@ -2,6 +2,7 @@ package envision_lang._launch;
 
 import java.io.File;
 import java.io.IOException;
+
 import envision_lang.EnvisionLang;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
@@ -14,6 +15,7 @@ import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 /**
@@ -33,13 +35,13 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The physical File object pointing back to the actual file on the system. */
 	private final File theFile;
 	/** Each line of the file. */
-	private EArrayList<String> lines = new EArrayList();
+	private EList<String> lines = new EArrayList<>();
 	/** The tokenized version of the file. */
-	private EArrayList<Token> tokens = new EArrayList();
+	private EList<Token> tokens = new EArrayList<>();
 	/** The tokenized version of each line. */
-	private EArrayList<EArrayList<Token>> lineTokens = new EArrayList();
+	private EList<EList<Token>> lineTokens = new EArrayList<>();
 	/** The parsed Statements from the code file. */
-	private EArrayList<Statement> statements = new EArrayList();
+	private EList<Statement> statements = new EArrayList<>();
 	/** True if this file is actually a proper Envision code file. */
 	private final boolean isValid;
 	/** True if this file has already been parsed by the Envision Parser. */
@@ -154,10 +156,10 @@ public class EnvisionCodeFile extends EnvisionObject {
 	}
 	
 	public void execute() throws Exception {
-		execute(new EArrayList<String>());
+		execute(new EArrayList<>());
 	}
 	
-	public void execute(EArrayList<String> programArgs) throws Exception {
+	public void execute(EList<String> programArgs) throws Exception {
 		if (isLoaded) interpreter.interpret(workingDir);
 	}
 	
@@ -179,10 +181,10 @@ public class EnvisionCodeFile extends EnvisionObject {
 	
 	public String getFileName() { return fileName; }
 	public File getSystemFile() { return theFile; }
-	public EArrayList<String> getLines() { return lines; }
-	public EArrayList<Token> getTokens() { return tokens; }
-	public EArrayList<EArrayList<Token>> getLineTokens() { return lineTokens; }
-	public EArrayList<Statement> getStatements() { return statements; }
+	public EList<String> getLines() { return lines; }
+	public EList<Token> getTokens() { return tokens; }
+	public EList<EList<Token>> getLineTokens() { return lineTokens; }
+	public EList<Statement> getStatements() { return statements; }
 	public EnvisionInterpreter getInterpreter() { return interpreter; }
 	
 	//-----------------------------------------------------
@@ -201,7 +203,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		
 		System.out.println("'" + getFileName() + "' Tokens:");
 		int i = 1;
-		for (EArrayList<Token> lines : lineTokens) {
+		for (EList<Token> lines : lineTokens) {
 			StringBuilder line = new StringBuilder(String.valueOf(i++));
 			line.append("\t");
 			for (Token t : lines) line.append(t.toString()).append(" ");

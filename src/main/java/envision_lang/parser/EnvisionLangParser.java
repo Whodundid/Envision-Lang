@@ -10,6 +10,7 @@ import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 /**
@@ -24,13 +25,13 @@ public class EnvisionLangParser {
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** The tokens of each line, line by line. Used to generate error messages. */
-	private EArrayList<EArrayList<Token>> tokenLines;
+	private EList<EList<Token>> tokenLines;
 	/** A complete list of all tokens within the file currently being parsed. */
-	private EArrayList<Token> tokens;
+	private EList<Token> tokens;
 	/** A non tokenized version of the file being parsed.
 	 *  This is simply each line of the file in a list.
 	 *  Used to help generate error messages. */
-	private EArrayList<String> lines;
+	private EList<String> lines;
 	/** A counter to keep track of the current token as parsing continues. */
 	private int current = 0;
 	
@@ -53,7 +54,7 @@ public class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EArrayList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
+	public static EList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
 		//error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
@@ -61,7 +62,7 @@ public class EnvisionLangParser {
 		EnvisionLangParser p = new EnvisionLangParser();
 		
 		//unpack the code file's tokenized values
-		EArrayList<Statement> statements = new EArrayList();
+		EList<Statement> statements = new EArrayList<>();
 		p.tokenLines = codeFile.getLineTokens();
 		p.tokens = codeFile.getTokens();
 		p.lines = codeFile.getLines();
@@ -372,7 +373,7 @@ public class EnvisionLangParser {
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
-	// Error Production Hanler
+	// Error Production Handler
 	//-----------------------------------------------------------------------------------------------------
 	
 	/**
@@ -419,7 +420,7 @@ public class EnvisionLangParser {
 		border = StringUtil.repeatString("-", longest.length() + 16);
 		
 		//find arrow position
-		EArrayList<Token> tokenLine = tokenLines.get(theLine - 1);
+		EList<Token> tokenLine = tokenLines.get(theLine - 1);
 		int problem_token_pos = 0;
 		for (int i = 0; i < tokenLine.size(); i++) {
 			if (tokenLine.get(i).checkID(current().id)) {

@@ -100,6 +100,10 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
 		}
 		
+		if (obj instanceof ClassInstance env_class) {
+			System.out.println(obj + " OPERATORS: " + env_class.getOperators());
+		}
+		
 		//otherwise, handle default assignment
 		if (op == Operator.ASSIGN) return assign();
 		/*
@@ -194,7 +198,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			//define as 'var' type variable
 			s.define(var_name, StaticTypes.VAR_TYPE, var_obj);
 		}
-		//if the object does exist, attemt to assign the new value to it
+		//if the object does exist, attempt to assign the new value to it
 		else {
 			//don't allow final values to be reassigned
 			if (var_obj.isFinal()) throw new FinalVarReassignmentError(var_obj, assignment_value);

@@ -17,6 +17,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.debug.Experimental;
 
 @Experimental
@@ -51,21 +52,21 @@ public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 			else {
 				//if the statement is valid, iterate across all of the method's scope statements
 				//and replace MODULAR_VALUE tokens with the association value.
-				EArrayList<Statement> statements = s.body;
-				EArrayList<Statement> newStatements = new EArrayList();
+				EList<Statement> statements = s.body;
+				EList<Statement> newStatements = new EArrayList();
 				
 				for (Statement stmt : statements) {
 					
 					//unbox block statements
 					if (stmt instanceof Stmt_Block) {
-						EArrayList<Statement> found = ((Stmt_Block) stmt).statements;
-						EArrayList<Stmt_Block> workList = new EArrayList();
+						EList<Statement> found = ((Stmt_Block) stmt).statements;
+						EList<Stmt_Block> workList = new EArrayList();
 						
 						while (workList.isNotEmpty()) {
-							EArrayList<Stmt_Block> newWork = new EArrayList();
+							EList<Stmt_Block> newWork = new EArrayList();
 							
 							for (Stmt_Block bs : workList) {
-								EArrayList<Statement> bsStatements = bs.statements;
+								EList<Statement> bsStatements = bs.statements;
 								for (Statement bss : bsStatements)
 									if (bss instanceof Stmt_Block) newWork.add((Stmt_Block) bss);
 									else found.add(bss);

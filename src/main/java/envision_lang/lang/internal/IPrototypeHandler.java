@@ -6,6 +6,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 /**
  * Essentially a glorified list that is used to directly define a set of
@@ -18,7 +19,7 @@ import eutil.datatypes.EArrayList;
  */
 public class IPrototypeHandler {
 
-	private final EArrayList<FunctionPrototype> prototypes = new EArrayList<>();
+	private final EList<FunctionPrototype> prototypes = new EArrayList<>();
 	
 	//--------------
 	// Constructors

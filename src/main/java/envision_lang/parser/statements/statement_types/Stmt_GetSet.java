@@ -5,12 +5,13 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Stmt_GetSet implements Statement {
 
 	public final VisibilityType getVis, setVis;
 	public final boolean get, set;
-	public EArrayList<Token> vars;
+	public EList<Token> vars;
 	
 	public Stmt_GetSet(VisibilityType getVisIn, VisibilityType setVisIn, boolean getIn, boolean setIn) { this(getVisIn, setVisIn, getIn, setIn, null); }
 	public Stmt_GetSet(VisibilityType getVisIn, VisibilityType setVisIn, boolean getIn, boolean setIn, EArrayList<Token> varsIn) {
@@ -21,7 +22,7 @@ public class Stmt_GetSet implements Statement {
 		vars = varsIn;
 	}
 	
-	public void setVars(EArrayList<Token> varsIn) {
+	public void setVars(EList<Token> varsIn) {
 		vars = varsIn;
 	}
 	

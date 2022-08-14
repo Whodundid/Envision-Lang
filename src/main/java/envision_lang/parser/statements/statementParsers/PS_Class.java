@@ -15,6 +15,7 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class PS_Class extends GenericParser {
 	
@@ -57,10 +58,10 @@ public class PS_Class extends GenericParser {
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors
-		EArrayList<Statement> body = getBlock();
-		EArrayList<Statement> staticMembers = new EArrayList();
+		EList<Statement> body = getBlock();
+		EList<Statement> staticMembers = new EArrayList<>();
 		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
+		EList<Stmt_FuncDef> constructors = new EArrayList<>();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
@@ -132,8 +133,8 @@ public class PS_Class extends GenericParser {
 		return cs;
 	}
 	
-	private static EArrayList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
+	private static EList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
+		EList<Stmt_FuncDef> constructors = new EArrayList<>();
 		Iterator<Statement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {

@@ -16,6 +16,7 @@ import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 import eutil.math.NumberUtil;
 
 /** Utility class designed to help with general object creation. */
@@ -29,8 +30,8 @@ public class ObjectCreator {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** Wraps the given set of arguments in corresponding EnvisionObjects for internal language data communication. */
-	public static EArrayList<EnvisionObject> createArgs(Object... args) {
-		EArrayList<EnvisionObject> callArgs = new EArrayList();
+	public static EList<EnvisionObject> createArgs(Object... args) {
+		EList<EnvisionObject> callArgs = new EArrayList<>();
 		
 		//return if incomming args is null
 		if (args == null) return callArgs;

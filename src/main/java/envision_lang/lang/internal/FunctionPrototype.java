@@ -9,6 +9,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 /**
  * A low-level function placeholder that is intended to be handled
@@ -57,9 +58,9 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Stores overloads in the form of 'return type', '[ParameterData]*'.
 	 * Note: Parameter data can be empty -- hence *.
 	 */
-	private final HashMap<IDatatype, EArrayList<ParameterData>> overloads = new HashMap();
+	private final HashMap<IDatatype, EList<ParameterData>> overloads = new HashMap<>();
 	
-	private final EArrayList<ParameterData> overload_params = new EArrayList();
+	private final EList<ParameterData> overload_params = new EArrayList<>();
 	
 	/**
 	 * Even internal functions must be bound by some pre-declared Java class in and
@@ -224,7 +225,7 @@ public class FunctionPrototype extends EnvisionObject {
 	
 	public FunctionPrototype addOverload(IDatatype rType, ParameterData params) {
 		//check if there is a bucket made for the given return type
-		EArrayList<ParameterData> bucket = overloads.get(rType);
+		var bucket = overloads.get(rType);
 		//if there is no bucket, make one first
 		if (bucket == null) {
 			overloads.put(rType, bucket = new EArrayList());
@@ -251,7 +252,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @return True if there is an overload with the same return type and parameters
 	 */
 	public boolean hasOverload(IDatatype rType, ParameterData params) {
-		EArrayList<ParameterData> bucket = overloads.get(rType);
+		var bucket = overloads.get(rType);
 		//if there's no bucket, then there's no overload -- return false
 		if (bucket == null) return false;
 		

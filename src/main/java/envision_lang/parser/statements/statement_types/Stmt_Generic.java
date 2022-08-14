@@ -5,13 +5,14 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.EList;
 
 public class Stmt_Generic implements Statement {
 	
-	public final EArrayList<Expr_Generic> generics = new EArrayList();
+	public final EList<Expr_Generic> generics = new EArrayList<>();
 	
 	public Stmt_Generic() {}
-	public Stmt_Generic(EArrayList<Expr_Generic> genericsIn) {
+	public Stmt_Generic(EList<Expr_Generic> genericsIn) {
 		generics.addAll(genericsIn);
 	}
 	
