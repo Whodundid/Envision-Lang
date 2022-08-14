@@ -30,7 +30,7 @@ public class TypeManager {
 	 * A collection of all user defined datatypes along with
 	 * the EnvisionClass associated with them.
 	 */
-	private HashMap<String, EnvisionClass> types = new HashMap<>();
+	private HashMap<String, EnvisionClass> types = new HashMap();
 	
 	public TypeManager() {
 		//load primitive types
@@ -107,7 +107,7 @@ public class TypeManager {
 	 */
 	public HashSet<IDatatype> getTypes() {
 		var mapped_types = types.keySet().stream().map(t -> NativeTypeManager.datatypeOf(t)).collect(Collectors.toList());
-		return new HashSet<>(mapped_types);
+		return new HashSet<IDatatype>(mapped_types);
 	}
 	
 	/*

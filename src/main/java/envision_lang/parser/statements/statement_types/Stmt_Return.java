@@ -5,21 +5,20 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class Stmt_Return implements Statement {
 
 	/** A condition for which to return on. */
 	public final Expression condition;
 	/** The value(s) being returned. */
-	public final EList<Expression> retVals;
+	public final EArrayList<Expression> retVals;
 	
-	public Stmt_Return(Expression valueIn) { this(new EArrayList<>(valueIn)); }
-	public Stmt_Return(Expression conditionIn, Expression valueIn) { this(conditionIn, new EArrayList<>(valueIn)); }
-	public Stmt_Return(EList<Expression> retValsIn) { this(null, retValsIn); }
-	public Stmt_Return(Expression conditionIn, EList<Expression> retValsIn) {
+	public Stmt_Return(Expression valueIn) { this(new EArrayList<Expression>(valueIn)); }
+	public Stmt_Return(Expression conditionIn, Expression valueIn) { this(conditionIn, new EArrayList<Expression>(valueIn)); }
+	public Stmt_Return(EArrayList<Expression> retValsIn) { this(null, retValsIn); }
+	public Stmt_Return(Expression conditionIn, EArrayList<Expression> retValsIn) {
 		condition = conditionIn;
-		retVals = new EArrayList<>(retValsIn);
+		retVals = new EArrayList(retValsIn);
 	}
 	
 	@Override

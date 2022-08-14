@@ -7,11 +7,10 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.VariableDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class Stmt_VarDef implements Statement {
 	
-	public final EList<VariableDeclaration> vars = new EArrayList<>();
+	public final EArrayList<VariableDeclaration> vars = new EArrayList();
 	public final ParserDeclaration declaration;
 	public final Stmt_GetSet getset;
 	

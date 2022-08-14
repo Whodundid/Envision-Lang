@@ -9,11 +9,10 @@ import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class ParameterData implements Iterable<Parameter> {
 	
-	EList<Parameter> params = new EArrayList<>();
+	EArrayList<Parameter> params = new EArrayList();
 	
 	//--------------
 	// Constructors
@@ -43,7 +42,7 @@ public class ParameterData implements Iterable<Parameter> {
 	}
 	
 	// Evil type erasure overload bypass..
-	public ParameterData(EList<EnvisionObject> objectsIn) {
+	public ParameterData(EArrayList<EnvisionObject> objectsIn) {
 		for (EnvisionObject o : objectsIn) {
 			if (o != null && !(o instanceof EnvisionNull)) {
 				add(o.getDatatype(), "");
@@ -125,8 +124,8 @@ public class ParameterData implements Iterable<Parameter> {
 	
 	public Parameter get(int i) { return params.get(i); }
 	
-	public EList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
-	public EList<String> getNames() { return params.map(p -> p.name); }
+	public EArrayList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
+	public EArrayList<String> getNames() { return params.map(p -> p.name); }
 	
 	//---------
 	// Setters

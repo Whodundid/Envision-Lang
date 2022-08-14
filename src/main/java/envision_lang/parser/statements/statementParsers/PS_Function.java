@@ -16,7 +16,6 @@ import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 /**
  * Attempts to parse a method declaration statement from tokens.
@@ -123,9 +122,9 @@ public class PS_Function extends GenericParser {
 		//internal value used for error outputs
 		String funcType = (constructor) ? "initializer" : "function";
 		//start parsing for function parameters
-		EList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
+		EArrayList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
 		//attempt to parse function body
-		EList<Statement> body = getFunctionBody(constructor);
+		EArrayList<Statement> body = getFunctionBody(constructor);
 		
 		return new Stmt_FuncDef(name, op, parameters, body, declaration, constructor, operator);
 	}
@@ -177,9 +176,9 @@ public class PS_Function extends GenericParser {
 	 * @param methodType : passed for potential error outputs
 	 * @return A list of all parsed method parameters
 	 */
-	public static EList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
-	public static EList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
-		EList<StatementParameter> parameters = new EArrayList<>();
+	public static EArrayList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
+	public static EArrayList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
+		EArrayList<StatementParameter> parameters = new EArrayList();
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
@@ -257,9 +256,9 @@ public class PS_Function extends GenericParser {
 	 * @param constructor : don't necessarily have a body
 	 * @return EArrayList<Statement> : list of all parsed method body statements
 	 */
-	public static EList<Statement> getFunctionBody() { return getFunctionBody(false); }
-	public static EList<Statement> getFunctionBody(boolean constructor) {
-		EList<Statement> body = null;
+	public static EArrayList<Statement> getFunctionBody() { return getFunctionBody(false); }
+	public static EArrayList<Statement> getFunctionBody(boolean constructor) {
+		EArrayList<Statement> body = null;
 		
 		//consume newlines
 		//while (match(NEWLINE));
@@ -267,19 +266,19 @@ public class PS_Function extends GenericParser {
 		//constructors do not necessarily need to specify a body
 		if (!constructor) {
 			if (match(LAMBDA)) {
-				body = new EArrayList<>();
+				body = new EArrayList<Statement>();
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) {
 				body = getBlock(true);
 			}
 			else {
-				(body = new EArrayList<>()).addIfNotNull(declaration());
+				(body = new EArrayList<Statement>()).addIfNotNull(declaration());
 			}
 		}
 		else {
 			if (match(LAMBDA)) {
-				body = new EArrayList<>();
+				body = new EArrayList<Statement>();
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) body = getBlock(true);

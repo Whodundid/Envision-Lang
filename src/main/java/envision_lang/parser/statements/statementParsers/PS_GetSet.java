@@ -13,7 +13,6 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class PS_GetSet extends GenericParser {
 	
@@ -22,7 +21,7 @@ public class PS_GetSet extends GenericParser {
 		declaration = (declaration == null) ? new ParserDeclaration().setStage(DeclarationStage.VISIBILITY) : declaration;
 		
 		Stmt_GetSet statement = parseGetSetVis(declaration);
-		EList<Token> vars = new EArrayList<>();
+		EArrayList<Token> vars = new EArrayList();
 		
 		do vars.add(consume(ReservedWord.IDENTIFIER, "Expected a variable name!"));
 		while (match(Operator.COMMA));

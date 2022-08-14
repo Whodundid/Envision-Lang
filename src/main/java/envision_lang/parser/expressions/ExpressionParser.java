@@ -29,7 +29,6 @@ import envision_lang.parser.expressions.expression_types.Expr_VarDef;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class ExpressionParser extends GenericParser {
 	
@@ -249,8 +248,8 @@ public class ExpressionParser extends GenericParser {
 		return e;
 	}
 	
-	public static EList<Expression> collectFuncArgs() {
-		EList<Expression> args = new EArrayList<>();
+	public static EArrayList<Expression> collectFuncArgs() {
+		EArrayList<Expression> args = new EArrayList();
 		
 		//arguments
 		consume(PAREN_L, "Expected '(' to begin arguments!");
@@ -342,7 +341,7 @@ public class ExpressionParser extends GenericParser {
 				e = parseExpression();
 				
 				if (match(COMMA)) {
-					EList<Expression> expressions = new EArrayList<>();
+					EArrayList<Expression> expressions = new EArrayList();
 					expressions.add(e);
 					do {
 						expressions.add(parseExpression());
@@ -396,7 +395,7 @@ public class ExpressionParser extends GenericParser {
 	private static Expression checkObject() {
 		if (match(THIS)) {
 			if (match(PAREN_L)) {
-				EList<Expression> args = new EArrayList<>();
+				EArrayList<Expression> args = new EArrayList();
 				if (!check(PAREN_R)) {
 					do {
 						if (args.size() >= 255) {
@@ -419,7 +418,7 @@ public class ExpressionParser extends GenericParser {
 			Token m = consume(IDENTIFIER, "Expected superclass method name!");
 			
 			if (match(PAREN_L)) {
-				EList<Expression> args = new EArrayList<>();
+				EArrayList<Expression> args = new EArrayList();
 				if (!check(PAREN_R)) {
 					do {
 						args.add(parseExpression());
@@ -461,11 +460,11 @@ public class ExpressionParser extends GenericParser {
 	private static Expression checkVariable() {
 		if (match(IDENTIFIER) || matchType(DATATYPE)) {
 			Token type = previous();
-			EList<Token> params = null;
+			EArrayList<Token> params = null;
 			
 			//check for parameters
 			if (match(LT)) {
-				params = new EArrayList<>();
+				params = new EArrayList();
 				while (!atEnd() && !match(GT)) {
 					//check if valid parameter
 					if (check(IDENTIFIER, TERNARY) || checkType(DATATYPE)) {

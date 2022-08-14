@@ -1,14 +1,14 @@
 package envision_lang._launch;
 
+import eutil.EUtil;
+import eutil.datatypes.EArrayList;
+
 import java.io.File;
 import java.io.IOException;
 
 import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.exceptions.errors.workingDirectory.MultipleMainsError;
 import envision_lang.packages.EnvisionLangPackage;
-import eutil.EUtil;
-import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 /** Handles code file discovery and wraping. */
 public class WorkingDirectory {
@@ -18,11 +18,11 @@ public class WorkingDirectory {
 	/** True if the given directory is not null and actually exists. */
 	private final boolean isValid;
 	/** All successfully parsed code files. */
-	private final EList<EnvisionCodeFile> codeFiles = new EArrayList<>();
+	private final EArrayList<EnvisionCodeFile> codeFiles = new EArrayList<>();
 	/** The main code file. */
 	private EnvisionCodeFile main = null;
 	/** Packages to be added to the interpreters at run time. */
-	private EList<EnvisionLangPackage> packages = new EArrayList<>();
+	private EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
 	
 	//--------------
 	// Constructors
@@ -56,10 +56,10 @@ public class WorkingDirectory {
 			return;
 		}
 		
-		EList<File> start = EUtil.toList(dir.listFiles());
-		EList<File> found = new EArrayList<>();
-		EList<File> directories = new EArrayList<>();
-		EList<File> workList = new EArrayList<>();
+		EArrayList<File> start = EUtil.toList(dir.listFiles());
+		EArrayList<File> found = new EArrayList<>();
+		EArrayList<File> directories = new EArrayList<>();
+		EArrayList<File> workList = new EArrayList<>();
 		
 		//add all envision code files to be found
 		found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
@@ -138,8 +138,8 @@ public class WorkingDirectory {
 	/** Returns the main code file (if there is one) from the parsed directory. */
 	public EnvisionCodeFile getMain() { return main; }
 	/** Returns all parsed Envision code files from the given directory. */
-	public EList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
+	public EArrayList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
 	/** Returns all packages to be added at program start. */
-	public EList<EnvisionLangPackage> getBuildPackages() { return packages; }
+	public EArrayList<EnvisionLangPackage> getBuildPackages() { return packages; }
 	
 }

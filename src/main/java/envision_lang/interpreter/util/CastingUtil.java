@@ -32,7 +32,7 @@ public class CastingUtil {
 			throw new InvalidDatatypeError(errC.err(toType));
 		}
 		
-		//only allow numbers to be cast
+		//only allow nubers to be cast
 		if (!(in instanceof EnvisionNumber)) {
 			throw new InvalidDatatypeError(errC.err(in.getTypeString()));
 		}

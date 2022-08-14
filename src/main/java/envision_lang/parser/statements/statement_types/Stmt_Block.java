@@ -3,14 +3,13 @@ package envision_lang.parser.statements.statement_types;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class Stmt_Block implements Statement {
 
-	public final EList<Statement> statements;
+	public final EArrayList<Statement> statements;
 	
-	public Stmt_Block() { this(new EArrayList<>()); }
-	public Stmt_Block(EList<Statement> in) {
+	public Stmt_Block() { this(new EArrayList<Statement>()); }
+	public Stmt_Block(EArrayList<Statement> in) {
 		statements = in;
 	}
 	

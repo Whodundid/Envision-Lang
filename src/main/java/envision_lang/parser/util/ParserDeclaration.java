@@ -5,7 +5,6 @@ import envision_lang.lang.util.VisibilityType;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class ParserDeclaration {
 	
@@ -15,14 +14,14 @@ public class ParserDeclaration {
 	public DeclarationStage stage = DeclarationStage.VISIBILITY;
 	private DeclarationType declarationType = null;
 	private VisibilityType vis = VisibilityType.SCOPE;
-	private EList<Token> parameters = new EArrayList<>();
-	private EList<DataModifier> modifiers = new EArrayList<>();
-	private EList<Expr_Generic> generics = new EArrayList<>();
+	private EArrayList<Token> parameters = new EArrayList();
+	private EArrayList<DataModifier> modifiers = new EArrayList();
+	private EArrayList<Expr_Generic> generics = new EArrayList();
 	private Token returnType = null;
 	
-	public ParserDeclaration() { this(VisibilityType.SCOPE, new EArrayList<>(), new EArrayList<>(), new EArrayList<>()); }
-	public ParserDeclaration(VisibilityType visIn) { this(visIn, new EArrayList<>(), new EArrayList<>(), new EArrayList<>()); }
-	public ParserDeclaration(VisibilityType visIn, EList<Token> paramsIn, EList<DataModifier> modsIn, EList<Expr_Generic> genericsIn) {
+	public ParserDeclaration() { this(VisibilityType.SCOPE, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<Expr_Generic>()); }
+	public ParserDeclaration(VisibilityType visIn) { this(visIn, new EArrayList<Token>(), new EArrayList<DataModifier>(), new EArrayList<Expr_Generic>()); }
+	public ParserDeclaration(VisibilityType visIn, EArrayList<Token> paramsIn, EArrayList<DataModifier> modsIn, EArrayList<Expr_Generic> genericsIn) {
 		vis = visIn;
 		parameters = paramsIn;
 		modifiers = modsIn;
@@ -33,9 +32,9 @@ public class ParserDeclaration {
 	public ParserDeclaration(ParserDeclaration in) {
 		stage = in.stage;
 		vis = in.vis;
-		parameters = new EArrayList<>(in.getParams());
-		modifiers = new EArrayList<>(in.getMods());
-		generics = new EArrayList<>(in.getGenerics());
+		parameters = new EArrayList<Token>(in.getParams());
+		modifiers = new EArrayList<DataModifier>(in.getMods());
+		generics = new EArrayList<Expr_Generic>(in.getGenerics());
 		returnType = in.returnType;
 		id = num++;
 	}
@@ -61,9 +60,9 @@ public class ParserDeclaration {
 	}
 	
 	public ParserDeclaration applyVisibility(VisibilityType visIn) { vis = visIn; return this; }
-	public ParserDeclaration applyParams(EList<Token> paramsIn) { parameters.addAll(paramsIn); return this; }
-	public ParserDeclaration applyDataMods(EList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
-	public ParserDeclaration applyGenerics(EList<Expr_Generic> genericsIn) { generics.addAll(genericsIn); return this; }
+	public ParserDeclaration applyParams(EArrayList<Token> paramsIn) { parameters.addAll(paramsIn); return this; }
+	public ParserDeclaration applyDataMods(EArrayList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
+	public ParserDeclaration applyGenerics(EArrayList<Expr_Generic> genericsIn) { generics.addAll(genericsIn); return this; }
 	public ParserDeclaration applyReturnType(Token returnTypeIn) { returnType = returnTypeIn; return this; }
 	public ParserDeclaration setDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
 	
@@ -102,9 +101,9 @@ public class ParserDeclaration {
 	public DeclarationStage getStage() { return stage; }
 	public DeclarationType getDeclarationType() { return declarationType; }
 	public VisibilityType getVisibility() { return vis; }
-	public EList<Token> getParams() { return parameters; }
-	public EList<DataModifier> getMods() { return modifiers; }
-	public EList<Expr_Generic> getGenerics() { return generics; }
+	public EArrayList<Token> getParams() { return parameters; }
+	public EArrayList<DataModifier> getMods() { return modifiers; }
+	public EArrayList<Expr_Generic> getGenerics() { return generics; }
 	public Token getReturnType() { return returnType; }
 	
 	public static ParserDeclaration createIfNull() { return createIfNull(DeclarationStage.VISIBILITY); }

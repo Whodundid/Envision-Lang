@@ -11,7 +11,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 /**
  * ClassConstructs are intended to optimize class instance creation by
@@ -47,7 +47,7 @@ public class ClassConstruct {
 	
 	private EnvisionFunction constructor;
 	private BoxList<String, EnvisionObject> fields;
-	private EList<EnvisionFunction> functions;
+	private EArrayList<EnvisionFunction> functions;
 	
 	/** Pulling scope map out for fast reference. */
 	private Map<String, Box2<IDatatype, EnvisionObject>> internal_scope_values;

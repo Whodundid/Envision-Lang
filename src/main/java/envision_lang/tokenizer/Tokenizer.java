@@ -1,5 +1,8 @@
 package envision_lang.tokenizer;
 
+import eutil.datatypes.EArrayList;
+import eutil.strings.EStringBuilder;
+
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
@@ -11,22 +14,19 @@ import java.io.InputStreamReader;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
-import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
-import eutil.strings.EStringBuilder;
 
 public class Tokenizer {
 	
 	/** The code file being tokenized. */
 	private EnvisionCodeFile theFile;
 	/** Each tokenized line in the code file. */
-	private final EList<EList<Token>> lineTokens = new EArrayList<>();
+	private final EArrayList<EArrayList<Token>> lineTokens = new EArrayList();
 	/** All of the parsed tokens from the given code file. */
-	private final EList<Token> tokens = new EArrayList<>();
+	private final EArrayList<Token> tokens = new EArrayList();
 	/** Each line in string form. */
-	private final EList<String> lines = new EArrayList<>();
+	private final EArrayList<String> lines = new EArrayList();
 	/** Comment tokens. */
-	private final EList<Token> commentTokens = new EArrayList<>();
+	private final EArrayList<Token> commentTokens = new EArrayList();
 	/** Used to keep track of multi-line comments. */
 	private boolean inComment = false;
 	/** Used to keep track of multi-line comments. */
@@ -38,7 +38,7 @@ public class Tokenizer {
 	private int start = 0;
 	private int cur = 0;
 	
-	private EList<Token> createdTokens;
+	private EArrayList<Token> createdTokens;
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
@@ -55,8 +55,8 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	/** Separates a single input line's characters into valid Envision tokens. */
-	private EList<Token> tokenizeLine(String line, int lineNum) {
-		createdTokens = new EArrayList<>();
+	private EArrayList<Token> tokenizeLine(String line, int lineNum) {
+		createdTokens = new EArrayList();
 		source = line.trim();
 		cur = 0;
 		
@@ -177,7 +177,7 @@ public class Tokenizer {
 	 * Parses a single number from tokens.
 	 * <p>
 	 * This can either parse a decimal value if a '.' is detected,
-	 * or it will simply parse a standard integer value.
+	 * or it will simply prase a standard integer value.
 	 */
 	private void number() {
 		while (isDigit(peek())) advance();
@@ -187,7 +187,7 @@ public class Tokenizer {
 		if (peek() == '.' && isDigit(peekNext())) {
 			//consume the '.'
 			advance();
-			//consume any additional digits
+			//consume any aditional digits
 			while (isDigit(peek())) advance();
 			decimal = true;
 			
@@ -197,7 +197,7 @@ public class Tokenizer {
 				advance();
 				//consume a '-' if there is one
 				if (peek() == '-') advance();
-				//consume any additional digits
+				//consume any aditional digits
 				while (isDigit(peek())) advance();
 			}
 		}
@@ -354,13 +354,13 @@ public class Tokenizer {
 					boolean empty = l.isBlank();
 					
 					if (!empty) {
-						EList<Token> list = tokenizeLine(l, lineNum);
+						EArrayList<Token> list = tokenizeLine(l, lineNum);
 						lineTokens.add(list);
 						tokens.addAll(list);
 					}
 					else {
 						Token nl = Token.newLine(lineNum);
-						lineTokens.add(new EArrayList<>(nl));
+						lineTokens.add(new EArrayList<Token>(nl));
 						tokens.add(nl);
 					}
 					
@@ -395,7 +395,7 @@ public class Tokenizer {
 	/** Tokenizes a single line. */
 	public boolean tokenizeLine(String lineIn) {
 		lineIn = lineIn.replace("\t", "");
-		EList<Token> list = tokenizeLine(lineIn, 0);
+		EArrayList<Token> list = tokenizeLine(lineIn, 0);
 		if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
 		lineTokens.add(list);
 		tokens.addAll(list);
@@ -409,10 +409,10 @@ public class Tokenizer {
 	// Getters
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public EList<EList<Token>> getLineTokens() { return lineTokens; }
-	public EList<Token> getTokens() { return tokens; }
-	public EList<String> getLines() { return lines; }
-	public EList<Token> getCommentTokens() { return createdTokens; }
+	public EArrayList<EArrayList<Token>> getLineTokens() { return lineTokens; }
+	public EArrayList<Token> getTokens() { return tokens; }
+	public EArrayList<String> getLines() { return lines; }
+	public EArrayList<Token> getCommentTokens() { return createdTokens; }
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
@@ -426,7 +426,7 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	/** Removes both single line and multi-line comments from strings. */
+	/** Removes both single line and multiline comments from strings. */
 	public static String stripComments(String in) {
 		if (in.startsWith("//")) return "";
 		EStringBuilder cur = new EStringBuilder();

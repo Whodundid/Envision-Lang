@@ -174,7 +174,7 @@ public enum ReservedWord implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	private static HashMap<String, ReservedWord> keywords = new HashMap<>();
+	private static HashMap<String, ReservedWord> keywords = new HashMap();
 	
 	static {
 		for (var k : values()) keywords.put(k.typeString, k);

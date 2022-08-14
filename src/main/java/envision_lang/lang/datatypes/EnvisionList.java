@@ -1,7 +1,7 @@
 package envision_lang.lang.datatypes;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.ArgLengthError;
@@ -19,7 +19,6 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 /**
@@ -33,7 +32,7 @@ public class EnvisionList extends ClassInstance {
 	/**
 	 * Internal Array list.
 	 */
-	private final EList<EnvisionObject> list = new EArrayList<>();
+	private final EArrayList<EnvisionObject> list = new EArrayList<>();
 	
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
@@ -55,7 +54,7 @@ public class EnvisionList extends ClassInstance {
 		list_type = typeIn;
 	}
 	
-	protected EnvisionList(IDatatype typeIn, EList<EnvisionObject> listIn) {
+	protected EnvisionList(IDatatype typeIn, EArrayList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
 		list.addAll(listIn);
@@ -67,7 +66,7 @@ public class EnvisionList extends ClassInstance {
 		list.addAll(in.list);
 	}
 	
-	protected EnvisionList(EnvisionList in, EList<EnvisionObject> listIn) {
+	protected EnvisionList(EnvisionList in, EArrayList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = in.list_type;
 		list.addAll(listIn);
@@ -97,7 +96,7 @@ public class EnvisionList extends ClassInstance {
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
 		case EQUALS, NOT_EQUALS -> true;
-		case ADD_ASSIGN -> true;
+		case ADD -> true;
 		default -> false;
 		};
 	}
@@ -164,7 +163,7 @@ public class EnvisionList extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EList<EnvisionObject> getList() { return list; }
+	public EArrayList<EnvisionObject> getList() { return list; }
 	
 	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
 	public long size_i() { return list.size(); }
@@ -187,7 +186,7 @@ public class EnvisionList extends ClassInstance {
 		return this;
 	}
 	
-	public EnvisionList addAll(Collection<EnvisionObject> vals) {
+	public EnvisionList addAll(List<EnvisionObject> vals) {
 		if (sizeLocked) throw lockedError();
 		list.addAll(vals);
 		return this;

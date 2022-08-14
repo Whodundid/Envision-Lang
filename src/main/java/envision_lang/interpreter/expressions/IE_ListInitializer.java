@@ -3,8 +3,12 @@ package envision_lang.interpreter.expressions;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.parser.expressions.expression_types.Expr_ListInitializer;
 
 public class IE_ListInitializer extends ExpressionExecutor<Expr_ListInitializer> {

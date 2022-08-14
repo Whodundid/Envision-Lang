@@ -14,7 +14,6 @@ import envision_lang.parser.statements.statement_types.Stmt_SwitchDef;
 import envision_lang.tokenizer.Token;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class PS_Switch extends GenericParser {
 	
@@ -28,7 +27,7 @@ public class PS_Switch extends GenericParser {
 		consumeEmptyLines();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
-		EList<Stmt_SwitchCase> cases = new EArrayList<>();
+		EArrayList<Stmt_SwitchCase> cases = new EArrayList();
 		Stmt_SwitchCase defaultCase = null;
 		boolean hasDefault = false;
 		
@@ -55,7 +54,7 @@ public class PS_Switch extends GenericParser {
 				}
 				
 				consumeEmptyLines();
-				EList<Statement> body = new EArrayList<>();
+				EArrayList<Statement> body = new EArrayList();
 				
 				if (check(COLON)) {
 					consume(COLON, "Expected a ':' after case name!");
@@ -90,7 +89,7 @@ public class PS_Switch extends GenericParser {
 		return new Stmt_SwitchDef(switchExpression, cases, defaultCase);
 	}
 	
-	private static boolean hasCase(EList<Stmt_SwitchCase> cases, Token t) {
+	private static boolean hasCase(EArrayList<Stmt_SwitchCase> cases, Token t) {
 		if (t == null) throw new EnvisionLangError("Switch Error: Token is null!");
 		for (Stmt_SwitchCase c : cases) {
 			if (EUtil.isEqual(c.caseName.lexeme, t.lexeme)) return true;

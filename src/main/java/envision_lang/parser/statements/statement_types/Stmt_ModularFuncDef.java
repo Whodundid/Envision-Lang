@@ -6,20 +6,20 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.BoxList;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class Stmt_ModularFuncDef implements Statement {
 	
 	public final Token name;
 	public final BoxList<Token, Token> associations;
-	public final EList<StatementParameter> methodParams;
-	public final EList<Statement> body;
+	public final EArrayList<StatementParameter> methodParams;
+	public final EArrayList<Statement> body;
 	public final ParserDeclaration declaration;
 	
 	public Stmt_ModularFuncDef(Token nameIn,
 						   BoxList<Token, Token> associationsIn,
-						   EList<StatementParameter> paramsIn,
-						   EList<Statement> bodyIn,
+						   EArrayList<StatementParameter> paramsIn,
+						   EArrayList<Statement> bodyIn,
 						   ParserDeclaration declarationIn) {
 		name = nameIn;
 		associations = associationsIn;

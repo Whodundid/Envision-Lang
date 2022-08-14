@@ -136,11 +136,6 @@ public abstract class EnvisionObject {
 	// Setters
 	//---------
 	
-	public EnvisionObject setModifiers(int modifiersIn) {
-		modifierHandler.setModifiers(modifiersIn);
-		return this;
-	}
-	
 	public EnvisionObject setModifier(DataModifier mod, boolean val) {
 		modifierHandler.setModifier(mod, val);
 		return this;

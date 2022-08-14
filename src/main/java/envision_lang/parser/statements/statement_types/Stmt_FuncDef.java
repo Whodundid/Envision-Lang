@@ -5,26 +5,25 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class Stmt_FuncDef implements Statement {
 	
 	public Token name;
 	public final Token operator;
-	public final EList<StatementParameter> methodParams;
-	public final EList<Statement> body;
+	public final EArrayList<StatementParameter> methodParams;
+	public final EArrayList<Statement> body;
 	public final ParserDeclaration declaration;
 	public final boolean isConstructor;
 	public final boolean isOperator;
 	
 	public Stmt_FuncDef(Token nameIn,
-						Token operatorIn,
-						EList<StatementParameter> paramsIn,
-						EList<Statement> bodyIn,
-						ParserDeclaration declarationIn,
-						boolean isConstructorIn,
-						boolean isOperatorIn)
-	{
+						   Token operatorIn,
+						   EArrayList<StatementParameter> paramsIn,
+						   EArrayList<Statement> bodyIn,
+						   ParserDeclaration declarationIn,
+						   boolean isConstructorIn,
+						   boolean isOperatorIn) {
 		name = nameIn;
 		operator = operatorIn;
 		methodParams = paramsIn;

@@ -8,7 +8,7 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Package;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class PS_Package extends GenericParser {
 	
@@ -17,7 +17,7 @@ public class PS_Package extends GenericParser {
 		Token packageName = consume(IDENTIFIER, "Expected a package name!");
 		consume(CURLY_L, "Expected a '{' after package declaration!");
 		
-		EList<Statement> body = getBlock();
+		EArrayList<Statement> body = getBlock();
 		
 		return new Stmt_Package(declaration, packageName, body);
 	}

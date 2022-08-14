@@ -22,7 +22,6 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class EnvisionFunction extends ClassInstance {
 	
@@ -46,7 +45,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * Every time the function is invoked, this list of statements is
 	 * executed.
 	 */
-	protected EList<Statement> statements = new EArrayList<>();
+	protected EArrayList<Statement> statements = new EArrayList();
 	
 	/**
 	 * The scope that this function was derived from.
@@ -76,7 +75,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * functions with the same name will be given to this base function as
 	 * an overload.
 	 */
-	protected EList<EnvisionFunction> overloads = new EArrayList<>();
+	protected EArrayList<EnvisionFunction> overloads = new EArrayList();
 	
 	/**
 	 * If this is an operator overload function, this is the operator that
@@ -273,7 +272,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction addOverload(ParameterData paramsIn, EArrayList<Statement> bodyIn) {
 		return addOverload(returnType, paramsIn, bodyIn);
 	}
 	
@@ -287,7 +286,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EArrayList<Statement> bodyIn) {
 		if (hasOverload(paramsIn)) throw new DuplicateOverloadError(functionName, paramsIn);
 		overloads.add(makeOverload(rt, paramsIn, bodyIn));
 		return this;
@@ -303,7 +302,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction makeOverload(IDatatype rt, ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction makeOverload(IDatatype rt, ParameterData paramsIn, EArrayList<Statement> bodyIn) {
 		EnvisionFunction overload = new EnvisionFunction(rt, functionName, paramsIn);
 		overload.setBody(bodyIn);
 		return overload;
@@ -348,7 +347,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * Attempts to return an overload with parameters matching the given
 	 * arguments.
 	 */
-	public EnvisionFunction getOverloadFromArgs(EList<EnvisionObject> args) {
+	public EnvisionFunction getOverloadFromArgs(EArrayList<EnvisionObject> args) {
 		ParameterData callParams = (args != null) ? new ParameterData(args) : new ParameterData();
 		
 		//check if the base method parameters match the given arguments
@@ -506,11 +505,11 @@ public class EnvisionFunction extends ClassInstance {
 		//create a new scope derived from this function's scope
 		Scope scope = new Scope(instanceScope);
 		
-		var callArgs = new EArrayList<EnvisionObject>().addA(args);
+		EArrayList<EnvisionObject> callArgs = new EArrayList<EnvisionObject>().addA(args);
 		EnvisionFunction m = getOverloadFromArgs(callArgs);
 		
 		//define parameter values within the current scope
-		EList<String> names = m.params.getNames();
+		EArrayList<String> names = m.params.getNames();
 		for (int i = 0; i < m.params.size(); i++) {
 			String n = names.get(i);
 			scope.define(n, callArgs.get(i));
@@ -570,11 +569,11 @@ public class EnvisionFunction extends ClassInstance {
 	public String getFunctionName() { return functionName; }
 //	public Scope getScope() { return functionScope; }
 	public ParameterData getParams() { return params; }
-	public EList<Statement> getStatements() { return statements; }
-	public EList<EnvisionFunction> getOverloads() { return overloads; }
-	public EList<Statement> getBody() { return statements; }
-	public EList<IDatatype> getParamTypes() { return params.getDataTypes(); }
-	public EList<String> getParamNames() { return params.getNames(); }
+	public EArrayList<Statement> getStatements() { return statements; }
+	public EArrayList<EnvisionFunction> getOverloads() { return overloads; }
+	public EArrayList<Statement> getBody() { return statements; }
+	public EArrayList<IDatatype> getParamTypes() { return params.getDataTypes(); }
+	public EArrayList<String> getParamNames() { return params.getNames(); }
 	
 	public IDatatype getReturnType() { return returnType; }
 	public boolean isVoid() { return returnType.isVoid(); }
@@ -592,7 +591,7 @@ public class EnvisionFunction extends ClassInstance {
 //		return this;
 //	}
 	
-	public EnvisionFunction setBody(EList<Statement> in) {
+	public EnvisionFunction setBody(EArrayList<Statement> in) {
 		statements.clear();
 		statements.addAll(in);
 		return this;

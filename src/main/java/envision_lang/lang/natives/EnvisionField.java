@@ -60,7 +60,6 @@ public class EnvisionField {
 		//make sure that the type coming in matches the expected type
 		IDatatype in = valueIn.getDatatype();
 		if (!datatype.compare(in)) throw new InvalidDatatypeError(datatype, in);
-		valueIn.setModifiers(modifierHandler.getModifiers());
 		
 		value = valueIn;
 	}

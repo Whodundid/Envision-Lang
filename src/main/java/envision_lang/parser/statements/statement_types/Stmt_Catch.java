@@ -4,15 +4,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class Stmt_Catch implements Statement {
 	
 	public final Token type;
 	public final Token var;
-	public final EList<Statement> body;
+	public final EArrayList<Statement> body;
 	
-	public Stmt_Catch(Token typeIn, Token varIn, EList<Statement> bodyIn) {
+	public Stmt_Catch(Token typeIn, Token varIn, EArrayList<Statement> bodyIn) {
 		type = typeIn;
 		var = varIn;
 		body = bodyIn;

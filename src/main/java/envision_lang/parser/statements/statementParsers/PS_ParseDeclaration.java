@@ -14,7 +14,6 @@ import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class PS_ParseDeclaration extends GenericParser {
 	
@@ -132,7 +131,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 */
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers
-		EList<DataModifier> modifiers = new EArrayList<>();
+		EArrayList<DataModifier> modifiers = new EArrayList();
 		
 		while (checkType(DATA_MODIFIER)) {
 			Token mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
@@ -148,7 +147,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EList<Expr_Generic> generics = new EArrayList<>();
+		EArrayList<Expr_Generic> generics = new EArrayList();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");

@@ -22,7 +22,6 @@ import envision_lang.parser.statements.statement_types.Stmt_LambdaFor;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.VariableDeclaration;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 
@@ -91,7 +90,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 		if (s.init != null) {
 			if (s.init instanceof Stmt_VarDef var_stmt) {
 				Stmt_VarDef initVars = (Stmt_VarDef) s.init;
-				EList<VariableDeclaration> vars = initVars.vars;
+				EArrayList<VariableDeclaration> vars = initVars.vars;
 				
 				//declare and initialize each variable, the first var will be used as the internal counter reference
 				for (int i = 0; i < vars.size(); i++) {
@@ -202,7 +201,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 	
 	private static class Iterable {
 		
-		private EList<EnvisionObject> vals;
+		private EArrayList<EnvisionObject> vals;
 		
 		/**
 		 * Determines what the iterable object will actually be created from.

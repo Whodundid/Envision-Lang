@@ -6,48 +6,47 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class Stmt_Class implements Statement {
 
 	public final Token name;
 	public final ParserDeclaration declaration;
-	public final EList<Expr_Var> parentclasses = new EArrayList<>();
-	public final EList<Statement> body = new EArrayList<>();
-	public final EList<Statement> staticMembers = new EArrayList<>();
-	public final EList<Stmt_FuncDef> methods = new EArrayList<>();
-	public final EList<Stmt_FuncDef> initializers = new EArrayList<>();
+	public final EArrayList<Expr_Var> parentclasses = new EArrayList<Expr_Var>();
+	public final EArrayList<Statement> body = new EArrayList<Statement>();
+	public final EArrayList<Statement> staticMembers = new EArrayList<Statement>();
+	public final EArrayList<Stmt_FuncDef> methods = new EArrayList<Stmt_FuncDef>();
+	public final EArrayList<Stmt_FuncDef> initializers = new EArrayList<Stmt_FuncDef>();
 	
 	public Stmt_Class(Token nameIn, ParserDeclaration declarationIn) {
 		name = nameIn;
 		declaration = declarationIn;
 	}
 	
-	public Stmt_Class setSupers(EList<Expr_Var> supersIn) {
+	public Stmt_Class setSupers(EArrayList<Expr_Var> supersIn) {
 		parentclasses.clear();
 		parentclasses.addAll(supersIn);
 		return this;
 	}
 	
-	public Stmt_Class setBody(EList<Statement> bodyIn) {
+	public Stmt_Class setBody(EArrayList<Statement> bodyIn) {
 		body.clear();
 		body.addAll(bodyIn);
 		return this;
 	}
 	
-	public Stmt_Class setStaticMembers(EList<Statement> staticsIn) {
+	public Stmt_Class setStaticMembers(EArrayList<Statement> staticsIn) {
 		staticMembers.clear();
 		staticMembers.addAll(staticsIn);
 		return this;
 	}
 	
-	public Stmt_Class setMethods(EList<Stmt_FuncDef> methodsIn) {
+	public Stmt_Class setMethods(EArrayList<Stmt_FuncDef> methodsIn) {
 		methods.clear();
 		methods.addAll(methodsIn);
 		return this;
 	}
 	
-	public Stmt_Class setInitializers(EList<Stmt_FuncDef> constructorsIn) {
+	public Stmt_Class setInitializers(EArrayList<Stmt_FuncDef> constructorsIn) {
 		initializers.clear();
 		initializers.addAll(constructorsIn);
 		return this;

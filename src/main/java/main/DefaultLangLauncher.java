@@ -74,32 +74,6 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 }
 
 /*
-//grab start time
-start = millis()
-
-class Vector {
-	-int x, y, z
-	
-	init() -> init(0, 0, 0)
-	init(x, y, z)
-	
-	+func toString() -> "<{x}, {y}, {z}>"
-	+func add(Vector v) -> Vector(x + v.x, y + v.y, z + v.z)
-	
-	+operator +(Vector v) -> add(v)
-}
-
-for (int i = 0; i < 100000; i++) {
-	a = Vector(randInt(0, 5), randInt(0, 5), randInt(0, 5))
-	b = Vector(randInt(0, 4), randInt(0, 4), randInt(0, 4))
-	
-	println("{i} {a} | {b} |", a + b)
-}
-
-println("END", millis() - start, "ms")
- */
-
-/*
 public class Vector {
 	int x, y, z
 	public {

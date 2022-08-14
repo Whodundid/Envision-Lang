@@ -20,7 +20,6 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 /**
  * The EnvisionClass is the primary component for which all
@@ -94,26 +93,26 @@ public class EnvisionClass extends EnvisionObject {
 	/**
 	 * A list of all static members on this class.
 	 */
-	protected EList<EnvisionObject> staticMembers = new EArrayList<>();
+	protected EArrayList<EnvisionObject> staticMembers = new EArrayList();
 	
 	/**
 	 * The entire list of static statements that have been declared within
 	 * this class declaration.
 	 */
-	protected EList<Statement> staticStatements = new EArrayList<>();
+	protected EArrayList<Statement> staticStatements = new EArrayList();
 	
 	/**
 	 * The entire list of non-static statements that have been declared within
 	 * this class declaration. These statements are used by class constructs
 	 * to help improve instance creation.
 	 */
-	protected EList<Statement> bodyStatements = new EArrayList<>();
+	protected EArrayList<Statement> bodyStatements = new EArrayList();
 	
 	/**
 	 * The entire list of constructor (initializer) statements that have been
 	 * declared within this class declaration.
 	 */
-	protected EList<Stmt_FuncDef> constructorStatements = new EArrayList<>();
+	protected EArrayList<Stmt_FuncDef> constructorStatements = new EArrayList();
 	
 	private static final IPrototypeHandler OBJ_PROTOS = new IPrototypeHandler();
 	
@@ -269,8 +268,8 @@ public class EnvisionClass extends EnvisionObject {
 		interpreter.executeBlock(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
-		EList<EnvisionObject> methods = instanceScope.values().filter(o -> o instanceof EnvisionFunction && ((EnvisionFunction) o).isOperator());
-		EList<EnvisionFunction> operators = methods.map(m -> (EnvisionFunction) m);
+		EArrayList<EnvisionObject> methods = instanceScope.values().filter(o -> o instanceof EnvisionFunction && ((EnvisionFunction) o).isOperator());
+		EArrayList<EnvisionFunction> operators = methods.map(m -> (EnvisionFunction) m);
 		
 		//set the overloaded operators onto the class instance
 		for (EnvisionFunction op : operators) {
@@ -413,16 +412,16 @@ public class EnvisionClass extends EnvisionObject {
 	//---------------------------------------------------------------------------
 	
 	//public EArrayList<InheritableObject> getParents() { return parents; }
-	public EList<EnvisionObject> getStaticMembers() { return staticMembers; }
-	public EList<Statement> getStaticStatements() { return staticStatements; }
-	public EList<Statement> getBody() { return bodyStatements; }
+	public EArrayList<EnvisionObject> getStaticMembers() { return staticMembers; }
+	public EArrayList<Statement> getStaticStatements() { return staticStatements; }
+	public EArrayList<Statement> getBody() { return bodyStatements; }
 
 	//---------------------------------------------------------------------------
 	
 	//public InheritableObject setParents(EArrayList<InheritableObject> in) { parents = in; return this; }
-	public EnvisionClass setStatics(EList<Statement> in) { staticStatements = in; return this; }
-	public EnvisionClass setBody(EList<Statement> in) { bodyStatements = in; return this; }
-	public EnvisionClass setConstructors(EList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
+	public EnvisionClass setStatics(EArrayList<Statement> in) { staticStatements = in; return this; }
+	public EnvisionClass setBody(EArrayList<Statement> in) { bodyStatements = in; return this; }
+	public EnvisionClass setConstructors(EArrayList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
 	
 	//---------------------------------------------------------------------------
 	

@@ -145,7 +145,7 @@ public enum Operator implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	private static HashMap<String, Operator> operators = new HashMap<>();
+	private static HashMap<String, Operator> operators = new HashMap();
 	
 	static {
 		for (var o : values()) operators.put(o.typeString, o);

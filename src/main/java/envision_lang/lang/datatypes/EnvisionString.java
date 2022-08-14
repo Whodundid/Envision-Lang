@@ -1,7 +1,5 @@
 package envision_lang.lang.datatypes;
 
-import java.util.List;
-
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.ArgLengthError;
 import envision_lang.exceptions.errors.FinalVarReassignmentError;
@@ -16,6 +14,7 @@ import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.StaticTypes;
 import envision_lang.tokenizer.Operator;
+import eutil.datatypes.EArrayList;
 
 /**
  * A script variable representing a list of characters.
@@ -211,7 +210,7 @@ public class EnvisionString extends EnvisionVariable {
 		return c;
 	}
 	
-	public List<EnvisionObject> toList_i() { return toList().getList(); }
+	public EArrayList<EnvisionObject> toList_i() { return toList().getList(); }
 	public EnvisionList toList() {
 		EnvisionList list = EnvisionListClass.newList(Primitives.CHAR);
 		for (int i = 0; i < string_val.length(); i++) {

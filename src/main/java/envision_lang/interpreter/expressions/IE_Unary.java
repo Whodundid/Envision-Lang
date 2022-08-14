@@ -14,7 +14,7 @@ import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Unary;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.tokenizer.Operator;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 
@@ -55,7 +55,7 @@ public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 			}
 		}
 		else if (left instanceof Expr_Compound ce) {
-			EList<Expression> expressions = ce.expressions;
+			EArrayList<Expression> expressions = ce.expressions;
 			EnvisionList l = EnvisionListClass.newList();
 			
 			for (Expression e : expressions) {

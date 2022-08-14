@@ -8,7 +8,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class IS_Return extends StatementExecutor<Stmt_Return> {
 
@@ -23,7 +23,7 @@ public class IS_Return extends StatementExecutor<Stmt_Return> {
 	@Override
 	public void run(Stmt_Return s) {
 		Expression cond = s.condition;
-		EList<Expression> r = s.retVals;
+		EArrayList<Expression> r = s.retVals;
 		
 		//if there is a condition on the return, evaluate the condition and
 		//only return a value if the condition is true

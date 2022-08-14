@@ -4,7 +4,6 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionFunctionClass;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.util.DataModifier;
@@ -15,7 +14,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 /** Utility class designed to help with function creation and overloading. */
 public class FunctionCreator {
@@ -44,7 +43,7 @@ public class FunctionCreator {
 			var dec_return_type = s.declaration.getReturnType();
 			//wrap the return type if not null
 			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
-			//otherwise, assign var as return type
+			//otherwise, assign var as retun type
 			else function_return_datatype = StaticTypes.VAR_TYPE;
 		}
 		
@@ -68,7 +67,6 @@ public class FunctionCreator {
 		
 		f.setScope(scopeIn);
 		f.setVisibility(s.declaration.getVisibility());
-		EnvisionFunctionClass.FUNC_CLASS.defineFunctionScopeMembers(f);
 		for (DataModifier mod : s.declaration.getMods()) f.setModifier(mod, true);
 		if (s.body != null) f.setBody(s.body);
 		
@@ -107,7 +105,7 @@ public class FunctionCreator {
 	*/
 	
 	/** Builds the method parameter data from the given method declaration statement. */
-	public static ParameterData buildParameters(EnvisionInterpreter in, EList<StatementParameter> params) {
+	public static ParameterData buildParameters(EnvisionInterpreter in, EArrayList<StatementParameter> params) {
 		ParameterData parameterData = new ParameterData();
 		
 		for (StatementParameter p : params) {

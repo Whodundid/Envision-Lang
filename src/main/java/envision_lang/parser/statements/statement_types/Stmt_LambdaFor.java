@@ -6,20 +6,19 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 
 public class Stmt_LambdaFor implements Statement {
 	
 	public final Statement init;
 	public final Expr_Lambda lambda;
-	public final EList<Expression> post;
+	public final EArrayList<Expression> post;
 	public final Statement body;
 	
 	public Stmt_LambdaFor(Statement initIn, Expr_Lambda lambdaIn, Expression postIn, Statement bodyIn) {
 		this(initIn, lambdaIn, new EArrayList<Expression>(postIn), bodyIn);
 	}
 	
-	public Stmt_LambdaFor(Statement initIn, Expr_Lambda lambdaIn, EList<Expression> postIn, Statement bodyIn) {
+	public Stmt_LambdaFor(Statement initIn, Expr_Lambda lambdaIn, EArrayList<Expression> postIn, Statement bodyIn) {
 		init = initIn;
 		lambda = lambdaIn;
 		post = postIn;

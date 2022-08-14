@@ -24,7 +24,7 @@ import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.VariableDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 
 public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 	
@@ -42,7 +42,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		
 		//extract base statement parts
 		ParserDeclaration statement_declaration = statement.getDeclaration();
-		EList<VariableDeclaration> unprocessed_var_declarations = statement.vars;
+		EArrayList<VariableDeclaration> unprocessed_var_declarations = statement.vars;
 		Token token_returntype = statement_declaration.getReturnType();
 		IDatatype var_dec_datatype = NativeTypeManager.datatypeOf(token_returntype);
 		

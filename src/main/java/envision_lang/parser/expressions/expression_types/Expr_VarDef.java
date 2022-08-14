@@ -4,16 +4,16 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EList;
+import eutil.datatypes.EArrayList;
 import eutil.strings.StringUtil;
 
 /** Used to declare variables within expressions. */
 public class Expr_VarDef implements Expression {
 
 	public final Token type;
-	public final EList<Token> params;
+	public final EArrayList<Token> params;
 	
-	public Expr_VarDef(Token typeIn, EList<Token> paramsIn) {
+	public Expr_VarDef(Token typeIn, EArrayList<Token> paramsIn) {
 		type = typeIn;
 		params = paramsIn;
 	}

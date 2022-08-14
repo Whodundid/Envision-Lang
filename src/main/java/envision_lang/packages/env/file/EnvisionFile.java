@@ -8,13 +8,12 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.JavaObjectWrapper;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 import eutil.strings.StringUtil;
 
 public class EnvisionFile extends ClassInstance {
 	
 	public File iFile;
-	public EList<String> toBeWritten = new EArrayList<>();
+	public EArrayList<String> toBeWritten = new EArrayList();
 	
 	//--------------
 	// Constructors

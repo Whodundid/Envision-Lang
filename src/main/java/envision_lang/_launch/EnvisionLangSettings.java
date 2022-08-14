@@ -2,7 +2,6 @@ package envision_lang._launch;
 
 import envision_lang.exceptions.errors.launch.InvalidLaunchArgumentError;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.EList;
 import eutil.debug.Broken;
 import eutil.debug.Unused;
 
@@ -17,9 +16,9 @@ public class EnvisionLangSettings {
 	/** All passed arguments to be processed. */
 	private final String[] launchArgs;
 	/** Arguments passed to the Envision Language. */
-	private final EList<LaunchArgs> envArgs = new EArrayList<>();
+	private final EArrayList<LaunchArgs> envArgs = new EArrayList();
 	/** Arguments passed to programs running on the Envision Language. */
-	private final EList<String> userArgs = new EArrayList<>();
+	private final EArrayList<String> userArgs = new EArrayList();
 	
 	//--------------
 	// Constructors
@@ -54,8 +53,8 @@ public class EnvisionLangSettings {
 		}
 	}
 	
-	public EList<LaunchArgs> getEnvArgs() { return envArgs; }
-	public EList<String> getUserArgs() { return userArgs; }
+	public EArrayList<LaunchArgs> getEnvArgs() { return envArgs; }
+	public EArrayList<String> getUserArgs() { return userArgs; }
 	
 	//-----------------
 	// Launch Arg Enum
