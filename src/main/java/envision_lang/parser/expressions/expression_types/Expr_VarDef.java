@@ -5,7 +5,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 /** Used to declare variables within expressions. */
 public class Expr_VarDef implements Expression {
@@ -20,7 +20,7 @@ public class Expr_VarDef implements Expression {
 	
 	@Override
 	public String toString() {
-		String p = (params != null) ? "<" + StringUtil.toString(params, ", ") + ">": "";
+		String p = (params != null) ? "<" + EStringUtil.toString(params, ", ") + ">": "";
 		return type.lexeme + p;
 	}
 	

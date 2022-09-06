@@ -7,7 +7,7 @@ import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLangSettings;
 import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
 import envision_lang.exceptions.EnvisionLangError;
-import eutil.random.RandomUtil;
+import eutil.random.ERandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")

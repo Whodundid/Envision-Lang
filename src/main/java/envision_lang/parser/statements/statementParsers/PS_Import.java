@@ -8,7 +8,7 @@ import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
 import envision_lang.tokenizer.Token;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class PS_Import extends GenericParser {
 	
@@ -28,7 +28,7 @@ public class PS_Import extends GenericParser {
 		
 		String object = null;
 		if (path.contains(".")) {
-			int pos = StringUtil.findStartingIndex(path, ".", true);
+			int pos = EStringUtil.findStartingIndex(path, ".", true);
 			object = path.substring(pos + 1);
 			path = path.substring(0, pos);
 		}

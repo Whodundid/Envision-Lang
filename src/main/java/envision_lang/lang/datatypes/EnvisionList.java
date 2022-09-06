@@ -19,7 +19,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 /**
  * A script variable that represents a grouping of multiple objects in the form
@@ -89,7 +89,7 @@ public class EnvisionList extends ClassInstance {
 	
 	@Override
 	public String toString() {
-		return "[" + StringUtil.combineAll(list, ", ") + "]";
+		return "[" + EStringUtil.combineAll(list, ", ") + "]";
 	}
 	
 	@Override

@@ -5,7 +5,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class Expr_FunctionCall implements Expression {
 	
@@ -39,8 +39,8 @@ public class Expr_FunctionCall implements Expression {
 		String nex = (next != null) ? "" + next : "";
 		String c = (callee != null) ? callee + "" : "";
 		String n = (name != null) ? "." + name.lexeme : "";
-		String g = (generics != null) ? "<" + StringUtil.toString(generics, gn -> gn.lexeme) + ">" : "";
-		String a = (args != null && args.isNotEmpty()) ? StringUtil.toString(args, ", ") : "";
+		String g = (generics != null) ? "<" + EStringUtil.toString(generics, gn -> gn.lexeme) + ">" : "";
+		String a = (args != null && args.isNotEmpty()) ? EStringUtil.toString(args, ", ") : "";
 		return c + n + g + "(" + a + ")" + nex;
 	}
 	

@@ -16,7 +16,7 @@ import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
-import eutil.math.NumberUtil;
+import eutil.math.ENumUtil;
 
 /** Utility class designed to help with general object creation. */
 public class ObjectCreator {
@@ -105,7 +105,7 @@ public class ObjectCreator {
 				case DOUBLE: obj = EnvisionDoubleClass.newDouble(((Number) valueIn).doubleValue()); break;
 				case STRING: obj = EnvisionStringClass.newString(stringify(valueIn)); break;
 				case NUMBER: 
-					if (NumberUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);
+					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);
 					else obj = EnvisionDoubleClass.newDouble((double) valueIn);
 					break;
 				default:

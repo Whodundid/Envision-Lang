@@ -4,7 +4,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 /** A grouping of multiple expressions to be executed together. */
 public class Expr_Compound implements Expression {
@@ -31,7 +31,7 @@ public class Expr_Compound implements Expression {
 	
 	@Override
 	public String toString() {
-		return StringUtil.toString(expressions, ", ");
+		return EStringUtil.toString(expressions, ", ");
 	}
 	
 	@Override

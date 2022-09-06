@@ -6,7 +6,7 @@ import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
-import eutil.random.RandomUtil;
+import eutil.random.ERandomUtil;
 
 public class RandName extends EnvisionFunction {
 	
@@ -16,7 +16,7 @@ public class RandName extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionString s = EnvisionStringClass.newString(RandomUtil.randomName());
+		EnvisionString s = EnvisionStringClass.newString(ERandomUtil.randomName());
 		ret(s);
 	}
 	

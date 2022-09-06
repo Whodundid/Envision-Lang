@@ -7,7 +7,7 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class Stmt_EnumDef implements Statement {
 	
@@ -47,7 +47,7 @@ public class Stmt_EnumDef implements Statement {
 	@Override
 	public String toString() {
 		String s = (superEnums.isEmpty()) ? "" : " " + superEnums.toString();
-		String b = (body != null && body.isNotEmpty()) ? " : {" + StringUtil.toString(body, ", ") + " }" : "";
+		String b = (body != null && body.isNotEmpty()) ? " : {" + EStringUtil.toString(body, ", ") + " }" : "";
 		return declaration + " enum " + name.lexeme + s + " { " + values + b + " }";
 	}
 	

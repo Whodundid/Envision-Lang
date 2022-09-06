@@ -8,7 +8,7 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.JavaObjectWrapper;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class EnvisionFile extends ClassInstance {
 	
@@ -32,7 +32,7 @@ public class EnvisionFile extends ClassInstance {
 		if (argPath == null) return new File(dirPath);
 		
 		// next, determine if this file is a relative file path off of the base program's default directory
-		if (EUtil.contains(new File(dirPath).list(), StringUtil.subStringToString(argPath, "\\", "/"))) {
+		if (EUtil.contains(new File(dirPath).list(), EStringUtil.subStringToString(argPath, "\\", "/"))) {
 			return new File(dirPath, argPath);
 		}
 		

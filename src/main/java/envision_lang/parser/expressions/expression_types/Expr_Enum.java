@@ -5,7 +5,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class Expr_Enum implements Expression {
 	
@@ -19,7 +19,7 @@ public class Expr_Enum implements Expression {
 	
 	@Override
 	public String toString() {
-		String a = (args != null && args.isNotEmpty()) ? "(" + StringUtil.toString(args, ", ") + ")" : "";
+		String a = (args != null && args.isNotEmpty()) ? "(" + EStringUtil.toString(args, ", ") + ")" : "";
 		return name.lexeme + a;
 	}
 	

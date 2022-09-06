@@ -6,7 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.tokenizer.EscapeCode;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 public class EnvisionStringFormatter {
 	
@@ -41,7 +41,7 @@ public class EnvisionStringFormatter {
 				out.append(handleEscapes(interpreter, str, to_pass));
 			}
 			else {
-				out.append(handleEscapes(interpreter, StringUtil.toString(o), null));
+				out.append(handleEscapes(interpreter, EStringUtil.toString(o), null));
 			}
 			
 			//add a space in between arguments
@@ -140,7 +140,7 @@ public class EnvisionStringFormatter {
 			return handleEscapes(interpreter, r_str, obj_inst);
 		}
 		//otherwise append the object's string value
-		else if (obj != null) return StringUtil.toString(obj);
+		else if (obj != null) return EStringUtil.toString(obj);
 		//if the obj is null then the variable doesn't actually exist -- throw an error
 		else throw new NullVariableError(varName);
 	}

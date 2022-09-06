@@ -14,7 +14,7 @@ import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 /**
  * A special type of EnvisionObject which bundles the data composing a code
@@ -67,7 +67,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		theFile = in;
 		
 		if (isValid = checkFile()) {
-			fileName = StringUtil.subStringAfter(theFile.getPath().replace("\\", "."), ".").replace(".nvis", "");
+			fileName = EStringUtil.subStringAfter(theFile.getPath().replace("\\", "."), ".").replace(".nvis", "");
 		}
 		else {
 			fileName = "NO_NAME";

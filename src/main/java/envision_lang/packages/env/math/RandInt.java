@@ -7,7 +7,7 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
-import eutil.random.RandomUtil;
+import eutil.random.ERandomUtil;
 
 public class RandInt extends EnvisionFunction {
 	
@@ -27,7 +27,7 @@ public class RandInt extends EnvisionFunction {
 			high = ((EnvisionNumber) args[1]).intVal_i();
 		}
 		
-		long rand = RandomUtil.getRoll(low, high);
+		long rand = ERandomUtil.getRoll(low, high);
 		EnvisionInt randInt = EnvisionIntClass.newInt(rand);
 		
 		ret(randInt);

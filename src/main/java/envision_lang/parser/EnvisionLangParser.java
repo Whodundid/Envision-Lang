@@ -10,7 +10,7 @@ import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
-import eutil.strings.StringUtil;
+import eutil.strings.EStringUtil;
 
 /**
  * The EnvisionParser handles the conversion of line tokens into
@@ -415,8 +415,8 @@ public class EnvisionLangParser {
 		String error = "\t" + message + "   ->   '" + current() + "'";
 		
 		//determine border length
-		String longest = StringUtil.getLongest(title, lineNumber, line, error);
-		border = StringUtil.repeatString("-", longest.length() + 16);
+		String longest = EStringUtil.getLongest(title, lineNumber, line, error);
+		border = EStringUtil.repeatString("-", longest.length() + 16);
 		
 		//find arrow position
 		EArrayList<Token> tokenLine = tokenLines.get(theLine - 1);
@@ -459,7 +459,7 @@ public class EnvisionLangParser {
 		}
 		
 		//position arrow in string
-		arrow = "\t\t" + StringUtil.repeatString(" ", spaces_before_arrow) + "^";
+		arrow = "\t\t" + EStringUtil.repeatString(" ", spaces_before_arrow) + "^";
 		
 		//assemble the generated error message parts
 		var generatedError = new StringBuilder();

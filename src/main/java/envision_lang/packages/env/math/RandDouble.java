@@ -7,7 +7,7 @@ import envision_lang.lang.datatypes.EnvisionDoubleClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
-import eutil.random.RandomUtil;
+import eutil.random.ERandomUtil;
 
 public class RandDouble extends EnvisionFunction {
 	
@@ -27,7 +27,7 @@ public class RandDouble extends EnvisionFunction {
 			high = ((EnvisionNumber) args[1]).doubleVal_i();
 		}
 		
-		double rand = RandomUtil.getRoll(low, high);
+		double rand = ERandomUtil.getRoll(low, high);
 		EnvisionDouble randDouble = EnvisionDoubleClass.newDouble(rand);
 		
 		ret(randDouble);
