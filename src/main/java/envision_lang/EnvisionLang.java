@@ -13,9 +13,9 @@ import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLangSettings;
 import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
 import envision_lang._launch.EnvisionLoader;
+import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError;
 import envision_lang.exceptions.errors.workingDirectory.NoMainError;
 import envision_lang.packages.EnvisionLangPackage;
@@ -184,6 +184,9 @@ public class EnvisionLang {
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
+	/** The actively bound program. */
+	private EnvisionProgram program;
+	
 	/** The active working directory. */
 	private WorkingDirectory dir;
 	
@@ -231,33 +234,24 @@ public class EnvisionLang {
 		}
 	}
 	
-	public void runProgram() throws Exception { runProgramI(); }
-	
 	public void runProgram(String pathIn) throws Exception { runProgram(new File(pathIn)); }
-	public void runProgram(File pathIn) throws Exception { runProgram(buildProgram(pathIn)); }
-	public void runProgram(EnvisionLang in) throws Exception { in.runProgramI(); }
+	public void runProgram(File pathIn) throws Exception { runProgram(new EnvisionProgram(pathIn)); }
+	public void runProgram(EnvisionProgram in) throws Exception { runProgramI(in); }
 	
-	public EnvisionLang buildProgram(File pathIn) {
-		//attempt to check if the working dir is actually valid
-		if (!(dir = new WorkingDirectory(pathIn)).isValid()) throw new BadDirError(dir);
+	/** Internal run program call. */
+	private void runProgramI(EnvisionProgram programIn) throws Exception {
+		program = programIn;
+		dir = programIn.getWorkingDir();
 		
-		//build the working directory
+		//load build packages into dir
 		try {
 			packages.forEach(dir::addBuildPackage);
-			dir.discoverFiles();
 		}
 		catch (Exception err) {
 			envisionLogger.error("Failed to build program!", err);
-			//throw e;
+			throw err;
 			//handle working directory error
 		}
-		
-		return this;
-	}
-	
-	/** Internal run program call. */
-	private void runProgramI() throws Exception {
-		final long start_time = System.currentTimeMillis();
 		
 		//check main
 		EnvisionCodeFile main = dir.getMain();
@@ -279,6 +273,7 @@ public class EnvisionLang {
 		
 		//check null main
 		if (main == null) throw new NoMainError(dir);
+		long start_time = System.currentTimeMillis();
 		
 		//interpret the program starting at the main file
 		try {
@@ -288,6 +283,8 @@ public class EnvisionLang {
 			//throw interpret error if the file could not be loaded
 			if (!main.load(this, dir)) throw new InterpreterCreationError();
 			
+			//track program start time
+			start_time = System.currentTimeMillis();
 			//actually execute the built program
 			main.execute(programArgs);
 			

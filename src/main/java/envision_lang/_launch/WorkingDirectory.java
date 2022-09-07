@@ -10,7 +10,7 @@ import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.exceptions.errors.workingDirectory.MultipleMainsError;
 import envision_lang.packages.EnvisionLangPackage;
 
-/** Handles code file discovery and wraping. */
+/** Handles code file discovery and wrapping. */
 public class WorkingDirectory {
 	
 	/** The program's top level directory. */
@@ -131,7 +131,7 @@ public class WorkingDirectory {
 	// Getters
 	//---------
 	
-	/** Returns true if this WorkingDirectory's parent file is not null and actully exists. */
+	/** Returns true if this WorkingDirectory's parent file is not null and actually exists. */
 	public boolean isValid() { return isValid; }
 	/** Returns this WorkingDirectory's parent file. */
 	public File getDirFile() { return dir; }
