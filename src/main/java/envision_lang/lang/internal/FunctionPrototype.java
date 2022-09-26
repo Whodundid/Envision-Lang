@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.lang.util.StaticTypes;
@@ -106,7 +105,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Note: due to this design structure, static functions should not be handled
 	 * using the internal prototype design.
 	 */
-	private ClassInstance instance;
+	private EnvisionObject instance;
 	
 	/**
 	 * In the event that a primitive object's function needs to be dynamically
@@ -177,7 +176,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @param interpreter
 	 * @return The built function
 	 */
-	public InstanceFunction build(ClassInstance instIn) {
+	public InstanceFunction build(EnvisionObject instIn) {
 		//NOTE: building needs to take into account the scope that it is coming from
 		
 		//check if already built and return built_func
@@ -334,7 +333,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 *             function will be binded to
 	 * @return This prototype
 	 */
-	public FunctionPrototype setInstance(ClassInstance inst) {
+	public FunctionPrototype setInstance(EnvisionObject inst) {
 		instance = inst;
 		return this;
 	}

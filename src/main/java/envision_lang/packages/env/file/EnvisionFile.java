@@ -1,6 +1,7 @@
 package envision_lang.packages.env.file;
 
 import java.io.File;
+import java.util.Objects;
 
 import envision_lang.exceptions.errors.file.NoSuchFileError;
 import envision_lang.interpreter.EnvisionInterpreter;
@@ -23,6 +24,27 @@ public class EnvisionFile extends ClassInstance {
 		super(EnvisionFileClass.FILE_CLASS);
 		iFile = createWrapFile(pathIn);
 	}
+	
+	public EnvisionFile(File fileIn) {
+		super(EnvisionFileClass.FILE_CLASS);
+		iFile = Objects.requireNonNull(fileIn);
+	}
+	
+	public EnvisionFile(String parent, String child) {
+		super(EnvisionFileClass.FILE_CLASS);
+		EUtil.requireNonNull(parent, child);
+		iFile = new File(parent, child);
+	}
+	
+	public EnvisionFile(File parent, String child) {
+		super(EnvisionFileClass.FILE_CLASS);
+		EUtil.requireNonNull(parent, child);
+		iFile = new File(parent, child);
+	}
+	
+	//------------------
+	// Internal Methods
+	//------------------
 	
 	private File createWrapFile(String pathIn) {
 		String dirPath = EnvisionInterpreter.topDir().getDirFile().getAbsolutePath();

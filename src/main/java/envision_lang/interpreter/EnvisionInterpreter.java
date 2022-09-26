@@ -61,6 +61,7 @@ import envision_lang.interpreter.statements.IS_While;
 import envision_lang.interpreter.util.TypeManager;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.throwables.LangShutdownCall;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBoolean;
@@ -68,6 +69,7 @@ import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.packages.env.EnvPackage;
+import envision_lang.packages.env.base.Package_Envision;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
@@ -204,12 +206,14 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	//---------------------------------------------------------------------------------
 	
-	public EnvisionInterpreter interpret(WorkingDirectory dirIn) throws Exception {
+	public EnvisionInterpreter interpret(WorkingDirectory dirIn, EArrayList<String> userArgs) throws Exception {
 		if (topDir == null) topDir = dirIn;
 		active_dir = dirIn;
 		
 		EnvPackage.ENV_PACKAGE.defineOn(this);
 		EArrayList<Statement> statements = startingFile.getStatements();
+		
+		Package_Envision.init(envisionInstance, internalScope, userArgs);
 		
 		int cur = 0;
 		try {
@@ -220,6 +224,9 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 			
 			//System.out.println("Complete: " + codeFile() + " : " + scope);
 		}
+		//exit silently on shutdown call
+		catch (LangShutdownCall shutdownCall) {}
+		//report error on statement execution error
 		catch (Exception error) {
 			//such professional error handler
 			envisionInstance.getConsoleHandler().println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));

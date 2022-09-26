@@ -15,7 +15,6 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.internal.EnvisionVoid;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
@@ -103,7 +102,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			
 			
 			//create the default instance of the variable : defaults to a null object
-			EnvisionObject obj = EnvisionNull.NULL;
+			EnvisionObject obj = ObjectCreator.createDefault(var_dec_datatype);
 			
 			//create the variable with its initial value(s)
 			if (assignment_value != null) {

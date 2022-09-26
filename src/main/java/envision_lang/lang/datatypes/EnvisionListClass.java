@@ -84,9 +84,10 @@ public class EnvisionListClass extends EnvisionClass {
 		return list;
 	}
 	
-	public static EnvisionList newList(IDatatype type, List<EnvisionObject> data) {
+	public static EnvisionList newList(IDatatype type, List<? extends EnvisionObject> data) {
 		EnvisionList list = newList(type);
-		list.addAll(data);
+		list.getList().ensureCapacity(data.size());
+		for (var o : data) list.add(o);
 		return list;
 	}
 	

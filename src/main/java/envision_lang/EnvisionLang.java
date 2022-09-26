@@ -11,13 +11,14 @@ import envision_lang._launch.EnvisionLangConsoleOutputHandler;
 import envision_lang._launch.EnvisionLangConsoleReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLangSettings;
-import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError;
 import envision_lang.exceptions.errors.workingDirectory.NoMainError;
+import envision_lang.lang.natives.NativeTypeManager;
+import envision_lang.lang.natives.Primitives;
 import envision_lang.packages.EnvisionLangPackage;
 import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
@@ -56,6 +57,8 @@ public class EnvisionLang {
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
 	private static boolean liveMode = false;
+	/** The directory of the loaded program. */
+	public static File programDir = null;
 	
 	public static final Logger envisionLogger = LoggerFactory.getLogger(EnvisionLang.class);
 	
@@ -177,7 +180,7 @@ public class EnvisionLang {
 	private final EnvisionLangConsoleOutputHandler consoleOutputHandler = new EnvisionLangConsoleOutputHandler(this);
 	
 	/**
-	 * Settings which will be applied to the Envision Language and (or) given to
+	 * Settings which will be applied to the Envision Scripting Language and (or) given to
 	 * programs executing at runtime.
 	 */
 	private EnvisionLangSettings launchSettings = null;
@@ -195,21 +198,9 @@ public class EnvisionLang {
 	//--------------
 	
 	/** Creates a new Envision workspace with standard launch settings. */
-	public EnvisionLang() {}
-	
-	/** Creates a new Envision workspace with the individually provided string arguments. */
-	public EnvisionLang(String... args) {
-		launchSettings = new EnvisionLangSettings(args);
-	}
-	
-	/** Creates a new Envision workspace with the given launch settings. */
-	public EnvisionLang(EnvisionLangSettings launchSettingsIn) {
-		launchSettings = launchSettingsIn;
-	}
-	
-	/** Creates a new Envision workspace with the individually provided launch arguments. */
-	public EnvisionLang(LaunchArgs... argsIn) {
-		launchSettings = new EnvisionLangSettings(argsIn);
+	public EnvisionLang() {
+		Primitives.initPrimitives();
+		NativeTypeManager.initNativeClasses();
 	}
 	
 	//------------------
@@ -234,6 +225,10 @@ public class EnvisionLang {
 		}
 	}
 	
+	public void buildProgram(String pathIn) throws Exception {
+		//this.program
+	}
+	
 	public void runProgram(String pathIn) throws Exception { runProgram(new File(pathIn)); }
 	public void runProgram(File pathIn) throws Exception { runProgram(new EnvisionProgram(pathIn)); }
 	public void runProgram(EnvisionProgram in) throws Exception { runProgramI(in); }
@@ -242,6 +237,7 @@ public class EnvisionLang {
 	private void runProgramI(EnvisionProgram programIn) throws Exception {
 		program = programIn;
 		dir = programIn.getWorkingDir();
+		programDir = dir.getDirFile();
 		
 		//load build packages into dir
 		try {
@@ -277,6 +273,8 @@ public class EnvisionLang {
 		
 		//interpret the program starting at the main file
 		try {
+			launchSettings = program.getLaunchArgs();
+			
 			//get user args
 			var programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<String>();
 			
@@ -288,15 +286,8 @@ public class EnvisionLang {
 			//actually execute the built program
 			main.execute(programArgs);
 			
-			if (liveMode) {
-				Scanner reader = new Scanner(System.in);
-				while (liveMode) {
-					String line = reader.nextLine();
-					if (!line.isEmpty()) main.getInterpreter().execute(EnvisionLangParser.parseStatement(line));
-					reader.reset();
-				}
-				reader.close();
-			}
+			//do live interpreting
+			//if (liveMode) liveMode(main);
 		}
 		catch (EnvisionLangError e) {
 			if (errorCallback != null) errorCallback.handleError(e);
@@ -308,6 +299,17 @@ public class EnvisionLang {
 			//debug log the program's total running time
 			envisionLogger.debug("ENVISION-END: " + (System.currentTimeMillis() - start_time) + " ms");
 		}
+	}
+	
+	@Broken(since="Forever")
+	private void liveMode(EnvisionCodeFile main) throws Exception {
+		Scanner reader = new Scanner(System.in);
+		while (liveMode) {
+			String line = reader.nextLine();
+			if (!line.isEmpty()) main.getInterpreter().execute(EnvisionLangParser.parseStatement(line));
+			reader.reset();
+		}
+		reader.close();
 	}
 	
 	public EnvisionLang setLaunchSettings(EnvisionLangSettings settingsIn) {

@@ -46,4 +46,9 @@ public class EnvisionNull extends EnvisionObject {
 		return "ENVISION:null";
 	}
 	
+	@Override
+	public EnvisionObject copy() {
+		return this;
+	}
+	
 }

@@ -53,7 +53,6 @@ public class ClassInstance extends EnvisionObject {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = instanceScopeIn;
-		registerNatives();
 	}
 	
 	/**
@@ -67,7 +66,6 @@ public class ClassInstance extends EnvisionObject {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = new Scope(derivingClassIn.staticScope);
-		registerNatives();
 	}
 	
 	//-----------
@@ -91,7 +89,7 @@ public class ClassInstance extends EnvisionObject {
 	/**
 	 * Called during instance initialization.
 	 */
-	protected void registerNatives() {};
+	//protected void registerNatives() {};
 	
 	/**
 	 * Used to natively handle operator overloads within class instances.
@@ -301,7 +299,11 @@ public class ClassInstance extends EnvisionObject {
 		//attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
 		
-		if (obj == null) throw new UndefinedFunctionError(funcName, this);
+		if (obj == null) {
+			System.out.println("NO FUNC!");
+			System.out.println(this.getScope());
+			throw new UndefinedFunctionError(funcName, this);
+		}
 		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);
 		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		

@@ -9,6 +9,7 @@ import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.packages.EnvisionPackage;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
+import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EDataType;
 
 /**
@@ -86,12 +87,21 @@ public enum Primitives implements IDatatype {
 	
 	//---------------------------------------
 	
+	private static final EArrayList<Primitives> primitivesList = new EArrayList<>();
+	
+	public static void initPrimitives() {
+		if (primitivesList.isNotEmpty()) return;
+		for (Primitives p : values()) {
+			primitivesList.add(p);
+		}
+	}
+	
 	//-----------
 	// Overrides
 	//-----------
 	
 	@Override public Primitives getPrimitive() { return this; }
-	@Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(string_type); }
+	@Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(this); }
 	@Override public String getType() { return string_type; }
 	
 	//---------
@@ -158,6 +168,7 @@ public enum Primitives implements IDatatype {
 	 */
 	public boolean isField() {
 		switch (this) {
+		case NULL:
 		case BOOLEAN:
 		case CHAR:
 		case INT:
@@ -219,7 +230,7 @@ public enum Primitives implements IDatatype {
 	}
 	
 	public static boolean isNumber(String typeIn) {
-		return isNumber(getDataType(typeIn.toLowerCase()));
+		return isNumber(getPrimitiveType(typeIn.toLowerCase()));
 	}
 	
 	public static boolean canBeParameterized(Primitives typeIn) {
@@ -249,7 +260,7 @@ public enum Primitives implements IDatatype {
 		return getDataType(token.getKeyword());
 	}
 	
-	public static Primitives getDataType(String typeIn) {
+	public static Primitives getPrimitiveType(String typeIn) {
 		if (typeIn == null) return null;
 		return switch (typeIn) {
 		case "var" -> VAR;

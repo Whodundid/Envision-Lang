@@ -5,6 +5,7 @@ import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.tokenizer.EscapeCode;
 import eutil.strings.EStringUtil;
 
@@ -13,7 +14,15 @@ public class EnvisionStringFormatter {
 	private EnvisionStringFormatter() {}
 
 	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject o) {
-		return formatPrint(interpreter, new EnvisionObject[] {o});
+		return formatPrint(interpreter, new EnvisionObject[] {o}, false);
+	}
+	
+	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject o, boolean format) {
+		return formatPrint(interpreter, new EnvisionObject[] {o}, format);
+	}
+	
+	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		return formatPrint(interpreter, args, false);
 	}
 	
 	/**
@@ -24,8 +33,13 @@ public class EnvisionStringFormatter {
 	 * @param args
 	 * @return String formatted for println
 	 */
-	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args, boolean format) {
 		StringBuilder out = new StringBuilder();
+		
+		if (args.length == 1 && args[0] instanceof EnvisionList list) {
+			out.append(list);
+			return out.toString();
+		}
 		
 		for (int i = 0; i < args.length; i++) {
 			EnvisionObject o = args[i];
@@ -37,11 +51,11 @@ public class EnvisionStringFormatter {
 				
 				ClassInstance to_pass = null;
 				if (!inst.isPrimitive()) to_pass = inst;
-					
-				out.append(handleEscapes(interpreter, str, to_pass));
+				
+				out.append(handleEscapes(interpreter, str, to_pass, format));
 			}
 			else {
-				out.append(handleEscapes(interpreter, EStringUtil.toString(o), null));
+				out.append(handleEscapes(interpreter, EStringUtil.toString(o), null, format));
 			}
 			
 			//add a space in between arguments
@@ -51,9 +65,11 @@ public class EnvisionStringFormatter {
 		return out.toString();
 	}
 	
-	/** Processes an incomming string and parses for escape characters and performs the accoring function if one is found. */
-	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst) {
+	/** Processes an incomming string and parses for escape characters and performs the according function if one is found. */
+	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst, boolean format) {
 		StringBuilder out = new StringBuilder();
+		
+		//System.out.println("TO PRINT: " + in);
 		
 		//search for escape characters and handle them accordingly
 		for (int i = 0; i < in.length(); i++) {
@@ -66,13 +82,16 @@ public class EnvisionStringFormatter {
 				//process the code
 				if (esc != null) out.append(EscapeCode.convertCode(esc));
 				//throw invalid escape char code
-				else throw new EnvisionLangError("Invalid string escape character code! '\\" + in.charAt(i) + "'");
+				else {
+					//System.out.println((int) in.charAt(i + 1));
+					throw new EnvisionLangError("Invalid string escape character code! '\\" + in.charAt(i + 1) + "'");
+				}
 				
 				//consume the '\'
 				i++;
 			}
 			//check if the start of a var expression
-			else if (c == '{' && (i + 1 < in.length())) {
+			else if (format && c == '{' && (i + 1 < in.length())) {
 				String varName = findVarName(in.substring(i + 1));
 				
 				String val = processObject(interpreter, varName, inst);
@@ -137,7 +156,7 @@ public class EnvisionStringFormatter {
 		//if the obj returned is a class instance, recursive replacement will need to be performed
 		if (obj instanceof ClassInstance obj_inst) {
 			String r_str = obj_inst.executeToString_i(interpreter);
-			return handleEscapes(interpreter, r_str, obj_inst);
+			return handleEscapes(interpreter, r_str, obj_inst, false);
 		}
 		//otherwise append the object's string value
 		else if (obj != null) return EStringUtil.toString(obj);

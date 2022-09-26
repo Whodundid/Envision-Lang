@@ -103,7 +103,7 @@ public class EnvisionBoolean extends EnvisionVariable {
 	 */
 	@Override
 	public EnvisionBoolean copy() {
-		return new EnvisionBoolean(this);
+		return EnvisionBooleanClass.newBoolean(this);
 	}
 	
 	/**

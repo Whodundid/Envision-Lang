@@ -72,6 +72,14 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		return bool;
 	}
 	
+	public static EnvisionBoolean valueOf(boolean val) {
+		return (val) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
+	}
+	
+	public static EnvisionBoolean valueOf(EnvisionBoolean val) {
+		return (val.bool_val) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
+	}
+	
 	//-----------
 	// Overrides
 	//-----------

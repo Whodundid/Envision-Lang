@@ -87,78 +87,81 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 	}
 	
 	private void handleInit() {
-		if (s.init != null) {
-			if (s.init instanceof Stmt_VarDef var_stmt) {
-				Stmt_VarDef initVars = (Stmt_VarDef) s.init;
-				EArrayList<VariableDeclaration> vars = initVars.vars;
+		if (s.init == null) {
+			index = EnvisionIntClass.newInt();
+			return;
+		}
+		
+		if (s.init instanceof Stmt_VarDef var_stmt) {
+			Stmt_VarDef initVars = (Stmt_VarDef) s.init;
+			EArrayList<VariableDeclaration> vars = initVars.vars;
+			
+			//declare and initialize each variable, the first var will be used as the internal counter reference
+			for (int i = 0; i < vars.size(); i++) {
+				VariableDeclaration varDec = vars.get(i);
+				String name = varDec.getName();
+				Expression var_assignment = varDec.assignment_value;
+				EnvisionObject value = (var_assignment != null) ? evaluate(var_assignment) : null;
 				
-				//declare and initialize each variable, the first var will be used as the internal counter reference
-				for (int i = 0; i < vars.size(); i++) {
-					VariableDeclaration varDec = vars.get(i);
-					String name = varDec.getName();
-					Expression var_assignment = varDec.assignment_value;
-					EnvisionObject value = (var_assignment != null) ? evaluate(var_assignment) : null;
-					
-					//first check if the variable is already defined
-					EnvisionObject obj = scope().get(name);
-					
-					//If this is the first variable index -- attempt to assign as the loop's index reference
-					if (i == 0) {
-						//if the variable is defined, make sure it's actually an int
-						if (obj != null) {
-							if (obj instanceof EnvisionInt env_int) {
-								index = env_int;
-								if (value != null) index.set(value);
-							}
-							else throw new InvalidDatatypeError("The object '"+obj+"' is invalid for the expected type (int)!");
+				//first check if the variable is already defined
+				EnvisionObject obj = scope().get(name);
+				
+				//If this is the first variable index -- attempt to assign as the loop's index reference
+				if (i == 0) {
+					//if the variable is defined, make sure it's actually an int
+					if (obj != null) {
+						if (obj instanceof EnvisionInt env_int) {
+							index = env_int;
+							if (value != null) index.set(value);
 						}
-						//if not, check if the variable's assignment value is potentially an int
-						else if (value != null) {
-							if (value instanceof EnvisionInt l_value) {
-								index = l_value;
-								scope().define(name, StaticTypes.INT_TYPE, index);
-							}
-							//define the variable anyways but also automatically define the index
-							else {
-								//define index
-								EnvisionInt new_int = EnvisionIntClass.newInt();
-								index = new_int;
-								scope().define(name, StaticTypes.INT_TYPE, new_int);
-								//define variable
-								scope().define(name, value.getDatatype(), value);
-								//throw new InvalidDataTypeError("invilsuqird");
-							}
+						else throw new InvalidDatatypeError("The object '"+obj+"' is invalid for the expected type (int)!");
+					}
+					//if not, check if the variable's assignment value is potentially an int
+					else if (value != null) {
+						if (value instanceof EnvisionInt l_value) {
+							index = l_value;
+							scope().define(name, StaticTypes.INT_TYPE, index);
 						}
-						//if there's no object already declared for the index and there's no assignment value
-						//simply create a new int to hold the loop's reference index
+						//define the variable anyways but also automatically define the index
 						else {
+							//define index
 							EnvisionInt new_int = EnvisionIntClass.newInt();
 							index = new_int;
 							scope().define(name, StaticTypes.INT_TYPE, new_int);
-						}
-					}
-					//this is not the first object, attempt to create new loop-level variable
-					else if (obj != null) {
-						if (obj instanceof EnvisionVariable env_var) env_var.set_i(value);
-						else scope().set(name, value);
-					}
-					else if (value != null) {
-						//because EnvisionVariables natively support copying, attempt to cast as such
-						if (value instanceof EnvisionVariable env_var) {
-							scope().define(name, env_var.getDatatype(), env_var.copy());
-						}
-						else {
+							//define variable
 							scope().define(name, value.getDatatype(), value);
+							//throw new InvalidDataTypeError("invilsuqird");
 						}
 					}
+					//if there's no object already declared for the index and there's no assignment value
+					//simply create a new int to hold the loop's reference index
 					else {
-						scope().define(name, EnvisionNull.NULL);
+						EnvisionInt new_int = EnvisionIntClass.newInt();
+						index = new_int;
+						scope().define(name, StaticTypes.INT_TYPE, new_int);
 					}
 				}
+				//this is not the first object, attempt to create new loop-level variable
+				else if (obj != null) {
+					if (obj instanceof EnvisionVariable env_var) env_var.set_i(value);
+					else scope().set(name, value);
+				}
+				else if (value != null) {
+					//because EnvisionVariables natively support copying, attempt to cast as such
+					if (value instanceof EnvisionVariable env_var) {
+						scope().define(name, env_var.getDatatype(), env_var.copy());
+					}
+					else {
+						scope().define(name, value.getDatatype(), value);
+					}
+				}
+				else {
+					scope().define(name, EnvisionNull.NULL);
+				}
 			}
-			else {
-				//throw error
-			}
+		}
+		else {
+			//throw error
 		}
 		
 		//if there are no initializers, set index to zero by default;
@@ -170,30 +173,29 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 	private void handleLambdaProductions(long i) {
 		boolean first = true;
 		for (Expression e : production.expressions) {
-			if (first) {
+			if (!first) {
+				evaluate(e);
+				continue;
+			}
+			
+			if (e instanceof Expr_Var var_expr) {
+				String name = var_expr.getName();
+				EnvisionObject cur_obj = iterable.get(i);
+				EnvisionObject created_obj = null;
 				
-				if (e instanceof Expr_Var var_expr) {
-					String name = var_expr.getName();
-					EnvisionObject cur_obj = iterable.get(i);
-					EnvisionObject created_obj = null;
-					
-					if (cur_obj instanceof EnvisionVariable env_var) {
-						created_obj = env_var.copy();
-					}
-					else created_obj = cur_obj;
-					
-					scope().define(name, created_obj.getDatatype(), created_obj);
+				if (cur_obj instanceof EnvisionVariable env_var) {
+					created_obj = env_var.copy();
 				}
-				else {
-					throw new InvalidTargetError("The given expression '" + e + "' is an invalid target for"
-											   + "the primary lambda production of: " + s.lambda.inputs + "!");
-				}
+				else created_obj = cur_obj;
 				
-				first = false;
+				scope().define(name, created_obj.getDatatype(), created_obj);
 			}
 			else {
-				evaluate(e);
+				throw new InvalidTargetError("The given expression '" + e + "' is an invalid target for"
+										     + "the primary lambda production of: " + s.lambda.inputs + "!");
 			}
+			
+			first = false;
 		}
 	}
 	

@@ -13,8 +13,10 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.Statement;
@@ -50,9 +52,9 @@ import eutil.datatypes.EArrayList;
 public class EnvisionClass extends EnvisionObject {
 	
 	/**
-	 * Denotes whether or not the Envision-Class-Hierarchy has been constructed.
+	 * Denotes whether or not the the natives for this class have been constructed.
 	 */
-	private static boolean nativesRegistered = false;
+	private boolean nativesRegistered = false;
 	
 	/**
 	 * Instance creation optimization tool.
@@ -146,7 +148,8 @@ public class EnvisionClass extends EnvisionObject {
 		
 		//assign class name
 		className = classNameIn;
-		
+		//assign default empty primitive class scope
+		staticScope = new Scope();
 		//assign native class object
 		internalClass = this;
 	}
@@ -175,7 +178,7 @@ public class EnvisionClass extends EnvisionObject {
 	// Methods
 	//---------
 	
-	public void initClassHierarchy() {
+	public void initClassNatives() {
 		//prevent re-registration
 		if (nativesRegistered) return;
 		registerStaticNatives();
@@ -183,7 +186,7 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	/**
-	 * Called at interpreter instantiation to register static class members
+	 * Called at class-interpreter instantiation to register static class members
 	 * outside of the internal construction phase. This approach prevents
 	 * an infinite instantiation loop.
 	 */
@@ -348,6 +351,17 @@ public class EnvisionClass extends EnvisionObject {
 	}
 	
 	/**
+	 * Returns a field value from this instance's scope.
+	 */
+	public EnvisionObject get(String name) {
+		EnvisionObject obj = staticScope.get(name);
+		//if function prototype, build dynamic function
+		if (obj instanceof FunctionPrototype proto) return proto.build(this);
+		//otherwise, just return scope object
+		return obj;
+	}
+	
+	/**
 	 * The constructor (initializer) function that is called by default
 	 * every time a new instance of this specific class is instantiated.
 	 * 
@@ -398,6 +412,22 @@ public class EnvisionClass extends EnvisionObject {
 	public EnvisionClass setScope(Scope in) {
 		staticScope = in;
 		return this;
+	}
+	
+	/**
+	 * Assigns a field value within this instance's scope.
+	 */
+	public EnvisionObject set(String name, EnvisionObject in) {
+		staticScope.set(name, in);
+		return in;
+	}
+	
+	/**
+	 * Assigns a field value within this instance's scope.
+	 */
+	public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
+		staticScope.set(name, type, in);
+		return in;
 	}
 	
 	/**

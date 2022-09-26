@@ -1,6 +1,8 @@
 package envision_lang._launch;
 
-import envision_lang.exceptions.errors.launch.InvalidLaunchArgumentError;
+import java.util.Collection;
+import java.util.List;
+
 import eutil.datatypes.EArrayList;
 import eutil.debug.Broken;
 import eutil.debug.Unused;
@@ -13,25 +15,27 @@ import eutil.debug.Unused;
  */
 public class EnvisionLangSettings {
 	
-	/** All passed arguments to be processed. */
-	private final String[] launchArgs;
 	/** Arguments passed to the Envision Language. */
-	private final EArrayList<LaunchArgs> envArgs = new EArrayList();
+	private EArrayList<LaunchArgs> envArgs = new EArrayList<>();
 	/** Arguments passed to programs running on the Envision Language. */
-	private final EArrayList<String> userArgs = new EArrayList();
+	private EArrayList<String> userArgs = new EArrayList<>();
 	
 	//--------------
 	// Constructors
 	//--------------
 	
+	public EnvisionLangSettings() {}
+	
 	public EnvisionLangSettings(String[] in) {
 		parseArgs(in);
-		launchArgs = in;
 	}
 	
 	public EnvisionLangSettings(LaunchArgs... argsIn) {
-		launchArgs = new String[0];
 		envArgs.addIfNotContains(argsIn);
+	}
+	
+	public EnvisionLangSettings(Collection<String> in) {
+		parseArgs(in.toArray(new String[0]));
 	}
 	
 	//---------
@@ -44,8 +48,8 @@ public class EnvisionLangSettings {
 			if (s.startsWith("-") && s.length() > 1) {
 				String option = s.substring(1); //strip '-'
 				LaunchArgs arg = LaunchArgs.matchArg(option);
-				if (arg == null) throw new InvalidLaunchArgumentError(s);
-				envArgs.add(arg);
+				if (arg != null) envArgs.addIfNotContains(arg);
+				else userArgs.add(s);
 			}
 			else {
 				userArgs.add(s);
@@ -55,6 +59,9 @@ public class EnvisionLangSettings {
 	
 	public EArrayList<LaunchArgs> getEnvArgs() { return envArgs; }
 	public EArrayList<String> getUserArgs() { return userArgs; }
+	
+	public void addUserArg(String arg) { userArgs.add(arg); }
+	public void addLaunchArg(LaunchArgs arg) { envArgs.addIfNotContains(arg); }
 	
 	//-----------------
 	// Launch Arg Enum
@@ -69,9 +76,9 @@ public class EnvisionLangSettings {
 		@Broken
 		PRELOAD_LANGUAGE("preloadLang"),
 		/** Displays various debug outputs from the language. 'Very poorly defined!' */
-		DEBUG_MODE("enableDebugMode"),
+		DEBUG_MODE("debugMode"),
 		/** 'Talk' directly to the interpreter. VERY BUGGY! */
-		LIVE_MODE("enableLiveMode"),
+		LIVE_MODE("liveMode"),
 		/** Prints out tokenized values, File by File. */
 		TOKENIZE("tokenize"),
 		/** Prints out parsed statements, File by File. */
@@ -99,6 +106,7 @@ public class EnvisionLangSettings {
 	
 	public static EnvisionLangSettings of(String... args) { return new EnvisionLangSettings(args); }
 	public static EnvisionLangSettings of(LaunchArgs... args) { return new EnvisionLangSettings(args); }
+	public static EnvisionLangSettings of(List<String> args) { return new EnvisionLangSettings(args); }
 	public static EnvisionLangSettings preload() { return new EnvisionLangSettings(LaunchArgs.PRELOAD_LANGUAGE); }
 	public static EnvisionLangSettings live() { return new EnvisionLangSettings(LaunchArgs.LIVE_MODE); }
 	public static EnvisionLangSettings tokenize() { return new EnvisionLangSettings(LaunchArgs.TOKENIZE); }

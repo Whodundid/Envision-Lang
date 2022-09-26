@@ -117,29 +117,28 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 	private EnvisionObject classCall(EnvisionClass c) {
 		try {
 			if (c.isAbstract()) throw new AbstractInstantiationError(c);
-			else if (c.isInstantiable()) {
-				//first check if it is actually 
-				if (c.isPrimitive()) {
-					//I don't like this code having to be evaluated here similar to a normal
-					//assignment path. It feels like it should be calling one of the more
-					//hard defined pathways instead.
-					
-					var value = (args.length == 1) ? args[0] : null;
-					if (value instanceof EnvisionVariable env_var) value = env_var.get();
-					return ObjectCreator.createObject(c.getDatatype(), value, false);
-				}
+			if (!c.isInstantiable()) throw new UnsupportedInstantiationError(c);
+			
+			//first check if it is actually 
+			if (c.isPrimitive()) {
+				//I don't like this code having to be evaluated here similar to a normal
+				//assignment path. It feels like it should be calling one of the more
+				//hard defined pathways instead.
+				
+				var value = (args.length == 1) ? args[0] : null;
+				if (value instanceof EnvisionVariable env_var) value = env_var.get();
+				return ObjectCreator.createObject(c.getDatatype(), value, false);
+			}
+			else {
+				//System.out.println("\tthe instantiable object: " + c.getClass());
+				//utilize construct optimization
+				ClassConstruct con = c.getClassConstruct();
+				if (con != null) con.call(interpreter, args);
+				//otherwise default to basic creation
 				else {
-					//System.out.println("\tthe instantiable object: " + c.getClass());
-					//utilize construct optimization
-					ClassConstruct con = c.getClassConstruct();
-					if (con != null) con.call(interpreter, args);
-					//otherwise default to basic creation
-					else {
-						c.newInstance(interpreter, args);
-					}
+					return c.newInstance(interpreter, args);
 				}
 			}
-			else throw new UnsupportedInstantiationError(c);
 		}
 		catch (ReturnValue r) {
 			return r.result;	

@@ -10,9 +10,9 @@ public class DebugPackage extends EnvisionLangPackage {
 
 	@Override
 	public void buildFunctions() {
-		packageScope.defineFunction(new DebugScope());
-		packageScope.defineFunction(new DebugInfo());
-		packageScope.defineFunction(new DebugParsed());
+		define(new DebugScope());
+		define(new DebugInfo());
+		define(new DebugParsed());
 	}
 	
 }

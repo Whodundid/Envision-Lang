@@ -93,6 +93,16 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	protected boolean isOperatorOverload = false;
 	
+	/**
+	 * The original pre-overloaded function of this one.
+	 * <p>
+	 * Otherwise known as this function's 'super'.
+	 * <p>
+	 * Unless this function is overriding an existing function, this field will
+	 * generally be null.
+	 */
+	protected EnvisionFunction superFunction = null;
+	
 	//--------------
 	// Constructors
 	//--------------
@@ -225,8 +235,10 @@ public class EnvisionFunction extends ClassInstance {
 		if (!(in instanceof EnvisionFunction)) return false;
 		
 		EnvisionFunction m = (EnvisionFunction) in;
-		return m.functionName.equals(functionName) && m.params.compare(params)
-				&& m.isConstructor == isConstructor && m.isOperatorOverload == isOperatorOverload;
+		return m.functionName.equals(functionName) &&
+			   m.params.compare(params) &&
+			   m.isConstructor == isConstructor &&
+			   m.isOperatorOverload == isOperatorOverload;
 	}
 	
 	//-------------------
@@ -322,7 +334,7 @@ public class EnvisionFunction extends ClassInstance {
 		//only accept functions with the same name
 		if (!functionName.equals(overload.functionName))
 			throw new InvalidTargetError("The given function: " + overload
-					+ " is not valid as an overload function of" + this + "!");
+										 + " is not valid as an overload function of" + this + "!");
 		//don't allow if already existing overloads
 		if (hasOverload(overload.params))
 			throw new DuplicateOverloadError(functionName, overload.params);
@@ -505,7 +517,7 @@ public class EnvisionFunction extends ClassInstance {
 		//create a new scope derived from this function's scope
 		Scope scope = new Scope(instanceScope);
 		
-		EArrayList<EnvisionObject> callArgs = new EArrayList<EnvisionObject>().addA(args);
+		var callArgs = new EArrayList<EnvisionObject>().addA(args);
 		EnvisionFunction m = getOverloadFromArgs(callArgs);
 		
 		//define parameter values within the current scope
@@ -525,20 +537,19 @@ public class EnvisionFunction extends ClassInstance {
 				EnvisionObject arg_obj = callArgs.get(i);
 				
 				Box2<IDatatype, EnvisionObject> scopeValue = ps.getTyped(arg_name);
+				if (scopeValue == null) continue;
 				
-				if (scopeValue != null) {
-					IDatatype scope_var_type = scopeValue.getA();
-					IDatatype incomming_type = arg_obj.getDatatype();
-					
-					if (scope_var_type.compare(incomming_type)) {
-						ps.set(arg_name, arg_obj);
-					}
-					else if (IDatatype.isNumber(scopeValue.getA())) {
-						EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getA());
-						ps.set(arg_name, obj);
-					}
-					else throw new InvalidArgumentError(functionName, scope_var_type, incomming_type);
+				IDatatype scope_var_type = scopeValue.getA();
+				IDatatype incomming_type = arg_obj.getDatatype();
+				
+				if (scope_var_type.compare(incomming_type)) {
+					ps.set(arg_name, arg_obj);
 				}
+				else if (IDatatype.isNumber(scopeValue.getA())) {
+					EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getA());
+					ps.set(arg_name, obj);
+				}
+				else throw new InvalidArgumentError(functionName, scope_var_type, incomming_type);
 			}
 		}
 		
@@ -567,13 +578,13 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return The name of this function
 	 */
 	public String getFunctionName() { return functionName; }
-//	public Scope getScope() { return functionScope; }
 	public ParameterData getParams() { return params; }
 	public EArrayList<Statement> getStatements() { return statements; }
 	public EArrayList<EnvisionFunction> getOverloads() { return overloads; }
 	public EArrayList<Statement> getBody() { return statements; }
 	public EArrayList<IDatatype> getParamTypes() { return params.getDataTypes(); }
 	public EArrayList<String> getParamNames() { return params.getNames(); }
+	public EnvisionFunction getSuper() { return superFunction; }
 	
 	public IDatatype getReturnType() { return returnType; }
 	public boolean isVoid() { return returnType.isVoid(); }
@@ -585,11 +596,6 @@ public class EnvisionFunction extends ClassInstance {
 	//---------
 	// Setters
 	//---------
-	
-//	public EnvisionFunction setScope(Scope scopeIn) {
-//		functionScope = scopeIn;
-//		return this;
-//	}
 	
 	public EnvisionFunction setBody(EArrayList<Statement> in) {
 		statements.clear();
@@ -606,6 +612,10 @@ public class EnvisionFunction extends ClassInstance {
 	public EnvisionFunction assignParentClass(EnvisionClass parentClassIn) {
 		parentClass = parentClassIn;
 		return this;
+	}
+	
+	public void setSuper(EnvisionFunction func) {
+		superFunction = func;
 	}
 	
 	//----------------

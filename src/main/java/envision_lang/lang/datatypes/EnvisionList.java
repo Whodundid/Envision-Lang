@@ -84,7 +84,9 @@ public class EnvisionList extends ClassInstance {
 	@Override
 	public EnvisionList copy() {
 		//shallow copy
-		return new EnvisionList(this);
+		var l = EnvisionListClass.newList(list_type);
+		for (var o : list) l.add(o);
+		return l;
 	}
 	
 	@Override

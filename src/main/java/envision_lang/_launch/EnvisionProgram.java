@@ -26,6 +26,8 @@ public class EnvisionProgram {
 	private File mainFile;
 	/** The Envision Scripting Language's active program working directory. */
 	private WorkingDirectory dir;
+	/** The settings to run the Envision Scripting Language with. */
+	private EnvisionLangSettings settings;
 	
 	//--------------
 	// Constructors
@@ -148,5 +150,26 @@ public class EnvisionProgram {
 	 * @return The working directory
 	 */
 	public WorkingDirectory getWorkingDir() { return dir; }
+	
+	/**
+	 * Returns the set of launch arguments for which to run the Envision
+	 * Scripting Language with.
+	 * 
+	 * @return The launch settings for this program
+	 */
+	public EnvisionLangSettings getLaunchArgs() { return settings; }
+	
+	//---------
+	// Setters
+	//---------
+	
+	/**
+	 * Sets the launch arguments to run the Envision Scripting Language with.
+	 * 
+	 * @param settingsIn The settings to run with this program
+	 */
+	public void setLaunchArgs(EnvisionLangSettings settingsIn) {
+		settings = settingsIn;
+	}
 	
 }

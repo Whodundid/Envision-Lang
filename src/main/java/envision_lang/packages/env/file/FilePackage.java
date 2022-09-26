@@ -10,7 +10,7 @@ public class FilePackage extends EnvisionLangPackage {
 
 	@Override
 	public void buildClasses() {
-		packageScope.defineClass(EnvisionFileClass.FILE_CLASS);
+		define(EnvisionFileClass.FILE_CLASS);
 	}
 	
 }

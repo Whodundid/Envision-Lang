@@ -11,7 +11,7 @@ import envision_lang.packages.env.io.IOPackage;
 import envision_lang.packages.env.math.MathPackage;
 
 /**
- * The basic bundled Envision package emcompassing many
+ * The basic bundled Envision package encompassing many
  * various specific built-in library functions and values.
  */
 public class EnvPackage extends EnvisionLangPackage {
@@ -29,10 +29,10 @@ public class EnvPackage extends EnvisionLangPackage {
 
 	@Override
 	public void buildFunctions() {
-		packageScope.defineFunction(new Millis());
-		packageScope.defineFunction(new Nanos());
-		packageScope.defineFunction(new Sleep());
-		packageScope.defineFunction(new SupportsOP());
+		define(new Millis());
+		define(new Nanos());
+		define(new Sleep());
+		define(new SupportsOP());
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package envision_lang.exceptions.errors;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 
 public class InvalidArgumentError extends EnvisionLangError {
@@ -56,7 +57,10 @@ public class InvalidArgumentError extends EnvisionLangError {
 	 * @return A built InvalidArgumentError with a conversion error message
 	 */
 	public static InvalidArgumentError conversionError(EnvisionObject arg, IDatatype toType) {
-		return new InvalidArgumentError("Cannot convert the value '"+arg+"' to an "+toType+"!");
+		String out = "";
+		if (arg instanceof EnvisionNull) out = "null";
+		else out = String.valueOf(arg);
+		return new InvalidArgumentError("Cannot convert the value of '"+out+"' to the type of '"+toType+"'!");
 	}
 	
 	/**
@@ -67,7 +71,7 @@ public class InvalidArgumentError extends EnvisionLangError {
 	 * @return A built InvalidArgumentError with a conversion error message
 	 */
 	public static InvalidArgumentError conversionError(IDatatype toType) {
-		return new InvalidArgumentError("Cannot create an instance of the given type '" + toType + "' from the given arguments!");
+		return new InvalidArgumentError("Cannot create an instance of the given type '"+toType+"' from the given arguments!");
 	}
 	
 }

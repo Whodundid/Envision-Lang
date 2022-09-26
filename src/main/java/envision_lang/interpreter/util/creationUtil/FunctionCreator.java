@@ -43,7 +43,7 @@ public class FunctionCreator {
 			var dec_return_type = s.declaration.getReturnType();
 			//wrap the return type if not null
 			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
-			//otherwise, assign var as retun type
+			//otherwise, assign var as return type
 			else function_return_datatype = StaticTypes.VAR_TYPE;
 		}
 		

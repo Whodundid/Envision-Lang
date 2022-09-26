@@ -10,9 +10,10 @@ public class IOPackage extends EnvisionLangPackage {
 
 	@Override
 	public void buildFunctions() {
-		packageScope.defineFunction(new Read());
-		packageScope.defineFunction(new Print());
-		packageScope.defineFunction(new Println());
+		define(new Read());
+		define(new Print());
+		define(new Println());
+		define(new Printf());
 	}
 	
 }

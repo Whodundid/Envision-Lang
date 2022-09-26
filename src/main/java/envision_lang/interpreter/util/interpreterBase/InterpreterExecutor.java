@@ -22,9 +22,9 @@ public abstract class InterpreterExecutor {
 		interpreter = in;
 	}
 	
-	//---------------------
-	// Interpreter Wrapers
-	//---------------------
+	//----------------------
+	// Interpreter Wrappers
+	//----------------------
 	
 	public void execute(Statement s) { interpreter.execute(s); }
 	public EnvisionObject evaluate(Expression e) { return interpreter.evaluate(e); }

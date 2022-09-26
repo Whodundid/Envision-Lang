@@ -17,7 +17,6 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
 
 /**
  * Interpreter Utility to help keep track of user-defined types.
@@ -35,13 +34,13 @@ public class TypeManager {
 	public TypeManager() {
 		//load primitive types
 		
-		types.put(StaticTypes.BOOL_TYPE.getType(), EnvisionBooleanClass.BOOLEAN_CLASS);
-		types.put(StaticTypes.INT_TYPE.getType(), EnvisionIntClass.INT_CLASS);
-		types.put(StaticTypes.DOUBLE_TYPE.getType(), EnvisionDoubleClass.DOUBLE_CLASS);
-		types.put(StaticTypes.CHAR_TYPE.getType(), EnvisionCharClass.CHAR_CLASS);
-		types.put(StaticTypes.STRING_TYPE.getType(), EnvisionStringClass.STRING_CLASS);
-		types.put(StaticTypes.LIST_TYPE.getType(), EnvisionListClass.LIST_CLASS);
-		types.put(StaticTypes.NUMBER_TYPE.getType(), EnvisionNumberClass.NUMBER_CLASS);
+		types.put(Primitives.BOOLEAN.string_type, EnvisionBooleanClass.BOOLEAN_CLASS);
+		types.put(Primitives.INT.string_type, EnvisionIntClass.INT_CLASS);
+		types.put(Primitives.DOUBLE.string_type, EnvisionDoubleClass.DOUBLE_CLASS);
+		types.put(Primitives.CHAR.string_type, EnvisionCharClass.CHAR_CLASS);
+		types.put(Primitives.STRING.string_type, EnvisionStringClass.STRING_CLASS);
+		types.put(Primitives.LIST.string_type, EnvisionListClass.LIST_CLASS);
+		types.put(Primitives.NUMBER.string_type, EnvisionNumberClass.NUMBER_CLASS);
 		
 	}
 	

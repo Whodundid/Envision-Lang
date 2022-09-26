@@ -78,7 +78,7 @@ public class EnvisionString extends EnvisionVariable {
 	
 	@Override
 	public EnvisionString copy() {
-		return new EnvisionString(this);
+		return EnvisionStringClass.newString(this);
 	}
 	
 	@Override

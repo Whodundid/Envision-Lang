@@ -158,7 +158,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	}
 	
 	public void execute(EArrayList<String> programArgs) throws Exception {
-		if (isLoaded) interpreter.interpret(workingDir);
+		if (isLoaded) interpreter.interpret(workingDir, programArgs);
 	}
 	
 	//---------

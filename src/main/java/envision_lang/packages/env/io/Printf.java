@@ -6,16 +6,16 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.StaticTypes;
 
-public class Println extends EnvisionFunction {
+public class Printf extends EnvisionFunction {
 	
-	public Println() {
-		super(StaticTypes.VOID_TYPE, "println");
+	public Printf() {
+		super(StaticTypes.VOID_TYPE, "printf");
 	}
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
-		interpreter.envision().getConsoleHandler().println(l);
+		interpreter.envision().getConsoleHandler().print(l);
 	}
 	
 }

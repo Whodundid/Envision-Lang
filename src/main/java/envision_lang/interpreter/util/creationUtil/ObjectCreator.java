@@ -54,6 +54,10 @@ public class ObjectCreator {
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
+	public static EnvisionObject createDefault(IDatatype typeIn) {
+		return createObject(typeIn, null, false, true);
+	}
+	
 	public static EnvisionObject createDefault(IDatatype typeIn, boolean strongIn) {
 		return createObject(typeIn, null, strongIn, true);
 	}
@@ -88,7 +92,7 @@ public class ObjectCreator {
 		if (p_type.isVariableType()) {
 			if (defaultIn) {
 				switch (p_type) {
-				case BOOLEAN: return EnvisionBooleanClass.newBoolean(defaultIn);
+				case BOOLEAN: return EnvisionBooleanClass.newBoolean();
 				case CHAR: return EnvisionCharClass.newChar();
 				case INT: return EnvisionIntClass.newInt();
 				case NUMBER:

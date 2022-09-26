@@ -12,15 +12,15 @@ public class MathPackage extends EnvisionLangPackage {
 
 	@Override
 	public void buildFunctions() {
-		packageScope.defineFunction(new Sqrt());
-		packageScope.defineFunction(new Pow());
-		packageScope.defineFunction(new Log());
-		packageScope.defineFunction(new Ceil());
-		packageScope.defineFunction(new Floor());
-		packageScope.defineFunction(new RandInt());
-		packageScope.defineFunction(new RandDouble());
-		packageScope.defineFunction(new RandStr());
-		packageScope.defineFunction(new RandName());
+		define(new Sqrt());
+		define(new Pow());
+		define(new Log());
+		define(new Ceil());
+		define(new Floor());
+		define(new RandInt());
+		define(new RandDouble());
+		define(new RandStr());
+		define(new RandName());
 	}
 	
 }

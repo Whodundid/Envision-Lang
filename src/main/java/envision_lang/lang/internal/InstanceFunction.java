@@ -1,10 +1,10 @@
 package envision_lang.lang.internal;
 
-import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
 
-public abstract class InstanceFunction<E extends ClassInstance> extends EnvisionFunction {
+public abstract class InstanceFunction<E extends EnvisionObject> extends EnvisionFunction {
 	
 	protected E inst;
 	
