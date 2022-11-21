@@ -9,15 +9,16 @@ import envision_lang.exceptions.errors.NegativeArgumentLengthError;
 import envision_lang.exceptions.errors.NoOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.Parameter;
+import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
-import envision_lang.lang.util.StaticTypes;
 import envision_lang.parser.statements.Statement;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.Box2;
@@ -435,6 +436,14 @@ public class EnvisionFunction extends ClassInstance {
 	 * Called when the language actually runs the related callable object.
 	 * Helper version to wrap a singleton argument into an array of length 1.
 	 */
+	public void invoke(EnvisionInterpreter interpreter) {
+		invoke(interpreter, new EnvisionObject[0]);
+	}
+	
+	/**
+	 * Called when the language actually runs the related callable object.
+	 * Helper version to wrap a singleton argument into an array of length 1.
+	 */
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject arg) {
 		invoke(interpreter, new EnvisionObject[]{arg});
 	}
@@ -497,8 +506,8 @@ public class EnvisionFunction extends ClassInstance {
 			
 			//compare each parameter to ensure that they are compatible matches
 			for (int i = 0, j = 0; i < incoming_args.length; i++) {
-				Parameter type = types.get(j);
-				Parameter obj = args.get(i);
+				EnvisionParameter type = types.get(j);
+				EnvisionParameter obj = args.get(i);
 				
 				if (!type.compare(obj)) throw new InvalidDatatypeError(type, obj);
 			}
@@ -530,7 +539,7 @@ public class EnvisionFunction extends ClassInstance {
 		//if this is a constructor, check if any of the arguments are assignment args
 		//as in if any argument name matches an existing body level variable -- assign it directly
 		if (isConstructor) {
-			Scope ps = scope.getParentScope();
+			IScope ps = scope.getParent();
 			
 			for (int i = 0; i < callArgs.size(); i++) {
 				String arg_name = m.params.getNames().get(i);

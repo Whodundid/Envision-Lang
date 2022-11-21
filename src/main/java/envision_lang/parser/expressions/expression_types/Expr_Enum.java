@@ -11,10 +11,12 @@ public class Expr_Enum implements Expression {
 	
 	public final Token name;
 	public final EArrayList<Expression> args;
+	public final Token definingToken;
 	
 	public Expr_Enum(Token nameIn, EArrayList<Expression> argsIn) {
 		name = nameIn;
 		args = argsIn;
+		definingToken = nameIn;
 	}
 	
 	@Override
@@ -26,6 +28,11 @@ public class Expr_Enum implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleEnum_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

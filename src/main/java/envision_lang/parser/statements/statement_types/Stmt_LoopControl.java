@@ -1,9 +1,10 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.Token;
 
 /**
  * Can either be a break or continue statement.
@@ -11,14 +12,15 @@ import envision_lang.parser.util.ParserDeclaration;
  * 
  * @author Hunter
  */
-public class Stmt_LoopControl implements Statement {
+public class Stmt_LoopControl extends BasicStatement {
 	
 	public final boolean isBreak;
 	public final boolean isContinue;
 	public final Expression condition;
 	
-	public Stmt_LoopControl(boolean isBreakIn) { this(isBreakIn, null); }
-	public Stmt_LoopControl(boolean isBreakIn, Expression conditionIn) {
+	public Stmt_LoopControl(Token start, boolean isBreakIn) { this(start, isBreakIn, null); }
+	public Stmt_LoopControl(Token start, boolean isBreakIn, Expression conditionIn) {
+		super(start);
 		isBreak = isBreakIn;
 		isContinue = !isBreakIn;
 		condition = conditionIn;
@@ -39,6 +41,11 @@ public class Stmt_LoopControl implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleLoopControlStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

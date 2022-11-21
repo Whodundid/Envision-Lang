@@ -8,7 +8,7 @@ import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;

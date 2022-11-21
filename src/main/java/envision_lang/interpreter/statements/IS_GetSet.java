@@ -86,7 +86,7 @@ public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 		//'abstract' is going to ruin this implementation, but I really have no idea how to handle inheritance yet..
 		
 		//add the return statement
-		meth.addStatement(new Stmt_Return(new Expr_Var(var)));
+		meth.addStatement(new Stmt_Return(var, new Expr_Var(var)));
 		
 		return meth;
 	}

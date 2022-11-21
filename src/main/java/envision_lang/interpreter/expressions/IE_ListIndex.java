@@ -10,7 +10,7 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
 import envision_lang.tokenizer.Operator;

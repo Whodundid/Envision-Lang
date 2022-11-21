@@ -9,14 +9,14 @@ public class IS_Package extends StatementExecutor<Stmt_Package> {
 	public IS_Package(EnvisionInterpreter in) {
 		super(in);
 	}
+	
+	public static void run(EnvisionInterpreter in, Stmt_Package s) {
+		new IS_Package(in).run(s);
+	}
 
 	@Override
 	public void run(Stmt_Package statement) {
 		
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_Package s) {
-		new IS_Package(in).run(s);
 	}
 	
 }

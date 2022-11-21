@@ -9,6 +9,7 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
+import eutil.EUtil;
 import eutil.datatypes.EArrayList;
 import eutil.strings.EStringUtil;
 
@@ -24,9 +25,9 @@ public class EnvisionLangParser {
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** The tokens of each line, line by line. Used to generate error messages. */
-	private EArrayList<EArrayList<Token>> tokenLines;
+	private EArrayList<EArrayList<Token<?>>> tokenLines;
 	/** A complete list of all tokens within the file currently being parsed. */
-	private EArrayList<Token> tokens;
+	private EArrayList<Token<?>> tokens;
 	/** A non tokenized version of the file being parsed.
 	 *  This is simply each line of the file in a list.
 	 *  Used to help generate error messages. */
@@ -251,7 +252,8 @@ public class EnvisionLangParser {
 	protected boolean checkPreviousType(KeywordType... val) { return checkType(previous(), val); }
 	
 	private boolean checkType(Token t, KeywordType... type) {
-		if (atEnd()) return false;
+		//if at end of file, check if the given keyword types contains TERMINATOR
+		if (atEnd()) return EUtil.contains(type, KeywordType.TERMINATOR);
 		for (var kt : type) {
 			if (t.keyword.hasType(kt)) return true;
 		}
@@ -372,7 +374,7 @@ public class EnvisionLangParser {
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
-	// Error Production Hanler
+	// Error Production Handler
 	//-----------------------------------------------------------------------------------------------------
 	
 	/**
@@ -419,7 +421,7 @@ public class EnvisionLangParser {
 		border = EStringUtil.repeatString("-", longest.length() + 16);
 		
 		//find arrow position
-		EArrayList<Token> tokenLine = tokenLines.get(theLine - 1);
+		EArrayList<Token<?>> tokenLine = tokenLines.get(theLine - 1);
 		int problem_token_pos = 0;
 		for (int i = 0; i < tokenLine.size(); i++) {
 			if (tokenLine.get(i).checkID(current().id)) {

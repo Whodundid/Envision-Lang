@@ -10,7 +10,7 @@ import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.EnvisionLangConsoleOutputHandler;
 import envision_lang._launch.EnvisionLangConsoleReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLangSettings;
+import envision_lang._launch.EnvisionLaunchSettings;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
@@ -52,7 +52,7 @@ public class EnvisionLang {
 	/** The current build of the Envision Scripting Language. */
 	public static final String version = "0.0.###";
 	/** The current build's date of the Envision Scripting Language. */
-	public static final String versionDate = "8/5/2022";
+	public static final String versionDate = "10/9/2022";
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
@@ -183,7 +183,7 @@ public class EnvisionLang {
 	 * Settings which will be applied to the Envision Scripting Language and (or) given to
 	 * programs executing at runtime.
 	 */
-	private EnvisionLangSettings launchSettings = null;
+	private EnvisionLaunchSettings launchSettings = null;
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
@@ -210,8 +210,8 @@ public class EnvisionLang {
 	private void applyEnvSettings() throws Exception {
 		if (launchSettings == null) return;
 		
-		for (EnvisionLangSettings.LaunchArgs a : launchSettings.getEnvArgs()) {
-			switch (a) {
+		for (EnvisionLaunchSettings.LaunchSetting arg : launchSettings.getEnvArgs()) {
+			switch (arg) {
 			case PRELOAD_LANGUAGE: preloadLanguage = true; EnvisionLoader.loadLang(); break;
 			case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
 			case CLASS_FILE_STATEMENTS: allowClassFileStatements = true; break;
@@ -312,7 +312,7 @@ public class EnvisionLang {
 		reader.close();
 	}
 	
-	public EnvisionLang setLaunchSettings(EnvisionLangSettings settingsIn) {
+	public EnvisionLang setLaunchSettings(EnvisionLaunchSettings settingsIn) {
 		launchSettings = settingsIn;
 		return this;
 	}

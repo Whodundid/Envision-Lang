@@ -4,6 +4,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.expression_types.Expr_TypeOf;
 
@@ -26,7 +27,10 @@ public class IE_TypeOf extends ExpressionExecutor<Expr_TypeOf> {
 		EnvisionObject lobj = evaluate(left);
 		EnvisionObject robj = evaluate(right);
 		
-		boolean same = lobj.equals(robj);
+		IDatatype typeA = lobj.getDatatype();
+		IDatatype typeB = robj.getDatatype();
+		
+		boolean same = typeA.compare(typeB);
 		boolean val = (is) ? same : !same;
 		
 		return EnvisionBooleanClass.newBoolean(val);

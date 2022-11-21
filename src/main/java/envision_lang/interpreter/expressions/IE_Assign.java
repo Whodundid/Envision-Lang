@@ -11,7 +11,7 @@ import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.creationUtil.OperatorOverloadHandler;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
-import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
@@ -20,7 +20,7 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.packages.EnvisionPackage;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
@@ -96,8 +96,11 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		
 		//if the given object is a class instance and supports
 		//the given operator, run the operator overload
-		if (obj instanceof ClassInstance env_class && env_class.supportsOperator(opIn)) {
-			return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
+		if (obj instanceof ClassInstance env_class) {
+			//System.out.println(env_class + " : " + env_class.getClass() + " : " + op);
+			if (env_class.supportsOperator(op)) {
+				return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
+			}
 		}
 		
 		//otherwise, handle default assignment
@@ -144,7 +147,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 										String name,
 										EnvisionObject obj,
 										EnvisionObject value) {
-		Scope s = interpreter.scope();
+		IScope s = interpreter.scope();
 		//System.out.println(name + " -- " + obj + " -- " + value);
 		
 		//---------------------------------------------------------
@@ -194,7 +197,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			//define as 'var' type variable
 			s.define(var_name, StaticTypes.VAR_TYPE, var_obj);
 		}
-		//if the object does exist, attemt to assign the new value to it
+		//if the object does exist, attempt to assign the new value to it
 		else {
 			//don't allow final values to be reassigned
 			if (var_obj.isFinal()) throw new FinalVarReassignmentError(var_obj, assignment_value);
@@ -204,8 +207,11 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 				CastingUtil.assert_expected_datatype(var_obj.getDatatype(), var_datatype);
 			}
 			
+			EnvisionObject theObject = ObjectCreator.wrap(assignment_value);
+			if (theObject.isPrimitive()) theObject = theObject.copy();
+			
 			//assign new value to existing variable
-			s.set(var_name, ObjectCreator.wrap(assignment_value));
+			s.set(var_name, theObject);
 		}
 		
 		return assignment_value;

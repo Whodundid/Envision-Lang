@@ -4,11 +4,12 @@ import envision_lang.EnvisionLang;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.Statement;
 import envision_lang.tokenizer.Token;
@@ -35,11 +36,11 @@ public abstract class InterpreterExecutor {
 	
 	public EnvisionLang envision() { return interpreter.envision(); }
 	public WorkingDirectory workingDir() { return interpreter.workingDir(); }
-	public Scope global() { return interpreter.internalScope(); }
-	public Scope scope() { return interpreter.scope(); }
+	public IScope global() { return interpreter.internalScope(); }
+	public IScope scope() { return interpreter.scope(); }
 	
-	protected Scope pushScope() { return interpreter.pushScope(); }
-	protected Scope popScope() { return interpreter.popScope(); }
+	protected IScope pushScope() { return interpreter.pushScope(); }
+	protected IScope popScope() { return interpreter.popScope(); }
 	
 	protected EnvisionObject lookUpVariable(String name) {
 		return interpreter.lookUpVariable(name);

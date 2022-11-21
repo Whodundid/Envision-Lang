@@ -12,13 +12,13 @@ public class IS_Generic extends StatementExecutor<Stmt_Generic> {
 		super(in);
 	}
 
+	public static void run(EnvisionInterpreter in, Stmt_Generic s) {
+		new IS_Generic(in).run(s);
+	}
+	
 	@Override
 	public void run(Stmt_Generic statement) {
 		
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_Generic s) {
-		new IS_Generic(in).run(s);
 	}
 	
 }

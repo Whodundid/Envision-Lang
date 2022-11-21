@@ -20,13 +20,13 @@ public class Tokenizer {
 	/** The code file being tokenized. */
 	private EnvisionCodeFile theFile;
 	/** Each tokenized line in the code file. */
-	private final EArrayList<EArrayList<Token>> lineTokens = new EArrayList();
+	private final EArrayList<EArrayList<Token<?>>> lineTokens = new EArrayList<>();
 	/** All of the parsed tokens from the given code file. */
-	private final EArrayList<Token> tokens = new EArrayList();
+	private final EArrayList<Token<?>> tokens = new EArrayList<>();
 	/** Each line in string form. */
-	private final EArrayList<String> lines = new EArrayList();
+	private final EArrayList<String> lines = new EArrayList<>();
 	/** Comment tokens. */
-	private final EArrayList<Token> commentTokens = new EArrayList();
+	private final EArrayList<Token<?>> commentTokens = new EArrayList<>();
 	/** Used to keep track of multi-line comments. */
 	private boolean inComment = false;
 	/** Used to keep track of multi-line comments. */
@@ -38,7 +38,7 @@ public class Tokenizer {
 	private int start = 0;
 	private int cur = 0;
 	
-	private EArrayList<Token> createdTokens;
+	private EArrayList<Token<?>> createdTokens;
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
@@ -55,7 +55,7 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	/** Separates a single input line's characters into valid Envision tokens. */
-	private EArrayList<Token> tokenizeLine(String line, int lineNum) {
+	private EArrayList<Token<?>> tokenizeLine(String line, int lineNum) {
 		createdTokens = new EArrayList();
 		source = line.trim();
 		cur = 0;
@@ -170,14 +170,16 @@ public class Tokenizer {
 		String text = source.substring(start, cur);
 		ReservedWord k = ReservedWord.getKeyword(text);
 		if (k == null) k = IDENTIFIER;
-		addToken(k);
+		if (k == TRUE) addToken(k, true);
+		else if (k == FALSE) addToken(k, false);
+		else addToken(k);
 	}
 	
 	/**
 	 * Parses a single number from tokens.
 	 * <p>
 	 * This can either parse a decimal value if a '.' is detected,
-	 * or it will simply prase a standard integer value.
+	 * or it will simply parse a standard integer value.
 	 */
 	private void number() {
 		while (isDigit(peek())) advance();
@@ -187,7 +189,7 @@ public class Tokenizer {
 		if (peek() == '.' && isDigit(peekNext())) {
 			//consume the '.'
 			advance();
-			//consume any aditional digits
+			//consume any additional digits
 			while (isDigit(peek())) advance();
 			decimal = true;
 			
@@ -197,7 +199,7 @@ public class Tokenizer {
 				advance();
 				//consume a '-' if there is one
 				if (peek() == '-') advance();
-				//consume any aditional digits
+				//consume any additional digits
 				while (isDigit(peek())) advance();
 			}
 		}
@@ -231,15 +233,20 @@ public class Tokenizer {
 	 * Parses a single char from tokens.
 	 */
 	private void parse_char() {
+		//consume 1st '
+		advance();
 		//error if at end
 		if (atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
-		//get char
-		advance();
+		//get char (could be up to 6 characters long ex. '\u4444'
+		int count = 0;
+		while (peek() != '\'' && count < 5 && !atEnd()) {
+			advance();
+		}
 		//consume the 2nd '
 		if (peek() != '\'' || atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
 		else advance();
 		
-		addToken(ReservedWord.CHAR_LITERAL, source.substring(start + 1, cur - 1).charAt(0));
+		addToken(ReservedWord.CHAR_LITERAL, source.substring(start + 1, cur - 1));
 	}
 	
 	/**
@@ -256,7 +263,7 @@ public class Tokenizer {
 	/**
 	 * Performs the same 'check' operation as check(char expected), but requires
 	 * that the given string of chars is present exactly as given.
-	 * Similarly, if the end is reached during the char maching, false is
+	 * Similarly, if the end is reached during the char matching, false is
 	 * returned instead.
 	 * 
 	 * @param expectedString A list of chars to check in order
@@ -354,13 +361,13 @@ public class Tokenizer {
 					boolean empty = l.isBlank();
 					
 					if (!empty) {
-						EArrayList<Token> list = tokenizeLine(l, lineNum);
+						EArrayList<Token<?>> list = tokenizeLine(l, lineNum);
 						lineTokens.add(list);
 						tokens.addAll(list);
 					}
 					else {
 						Token nl = Token.newLine(lineNum);
-						lineTokens.add(new EArrayList<Token>(nl));
+						lineTokens.add(new EArrayList<>(nl));
 						tokens.add(nl);
 					}
 					
@@ -395,7 +402,7 @@ public class Tokenizer {
 	/** Tokenizes a single line. */
 	public boolean tokenizeLine(String lineIn) {
 		lineIn = lineIn.replace("\t", "");
-		EArrayList<Token> list = tokenizeLine(lineIn, 0);
+		EArrayList<Token<?>> list = tokenizeLine(lineIn, 0);
 		if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
 		lineTokens.add(list);
 		tokens.addAll(list);
@@ -409,24 +416,24 @@ public class Tokenizer {
 	// Getters
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public EArrayList<EArrayList<Token>> getLineTokens() { return lineTokens; }
-	public EArrayList<Token> getTokens() { return tokens; }
+	public EArrayList<EArrayList<Token<?>>> getLineTokens() { return lineTokens; }
+	public EArrayList<Token<?>> getTokens() { return tokens; }
 	public EArrayList<String> getLines() { return lines; }
-	public EArrayList<Token> getCommentTokens() { return createdTokens; }
+	public EArrayList<Token<?>> getCommentTokens() { return createdTokens; }
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	private void addToken(IKeyword keyword) { addToken(keyword, null); }
-	private void addToken(IKeyword keyword, Object literal) {
+	private <TYPE> void addToken(IKeyword keyword, TYPE literal) {
 		String text = source.substring(start, cur);
-		createdTokens.add(new Token(keyword, text, literal, lineNum));
+		createdTokens.add(new Token<TYPE>(keyword, text, literal, lineNum));
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	/** Removes both single line and multiline comments from strings. */
+	/** Removes both single line and multi-line comments from strings. */
 	public static String stripComments(String in) {
 		if (in.startsWith("//")) return "";
 		EStringBuilder cur = new EStringBuilder();

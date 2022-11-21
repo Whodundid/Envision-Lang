@@ -1,13 +1,10 @@
 package main;
 
-import static envision_lang._launch.EnvisionLangSettings.LaunchArgs.*;
-
 import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLangSettings;
-import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
+import envision_lang._launch.EnvisionLaunchSettings;
+import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang.exceptions.EnvisionLangError;
-import eutil.random.ERandomUtil;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
@@ -42,18 +39,21 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//env = new EnvisionLang(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
+		//testThing();
+		
 		//long preStart = System.currentTimeMillis();
 		//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
-		//env.runProgram("program");
+		//env.setLaunchSettings(EnvisionLaunchSettings.of(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE));
+		env.runProgram("program");
 		//env.runProgram("program");
 		//env.runProgram("program");
 		
 		//long start = System.currentTimeMillis();
 		{
-			env.runProgram("program");
+			//env.runProgram("program");
 			//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 			//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		}
@@ -61,6 +61,10 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//System.out.println(" Total: " + (System.currentTimeMillis() - preStart) + " ms");
 	}
 
+	private void testThing() {
+		TestPoint t = new TestPoint();
+	}
+	
 	@Override
 	public void handleError(EnvisionLangError e) {
 		handleException(e);

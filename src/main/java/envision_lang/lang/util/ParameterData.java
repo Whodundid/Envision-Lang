@@ -10,9 +10,9 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
 
-public class ParameterData implements Iterable<Parameter> {
+public class ParameterData implements Iterable<EnvisionParameter> {
 	
-	EArrayList<Parameter> params = new EArrayList();
+	EArrayList<EnvisionParameter> params = new EArrayList();
 	
 	//--------------
 	// Constructors
@@ -24,7 +24,7 @@ public class ParameterData implements Iterable<Parameter> {
 		params = new EArrayList(dataIn.params);
 	}
 	
-	public ParameterData(Parameter... paramsIn) {
+	public ParameterData(EnvisionParameter... paramsIn) {
 		add(paramsIn);
 	}
 	
@@ -41,7 +41,6 @@ public class ParameterData implements Iterable<Parameter> {
 		}
 	}
 	
-	// Evil type erasure overload bypass..
 	public ParameterData(EArrayList<EnvisionObject> objectsIn) {
 		for (EnvisionObject o : objectsIn) {
 			if (o != null && !(o instanceof EnvisionNull)) {
@@ -56,7 +55,7 @@ public class ParameterData implements Iterable<Parameter> {
 	//-----------
 	
 	@Override
-	public Iterator<Parameter> iterator() {
+	public Iterator<EnvisionParameter> iterator() {
 		return params.iterator();
 	}
 	
@@ -70,11 +69,11 @@ public class ParameterData implements Iterable<Parameter> {
 	//---------
 	
 	public void add(IDatatype type, String name) {
-		params.add(new Parameter(type.toDatatype(), name));
+		params.add(new EnvisionParameter(type.toDatatype(), name));
 	}
 	
-	public void add(Parameter... in) {
-		for (Parameter p : in) {
+	public void add(EnvisionParameter... in) {
+		for (EnvisionParameter p : in) {
 			params.add(p);
 		}
 	}
@@ -90,8 +89,8 @@ public class ParameterData implements Iterable<Parameter> {
 	public boolean compare(ParameterData dataIn) {
 		if (dataIn.size() == size()) {
 			for (int i = 0; i < size(); i++) {
-				Parameter a = get(i);
-				Parameter b = dataIn.get(i);
+				EnvisionParameter a = get(i);
+				EnvisionParameter b = dataIn.get(i);
 				//System.out.println("the param compare: " + a.datatype + " : " + b.datatype + " : " + a.isNumber() + " : " + b.isNumber());
 				if (a.datatype.getPrimitive() == Primitives.NUMBER && b.isNumber()) return true;
 				if (a.datatype.isVar()) continue;
@@ -108,7 +107,7 @@ public class ParameterData implements Iterable<Parameter> {
 			if (base == Primitives.VAR) return true;
 			
 			for (int i = 0; i < size(); i++) {
-				Parameter b = dataIn.get(i);
+				EnvisionParameter b = dataIn.get(i);
 				if (base == Primitives.NUMBER && b.isNumber()) return true;
 				if (!type.compare(b.datatype)) return false;
 			}
@@ -122,7 +121,7 @@ public class ParameterData implements Iterable<Parameter> {
 	// Getters
 	//---------
 	
-	public Parameter get(int i) { return params.get(i); }
+	public EnvisionParameter get(int i) { return params.get(i); }
 	
 	public EArrayList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
 	public EArrayList<String> getNames() { return params.map(p -> p.name); }

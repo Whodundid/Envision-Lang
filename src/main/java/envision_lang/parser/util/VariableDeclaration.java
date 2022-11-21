@@ -5,7 +5,7 @@ import envision_lang.tokenizer.Token;
 
 public class VariableDeclaration {
 	
-	public final Token name;
+	public final Token<String> name;
 	public final Expression assignment_value;
 	
 	public VariableDeclaration(Token nameIn, Expression valueIn) {

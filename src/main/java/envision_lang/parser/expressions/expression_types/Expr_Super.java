@@ -11,11 +11,13 @@ public class Expr_Super implements Expression {
 	
 	public final Token target;
 	public final EArrayList<Expression> args;
+	public final Token definingToken;
 	
-	public Expr_Super(Token methodIn) { this(methodIn, null); }
-	public Expr_Super(Token methodIn, EArrayList<Expression> argsIn) {
+	public Expr_Super(Token start, Token methodIn) { this(start, methodIn, null); }
+	public Expr_Super(Token start, Token methodIn, EArrayList<Expression> argsIn) {
 		target = methodIn;
 		args = argsIn;
+		definingToken = start;
 	}
 
 	@Override
@@ -27,6 +29,11 @@ public class Expr_Super implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleSuper_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

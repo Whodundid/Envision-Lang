@@ -7,7 +7,7 @@ import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.VisibilityType;
+import envision_lang.lang.util.EnvisionVis;
 import envision_lang.parser.GenericParser;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;
@@ -36,18 +36,18 @@ public class PS_ParseDeclaration extends GenericParser {
 		//handle data modifiers
 		parseDataModifiers(dec);
 		
-		if (check(GET, SET)) 	return dec.setDeclarationType(GETSET);
-		if (match(ENUM)) 		return dec.setDeclarationType(ENUM_DEF);
-		if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF);
+		//if (check(GET, SET)) 	return dec.setDeclarationType(GETSET).setStartToken(current());
+		if (match(ENUM)) 		return dec.setDeclarationType(ENUM_DEF).setStartToken(previous());
+		if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF).setStartToken(current());
 		
 		//parse generics
 		parseGenerics(dec);
 		
 		//check for appropriate continuing statement
-		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF);
-		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF);
-		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF);
-		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF);
+		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF).setStartToken(current());
+		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF).setStartToken(previous());
+		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF).setStartToken(previous());
+		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF).setStartToken(previous());
 		
 		//parse datatype
 		parseDataType(dec);
@@ -85,7 +85,7 @@ public class PS_ParseDeclaration extends GenericParser {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
 		Token vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
-		VisibilityType visibility = VisibilityType.parse(vis_token);
+		EnvisionVis visibility = EnvisionVis.parse(vis_token);
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
 		
@@ -111,6 +111,7 @@ public class PS_ParseDeclaration extends GenericParser {
 		}
 		
 		dec.setDeclarationType(type);
+		dec.setStartToken(t);
 		
 		//if the keyword is a datatype, immediately set return type
 		//if (t.keyword.isDataType()) dec.applyReturnType(t);
@@ -147,7 +148,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EArrayList<Expr_Generic> generics = new EArrayList();
+		EArrayList<Expr_Generic> generics = new EArrayList<>();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");
@@ -165,6 +166,10 @@ public class PS_ParseDeclaration extends GenericParser {
 		}
 		
 		dec.applyGenerics(generics);
+	}
+	
+	public static void parseGetSet(ParserDeclaration dec) {
+		
 	}
 	
 	public static void parseReturnType(ParserDeclaration dec) {

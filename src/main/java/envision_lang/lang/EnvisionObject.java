@@ -4,11 +4,12 @@ import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.internal.JavaObjectWrapper;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifier;
 import envision_lang.lang.util.DataModifierHandler;
-import envision_lang.lang.util.VisibilityType;
+import envision_lang.lang.util.EnvisionVis;
 
 /**
  * The underlying parent object class for which all Envision:Java
@@ -93,6 +94,11 @@ public abstract class EnvisionObject {
 		throw new CopyNotSupportedError();
 	}
 	
+	public Object convertToJavaObject() {
+		if (this instanceof JavaObjectWrapper jw) return jw.javaObject;
+		return toString();
+	}
+	
 	//---------
 	// Getters
 	//---------
@@ -105,7 +111,7 @@ public abstract class EnvisionObject {
 	public String getTypeString() { return internalType.getType(); }
 	
 	public int getObjectHash() { return hashCode(); }
-	public String getHexHash() { return Integer.toHexString(hashCode()); }
+	public String getHexHash() { return "#" + Integer.toHexString(hashCode()); }
 	
 	/**
 	 * In the event that this object represents a primitive object type such as an
@@ -119,7 +125,7 @@ public abstract class EnvisionObject {
 	/**
 	 * @return This object's visibility
 	 */
-	public VisibilityType getVisibility() { return modifierHandler.getVisibility(); }
+	public EnvisionVis getVisibility() { return modifierHandler.getVisibility(); }
 	
 	public boolean isStatic() { return modifierHandler.isStatic(); }
 	public boolean isFinal() { return modifierHandler.isFinal(); }
@@ -147,7 +153,7 @@ public abstract class EnvisionObject {
 	 * @param visIn Visibility to assign
 	 * @return This EnvisionObject
 	 */
-	public EnvisionObject setVisibility(VisibilityType visIn) {
+	public EnvisionObject setVisibility(EnvisionVis visIn) {
 		modifierHandler.setVisibility(visIn);
 		return this;
 	}

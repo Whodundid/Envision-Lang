@@ -9,6 +9,7 @@ public class Expr_Domain implements Expression	{
 
 	public final Expression left, middle, right;
 	public final Token lower, upper;
+	public final Token definingToken;
 	
 	public Expr_Domain(Expression leftIn, Token lowerIn, Expression middleIn, Token upperIn, Expression rightIn) {
 		left = leftIn;
@@ -16,6 +17,7 @@ public class Expr_Domain implements Expression	{
 		middle = middleIn;
 		upper = upperIn;
 		right = rightIn;
+		definingToken = leftIn.definingToken();
 	}
 	
 	@Override
@@ -26,6 +28,11 @@ public class Expr_Domain implements Expression	{
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleDomain_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

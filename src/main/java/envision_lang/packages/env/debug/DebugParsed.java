@@ -5,7 +5,7 @@ import envision_lang.exceptions.errors.ArgLengthError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 

@@ -18,6 +18,7 @@ import eutil.datatypes.EArrayList;
 public class PS_Switch extends GenericParser {
 	
 	public static Statement switchStatement() {
+		Token switchToken = consume(SWITCH, "Expected 'switch' here!");
 		consumeEmptyLines();
 		consume(PAREN_L, "Expected '(' after while declaration!");
 		consumeEmptyLines();
@@ -36,6 +37,7 @@ public class PS_Switch extends GenericParser {
 		if (!check(CURLY_R)) {
 			while (check(CASE, DEFAULT) && !atEnd()) {
 				
+				Token caseToken = null;
 				Token caseName = null;
 				boolean isDefault = match(DEFAULT);
 				
@@ -43,7 +45,7 @@ public class PS_Switch extends GenericParser {
 				if (hasDefault && isDefault) error("Switch already has a default case!");
 				
 				if (!isDefault) {
-					consume(CASE, "Expected a case statement!");
+					caseToken = consume(CASE, "Expected a case statement!");
 					while (match(NEWLINE));
 					caseName = consumeType(LITERAL, "Expected a case name!");
 					//prevent duplicate cases
@@ -75,7 +77,7 @@ public class PS_Switch extends GenericParser {
 				}
 				*/
 				
-				Stmt_SwitchCase theCase = new Stmt_SwitchCase(caseName, body, isDefault);
+				Stmt_SwitchCase theCase = new Stmt_SwitchCase(caseToken, caseName, body, isDefault);
 				if (isDefault) defaultCase = theCase;
 				cases.add(theCase);
 				
@@ -86,7 +88,7 @@ public class PS_Switch extends GenericParser {
 		while (match(NEWLINE));
 		consume(CURLY_R, "Expected a '}' to close switch statement!");
 		
-		return new Stmt_SwitchDef(switchExpression, cases, defaultCase);
+		return new Stmt_SwitchDef(switchToken, switchExpression, cases, defaultCase);
 	}
 	
 	private static boolean hasCase(EArrayList<Stmt_SwitchCase> cases, Token t) {

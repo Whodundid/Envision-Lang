@@ -126,7 +126,7 @@ public class PS_Function extends GenericParser {
 		//attempt to parse function body
 		EArrayList<Statement> body = getFunctionBody(constructor);
 		
-		return new Stmt_FuncDef(name, op, parameters, body, declaration, constructor, operator);
+		return new Stmt_FuncDef(declaration.getStartToken(), name, op, parameters, body, declaration, constructor, operator);
 	}
 	
 	

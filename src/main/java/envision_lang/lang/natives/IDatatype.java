@@ -231,7 +231,26 @@ public interface IDatatype {
 	public static IDatatype dynamicallyDetermineType(Object obj) {
 		if (obj instanceof EnvisionObject o) return o.getDatatype();
 		Primitives type = Primitives.getDataType(obj);
-		return new EnvisionDatatype(type);
+		return NativeTypeManager.datatypeOf(type);
+	}
+	
+	public static IDatatype of(String typeName) {
+		if (typeName == null) return StaticTypes.NULL_TYPE;
+		
+		String lower = typeName.toLowerCase();
+		IDatatype parsedType = null;
+		
+		parsedType = switch (lower) {
+		case "boolean" -> StaticTypes.BOOL_TYPE;
+		case "byte", "short", "int", "integer", "long" -> StaticTypes.INT_TYPE;
+		case "float", "double", "number" -> StaticTypes.DOUBLE_TYPE;
+		case "char", "character" -> StaticTypes.CHAR_TYPE;
+		case "string" -> StaticTypes.STRING_TYPE;
+		default -> null;
+		};
+		
+		if (parsedType == null) return NativeTypeManager.datatypeOf(typeName);
+		return parsedType;
 	}
 	
 }

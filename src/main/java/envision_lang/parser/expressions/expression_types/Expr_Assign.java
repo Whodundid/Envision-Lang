@@ -14,6 +14,7 @@ public class Expr_Assign implements Expression {
 	public Operator operator;
 	public Expression value;
 	public final BoxList<Token, Token> modulars;
+	public final Token definingToken;
 	
 	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn) { this(nameIn, operatorIn, valueIn, null); }
 	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn, BoxList<Token, Token> modularsIn) {
@@ -21,6 +22,7 @@ public class Expr_Assign implements Expression {
 		operator = operatorIn;
 		value = valueIn;
 		modulars = modularsIn;
+		definingToken = nameIn;
 	}
 	
 	public Expr_Assign(Expr_Assign left, Operator operatorIn, Expression valueIn) {
@@ -29,6 +31,7 @@ public class Expr_Assign implements Expression {
 		operator = operatorIn;
 		value = valueIn;
 		modulars = null;
+		definingToken = left.definingToken;
 	}
 	
 	public String getName() {
@@ -46,12 +49,17 @@ public class Expr_Assign implements Expression {
 	
 	@Override
 	public Expr_Assign copy() {
-		return new Expr_Assign(Token.copy(name), operator, value.copy(), modulars);
+		return new Expr_Assign(name.copy(), operator, value.copy(), modulars);
 	}
 	
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleAssign_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

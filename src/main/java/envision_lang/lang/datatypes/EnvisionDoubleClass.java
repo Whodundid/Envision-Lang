@@ -13,7 +13,7 @@ import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 public class EnvisionDoubleClass extends EnvisionClass {
 

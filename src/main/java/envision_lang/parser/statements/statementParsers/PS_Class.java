@@ -38,7 +38,7 @@ public class PS_Class extends GenericParser {
 		}
 		*/
 		
-		Stmt_Class cs = new Stmt_Class(name, declaration);
+		Stmt_Class cs = new Stmt_Class(declaration.getStartToken(), name, declaration);
 		
 		//removing parent class parsing for now
 		/*

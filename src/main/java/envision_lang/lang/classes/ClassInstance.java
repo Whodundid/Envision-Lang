@@ -11,6 +11,7 @@ import envision_lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBoolean;
@@ -36,7 +37,7 @@ public class ClassInstance extends EnvisionObject {
 	 * scope and the over-arching class's scope from which this instance
 	 * was defined from.
 	 */
-	protected Scope instanceScope;
+	protected IScope instanceScope;
 	
 	/**
 	 * Used for operator overloading. In the event that a class defines
@@ -49,7 +50,7 @@ public class ClassInstance extends EnvisionObject {
 	// Constructors
 	//--------------
 	
-	public ClassInstance(EnvisionClass derivingClassIn, Scope instanceScopeIn) {
+	public ClassInstance(EnvisionClass derivingClassIn, IScope instanceScopeIn) {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = instanceScopeIn;
@@ -394,7 +395,7 @@ public class ClassInstance extends EnvisionObject {
 	/**
 	 * Returns the scope of this class instance.
 	 */
-	public Scope getScope() {
+	public IScope getScope() {
 		return instanceScope;
 	}
 	
@@ -420,7 +421,7 @@ public class ClassInstance extends EnvisionObject {
 	// Setters
 	//---------
 	
-	public void setScope(Scope in) {
+	public void setScope(IScope in) {
 		instanceScope = in;
 	}
 	

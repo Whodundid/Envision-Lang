@@ -11,7 +11,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -66,6 +66,11 @@ public class EnvisionBoolean extends EnvisionVariable {
 	@Override
 	public String toString() {
 		return String.valueOf(bool_val);
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return bool_val;
 	}
 	
 	@Override

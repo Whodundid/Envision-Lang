@@ -8,6 +8,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
+import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -44,6 +45,7 @@ public class PS_Return extends GenericParser {
 	 * @return The parsed return statement
 	 */
 	public static Statement returnStatement(boolean parseForCondition) {
+		Token returnToken = getAdvance();
 		while (match(NEWLINE));
 		
 		//handle condition stuff
@@ -54,8 +56,10 @@ public class PS_Return extends GenericParser {
 			consume(PAREN_R, "Expected a ')' to close if expression!");
 		}
 		
+		System.out.println("HERE");
+		
 		//get return values
-		EArrayList<Expression> retVals = new EArrayList();
+		EArrayList<Expression> retVals = new EArrayList<>();
 		if (!check(SEMICOLON, NEWLINE)) {
 			do {
 				retVals.add(ExpressionParser.parseExpression());
@@ -63,7 +67,7 @@ public class PS_Return extends GenericParser {
 			while (match(COMMA));
 		}
 		
-		return new Stmt_Return(cond, retVals);
+		return new Stmt_Return(returnToken, cond, retVals);
 	}
 	
 }

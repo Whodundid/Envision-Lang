@@ -3,8 +3,8 @@ package envision_lang.interpreter.expressions;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.datatypes.EnvisionList;
-import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.datatypes.EnvisionTupleClass;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 
 public class IE_Compound extends ExpressionExecutor<Expr_Compound> {
@@ -22,12 +22,12 @@ public class IE_Compound extends ExpressionExecutor<Expr_Compound> {
 		if (e.hasOne()) return evaluate(e.getFirst());
 		
 		//wrap into list
-		EnvisionList l = EnvisionListClass.newList();
+		EnvisionTuple t = EnvisionTupleClass.newTuple();
 		for (var exp : e.expressions) {
-			l.add(evaluate(exp));
+			t.getInternalList().add(evaluate(exp));
 		}
 		
-		return l;
+		return t;
 	}
 	
 }

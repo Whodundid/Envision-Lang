@@ -1,15 +1,15 @@
 package envision_lang.interpreter.util.creationUtil;
 
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.Parameter;
+import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
-import envision_lang.lang.util.StaticTypes;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
@@ -28,7 +28,7 @@ public class FunctionCreator {
 	 * Returns a new EnvisionMethod built from the given function declaration
 	 * statement with the given scope as its base of reference.
 	 */
-	public static EnvisionFunction buildFunction(EnvisionInterpreter in, Stmt_FuncDef s, Scope scopeIn) {
+	public static EnvisionFunction buildFunction(EnvisionInterpreter in, Stmt_FuncDef s, IScope scopeIn) {
 		
 		//---------------------------------------------------------
 		
@@ -117,9 +117,9 @@ public class FunctionCreator {
 			
 			Expression assign = p.assignment;
 			
-			Parameter newParam = null;
-			if (assign != null) newParam = new Parameter(theType, theName, in.evaluate(assign));
-			else newParam = new Parameter(theType, theName);
+			EnvisionParameter newParam = null;
+			if (assign != null) newParam = new EnvisionParameter(theType, theName, in.evaluate(assign));
+			else newParam = new EnvisionParameter(theType, theName);
 			
 			parameterData.add(newParam);
 		}
@@ -128,7 +128,7 @@ public class FunctionCreator {
 	}
 	
 	/** Attempts to find a method of the same name within the given scope. */
-	public static EnvisionFunction getBaseFunction(Token name, Token operator, Scope scopeIn) {
+	public static EnvisionFunction getBaseFunction(Token name, Token operator, IScope scopeIn) {
 		String n = (name != null) ? name.lexeme : "OP(" + operator.lexeme + ")";
 		
 		//placeholder variable check

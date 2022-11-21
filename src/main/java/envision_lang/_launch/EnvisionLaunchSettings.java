@@ -13,10 +13,10 @@ import eutil.debug.Unused;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionLangSettings {
+public class EnvisionLaunchSettings {
 	
 	/** Arguments passed to the Envision Language. */
-	private EArrayList<LaunchArgs> envArgs = new EArrayList<>();
+	private EArrayList<LaunchSetting> envArgs = new EArrayList<>();
 	/** Arguments passed to programs running on the Envision Language. */
 	private EArrayList<String> userArgs = new EArrayList<>();
 	
@@ -24,17 +24,17 @@ public class EnvisionLangSettings {
 	// Constructors
 	//--------------
 	
-	public EnvisionLangSettings() {}
+	public EnvisionLaunchSettings() {}
 	
-	public EnvisionLangSettings(String[] in) {
+	public EnvisionLaunchSettings(String[] in) {
 		parseArgs(in);
 	}
 	
-	public EnvisionLangSettings(LaunchArgs... argsIn) {
+	public EnvisionLaunchSettings(LaunchSetting... argsIn) {
 		envArgs.addIfNotContains(argsIn);
 	}
 	
-	public EnvisionLangSettings(Collection<String> in) {
+	public EnvisionLaunchSettings(Collection<String> in) {
 		parseArgs(in.toArray(new String[0]));
 	}
 	
@@ -47,7 +47,7 @@ public class EnvisionLangSettings {
 		for (String s : in) {
 			if (s.startsWith("-") && s.length() > 1) {
 				String option = s.substring(1); //strip '-'
-				LaunchArgs arg = LaunchArgs.matchArg(option);
+				LaunchSetting arg = LaunchSetting.matchArg(option);
 				if (arg != null) envArgs.addIfNotContains(arg);
 				else userArgs.add(s);
 			}
@@ -57,17 +57,17 @@ public class EnvisionLangSettings {
 		}
 	}
 	
-	public EArrayList<LaunchArgs> getEnvArgs() { return envArgs; }
+	public EArrayList<LaunchSetting> getEnvArgs() { return envArgs; }
 	public EArrayList<String> getUserArgs() { return userArgs; }
 	
 	public void addUserArg(String arg) { userArgs.add(arg); }
-	public void addLaunchArg(LaunchArgs arg) { envArgs.addIfNotContains(arg); }
+	public void addLaunchArg(LaunchSetting arg) { envArgs.addIfNotContains(arg); }
 	
 	//-----------------
 	// Launch Arg Enum
 	//-----------------
 	
-	public static enum LaunchArgs {
+	public static enum LaunchSetting {
 		@Unused
 		CLASS_FILE_STATEMENTS("allowClassFileStatements"),
 		@Unused
@@ -90,12 +90,12 @@ public class EnvisionLangSettings {
 		
 		public final String name;
 		
-		private LaunchArgs(String argName) {
+		private LaunchSetting(String argName) {
 			name = argName;
 		}
 		
-		public static LaunchArgs matchArg(String argNameIn) {
-			for (LaunchArgs a : values()) if (a.name.equals(argNameIn)) return a;
+		public static LaunchSetting matchArg(String argNameIn) {
+			for (LaunchSetting a : values()) if (a.name.equals(argNameIn)) return a;
 			return null;
 		}
 	}
@@ -104,12 +104,12 @@ public class EnvisionLangSettings {
 	// Static Default Settings
 	//-------------------------
 	
-	public static EnvisionLangSettings of(String... args) { return new EnvisionLangSettings(args); }
-	public static EnvisionLangSettings of(LaunchArgs... args) { return new EnvisionLangSettings(args); }
-	public static EnvisionLangSettings of(List<String> args) { return new EnvisionLangSettings(args); }
-	public static EnvisionLangSettings preload() { return new EnvisionLangSettings(LaunchArgs.PRELOAD_LANGUAGE); }
-	public static EnvisionLangSettings live() { return new EnvisionLangSettings(LaunchArgs.LIVE_MODE); }
-	public static EnvisionLangSettings tokenize() { return new EnvisionLangSettings(LaunchArgs.TOKENIZE); }
-	public static EnvisionLangSettings parse() { return new EnvisionLangSettings(LaunchArgs.PARSE_STATEMENTS); }
+	public static EnvisionLaunchSettings of(String... args) { return new EnvisionLaunchSettings(args); }
+	public static EnvisionLaunchSettings of(LaunchSetting... args) { return new EnvisionLaunchSettings(args); }
+	public static EnvisionLaunchSettings of(List<String> args) { return new EnvisionLaunchSettings(args); }
+	public static EnvisionLaunchSettings preload() { return new EnvisionLaunchSettings(LaunchSetting.PRELOAD_LANGUAGE); }
+	public static EnvisionLaunchSettings live() { return new EnvisionLaunchSettings(LaunchSetting.LIVE_MODE); }
+	public static EnvisionLaunchSettings tokenize() { return new EnvisionLaunchSettings(LaunchSetting.TOKENIZE); }
+	public static EnvisionLaunchSettings parse() { return new EnvisionLaunchSettings(LaunchSetting.PARSE_STATEMENTS); }
 	
 }

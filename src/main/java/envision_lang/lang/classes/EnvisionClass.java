@@ -5,6 +5,7 @@ import static envision_lang.lang.natives.Primitives.*;
 import envision_lang.exceptions.errors.classErrors.NotAConstructorError;
 import envision_lang.exceptions.errors.classErrors.UndefinedConstructorError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
@@ -78,7 +79,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * that any values native to that original defining scope are also
 	 * visible to this static class scope in some capacity.
 	 */
-	protected Scope staticScope;
+	protected IScope staticScope;
 	
 	/**
 	 * The name of the class from which object instances of the same type
@@ -271,7 +272,7 @@ public class EnvisionClass extends EnvisionObject {
 		interpreter.executeBlock(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
-		EArrayList<EnvisionObject> methods = instanceScope.values().filter(o -> o instanceof EnvisionFunction && ((EnvisionFunction) o).isOperator());
+		EArrayList<EnvisionObject> methods = instanceScope.locals().filter(o -> o instanceof EnvisionFunction && ((EnvisionFunction) o).isOperator());
 		EArrayList<EnvisionFunction> operators = methods.map(m -> (EnvisionFunction) m);
 		
 		//set the overloaded operators onto the class instance
@@ -346,7 +347,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * 
 	 * @return The static scope of this class.
 	 */
-	public Scope getClassScope() {
+	public IScope getClassScope() {
 		return staticScope;
 	}
 	

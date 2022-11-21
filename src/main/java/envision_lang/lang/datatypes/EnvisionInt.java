@@ -11,7 +11,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -64,6 +64,11 @@ public class EnvisionInt extends EnvisionNumber {
 	
 	@Override public String toString() { return String.valueOf(int_val); }
 	@Override public EnvisionInt copy() { return EnvisionIntClass.newInt(int_val); }
+	
+	@Override
+	public Object convertToJavaObject() {
+		return int_val;
+	}
 	
 	@Override public EnvisionInt negate() { int_val = -int_val; return this; }
 	
@@ -130,8 +135,8 @@ public class EnvisionInt extends EnvisionNumber {
 			switch (op) {
 			//inc/dec
 			case NEGATE:			return EnvisionIntClass.newInt(-int_val);
-			case INC:				int_val++; return this;
-			case DEC:				int_val--; return this;
+			case INC:				int_val++; return copy();
+			case DEC:				int_val--; return copy();
 			case POST_INC:			return EnvisionIntClass.newInt(int_val++);
 			case POST_DEC:			return EnvisionIntClass.newInt(int_val--);
 			

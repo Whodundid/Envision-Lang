@@ -11,7 +11,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -64,6 +64,11 @@ public class EnvisionDouble extends EnvisionNumber {
 	
 	@Override public String toString() { return String.valueOf(double_val); }
 	@Override public EnvisionDouble copy() { return EnvisionDoubleClass.newDouble(double_val); }
+	
+	@Override
+	public Object convertToJavaObject() {
+		return double_val;
+	}
 	
 	@Override public EnvisionDouble negate() { double_val = -double_val; return this; }
 	

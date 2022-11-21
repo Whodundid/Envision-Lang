@@ -1,6 +1,6 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.errors.NotABooleanError;
+import envision_lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
@@ -28,7 +28,7 @@ public class IE_Ternary extends ExpressionExecutor<Expr_Ternary> {
 		
 		//check that the value is actually a boolean
 		if (!(value instanceof EnvisionBoolean)) {
-			throw new NotABooleanError(value);
+			throw new InvalidDatatypeError("Expected a boolean here but got '" + value + "' instead!");
 		}
 		
 		return (isTrue(value)) ? evaluate(ifTrue) : evaluate(ifFalse);

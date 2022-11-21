@@ -2,11 +2,11 @@ package envision_lang.exceptions.errors;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.Parameter;
+import envision_lang.lang.util.EnvisionParameter;
 
 public class InvalidDatatypeError extends EnvisionLangError {
 	
-	public InvalidDatatypeError(Parameter expected, Parameter got) {
+	public InvalidDatatypeError(EnvisionParameter expected, EnvisionParameter got) {
 		super("Expected a '" + expected.datatype + "' but expected '" + got.datatype + "' !");
 	}
 	

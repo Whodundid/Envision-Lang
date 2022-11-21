@@ -14,11 +14,13 @@ import eutil.datatypes.EArrayList;
 public class Expr_FuncDef implements Expression {
 	
 	public final Stmt_FuncDef declaration;
+	public final Token definingToken;
 	
-	public Expr_FuncDef(Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
+	public Expr_FuncDef(Token start, Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
 		ParserDeclaration d = new ParserDeclaration();
 		d.applyReturnType(Token.create(ReservedWord.VAR, "var", nameIn.line));
-		declaration = new Stmt_FuncDef(nameIn, null, paramsIn, bodyIn, d, false, false);
+		declaration = new Stmt_FuncDef(start, nameIn, null, paramsIn, bodyIn, d, false, false);
+		definingToken = start;
 	}
 	
 	@Override
@@ -29,6 +31,11 @@ public class Expr_FuncDef implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleMethodDec_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

@@ -12,10 +12,12 @@ public class Expr_VarDef implements Expression {
 
 	public final Token type;
 	public final EArrayList<Token> params;
+	public final Token definingToken;
 	
 	public Expr_VarDef(Token typeIn, EArrayList<Token> paramsIn) {
 		type = typeIn;
 		params = paramsIn;
+		definingToken = typeIn;
 	}
 	
 	@Override
@@ -32,6 +34,11 @@ public class Expr_VarDef implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleVarDec_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

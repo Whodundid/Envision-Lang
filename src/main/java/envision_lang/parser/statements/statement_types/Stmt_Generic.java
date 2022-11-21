@@ -1,17 +1,19 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class Stmt_Generic implements Statement {
+public class Stmt_Generic extends BasicStatement {
 	
-	public final EArrayList<Expr_Generic> generics = new EArrayList();
+	public final EArrayList<Expr_Generic> generics = new EArrayList<>();
 	
-	public Stmt_Generic() {}
-	public Stmt_Generic(EArrayList<Expr_Generic> genericsIn) {
+	public Stmt_Generic(Token start) { this(start, new EArrayList<>()); }
+	public Stmt_Generic(Token start, EArrayList<Expr_Generic> genericsIn) {
+		super(start);
 		generics.addAll(genericsIn);
 	}
 	
@@ -28,6 +30,11 @@ public class Stmt_Generic implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleGenericStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

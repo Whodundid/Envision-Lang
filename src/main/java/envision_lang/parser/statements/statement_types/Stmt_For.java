@@ -1,24 +1,27 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
 /** Standard for loop. */
-public class Stmt_For implements Statement {
+public class Stmt_For extends BasicStatement {
 	
 	public final Statement init;
 	public final Expression cond;
 	public final EArrayList<Expression> post;
 	public final Statement body;
 	
-	public Stmt_For(Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
-		this(initIn, condIn, new EArrayList<Expression>(postIn), bodyIn);
+	public Stmt_For(Token start, Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
+		this(start, initIn, condIn, new EArrayList<>(postIn), bodyIn);
 	}
 	
-	public Stmt_For(Statement initIn, Expression condIn, EArrayList<Expression> postIn, Statement bodyIn) {
+	public Stmt_For(Token start, Statement initIn, Expression condIn, EArrayList<Expression> postIn, Statement bodyIn) {
+		super(start);
 		init = initIn;
 		cond = condIn;
 		post = postIn;
@@ -42,6 +45,11 @@ public class Stmt_For implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleForStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

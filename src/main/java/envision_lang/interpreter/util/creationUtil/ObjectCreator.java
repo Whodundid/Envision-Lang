@@ -15,6 +15,7 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
+import envision_lang.lang.natives.StaticTypes;
 import eutil.datatypes.EArrayList;
 import eutil.math.ENumUtil;
 
@@ -45,6 +46,7 @@ public class ObjectCreator {
 	
 	/** Wraps the unknown object into an EnvisionObject. If the object was already an EnvisionObject, a casting is performed on the input instead. */
 	public static EnvisionObject wrap(Object in) {
+		if (in == null) return EnvisionNull.NULL;
 		if (in instanceof EnvisionObject env_obj) return env_obj;
 		
 		IDatatype type = IDatatype.dynamicallyDetermineType(in);
@@ -71,7 +73,7 @@ public class ObjectCreator {
 	}
 	
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
-		if (typeIn == null) return EnvisionNull.NULL;
+		if (typeIn == null || typeIn == StaticTypes.NULL_TYPE || valueIn == EnvisionNull.NULL) return EnvisionNull.NULL;
 		
 		//format incomming arguments
 		//convert var type to definitive type

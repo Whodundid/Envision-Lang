@@ -3,7 +3,7 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.lang.util.VisibilityType;
+import envision_lang.lang.util.EnvisionVis;
 import envision_lang.parser.GenericParser;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;
@@ -30,34 +30,38 @@ public class PS_GetSet extends GenericParser {
 		return statement;
 	}
 	
-	public static Stmt_GetSet parseGetSetVis() { return parseGetSetVis((VisibilityType) null); }
+	public static Stmt_GetSet parseGetSetVis() { return parseGetSetVis((EnvisionVis) null); }
 	public static Stmt_GetSet parseGetSetVis(ParserDeclaration dec) { return parseGetSetVis(dec.getVisibility()); }
-	public static Stmt_GetSet parseGetSetVis(VisibilityType visIn) {
+	public static Stmt_GetSet parseGetSetVis(EnvisionVis visIn) {
 		//parse for getset modifiers
-		VisibilityType curVis = visIn;
-		VisibilityType getVis = VisibilityType.SCOPE;
-		VisibilityType setVis = VisibilityType.SCOPE;
+		EnvisionVis curVis = visIn;
+		EnvisionVis getVis = EnvisionVis.SCOPE;
+		EnvisionVis setVis = EnvisionVis.SCOPE;
 		boolean get = false, set = false;
 		
 		//parse for first getset (if there is one)
 		if (checkType(VISIBILITY_MODIFIER)) {
 			errorIf(curVis != null, "Duplicate visibilty modifier!");
-			curVis = VisibilityType.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
+			curVis = EnvisionVis.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
 		}
+		
+		Token start = null;
 		
 		if (match(GET)) {
 			get = true;
 			getVis = curVis;
+			start = previous();
 		}
 		else if (match(SET)) {
 			set = true;
 			setVis = curVis;
+			start = previous();
 		}
 		else error("Expected either 'get' or 'set' here!");
 		
 		//parse for second getset (if there is one)
 		if (checkType(VISIBILITY_MODIFIER))
-			curVis = VisibilityType.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
+			curVis = EnvisionVis.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
 		
 		if (match(GET)) {
 			if (get) error("Duplicate 'get' declaration in current variable declaration!");
@@ -71,7 +75,7 @@ public class PS_GetSet extends GenericParser {
 		}
 		else error("Expected either 'get' or 'set' here!");
 		
-		return new Stmt_GetSet(getVis, setVis, get, set);
+		return new Stmt_GetSet(start, getVis, setVis, get, set);
 	}
 	
 }

@@ -1,8 +1,8 @@
 package envision_lang.lang.internal;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.util.StaticTypes;
-import envision_lang.lang.util.VisibilityType;
+import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.util.EnvisionVis;
 
 /**
  * An EnvisionObject intended to bridge the gap between Java and
@@ -20,7 +20,7 @@ import envision_lang.lang.util.VisibilityType;
  * onto the EnvisionFile's instance scope as a RESTRICTED variable to
  * ensure the validity this relationship.
  * 
- * @see VisibilityType.RESTRICTED
+ * @see EnvisionVis.RESTRICTED
  * 
  * @author Hunter Bragg
  */

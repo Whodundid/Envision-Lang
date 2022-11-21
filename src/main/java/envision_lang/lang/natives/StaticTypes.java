@@ -1,8 +1,4 @@
-package envision_lang.lang.util;
-
-import envision_lang.lang.natives.EnvisionDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.natives.Primitives;
+package envision_lang.lang.natives;
 
 public class StaticTypes {
 
@@ -22,6 +18,7 @@ public class StaticTypes {
 	public static final EnvisionDatatype NUMBER_TYPE 		= 	NativeTypeManager.datatypeOf(Primitives.NUMBER);
 	public static final EnvisionDatatype STRING_TYPE 		= 	NativeTypeManager.datatypeOf(Primitives.STRING);
 	public static final EnvisionDatatype LIST_TYPE 			= 	NativeTypeManager.datatypeOf(Primitives.LIST);
+	public static final EnvisionDatatype TUPLE_TYPE			=   NativeTypeManager.datatypeOf(Primitives.TUPLE);
 	public static final EnvisionDatatype CLASS_TYPE 		= 	NativeTypeManager.datatypeOf(Primitives.CLASS);
 	public static final EnvisionDatatype INTERFACE_TYPE 	= 	NativeTypeManager.datatypeOf(Primitives.INTERFACE);
 	public static final EnvisionDatatype FUNC_TYPE 			= 	NativeTypeManager.datatypeOf(Primitives.FUNCTION);

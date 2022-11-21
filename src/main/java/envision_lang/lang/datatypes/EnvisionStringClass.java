@@ -39,6 +39,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		STRING_PROTOS.define("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
 		STRING_PROTOS.define("get", STRING).assignDynamicClass(IFunc_get.class);
 		STRING_PROTOS.define("set", STRING, STRING).assignDynamicClass(IFunc_set.class);
+		STRING_PROTOS.define("reverse", STRING).assignDynamicClass(IFunc_reverse.class);
 		STRING_PROTOS.define("toUpperCase", STRING).assignDynamicClass(IFunc_toUpperCase.class);
 		STRING_PROTOS.define("toLowerCase", STRING).assignDynamicClass(IFunc_toLowerCase.class);
 		STRING_PROTOS.define("substring", STRING, INT).addOverload(STRING, INT, INT).assignDynamicClass(IFunc_substring.class);
@@ -305,6 +306,13 @@ public class EnvisionStringClass extends EnvisionClass {
 		public IFunc_set() { super(STRING, "set", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.set_i(String.valueOf(args[0])));
+		}
+	}
+	
+	private static class IFunc_reverse<E extends EnvisionString> extends InstanceFunction<E> {
+		public IFunc_reverse() { super(STRING, "reverse"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(inst.reverse());
 		}
 	}
 	

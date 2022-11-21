@@ -16,7 +16,7 @@ public class IS_Block extends StatementExecutor<Stmt_Block> {
 		buildBlock(interpreter, statement, new Scope(scope()));
 	}
 	
-	/** Excecutes block statements within the specified scope. */
+	/** Executes block statements within the specified scope. */
 	public static void buildBlock(EnvisionInterpreter in, Stmt_Block s, Scope scope) {
 		in.executeBlock(s.statements, scope);
 	}

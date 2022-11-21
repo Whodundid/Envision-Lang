@@ -12,7 +12,7 @@ import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 public class EnvisionListClass extends EnvisionClass {
 
@@ -51,6 +51,7 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("set", LIST, INT, VAR).assignDynamicClass(IFunc_set.class);
 		LIST_PROTOTYPES.define("setFirst", LIST, VAR).assignDynamicClass(IFunc_setFirst.class);
 		LIST_PROTOTYPES.define("setLast", LIST, VAR).assignDynamicClass(IFunc_setLast.class);
+		LIST_PROTOTYPES.define("setSize", LIST, INT);
 		LIST_PROTOTYPES.define("shiftLeft", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftLeft.class);
 		LIST_PROTOTYPES.define("shiftRight", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftRight.class);
 		LIST_PROTOTYPES.define("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
@@ -86,7 +87,7 @@ public class EnvisionListClass extends EnvisionClass {
 	
 	public static EnvisionList newList(IDatatype type, List<? extends EnvisionObject> data) {
 		EnvisionList list = newList(type);
-		list.getList().ensureCapacity(data.size());
+		list.getInternalList().ensureCapacity(data.size());
 		for (var o : data) list.add(o);
 		return list;
 	}
@@ -246,6 +247,8 @@ public class EnvisionListClass extends EnvisionClass {
 		public IFunc_flip() { super(LIST, "flip"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.flip());
+			int x = 5, c = 1;
+			x = 5;
 		}
 	}
 	

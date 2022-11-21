@@ -6,7 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.Parameter;
+import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.tokenizer.Operator;
 
@@ -64,7 +64,7 @@ public class OperatorOverloadHandler {
 		ParameterData params = new ParameterData();
 		if (b != null) {
 			// create parameters around the given 'b' target arg
-			params.add(new Parameter(b));
+			params.add(new EnvisionParameter(b));
 		}
 		
 		EnvisionFunction theOverload = null;

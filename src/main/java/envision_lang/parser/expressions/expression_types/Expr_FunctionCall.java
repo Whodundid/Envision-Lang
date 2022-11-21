@@ -14,6 +14,7 @@ public class Expr_FunctionCall implements Expression {
 	public Token name;
 	public EArrayList<Token> generics;
 	public final EArrayList<Expression> args;
+	public final Token definingToken;
 	
 	public Expr_FunctionCall(Expression calleeIn, EArrayList<Expression> argsIn) { this(null, calleeIn, null, argsIn); }
 	public Expr_FunctionCall(Token nameIn, EArrayList<Expression> argsIn) { this(null, null, nameIn, argsIn); }
@@ -23,10 +24,11 @@ public class Expr_FunctionCall implements Expression {
 		callee = calleeIn;
 		name = nameIn;
 		args = argsIn;
+		definingToken = calleeIn.definingToken();
 	}
 	
 	public Expr_FunctionCall copy(Expr_FunctionCall in) {
-		return new Expr_FunctionCall(in.next, in.callee, in.name, in.args);
+		return new Expr_FunctionCall((Expr_FunctionCall) in.next.copy(), in.callee.copy(), in.name.copy(), in.args);
 	}
 	
 	public Expr_FunctionCall addNext(Expr_FunctionCall nextIn) {
@@ -47,6 +49,11 @@ public class Expr_FunctionCall implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleMethodCall_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

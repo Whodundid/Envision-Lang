@@ -10,7 +10,7 @@ import eutil.datatypes.EArrayList;
 public class PS_Block extends GenericParser {
 	
 	public static EArrayList<Statement> handleBlock() {
-		EArrayList<Statement> b = new EArrayList();
+		EArrayList<Statement> b = new EArrayList<>();
 		
 		consume(CURLY_L, "Expected a '}' to start scope block!");
 		

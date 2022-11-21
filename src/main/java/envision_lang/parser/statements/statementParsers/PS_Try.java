@@ -14,15 +14,16 @@ import eutil.datatypes.EArrayList;
 public class PS_Try extends GenericParser {
 	
 	public static Statement tryStatement() {
-		consume(CURLY_L, "Expected block start after try declaration!");
-		Stmt_Block tryBlock = new Stmt_Block(getBlock());
+		Token tryToken = consume(TRY, "Expected 'try' here!");
+		Token blockStart = consume(CURLY_L, "Expected block start after try declaration!");
+		Stmt_Block tryBlock = new Stmt_Block(blockStart, getBlock());
 		
 		EArrayList<Stmt_Catch> catches = new EArrayList();
 		
 		consumeEmptyLines();
 		
 		do {
-			consume(CATCH, "Expected 'catch' statement block after try block!");
+			Token catchToken = consume(CATCH, "Expected 'catch' statement block after try block!");
 			
 			consume(PAREN_L, "Expected catch expression start!");
 			Token exceptionType = consume(IDENTIFIER, "Expected an exception type!");
@@ -30,7 +31,7 @@ public class PS_Try extends GenericParser {
 			consume(PAREN_R, "Expected catch expression end!");
 			
 			consume(CURLY_L, "Expected block start after catch declaration!");
-			catches.add(new Stmt_Catch(exceptionType, var, getBlock()));
+			catches.add(new Stmt_Catch(catchToken, exceptionType, var, getBlock()));
 		}
 		while (check(CATCH));
 		
@@ -39,11 +40,11 @@ public class PS_Try extends GenericParser {
 		Stmt_Block finallyBlock = null;
 		if (match(FINALLY)) {
 			consumeEmptyLines();
-			consume(CURLY_L, "Expected block start after finally declaration!");
-			finallyBlock = new Stmt_Block(getBlock());
+			Token blockStart2 = consume(CURLY_L, "Expected block start after finally declaration!");
+			finallyBlock = new Stmt_Block(blockStart2, getBlock());
 		}
 		
-		return new Stmt_Try(tryBlock, catches, finallyBlock);
+		return new Stmt_Try(tryToken, tryBlock, catches, finallyBlock);
 	}
 	
 }

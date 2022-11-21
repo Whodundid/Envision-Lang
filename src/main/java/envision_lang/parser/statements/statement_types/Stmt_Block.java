@@ -1,15 +1,18 @@
 package envision_lang.parser.statements.statement_types;
 
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
+import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class Stmt_Block implements Statement {
+public class Stmt_Block extends BasicStatement {
 
 	public final EArrayList<Statement> statements;
 	
-	public Stmt_Block() { this(new EArrayList<Statement>()); }
-	public Stmt_Block(EArrayList<Statement> in) {
+	public Stmt_Block(Token start) { this(start, new EArrayList<>()); }
+	public Stmt_Block(Token start, EArrayList<Statement> in) {
+		super(start);
 		statements = in;
 	}
 	
@@ -32,6 +35,11 @@ public class Stmt_Block implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleBlockStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

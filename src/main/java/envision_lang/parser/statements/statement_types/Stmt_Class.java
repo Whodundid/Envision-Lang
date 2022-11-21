@@ -1,13 +1,14 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Var;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class Stmt_Class implements Statement {
+public class Stmt_Class extends BasicStatement {
 
 	public final Token name;
 	public final ParserDeclaration declaration;
@@ -17,7 +18,8 @@ public class Stmt_Class implements Statement {
 	public final EArrayList<Stmt_FuncDef> methods = new EArrayList<Stmt_FuncDef>();
 	public final EArrayList<Stmt_FuncDef> initializers = new EArrayList<Stmt_FuncDef>();
 	
-	public Stmt_Class(Token nameIn, ParserDeclaration declarationIn) {
+	public Stmt_Class(Token start, Token nameIn, ParserDeclaration declarationIn) {
+		super(start);
 		name = nameIn;
 		declaration = declarationIn;
 	}
@@ -75,6 +77,11 @@ public class Stmt_Class implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleClassStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

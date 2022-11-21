@@ -8,6 +8,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
+import envision_lang.tokenizer.Token;
 
 /**
  * Parses for break and continue statements and their conditional
@@ -25,14 +26,14 @@ public class PS_LoopControl extends GenericParser {
 	 * @return The parsed break statement.
 	 */
 	public static Statement handleBreak() {
-		if (match(BREAK)) return new Stmt_LoopControl(true);
+		if (match(BREAK)) return new Stmt_LoopControl(previous(), true);
 		
-		consume(BREAKIF, "Expected a 'breakif' statement!");
+		Token start = consume(BREAKIF, "Expected a 'breakif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
 		Expression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
-		return new Stmt_LoopControl(true, condition);
+		return new Stmt_LoopControl(start, true, condition);
 	}
 	
 	/**
@@ -43,14 +44,14 @@ public class PS_LoopControl extends GenericParser {
 	 * @return The parsed continue statement.
 	 */
 	public static Statement handleContinue() {
-		if (match(CONTINUE)) return new Stmt_LoopControl(false);
+		if (match(CONTINUE)) return new Stmt_LoopControl(previous(), false);
 		
-		consume(CONTIF, "Expected a 'contif' statement!");
+		Token start = consume(CONTIF, "Expected a 'contif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
 		Expression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
-		return new Stmt_LoopControl(false, condition);
+		return new Stmt_LoopControl(start, false, condition);
 	}
 	
 }

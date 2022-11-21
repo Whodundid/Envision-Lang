@@ -16,6 +16,7 @@ import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
 import envision_lang.parser.expressions.expression_types.Expr_ListInitializer;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
 import envision_lang.parser.expressions.expression_types.Expr_Logic;
+import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 import envision_lang.parser.expressions.expression_types.Expr_SetListIndex;
@@ -54,12 +55,18 @@ public class ExpressionParser extends GenericParser {
 		if (matchType(ASSIGNMENT)) {
 			Operator operator = previous().asOperator();
 			Expression value = assignment();
+			Expression check = null;
 			
-			if (e instanceof Expr_Var v) return new Expr_Assign(v.name, operator, value);
+			if (e instanceof Expr_Var v) check = new Expr_Assign(v.name, operator, value);
 			//if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
-			if (e instanceof Expr_Get g) return new Expr_Set(g.object, g.name, value);
-			if (e instanceof Expr_ListIndex lie) return new Expr_SetListIndex(lie, value);
-			if (e instanceof Expr_Assign ae) return new Expr_Assign(ae, operator, value);
+			if (e instanceof Expr_Get g) check = new Expr_Set(g.object, g.name, value);
+			if (e instanceof Expr_ListIndex lie) check = new Expr_SetListIndex(lie, operator, value);
+			if (e instanceof Expr_Assign ae) check = new Expr_Assign(ae, operator, value);
+			
+			if (check != null) {
+				//requireTerminator(); //THIS NEEDS TO KNOW WHETHER OR NOT IT IS IN A FUNCTION CALL AS AN ARGUMENT!
+				return check;
+			}
 			
 			setPrevious();
 			error("'" + e + "' Invalid assignment target.");
@@ -119,10 +126,15 @@ public class ExpressionParser extends GenericParser {
 		*/
 		
 		//typeof expressions
-		if (match(IS/*, ISNOT*/)) {
-			boolean is = previous().keyword == IS;
+		if (check(NEGATE) && checkNext(TYPEOF)) {
+			advance(); //consume the '!'
+			advance(); //consume the 'typeof'
 			Expression right = lambda();
-			e = new Expr_TypeOf(e, is, right);
+			e = new Expr_TypeOf(e, false, right);
+		}
+		else if (match(TYPEOF)) {
+			Expression right = lambda();
+			e = new Expr_TypeOf(e, true, right);
 		}
 		
 		return e;
@@ -134,19 +146,7 @@ public class ExpressionParser extends GenericParser {
 		Expression e = arithmetic();
 		
 		while (match(LAMBDA)) {
-			/*
-			if (c instanceof CompoundExpression) {
-				compound = (CompoundExpression) c;
-			}
-			else if (c instanceof GroupingExpression) {
-				GroupingExpression g = (GroupingExpression) c;
-				
-				if (g.expression instanceof CompoundExpression) { compound = (CompoundExpression) g.expression; }
-				else { compound.add(g.expression); }
-			}
-			else compound.add(c);
-			*/
-			e = new Expr_Lambda(e, parseExpression());
+			e = new Expr_Lambda(previous(), e, parseExpression());
 		}
 		
 		return e;
@@ -181,11 +181,11 @@ public class ExpressionParser extends GenericParser {
 	//-----------------------------------------------------------------------------------------------------
 	
 	public static Expression unary() {
-		if (check(NEGATE, SUB, DEC, INC) && checkNext(IDENTIFIER, IS, FALSE, TRUE)) {
+		if (check(NEGATE, SUB, DEC, INC) && checkNext(IDENTIFIER, TYPEOF, FALSE, TRUE)) {
 			match(NEGATE, SUB, DEC, INC);
 			Operator operator = previous().asOperator();
 			Expression right = unary();
-			Expression e = new Expr_Unary(operator, right, null);
+			Expression e = new Expr_Unary(previous(), operator, right, null);
 			return e;
 		}
 		
@@ -193,7 +193,7 @@ public class ExpressionParser extends GenericParser {
 		
 		if (match(DEC, INC)) {
 			Operator o = previous().asOperator();
-			e = new Expr_Unary(o, null, e);
+			e = new Expr_Unary(previous(), o, null, e);
 		}
 		
 		return e;
@@ -225,12 +225,14 @@ public class ExpressionParser extends GenericParser {
 			//check if standard function call
 			if (check(PAREN_L)) {
 				e = new Expr_FunctionCall(e, collectFuncArgs());
+				//requireTerminator();
 			}
 			//check if accessing array element
 			else if (match(BRACKET_L)) {
 				Expression index = parseExpression();
 				consume(BRACKET_R, "Expected ']' after list index!");
 				e = new Expr_ListIndex(e, index);
+				//requireTerminator();
 			}
 			//check if accessing member object
 			else if (match(PERIOD)) {
@@ -274,7 +276,7 @@ public class ExpressionParser extends GenericParser {
 		
 		//if (match(Keyword.MODULAR_VALUE)) return e = new ModularExpression(ParserStage.modularValues);
 		if (match(INIT)) return new Expr_Var(previous());
-		if (matchType(OPERATOR)) return new Expr_Literal(previous().keyword);
+		if (matchType(OPERATOR)) return new Expr_Literal(previous(), previous().keyword);
 		
 		if ((e = checkLiteral()) != null) return e;
 		if ((e = checkLists()) != null) return e;
@@ -292,10 +294,10 @@ public class ExpressionParser extends GenericParser {
 	//---------------
 	
 	private static Expression checkLiteral() {
-		if (match(FALSE)) return new Expr_Literal(false);
-		if (match(TRUE)) return new Expr_Literal(true);
-		if (match(NULL)) return new Expr_Literal(null);
-		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previous().literal);
+		if (match(FALSE)) return new Expr_Literal(previous(), false);
+		if (match(TRUE)) return new Expr_Literal(previous(), true);
+		if (match(NULL)) return new Expr_Literal(previous(), null);
+		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previous(), previous().literal);
 		return null;
 	}
 	
@@ -303,26 +305,27 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkLists() {
 		if (match(TO)) {
+			Token start = previous();
 			Expression right = range();
 			Expression by = null;
 			if (match(BY)) {
 				by = range();
 			}
-			return new Expr_Range(new Expr_Literal(0), right, by);
+			return new Expr_Range(new Expr_Literal(start, 0), right, by);
 		}
 		
 		if (match(BRACKET_L)) {
-			Expr_ListInitializer e = new Expr_ListInitializer();
+			Expr_ListInitializer e = new Expr_ListInitializer(previous());
 			
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			if (!check(BRACKET_R)) {
 				do {
-					while (match(NEWLINE));
+					consumeEmptyLines();
 					e.addValue(assignment());
 				}
 				while (match(COMMA));
 			}
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			consume(BRACKET_R, "Expected ']' after list initializer!");
 			
 			return e;
@@ -334,57 +337,58 @@ public class ExpressionParser extends GenericParser {
 	//-----------------------------------------------------------------------------------------------------
 	
 	private static Expression checkLambda() {
-		if (match(PAREN_L)) {
-			Expression e = null;
+		if (!match(PAREN_L)) return null;
+		
+		Expression e = null;
+		Token start = previous();
+		EArrayList<Expression> expressions = null;
+		
+		if (!check(PAREN_R)) {
+			e = parseExpression();
 			
-			if (!check(PAREN_R)) {
-				e = parseExpression();
-				
-				if (match(COMMA)) {
-					EArrayList<Expression> expressions = new EArrayList();
-					expressions.add(e);
-					do {
-						expressions.add(parseExpression());
-					}
-					while (match(COMMA));
-					e = new Expr_Compound(expressions);
+			if (match(COMMA)) {
+				expressions = new EArrayList<>();
+				expressions.add(e);
+				do {
+					expressions.add(parseExpression());
 				}
+				while (match(COMMA));
+				e = new Expr_Compound(start, expressions);
 			}
-			consume(PAREN_R, "Expected ')' after expression!");
-			
-			//check for cast expressions
-			if (e instanceof Expr_VarDef var_def) {
-				Token type = var_def.type;
-				//can only be a cast expression if either a datatype or a object type
-				if (type.isDatatype() || type.isReference()) {
-					Expression target = parseExpression();
-					e = new Expr_Cast(type, target);
-					return e;
-				}
-			}
-			
-			/*if (e == null && !check(LAMBDA)) {
-				error("An empty expression can only be followed with a lambda expression!");
-			}
-			else*/
-			if (match(TERNARY)) {
-				Expression t = parseExpression();
-				consume(COLON, "Expected a ':' in between ternary expressions!");
-				Expression f = parseExpression();
-				return new Expr_Ternary(e, t, f);
-			}
-			else {
-				//parser.pd("CUR PRI: " + current());
-				
-				// This is duct tape at best
-				if (e instanceof Expr_Compound) return e;
-				
-				//if there was no lambda production, return empty
-				if (e == null) return new Expr_Compound();
-				//else return new CompoundExpression(e);
-				
+		}
+		consume(PAREN_R, "Expected ')' after expression!");
+		
+		//check for cast expressions
+		if (e instanceof Expr_VarDef var_def) {
+			Token type = var_def.type;
+			//can only be a cast expression if either a datatype or a object type
+			if (type.isDatatype() || type.isReference()) {
+				Expression target = parseExpression();
+				e = new Expr_Cast(type, target);
 				return e;
 			}
+		}
+		
+		if (match(TERNARY)) {
+			Expression t = parseExpression();
+			consume(COLON, "Expected a ':' in between ternary expressions!");
+			Expression f = parseExpression();
+			return new Expr_Ternary(e, t, f);
+		}
+		else if (e == null && !check(LAMBDA) && expressions != null && expressions.isEmpty()) {
+			error("An empty expression can only be followed with a lambda expression!");
+		}
+		else {
+			//parser.pd("CUR PRI: " + current());
+			
+			// This is duct tape at best
+			if (e instanceof Expr_Compound) return e;
+			
+			//if there was no lambda production, return empty
+			if (e == null) return new Expr_Compound(current());
+			//else return new CompoundExpression(e);
+			
+			return e;
 		}
 		
 		return null;
@@ -394,6 +398,7 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkObject() {
 		if (match(THIS)) {
+			Token start = previous();
 			if (match(PAREN_L)) {
 				EArrayList<Expression> args = new EArrayList();
 				if (!check(PAREN_R)) {
@@ -410,10 +415,11 @@ public class ExpressionParser extends GenericParser {
 				//return new ThisConExpression(args);
 			}
 			if (match(PERIOD)) { return new Expr_This(consume(IDENTIFIER, "Expected a valid identifier!")); }
-			return new Expr_This();
+			return new Expr_This(start);
 		}
 		
 		if (match(SUPER)) {
+			Token start = previous();
 			consume(PERIOD, "Expected '.' after super call!");
 			Token m = consume(IDENTIFIER, "Expected superclass method name!");
 			
@@ -427,10 +433,10 @@ public class ExpressionParser extends GenericParser {
 				}
 				consume(PAREN_R, "Expected a ')' to close method arguments!");
 				
-				return new Expr_Super(m, args);
+				return new Expr_Super(start, m, args);
 			}
 			
-			return new Expr_Super(m);
+			return new Expr_Super(start, m);
 		}
 		
 		return null;
@@ -462,9 +468,12 @@ public class ExpressionParser extends GenericParser {
 			Token type = previous();
 			EArrayList<Token> params = null;
 			
+			//check if primitive type
+			if (type.isDatatype()) return new Expr_Primitive(type);
+			
 			//check for parameters
 			if (match(LT)) {
-				params = new EArrayList();
+				params = new EArrayList<>();
 				while (!atEnd() && !match(GT)) {
 					//check if valid parameter
 					if (check(IDENTIFIER, TERNARY) || checkType(DATATYPE)) {

@@ -7,6 +7,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.packages.EnvisionPackage;
+import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -52,6 +53,7 @@ public enum Primitives implements IDatatype {
 	STRING("string"),
 	NUMBER("number"),
 	LIST("list"),
+	TUPLE("tuple"),
 	
 	// dynamic object types
 	
@@ -258,6 +260,26 @@ public enum Primitives implements IDatatype {
 	
 	public static Primitives getDataType(Token token) {
 		return getDataType(token.getKeyword());
+	}
+	
+	public static Primitives getDataType(IKeyword keyword) {
+		if (keyword.isOperator()) return null;
+		return switch (keyword.asReservedWord()) {
+		case FUNC -> FUNCTION;
+		case CLASS -> CLASS;
+		case VAR -> VAR;
+		case BOOLEAN -> BOOLEAN;
+		case CHAR -> CHAR;
+		case STRING -> STRING;
+		case INT -> INT;
+		case DOUBLE -> DOUBLE;
+		case LIST -> LIST;
+		case ENUM -> ENUM;
+		case NULL -> NULL;
+		case VOID -> VOID;
+		case TRUE, FALSE -> BOOLEAN;
+		default -> null;
+		};
 	}
 	
 	public static Primitives getPrimitiveType(String typeIn) {

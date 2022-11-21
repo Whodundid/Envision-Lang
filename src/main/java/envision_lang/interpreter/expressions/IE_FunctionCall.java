@@ -50,6 +50,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 			for (int i = 0; i < args.length; i++) {
 				Expression arg = e.args.get(i);
 				EnvisionObject obj = evaluate(arg);
+				if (obj.isPrimitive()) obj = obj.copy();
 				args[i] = obj;
 			}
 			
@@ -57,7 +58,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 			if (o instanceof EnvisionCodeFile env_code) return importCall(env_code);
 			//if (o instanceof FunctionPrototype env_proto) return protoCall(env_proto);
 			if (o instanceof EnvisionFunction env_func) return functionCall(env_func);
-			//if (o instanceof EnvisionLangPackage env_pkg)  return packageCall(env_pkg);
+			//if (o instanceof EnvisionLangPackage env_pkg) return packageCall(env_pkg);
 			if (o instanceof EnvisionClass env_class) return classCall(env_class);
 			if (o instanceof ClassInstance env_inst) return instanceCall(env_inst);
 			

@@ -26,6 +26,7 @@ import envision_lang.interpreter.expressions.IE_ListIndexSet;
 import envision_lang.interpreter.expressions.IE_ListInitializer;
 import envision_lang.interpreter.expressions.IE_Literal;
 import envision_lang.interpreter.expressions.IE_Logical;
+import envision_lang.interpreter.expressions.IE_Primitive;
 import envision_lang.interpreter.expressions.IE_Range;
 import envision_lang.interpreter.expressions.IE_Set;
 import envision_lang.interpreter.expressions.IE_Super;
@@ -60,12 +61,14 @@ import envision_lang.interpreter.statements.IS_VarDec;
 import envision_lang.interpreter.statements.IS_While;
 import envision_lang.interpreter.util.TypeManager;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.throwables.LangShutdownCall;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
+import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.packages.env.EnvPackage;
@@ -89,6 +92,7 @@ import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
 import envision_lang.parser.expressions.expression_types.Expr_ListInitializer;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
 import envision_lang.parser.expressions.expression_types.Expr_Logic;
+import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 import envision_lang.parser.expressions.expression_types.Expr_SetListIndex;
@@ -155,17 +159,17 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	/**
 	 * Lowest scope level intended exclusively for language packages and internal functions.
 	 */
-	private final Scope internalScope = new Scope();
+	private final IScope internalScope = new Scope();
 	
 	/**
 	 * The scope intended for actual user program execution.
 	 */
-	private final Scope programScope = new Scope(internalScope);
+	private final IScope programScope = new Scope(internalScope);
 	
 	/**
 	 * The primary working interpreter scope.
 	 */
-	private Scope working_scope = programScope;
+	private IScope working_scope = programScope;
 	
 	/**
 	 * The active working file directory for which this interpreter has been created
@@ -193,6 +197,14 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * user-defined EnvisionPackages.
 	 */
 	private final TypeManager typeManager = new TypeManager();
+	
+	
+	private int lastLineNum = -1;
+	private Token lastLineToken = null;
+	
+	private boolean runNext = false;
+	private boolean runningStatement = false;
+	
 	
 	//--------------
 	// Constructors
@@ -274,7 +286,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param scopeIn      The scope for which to execute the statements on
 	 */
 	public void executeBlock(EArrayList<Statement> statements, Scope scopeIn) {
-		Scope prev = working_scope;
+		IScope prev = working_scope;
 		try {
 			working_scope = scopeIn;
 			for (Statement s : statements) {
@@ -286,6 +298,14 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		}
 	}
 	
+	public void runNextStatement() {
+		
+	}
+	
+	public void block() {
+		runNext = false;
+	}
+	
 	/**
 	 * Returns true if the given object is an EnvisionBoolean and the
 	 * boolean value is true.
@@ -294,7 +314,9 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @return
 	 */
 	public boolean isTrue(EnvisionObject obj) {
-		return (obj instanceof EnvisionBoolean env_bool && env_bool.bool_val);
+		if (obj instanceof EnvisionBoolean bool) return bool.bool_val;
+		if (obj instanceof EnvisionInt env_int) return env_int.int_val != 0;
+		return false;
 	}
 	
 	/**
@@ -368,14 +390,14 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * 
 	 * @return The internal scope of this interpreter
 	 */
-	public Scope internalScope() { return internalScope; }
+	public IScope internalScope() { return internalScope; }
 	
 	/**
 	 * Returns the current working scope that is actively bound.
 	 * 
 	 * @return The current working scope
 	 */
-	public Scope scope() { return working_scope; }
+	public IScope scope() { return working_scope; }
 	
 	/**
 	 * Returns the TypeManager for this interpreter. The type manager
@@ -392,8 +414,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	// Interpreter Helper Methods
 	//----------------------------
 	
-	public Scope pushScope() { return working_scope = new Scope(working_scope); }
-	public Scope popScope() { return working_scope = working_scope.getParentScope(); }
+	public IScope pushScope() { return working_scope = new Scope(working_scope); }
+	public IScope popScope() { return working_scope = working_scope.getParent(); }
 	
 	public EnvisionObject lookUpVariable(String name) {
 		EnvisionObject object = EnvisionNull.NULL;
@@ -709,6 +731,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public EnvisionObject handleMethodCall_E(Expr_FunctionCall e) { return IE_FunctionCall.run(this, e); }
 	@Override public EnvisionObject handleMethodDec_E(Expr_FuncDef e) { return IE_FuncDef.run(this, e); }
 	//@Override public EnvisionObject handleModular_E(ModularExpression e) { return IE_Modular.run(this, e); }
+	@Override public EnvisionObject handlePrimitive_E(Expr_Primitive e) { return IE_Primitive.run(this, e); }
 	@Override public EnvisionObject handleRange_E(Expr_Range e) { return IE_Range.run(this, e); }
 	@Override public EnvisionObject handleSet_E(Expr_Set e) { return IE_Set.run(this, e); }
 	@Override public EnvisionObject handleSuper_E(Expr_Super e) { return IE_Super.run(this, e); }

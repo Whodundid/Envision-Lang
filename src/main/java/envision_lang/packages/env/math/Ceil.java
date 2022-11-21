@@ -6,7 +6,7 @@ import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 public class Ceil extends EnvisionFunction {
 	

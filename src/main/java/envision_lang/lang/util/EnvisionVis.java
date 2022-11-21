@@ -3,8 +3,9 @@ package envision_lang.lang.util;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
+import eutil.reflection.ObjectVisibility;
 
-public enum VisibilityType {
+public enum EnvisionVis {
 	
 	PUBLIC("+"),
 	PROTECTED("_"),
@@ -16,20 +17,20 @@ public enum VisibilityType {
 	
 	public final String lexeme;
 	
-	private VisibilityType(String lexemeIn) {
+	private EnvisionVis(String lexemeIn) {
 		lexeme = lexemeIn;
 	}
 	
-	public static VisibilityType parse(Token t) {
+	public static EnvisionVis parse(Token t) {
 		return parse(t.keyword);
 	}
 	
-	public static VisibilityType parse(IKeyword k) {
+	public static EnvisionVis parse(IKeyword k) {
 		if (k.isOperator()) return parse(k.asOperator());
 		return null;
 	}
 	
-	public static VisibilityType parse(Operator k) {
+	public static EnvisionVis parse(Operator k) {
 		switch (k) {
 		case ADD: return PUBLIC;
 		case PROTECTED: return PROTECTED;
@@ -38,13 +39,22 @@ public enum VisibilityType {
 		}
 	}
 	
-	public static VisibilityType parse(String s) {
+	public static EnvisionVis parse(String s) {
 		switch (s.toLowerCase()) {
 		case "+": return PUBLIC;
 		case "_": return PROTECTED;
 		case "-": return PRIVATE;
 		default: return null;
 		}
+	}
+	
+	public static EnvisionVis of(ObjectVisibility v) {
+		return switch (v) {
+		case PUBLIC -> PUBLIC;
+		case PROTECTED -> PROTECTED;
+		case PRIVATE -> PRIVATE;
+		default -> SCOPE;
+		};
 	}
 	
 	@Override

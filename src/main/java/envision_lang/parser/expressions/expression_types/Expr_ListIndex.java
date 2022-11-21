@@ -3,15 +3,18 @@ package envision_lang.parser.expressions.expression_types;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.tokenizer.Token;
 
 public class Expr_ListIndex implements Expression {
 	
 	public final Expression list;
 	public final Expression index;
+	public final Token definingToken;
 	
 	public Expr_ListIndex(Expression listIn, Expression indexIn) {
 		list = listIn;
 		index = indexIn;
+		definingToken = listIn.definingToken();
 	}
 	
 	@Override
@@ -27,6 +30,11 @@ public class Expr_ListIndex implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleListIndex_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

@@ -1,10 +1,10 @@
 package envision_lang.lang.internal;
 
-import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.lang.util.ParameterData;
-import envision_lang.lang.util.StaticTypes;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -76,7 +76,7 @@ public class IPrototypeHandler {
 	 * 
 	 * @param scope The scope for which this handler is defining on
 	 */
-	public void defineOn(Scope scope) {
+	public void defineOn(IScope scope) {
 		prototypes.forEach(p -> scope.define(p.getFunctionName(), StaticTypes.FUNC_TYPE, p));
 	}
 	

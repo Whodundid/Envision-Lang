@@ -41,17 +41,17 @@ public enum ReservedWord implements IKeyword {
 	/** Returns a value iff the condition is true */
 	RETIF("retif"),
 	/** Hardcoded boolean value -- can be assigned to booleans and generic types */
-	TRUE("true"),
+	TRUE("true", KeywordType.LITERAL),
 	/** Hardcoded boolean value -- can be assigned to booleans and generic types */
-	FALSE("false"),
+	FALSE("false", KeywordType.LITERAL),
 	/** Shortcut to create getter methods for passed variables. */
 	GET("get"),
 	/** Shortcut to create setter methods for passed variables. */
 	SET("set"),
 	/** Denotes the start of a new line. */
-	NEWLINE("\\NewLine"),
+	NEWLINE("\\NewLine", KeywordType.TERMINATOR),
 	
-	/** Bundles data within the following block into the same pacakge -- similar to 'namespace' in C++/C#. */
+	/** Bundles data within the following block into the same package -- similar to 'namespace' in C++/C#. */
 	//PACKAGE("package", KeywordType.BASE),
 	//READ("read", KeywordType.BASE), //Used to read console input from the user
 	//PRINT("print", KeywordType.BASE),
@@ -74,7 +74,7 @@ public enum ReservedWord implements IKeyword {
 	/**
 	 *  Denotes the start of an Operator Overload function.
 	 */
-	OPERATOR_("operator"), //Used to incate operator overloading
+	OPERATOR_("operator"), //Used to indicate operator overloading
 	//MODULAR_VALUE("@", KeywordType.OPERATOR_TYPE), //Used for modular function declarations
 	//OPERATOR_EXPR("~", true, KeywordType.OPERATOR_TYPE), //Used for modular operator expressions
 	
@@ -135,7 +135,8 @@ public enum ReservedWord implements IKeyword {
 	SWITCH("switch"), //Tests a value against a series of potential matching cases.
 	CASE("case"), //A potential match for data being tested in a switch.
 	DEFAULT("default"), //A catch-all case for switch statements when no case matches the tested value.
-	IS("is"), //Compares the underlying object types of two objects -- instanceof in Java.
+	TYPEOF("typeof"), //Compares the underlying object types of two objects -- instanceof in Java.
+	//IS("is"), //Compares the underlying object types of two objects -- instanceof in Java.
 	//ISNOT("isnot", KeywordType.LOGIC), //Compares the underlying object types such that the compared is not the same. !(instanceof)
 	
 	//------------
@@ -155,7 +156,7 @@ public enum ReservedWord implements IKeyword {
 	STRING_LITERAL("\\StringLiteral", KeywordType.LITERAL), //A string in token form.
 	CHAR_LITERAL("\\CharLiteral", KeywordType.LITERAL), //A char in token form.
 	IDENTIFIER("\\Literal", KeywordType.LITERAL), //A value that could pertain to a object name.
-	EOF("\\EOF", KeywordType.LITERAL), //Denotes the end of the current file
+	EOF("\\EOF", KeywordType.LITERAL, KeywordType.TERMINATOR), //Denotes the end of the current file
 	
 	;
 	

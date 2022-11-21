@@ -6,7 +6,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 public class LockedListError extends EnvisionLangError {
 
 	public LockedListError(EnvisionList list) {
-		super("The list: '" + list + "' is size locked!");
+		super("Cannot modify list size! The list is size locked!");
 	}
 
 }

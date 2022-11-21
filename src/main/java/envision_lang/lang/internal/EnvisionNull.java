@@ -1,7 +1,7 @@
 package envision_lang.lang.internal;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 /**
  * Null object representation for the Envision:Java Scripting Language.
@@ -49,6 +49,11 @@ public class EnvisionNull extends EnvisionObject {
 	@Override
 	public EnvisionObject copy() {
 		return this;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return null;
 	}
 	
 }

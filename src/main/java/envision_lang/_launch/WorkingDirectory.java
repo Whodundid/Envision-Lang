@@ -1,14 +1,14 @@
 package envision_lang._launch;
 
-import eutil.EUtil;
-import eutil.datatypes.EArrayList;
-
 import java.io.File;
 import java.io.IOException;
 
 import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.exceptions.errors.workingDirectory.MultipleMainsError;
 import envision_lang.packages.EnvisionLangPackage;
+import eutil.EUtil;
+import eutil.datatypes.EArrayList;
+import eutil.debug.Broken;
 
 /** Handles code file discovery and wrapping. */
 public class WorkingDirectory {
@@ -99,6 +99,7 @@ public class WorkingDirectory {
 	/**
 	 * Attempts to return a code file of the given name (if it exists).
 	 */
+	@Broken("Does not account for nested files!")
 	public EnvisionCodeFile getFile(String name) {
 		for (EnvisionCodeFile f : codeFiles) {
 			if (f.getFileName().equals(name)) return f;

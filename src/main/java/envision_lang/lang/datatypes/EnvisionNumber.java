@@ -62,6 +62,12 @@ public abstract class EnvisionNumber extends EnvisionVariable {
 	 */
 	public abstract EnvisionDouble doubleVal();
 	
+	
+	@Override
+	public Object convertToJavaObject() {
+		return doubleVal_i();
+	}
+	
 	//-----------------------
 	// Static Helper Methods
 	//-----------------------

@@ -5,6 +5,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.throwables.Break;
+import envision_lang.interpreter.util.throwables.EnvisionException;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
@@ -53,18 +54,22 @@ public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 					else caseNameValue = scope().get(caseName.lexeme);
 					
 					//not sure how to handle yet
-					if (isNull(caseNameValue)) System.out.println("NULL SWITCH CASE");
+					if (isNull(caseNameValue)) throw new EnvisionException("NULL SWITCH CASE");
 					
 					//if the case matched -- set the matched state to true and execute each case block from here on out
 					if (isEqual(exprObj, caseNameValue)) caseMatched = true;
 				}
 				
 				//if the case matched (at any point) -- execute the current case block
-				if (caseMatched) for (Statement stmt : c.body) execute(stmt);
+				if (caseMatched)
+					for (Statement stmt : c.body)
+						execute(stmt);
 			}
 			
 			//if a default case exists and no case matched the given input, execute the default case
-			if (!caseMatched && defaultCase != null) for (Statement stmt : defaultCase.body) execute(stmt);
+			if (!caseMatched && defaultCase != null)
+				for (Statement stmt : defaultCase.body)
+					execute(stmt);
 		}
 		//leave the switch
 		catch (Break e) {}

@@ -4,7 +4,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 public class Sleep extends EnvisionFunction {
 	

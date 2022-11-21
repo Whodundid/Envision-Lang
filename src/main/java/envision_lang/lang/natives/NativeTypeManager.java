@@ -1,7 +1,6 @@
 package envision_lang.lang.natives;
 
 import java.util.HashMap;
-import java.util.List;
 
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
@@ -11,9 +10,9 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionNumberClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.datatypes.EnvisionTupleClass;
 import envision_lang.lang.internal.EnvisionFunctionClass;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 
 /**
  * Used to keep a constant running log of all native Envision datatypes. Only
@@ -29,7 +28,7 @@ import eutil.datatypes.EArrayList;
 public class NativeTypeManager {
 
 	/** The internal native Envision class list. */
-	private static final List<EnvisionClass> native_classes = new EArrayList<>();
+	private static final HashMap<Primitives, EnvisionClass> native_classes = new HashMap<>();
 	/** This map is used to manage each singleton native datatype in one place. */
 	private static final HashMap<String, EnvisionDatatype> native_types = new HashMap<>();
 	/** True if Envision's natives have been registered. */
@@ -43,14 +42,15 @@ public class NativeTypeManager {
 			native_types.put(p.string_type, p.toDatatype());
 		}
 		
-		native_classes.add(EnvisionFunctionClass.FUNC_CLASS);
-		native_classes.add(EnvisionBooleanClass.BOOLEAN_CLASS);
-		native_classes.add(EnvisionCharClass.CHAR_CLASS);
-		native_classes.add(EnvisionDoubleClass.DOUBLE_CLASS);
-		native_classes.add(EnvisionIntClass.INT_CLASS);
-		native_classes.add(EnvisionNumberClass.NUMBER_CLASS);
-		native_classes.add(EnvisionStringClass.STRING_CLASS);
-		native_classes.add(EnvisionListClass.LIST_CLASS);
+		native_classes.put(Primitives.FUNCTION, EnvisionFunctionClass.FUNC_CLASS);
+		native_classes.put(Primitives.BOOLEAN, EnvisionBooleanClass.BOOLEAN_CLASS);
+		native_classes.put(Primitives.CHAR, EnvisionCharClass.CHAR_CLASS);
+		native_classes.put(Primitives.DOUBLE, EnvisionDoubleClass.DOUBLE_CLASS);
+		native_classes.put(Primitives.INT, EnvisionIntClass.INT_CLASS);
+		native_classes.put(Primitives.NUMBER, EnvisionNumberClass.NUMBER_CLASS);
+		native_classes.put(Primitives.STRING, EnvisionStringClass.STRING_CLASS);
+		native_classes.put(Primitives.LIST, EnvisionListClass.LIST_CLASS);
+		native_classes.put(Primitives.TUPLE, EnvisionTupleClass.TUPLE_CLASS);
 		
 		//load native classes into native types
 		//for (EnvisionClass c : native_classes) {
@@ -61,7 +61,7 @@ public class NativeTypeManager {
 		//native_types.put(Primitives.BOOLEAN.string_type, Primitives.BOOLEAN.toDatatype());
 		
 		//load static natives on each native class
-		for (EnvisionClass c : native_classes) {
+		for (EnvisionClass c : native_classes.values()) {
 			c.initClassNatives();
 		}
 		
@@ -102,6 +102,10 @@ public class NativeTypeManager {
 		//add it
 		native_types.put(type, t);
 		return t;
+	}
+	
+	public static EnvisionClass getClassTypeOf(Primitives type) {
+		return native_classes.get(type);
 	}
 	
 	public static boolean doesTypeExist(String type) {

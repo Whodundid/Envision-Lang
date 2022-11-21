@@ -27,7 +27,7 @@ public class EnvisionProgram {
 	/** The Envision Scripting Language's active program working directory. */
 	private WorkingDirectory dir;
 	/** The settings to run the Envision Scripting Language with. */
-	private EnvisionLangSettings settings;
+	private EnvisionLaunchSettings settings;
 	
 	//--------------
 	// Constructors
@@ -157,7 +157,7 @@ public class EnvisionProgram {
 	 * 
 	 * @return The launch settings for this program
 	 */
-	public EnvisionLangSettings getLaunchArgs() { return settings; }
+	public EnvisionLaunchSettings getLaunchArgs() { return settings; }
 	
 	//---------
 	// Setters
@@ -168,7 +168,7 @@ public class EnvisionProgram {
 	 * 
 	 * @param settingsIn The settings to run with this program
 	 */
-	public void setLaunchArgs(EnvisionLangSettings settingsIn) {
+	public void setLaunchArgs(EnvisionLaunchSettings settingsIn) {
 		settings = settingsIn;
 	}
 	

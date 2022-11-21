@@ -9,10 +9,12 @@ public class Expr_Generic implements Expression	{
 	
 	public final Token generic;
 	public final Token extension;
+	public final Token definingToken;
 	
 	public Expr_Generic(Token genericIn, Token extensionIn) {
 		generic = genericIn;
 		extension = extensionIn;
+		definingToken = genericIn;
 	}
 	
 	@Override
@@ -24,6 +26,11 @@ public class Expr_Generic implements Expression	{
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleGeneric_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

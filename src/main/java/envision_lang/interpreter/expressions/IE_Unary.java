@@ -36,7 +36,7 @@ public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 		if (left == null) {
 			//check for class level operator overloading
 			if (evaluate(right) instanceof ClassInstance inst) {
-				return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, null);
+				return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, inst);
 			}
 		}
 		//check for post increment/decrement (x++)
@@ -47,10 +47,10 @@ public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
 			//check for class level operator overloading
 			if (l instanceof ClassInstance class_inst) {
 				EnvisionObject obj = OperatorOverloadHandler.handleOverload(interpreter,
-															  scopeName,
-															  Operator.makePost(op),
-															  class_inst,
-															  null);
+															  				scopeName,
+															  				Operator.makePost(op),
+															  				class_inst,
+															  				null);
 				return obj;
 			}
 		}

@@ -9,9 +9,11 @@ import eutil.datatypes.BoxList;
 public class Expr_Modular implements Expression {
 	
 	public final BoxList<Token, Token> modulars;
+	public final Token definingToken;
 	
-	public Expr_Modular(BoxList<Token, Token> modularsIn) {
+	public Expr_Modular(Token start, BoxList<Token, Token> modularsIn) {
 		modulars = modularsIn;
+		definingToken = start;
 	}
 	
 	@Override
@@ -23,6 +25,11 @@ public class Expr_Modular implements Expression {
 	public EnvisionObject execute(ExpressionHandler handler) {
 		//return handler.handleModular_E(this);
 		return null;
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

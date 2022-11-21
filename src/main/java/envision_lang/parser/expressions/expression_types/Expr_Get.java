@@ -9,10 +9,12 @@ public class Expr_Get implements Expression {
 
 	public final Expression object;
 	public final Token name;
+	public final Token definingToken;
 	
 	public Expr_Get(Expression objectIn, Token nameIn) {
 		object = objectIn;
 		name = nameIn;
+		definingToken = objectIn.definingToken();
 	}
 	
 	@Override
@@ -22,12 +24,17 @@ public class Expr_Get implements Expression {
 	
 	@Override
 	public Expr_Get copy() {
-		return new Expr_Get(object.copy(), Token.copy(name));
+		return new Expr_Get(object.copy(), name.copy());
 	}
 	
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleGet_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

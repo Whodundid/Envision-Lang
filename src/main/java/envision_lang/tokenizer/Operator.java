@@ -49,7 +49,7 @@ public enum Operator implements IKeyword {
 	
 	CURLY_L("{"), //Start scope blocks.
 	CURLY_R("}"), //Ends scope blocks.
-	PAREN_L("("), //Stats expressions or parameter/argument data.
+	PAREN_L("("), //Starts expressions or parameter/argument data.
 	PAREN_R(")"), //Ends expressions or parameter/argument data.
 	BRACKET_L("["), //Starts list initializer values.
 	BRACKET_R("]"), //End list initializer values.
@@ -58,16 +58,16 @@ public enum Operator implements IKeyword {
 	// terminator
 	//------------
 	
-	SEMICOLON(";"), //Concludes the current statement. (generally unnecessary but still permitted)
+	SEMICOLON(";", KeywordType.TERMINATOR), //Concludes the current statement. (generally unnecessary but still permitted)
 	
 	//------------
 	// separators
 	//------------
 	
-	COMMA(",", KeywordType.SEPARATOR),
-	COLON(":", KeywordType.SEPARATOR),
-	PERIOD(".", KeywordType.SEPARATOR),
-	VARARGS("...", KeywordType.SEPARATOR),
+	COMMA(","),
+	COLON(":"),
+	PERIOD("."),
+	VARARGS("..."),
 	
 	//---------
 	// comment
@@ -90,7 +90,7 @@ public enum Operator implements IKeyword {
 	BW_AND("&", KeywordType.OPERATOR),
 	BW_OR("|", KeywordType.OPERATOR),
 	BW_XOR("^", KeywordType.OPERATOR),
-	//BW_NOT("~", KeywordType.OPERATOR),
+	BW_NOT("~", KeywordType.OPERATOR),
 	TERNARY("?"),
 	LT("<", KeywordType.OPERATOR),
 	GT(">", KeywordType.OPERATOR),

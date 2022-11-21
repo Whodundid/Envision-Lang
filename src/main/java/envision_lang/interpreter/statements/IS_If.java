@@ -13,10 +13,10 @@ import envision_lang.parser.statements.statement_types.Stmt_If;
  * Every if statement has exactly one, non-null condition.
  * In the event that the given condition is null, a null error is thrown.
  * 
- * Each if statement has exactly one 'then' branch and an 'else' branch.
- * Both the then and else branches can potentially be completely null.
+ * Each if statement has exactly one 'then' branch and an optional 'else' branch.
+ * Both branches can potentially be completely null if not defined.
  * 
- * @author Hunter
+ * @author Hunter Bragg
  */
 public class IS_If extends StatementExecutor<Stmt_If> {
 
@@ -38,7 +38,8 @@ public class IS_If extends StatementExecutor<Stmt_If> {
 		if (cond == null) throw new ExpressionError("The given if condition is null!");
 		
 		//check if true
-		if (isTrue(evaluate(cond))) execute(thenBranch);
+		if (isTrue(evaluate(cond)))
+			if (thenBranch != null) execute(thenBranch);
 		//otherwise if false
 		else if (elseBranch != null) execute(elseBranch);
 	}

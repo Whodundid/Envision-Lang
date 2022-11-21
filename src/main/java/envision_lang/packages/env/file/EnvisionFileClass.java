@@ -488,7 +488,7 @@ public class EnvisionFileClass extends EnvisionClass {
 			if (args.length > 0 && args[0] instanceof EnvisionList) {
 				EnvisionList list = (EnvisionList) args[0];
 				
-				for (Object o : list.getList()) {
+				for (Object o : list.getInternalList()) {
 					String s = o.toString();
 					s += "\n";
 					inst.toBeWritten.add(s);

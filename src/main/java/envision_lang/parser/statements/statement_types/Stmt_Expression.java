@@ -1,15 +1,17 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.Token;
 
-public class Stmt_Expression implements Statement {
+public class Stmt_Expression extends BasicStatement {
 	
 	public final Expression expression;
 	
 	public Stmt_Expression(Expression expressionIn) {
+		super(expressionIn.definingToken());
 		expression = expressionIn;
 	}
 	
@@ -31,6 +33,11 @@ public class Stmt_Expression implements Statement {
 	@Override
 	public Stmt_Expression copy() {
 		return new Stmt_Expression(expression.copy());
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

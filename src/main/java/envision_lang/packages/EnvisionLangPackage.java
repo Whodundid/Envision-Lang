@@ -1,7 +1,7 @@
 package envision_lang.packages;
 
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
@@ -39,7 +39,7 @@ public abstract class EnvisionLangPackage extends EnvisionPackage implements Bui
 	
 	public void defineOn(EnvisionInterpreter interpreter) {
 		//add each object within the incoming package's scope
-		Scope incoming_scope = interpreter.internalScope();
+		IScope incoming_scope = interpreter.internalScope();
 		for (var obj : packageScope.values.entrySet()) {
 			String import_val_name = obj.getKey();
 			IDatatype import_val_type = obj.getValue().getA();

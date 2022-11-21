@@ -14,9 +14,10 @@ import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.strings.EStringUtil;
@@ -72,6 +73,12 @@ public class EnvisionList extends ClassInstance {
 		list.addAll(listIn);
 	}
 	
+	protected EnvisionList(EnvisionTuple tupleIn) {
+		super(EnvisionListClass.LIST_CLASS);
+		list_type = tupleIn.getTupleType();
+		list.addAll(tupleIn.getInternalList());
+	}
+	
 	//-----------
 	// Overrides
 	//-----------
@@ -85,7 +92,10 @@ public class EnvisionList extends ClassInstance {
 	public EnvisionList copy() {
 		//shallow copy
 		var l = EnvisionListClass.newList(list_type);
-		for (var o : list) l.add(o);
+		for (var o : list) {
+			if (o.isPrimitive()) l.add(o.copy());
+			else l.add(o);
+		}
 		return l;
 	}
 	
@@ -98,7 +108,8 @@ public class EnvisionList extends ClassInstance {
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
 		case EQUALS, NOT_EQUALS -> true;
-		case ADD -> true;
+		case MUL -> true;
+		case ADD_ASSIGN -> true;
 		default -> false;
 		};
 	}
@@ -110,15 +121,39 @@ public class EnvisionList extends ClassInstance {
 	{
 		//Special case -- EnvisionLists do natively support null additions
 		
-		//only support '+=' operator
-		if (op != Operator.ADD_ASSIGN) {
-			return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
+		//support '+=' operator
+		if (op == Operator.ADD_ASSIGN) {
+			//attempt to add the incoming object to this list
+			if (obj instanceof EnvisionVariable var) add(var.copy());
+			else add(obj);
+			
+			return this;
+		}
+		else if (op == Operator.MUL) {
+			if (!(obj instanceof EnvisionInt)) throw new InvalidArgumentError("Expected an integer value here!");
+			EnvisionInt mulValue = (EnvisionInt) obj;
+			long byAmount = mulValue.int_val;
+			
+			if (byAmount < 1) {
+				throw new InvalidArgumentError("Expected an integer greater than or equal to '1' here!");
+			}
+			
+			EArrayList<EnvisionObject> toCopy = new EArrayList<>(list.size());
+			for (var o : list) toCopy.add(o);
+			
+			for (int i = 0; i < (byAmount - 1); i++) {
+				for (var o : toCopy) {
+					if (o.isPrimitive()) list.add(o.copy());
+					else list.add(o);
+				}
+			}
+			
+			return this;
 		}
 		
-		//attempt to add the incoming object to this list
-		add(obj);
+
 		
-		return this;
+		return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 	}
 	
 	@Override
@@ -146,10 +181,13 @@ public class EnvisionList extends ClassInstance {
 		case "notContains" -> notContains(args[0]);
 		case "push" -> push(args[0]);
 		case "pop" -> pop();
+		case "random" -> random();
 		case "remove" -> remove((EnvisionInt) args[0]);
 		case "removeFirst" -> removeFirst();
 		case "removeLast" -> removeLast();
+		case "removeRandom" -> removeRandom();
 		case "set" -> set((EnvisionInt) args[0], args[1]);
+		case "setSize" -> setSize(args);
 		case "setFirst" -> setFirst(args[0]);
 		case "setLast" -> setLast(args[0]);
 		case "shiftLeft" -> shiftLeft(args);
@@ -165,10 +203,11 @@ public class EnvisionList extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EArrayList<EnvisionObject> getList() { return list; }
+	public EArrayList<EnvisionObject> getInternalList() { return list; }
 	
 	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
 	public long size_i() { return list.size(); }
+	public boolean isEmpty_i() { return list.isEmpty(); }
 	public EnvisionBoolean isEmpty() { return (list.isEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	public EnvisionBoolean hasOne() { return (list.hasOne()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	public EnvisionBoolean isNotEmpty() { return (list.isNotEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
@@ -248,6 +287,12 @@ public class EnvisionList extends ClassInstance {
 		return list.remove(checkEmpty(list.size() - 1));
 	}
 	
+	public EnvisionObject removeRandom() {
+		if (sizeLocked) throw lockedError();
+		if (list.isEmpty()) return EnvisionNull.NULL;
+		return list.removeRandom();
+	}
+	
 	//------------------
 	// List Set Methods
 	//------------------
@@ -277,17 +322,20 @@ public class EnvisionList extends ClassInstance {
 	//-------------------
 	
 	public EnvisionList setSize(EnvisionObject[] args) {
+		if (sizeLocked) throw lockedError();
 		if (args.length == 2) return setSize(((EnvisionInt) args[0]).int_val, args[1]);
 		if (args.length == 1) return setSize(((EnvisionInt) args[0]).int_val, null);
 		throw new EnvisionLangError("Invalid argumets -- EnvisionList::setSize");
 	}
 	
 	public EnvisionList setSize(EnvisionObject sizeObj, EnvisionObject defaultValue) {
+		if (sizeLocked) throw lockedError();
 		if (sizeObj instanceof EnvisionInt env_int) return setSize(env_int.int_val, defaultValue);
 		throw new InvalidArgumentError("Expected an integer for size!");
 	}
 	
 	public EnvisionList setSize(long size, EnvisionObject defaultValue) {
+		if (sizeLocked) throw lockedError();
 		list.clear();
 		for (int i = 0; i < size; i++) list.add(defaultValue);
 		return this;
@@ -322,7 +370,7 @@ public class EnvisionList extends ClassInstance {
 	}
 	
 	public EnvisionList shuffle() {
-		EArrayList l = new EArrayList(list);
+		EArrayList<EnvisionObject> l = new EArrayList<>(list);
 		Collections.shuffle(l);
 		return new EnvisionList(this, l);
 	}
@@ -359,13 +407,21 @@ public class EnvisionList extends ClassInstance {
 		return new EnvisionList(this, list.shiftRight(amount));
 	}
 	
+	public EnvisionObject random() {
+		if (isEmpty_i()) return EnvisionNull.NULL;
+		return list.getRandom();
+	}
+	
 	/**
 	 * I've got no idea what this is right now..
 	 * @param args
 	 * @return
 	 */
 	public EnvisionList fill(EnvisionObject[] args) {
-		System.out.println(args);
+		if (args.length != 1) throw new ArgLengthError("List::fill", 1, args.length);
+		for (int i = 0; i < list.size(); i++) {
+			list.set(i, args[0]);
+		}
 		return this;
 	}
 	

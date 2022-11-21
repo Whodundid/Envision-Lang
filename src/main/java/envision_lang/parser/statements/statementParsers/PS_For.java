@@ -24,6 +24,7 @@ import eutil.datatypes.EArrayList;
 public class PS_For extends GenericParser {
 	
 	public static Statement forStatement() {
+		Token forToken = consume(FOR, "Expected 'for' here!");
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
 		//0 = normal, 1 = range (to), 2 = lambda
@@ -31,7 +32,7 @@ public class PS_For extends GenericParser {
 		
 		Statement initializer = null;
 		Expression middle = null;
-		EArrayList<Expression> post = new EArrayList();
+		EArrayList<Expression> post = new EArrayList<>();
 		Statement body = null;
 		
 		Stmt_VarDef vars = null;
@@ -42,7 +43,7 @@ public class PS_For extends GenericParser {
 		
 		//determine the number of semicolons -- parts
 		int depth = 1, numSemi = 0;
-		EArrayList<Token> loopTokens = new EArrayList();
+		EArrayList<Token> loopTokens = new EArrayList<>();
 		int pos = getCurrentNum();
 		while (depth != 0 && !atEnd()) {
 			Token t = getAdvance();
@@ -87,7 +88,7 @@ public class PS_For extends GenericParser {
 					match(SEMICOLON);
 				}
 				else {
-					vars = new Stmt_VarDef(new ParserDeclaration());
+					vars = new Stmt_VarDef(current(), new ParserDeclaration());
 					
 					do {
 						Token name = consume(IDENTIFIER, "Expected a lambda loop index variable name!");
@@ -152,9 +153,9 @@ public class PS_For extends GenericParser {
 		
 		Statement forStatement = null;
 		switch (type) {
-		case 0: forStatement = new Stmt_For(initializer, middle, post, body); break;
-		case 1: forStatement = new Stmt_RangeFor(initializer, body).addAll(ranges); break;
-		case 2: forStatement = new Stmt_LambdaFor(vars, (Expr_Lambda) middle, post, body); break;
+		case 0: forStatement = new Stmt_For(forToken, initializer, middle, post, body); break;
+		case 1: forStatement = new Stmt_RangeFor(forToken, initializer, body).addAll(ranges); break;
+		case 2: forStatement = new Stmt_LambdaFor(forToken, vars, (Expr_Lambda) middle, post, body); break;
 		default: error("INVALID FOR LOOP TYPE! (" + type + ") -- THIS SHOULDN'T BE POSSIBLE!!");
 		}
 		

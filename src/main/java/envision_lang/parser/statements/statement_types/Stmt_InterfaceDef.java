@@ -1,18 +1,20 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 
-public class Stmt_InterfaceDef implements Statement {
+public class Stmt_InterfaceDef extends BasicStatement {
 	
 	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Generic> generics = new EArrayList();
+	public final EArrayList<Expr_Generic> generics = new EArrayList<>();
 	
-	public Stmt_InterfaceDef(ParserDeclaration declarationIn) { declaration = declarationIn; }
-	public Stmt_InterfaceDef(ParserDeclaration declarationIn, EArrayList<Expr_Generic> genericsIn) {
+	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn) { this(start, declarationIn, new EArrayList<>()); }
+	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn, EArrayList<Expr_Generic> genericsIn) {
+		super(start);
 		declaration = declarationIn;
 		generics.addAll(genericsIn);
 	}
@@ -30,6 +32,11 @@ public class Stmt_InterfaceDef implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleInterfaceStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

@@ -36,6 +36,13 @@ public class PS_VarDef extends GenericParser {
 		if (checkType(DATATYPE)) type = consumeType(DATATYPE, "Expected a valid datatype!");
 		else type = getAdvance();
 		
+		//check for list-set-expression
+		if (check(BRACKET_L)) {
+			setPrevious();
+			Expression listIndexSet = ExpressionParser.parseExpression();
+			return new Stmt_Expression(listIndexSet);
+		}
+		
 		Primitives checkType = (type != null) ? type.getPrimitiveDataType() : Primitives.VAR;
 		
 		//check for valid variable datatypes
@@ -59,7 +66,7 @@ public class PS_VarDef extends GenericParser {
 		}
 		
 		//define the actual variable statement
-		Stmt_VarDef varDecStatement = new Stmt_VarDef(declaration, getset);
+		Stmt_VarDef varDecStatement = new Stmt_VarDef(declaration.getStartToken(), declaration, getset);
 		
 		//parse for declared variables
 		do {

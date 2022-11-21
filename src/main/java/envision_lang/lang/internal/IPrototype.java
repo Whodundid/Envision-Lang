@@ -1,7 +1,7 @@
-package envision_lang.lang.util;
+package envision_lang.lang.internal;
 
-import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.util.ParameterData;
 import eutil.datatypes.BoxList;
 
 /**
@@ -10,8 +10,8 @@ import eutil.datatypes.BoxList;
  * 
  * @author Hunter Bragg
  */
-public interface PrototypeTarget {
-
+public interface IPrototype {
+	
 	/** The name of the prototype function. */
 	public String name();
 	/** The return type of the prototype function. */

@@ -8,10 +8,12 @@ import envision_lang.tokenizer.Token;
 public class Expr_This implements Expression {
 
 	public final Token keyword;
+	public final Token definingToken;
 	
-	public Expr_This() { this(null); }
-	public Expr_This(Token keywordIn) {
+	public Expr_This(Token start) { this(start, null); }
+	public Expr_This(Token start, Token keywordIn) {
 		keyword = keywordIn;
+		definingToken = start;
 	}
 	
 	@Override
@@ -23,6 +25,11 @@ public class Expr_This implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleThisGet_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

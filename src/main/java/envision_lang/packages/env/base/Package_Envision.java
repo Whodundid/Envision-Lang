@@ -1,14 +1,14 @@
 package envision_lang.packages.env.base;
 
 import envision_lang.EnvisionLang;
-import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import eutil.datatypes.EArrayList;
 
 public class Package_Envision extends ClassInstance {
@@ -16,7 +16,7 @@ public class Package_Envision extends ClassInstance {
 	private static EnvisionObject userArgs = EnvisionNull.NULL;
 	private static Package_Envision instance;
 	
-	public static void init(EnvisionLang lang, Scope internalScope, EArrayList<String> programArgs) {
+	public static void init(EnvisionLang lang, IScope internalScope, EArrayList<String> programArgs) {
 		instance = new Package_Envision(lang, programArgs);
 		internalScope.define("Envision", instance);
 	}

@@ -12,7 +12,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 
@@ -79,6 +79,11 @@ public class EnvisionString extends EnvisionVariable {
 	@Override
 	public EnvisionString copy() {
 		return EnvisionStringClass.newString(this);
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return string_val;
 	}
 	
 	@Override
@@ -189,6 +194,7 @@ public class EnvisionString extends EnvisionVariable {
 		case "isChar" -> isChar();
 		case "get" -> get();
 		case "set" -> set(args[0]);
+		case "reverse" -> reverse();
 		case "toUpperCase" -> toUpperCase();
 		case "toLowerCase" -> toLowerCase();
 		case "substring" -> substring(args);
@@ -210,7 +216,7 @@ public class EnvisionString extends EnvisionVariable {
 		return c;
 	}
 	
-	public EArrayList<EnvisionObject> toList_i() { return toList().getList(); }
+	public EArrayList<EnvisionObject> toList_i() { return toList().getInternalList(); }
 	public EnvisionList toList() {
 		EnvisionList list = EnvisionListClass.newList(Primitives.CHAR);
 		for (int i = 0; i < string_val.length(); i++) {
@@ -283,6 +289,10 @@ public class EnvisionString extends EnvisionVariable {
 	public EnvisionString substring(int start) { return EnvisionStringClass.newString(substring_i(start)); }
 	public EnvisionString substring(int start, int end) {
 		return EnvisionStringClass.newString(substring_i(start, end));
+	}
+	
+	public EnvisionString reverse() {
+		return EnvisionStringClass.newString(new StringBuilder(string_val).reverse());
 	}
 	
 	public EnvisionInt compareTo(EnvisionString str) {

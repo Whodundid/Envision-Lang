@@ -24,14 +24,14 @@ public class IE_Lambda extends ExpressionExecutor<Expr_Lambda> {
 		Expr_Compound production = e.production;
 		
 		if (production.isEmpty()) throw new InvalidTargetError("Lambda Error: No production expression defined!");
-		if (!production.hasOne()) throw new InvalidTargetError("A lambda expression can only define one production!");
+		//if (!production.hasOne()) throw new InvalidTargetError("A lambda expression can only define one production!");
 			
 		EnvisionObject rVal = null;
 		
 		//push scope to isolate input expressions
 		pushScope();
 		for (Expression exp : inputs.expressions) evaluate(exp);
-		rVal = evaluate(production.getFirst());
+		rVal = evaluate(production);
 		popScope();
 		
 		return rVal;

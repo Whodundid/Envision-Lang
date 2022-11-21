@@ -12,7 +12,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
@@ -214,7 +214,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 		 * @param objIn The potential iterable object
 		 */
 		public Iterable(EnvisionObject objIn) {
-			if (objIn instanceof EnvisionList l) vals = new EArrayList<>(l.getList());
+			if (objIn instanceof EnvisionList l) vals = new EArrayList<>(l.getInternalList());
 			else if (objIn instanceof EnvisionString str) vals = new EArrayList<>(str.toList_i());
 			else throw new InvalidTargetError("'" + objIn + "' is not a valid iterable object!");
 		}

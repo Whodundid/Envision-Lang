@@ -9,11 +9,13 @@ public class Expr_Set implements Expression {
 
 	public final Expression object, value;
 	public final Token name;
+	public final Token definingToken;
 	
 	public Expr_Set(Expression objectIn, Token nameIn, Expression valueIn) {
 		object = objectIn;
 		name = nameIn;
 		value = valueIn;
+		definingToken = objectIn.definingToken();
 	}
 	
 	@Override
@@ -29,6 +31,11 @@ public class Expr_Set implements Expression {
 	@Override
 	public EnvisionObject execute(ExpressionHandler handler) {
 		return handler.handleSet_E(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

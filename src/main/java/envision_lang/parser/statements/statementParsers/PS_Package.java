@@ -19,7 +19,7 @@ public class PS_Package extends GenericParser {
 		
 		EArrayList<Statement> body = getBlock();
 		
-		return new Stmt_Package(declaration, packageName, body);
+		return new Stmt_Package(declaration.getStartToken(), declaration, packageName, body);
 	}
 	
 }

@@ -2,6 +2,7 @@ package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Enum;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
@@ -9,15 +10,16 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.strings.EStringUtil;
 
-public class Stmt_EnumDef implements Statement {
+public class Stmt_EnumDef extends BasicStatement {
 	
 	public final Token name;
 	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Var> superEnums = new EArrayList<Expr_Var>();
-	public final EArrayList<Expr_Enum> values = new EArrayList<Expr_Enum>();
-	public final EArrayList<Statement> body = new EArrayList<Statement>();
+	public final EArrayList<Expr_Var> superEnums = new EArrayList<>();
+	public final EArrayList<Expr_Enum> values = new EArrayList<>();
+	public final EArrayList<Statement> body = new EArrayList<>();
 	
 	public Stmt_EnumDef(Token nameIn, ParserDeclaration declarationIn) {
+		super(nameIn);
 		name = nameIn;
 		declaration = declarationIn;
 	}
@@ -59,6 +61,11 @@ public class Stmt_EnumDef implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleEnumStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

@@ -44,7 +44,7 @@ import eutil.datatypes.EArrayList;
 public abstract class GenericParser {
 	
 	public static EnvisionLangParser parser;
-
+	
 	/** Assigned when creating a modular function and will only not be null while building one. */
 	//public static BoxHolder<Token, Token> modularValues = null;
 	/** Assigned when a class is currently being parsed. Will only not be null while within a class declaration. */
@@ -70,7 +70,7 @@ public abstract class GenericParser {
 	public static Statement declaration() { return declaration(false); }
 	public static Statement declaration(boolean inMethod) {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
-		while (match(NEWLINE, SEMICOLON)) return null;
+		while (matchType(TERMINATOR)) return null;
 		
 		//break out if the end of the tokens has been reached
 		if (atEnd()) return null;
@@ -129,14 +129,14 @@ public abstract class GenericParser {
 	 * @return Statement
 	 */
 	public static Statement parseStatement() {
-		if (match(CURLY_L))				return new Stmt_Block(getBlock());
-		if (match(IMPORT))				return PS_Import.handleImport();
-		if (match(TRY))					return PS_Try.tryStatement();
-		if (match(FOR))					return PS_For.forStatement();
-		if (match(SWITCH))				return PS_Switch.switchStatement();
-		if (match(IF))					return PS_If.ifStatement();
-		if (match(RETURN))				return PS_Return.returnStatement();
-		if (match(RETIF))				return PS_Return.returnStatement(true);
+		if (match(CURLY_L))				return new Stmt_Block(previous(), getBlock());
+		if (check(IMPORT))				return PS_Import.handleImport();
+		if (check(TRY))					return PS_Try.tryStatement();
+		if (check(FOR))					return PS_For.forStatement();
+		if (check(SWITCH))				return PS_Switch.switchStatement();
+		if (check(IF))					return PS_If.ifStatement();
+		if (check(RETURN))				return PS_Return.returnStatement();
+		if (check(RETIF))				return PS_Return.returnStatement(true);
 		if (check(CONTINUE, CONTIF))	return PS_LoopControl.handleContinue();
 		if (check(BREAK, BREAKIF))		return PS_LoopControl.handleBreak();
 		if (check(DO, WHILE))			return PS_While.whileStatement();
@@ -166,7 +166,7 @@ public abstract class GenericParser {
 	 */
 	public static EArrayList<Statement> getBlock() { return getBlock(false); }
 	public static EArrayList<Statement> getBlock(boolean inMethod) {
-		EArrayList<Statement> statements = new EArrayList();
+		EArrayList<Statement> statements = new EArrayList<>();
 		
 		while (!check(CURLY_R) && !atEnd()) {
 			Statement s = declaration(inMethod);
@@ -186,7 +186,7 @@ public abstract class GenericParser {
 	 */
 	public static Token[] getParameters() { return getParameters(null); }
 	public static Token[] getParameters(Token typeIn) {
-		EArrayList<Token> params = new EArrayList();
+		EArrayList<Token> params = new EArrayList<>();
 		
 		//check type
 		if (typeIn != null) {
@@ -303,6 +303,14 @@ public abstract class GenericParser {
 			setPrevious(prevAmount);
 			throw parser.error(message);
 		}
+	}
+	
+	public static void requireTerminator() {
+		consumeType(TERMINATOR, "Expected either a ';' or a new line here to conclude function call!");
+	}
+	
+	public static void requireTerminator(String msg) {
+		consumeType(TERMINATOR, msg);
 	}
 	
 }

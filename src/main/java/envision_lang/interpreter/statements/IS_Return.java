@@ -35,7 +35,6 @@ public class IS_Return extends StatementExecutor<Stmt_Return> {
 		if (r.hasOne()) {
 			EnvisionObject env_obj = evaluate(r.get(0));
 			throw ReturnValue.wrap(env_obj);
-			//throw new ReturnValue(env_obj);
 		}
 		//otherwise, wrap each value to return into a generic list
 		else {
@@ -45,8 +44,10 @@ public class IS_Return extends StatementExecutor<Stmt_Return> {
 				EnvisionObject env_obj = evaluate(o);
 				retList.add(env_obj);
 			}
+			
+			retList.lockSize();
+			
 			throw ReturnValue.wrap(retList);
-			//throw new ReturnValue(retList);
 		}
 	}
 	

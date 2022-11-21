@@ -7,7 +7,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.StaticTypes;
 
 public class DebugInfo extends EnvisionFunction {
 		

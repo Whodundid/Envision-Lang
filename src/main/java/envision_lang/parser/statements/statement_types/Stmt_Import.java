@@ -1,19 +1,22 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Import;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
-public class Stmt_Import implements Statement {
+public class Stmt_Import extends BasicStatement {
 
 	public final Expr_Import imp;
 	public final Token asName;
+	public final boolean importAll;
 	
-	public Stmt_Import(Expr_Import nameIn, Token asNameIn) {
+	public Stmt_Import(Token start, Expr_Import nameIn, Token asNameIn, boolean all) {
+		super(start);
 		imp = nameIn;
 		asName = asNameIn;
+		importAll = all;
 	}
 	
 	@Override
@@ -27,6 +30,11 @@ public class Stmt_Import implements Statement {
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleImportStatement(this);
+	}
+	
+	@Override
+	public Token definingToken() {
+		return definingToken;
 	}
 	
 }

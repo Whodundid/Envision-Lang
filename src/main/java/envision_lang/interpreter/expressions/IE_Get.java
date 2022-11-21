@@ -90,10 +90,10 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 		}
 		
 		//check if the object is actually visible
-		if (!object.isPublic()) {
+		//if (!object.isPublic()) {
 			//if the current scope is not the same as the instance's scope, throw an error
-			throw new NotVisibleError(object);
-		}
+			//throw new NotVisibleError(expression.name.lexeme);
+		//}
 		
 		return object;
 	}
@@ -111,7 +111,7 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 		
 		return null;
 	}
-	*/	
+	*/
 	
 	//--------------------------------------------------------------------
 	
