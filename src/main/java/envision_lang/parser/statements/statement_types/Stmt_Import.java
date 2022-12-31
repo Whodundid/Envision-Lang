@@ -9,10 +9,10 @@ import envision_lang.tokenizer.Token;
 public class Stmt_Import extends BasicStatement {
 
 	public final Expr_Import imp;
-	public final Token asName;
+	public final Token<?> asName;
 	public final boolean importAll;
 	
-	public Stmt_Import(Token start, Expr_Import nameIn, Token asNameIn, boolean all) {
+	public Stmt_Import(Token<?> start, Expr_Import nameIn, Token<?> asNameIn, boolean all) {
 		super(start);
 		imp = nameIn;
 		asName = asNameIn;
@@ -21,7 +21,7 @@ public class Stmt_Import extends BasicStatement {
 	
 	@Override
 	public String toString() {
-		String a = (asName != null) ? " as " + asName.lexeme : "";
+		String a = (asName != null) ? " as " + asName.getLexeme() : "";
 		return "import " + imp + a;
 	}
 	
@@ -33,7 +33,7 @@ public class Stmt_Import extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

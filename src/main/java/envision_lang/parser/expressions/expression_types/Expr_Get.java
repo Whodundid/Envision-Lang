@@ -8,10 +8,10 @@ import envision_lang.tokenizer.Token;
 public class Expr_Get implements Expression {
 
 	public final Expression object;
-	public final Token name;
-	public final Token definingToken;
+	public final Token<?> name;
+	public final Token<?> definingToken;
 	
-	public Expr_Get(Expression objectIn, Token nameIn) {
+	public Expr_Get(Expression objectIn, Token<?> nameIn) {
 		object = objectIn;
 		name = nameIn;
 		definingToken = objectIn.definingToken();
@@ -19,7 +19,7 @@ public class Expr_Get implements Expression {
 	
 	@Override
 	public String toString() {
-		return object + "." + name.lexeme;
+		return object + "." + name.getLexeme();
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class Expr_Get implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

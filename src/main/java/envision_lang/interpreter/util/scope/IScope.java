@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.exceptions.errors.UndefinedValueError;
+import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionChar;
@@ -65,6 +66,52 @@ public interface IScope {
 		return s;
 	}
 	
+	//===========
+	// Overrides
+	//===========
+	
+	/**
+	 * Creates a deep copy of this immediate scope. The parent scope is not deep
+	 * copied, but it is still set as the cloned scope's immediate parent.
+	 * 
+	 * @return A deep copy of this scope
+	 */
+	default IScope copy() {
+		// create clone using the same parent scope
+		IScope c = new Scope(getParent());
+		
+		// for each element on this scope, create an entirely new deep copy of each (if possible)
+		for (var o : values().entrySet()) {
+			String name = o.getKey();
+			IDatatype datatype = o.getValue().getA();
+			EnvisionObject object = o.getValue().getB();
+			
+			// only copy if the underlying object can actually be copied
+			EnvisionObject copy = null;
+			try {
+				copy = object.copy();
+			}
+			catch (CopyNotSupportedError e) {
+				// objects that can't be copied will be ignored
+			}
+			
+			if (copy != null) {
+				c.define(name, datatype, copy);
+			}
+		}
+		
+		// shallow copy imports
+		for (var o : imports().entrySet()) {
+			String name = o.getKey();
+			IDatatype datatype = o.getValue().getA();
+			EnvisionObject object = o.getValue().getB();
+			
+			c.defineImportVal(name, datatype, object);
+		}
+		
+		return c;
+	}
+	
 	//---------
 	// Methods
 	//---------
@@ -108,6 +155,22 @@ public interface IScope {
 		*/
 		values().put(name, new Box2<>(type, obj));
 		return obj;
+	}
+	
+	/**
+	 * Attempts to define the following object onto this scope only if there is
+	 * not an object already defined under the same name.
+	 * 
+	 * @param name The name to define this object under
+	 * @param type The Envision datatype of the object
+	 * @param obj The actual object to define
+	 * 
+	 * @return
+	 */
+	default EnvisionObject defineIfNotPresent(String name, IDatatype type, EnvisionObject obj) {
+		var existing = get(name);
+		if (existing != null) return existing;
+		return define(name, type, obj);
 	}
 	
 	/**
@@ -228,6 +291,18 @@ public interface IScope {
 	}
 	
 	/**
+	 * Returns a list of all functions on this immediate scope. Does not
+	 * check parents.
+	 */
+	default EArrayList<EnvisionFunction> operators() {
+		return values().entrySet().stream()
+								  .filter(b -> b.getValue().getB().getDatatype().isFunction())
+								  .map(b -> b.getValue().getB()).map(b -> (EnvisionFunction) b)
+								  .filter(b -> b.isOperator())
+								  .collect(EArrayList.toEArrayList());
+	}
+	
+	/**
 	 * Clears this immediate scope of all defined values as well as any
 	 * imported ones.
 	 */
@@ -288,13 +363,25 @@ public interface IScope {
 	}
 	
 	/**
+	 * Attempts to return a function from within this scope under the given name.
+	 * WARNING! UNSAFE type cast!
+	 * 
+	 * @param funcName The name of the function to find
+	 * @return The function under the given name
+	 */
+	default EnvisionFunction getFunction(String funcName) {
+		var func = get(funcName);
+		return (EnvisionFunction) func;
+	}
+	
+	/**
 	 * Attempts to return an object of the same name from this scope as
 	 * well as any encompassing parent scopes.
 	 * 
 	 * (extracts the lexeme of a Token for the name)
 	 */
 	default Box2<IDatatype, EnvisionObject> getTyped(Token name) {
-		return getTyped(name.lexeme);
+		return getTyped(name.getLexeme());
 	}
 	
 	/**
@@ -411,7 +498,16 @@ public interface IScope {
 	 * @return ToString for IScope objects
 	 */
 	static String asString(IScope scopeIn) {
-		EStringBuilder out = new EStringBuilder("Scope:{");
+		return asString(scopeIn, false);
+	}
+	
+	/**
+	 * Converts this scope to an easier to understand visual representation.
+	 * 
+	 * @return ToString for IScope objects
+	 */
+	static String asString(IScope scopeIn, boolean printParent) {
+		EStringBuilder out = new EStringBuilder("Scope: {");
 		
 		var values = scopeIn.values();
 		var importedValues = scopeIn.imports();
@@ -434,27 +530,33 @@ public interface IScope {
 				// packages
 				out.a(convertMapping(tab, "Packages",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getB().getDatatype().isPackage())
+										 .filter(b -> b.getValue().getA().isPackage())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// fields
 				out.a(convertMapping(tab, "Fields",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getB().getDatatype().isField())
+										 .filter(b -> b.getValue().getA().isField())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// methods
 				out.a(convertMapping(tab, "Functions",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getB().getDatatype().isFunction())
+										 .filter(b -> b.getValue().getA().isFunction())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// classes
 				out.a(convertMapping(tab, "Classes",
 						values.entrySet().stream()
-						 				 .filter(b -> b.getValue().getB().getDatatype().isClass())
+						 				 .filter(b -> b.getValue().getA().isClass())
 						 				 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 			}
 		}
 		
-		return out.a("}").toString();
+		out.a("}");
+		
+		if (printParent && scopeIn.getParent() != null) {
+			out.a("\nParent " + asString(scopeIn.getParent(), false));
+		}
+		
+		return out.toString();
 	}
 	
 	private static String convertMapping(String tab, String catName, Iterator<Entry<String, Box2<IDatatype, EnvisionObject>>> objects) {
@@ -479,8 +581,10 @@ public interface IScope {
 			if (obj instanceof EnvisionString) obj_output.a("\"", obj_output, "\"");
 			else if (obj instanceof EnvisionChar) obj_output.a("'", obj_output, "'");
 			else obj_output.a(obj);
+			String var_actual_type = (StaticTypes.VAR_TYPE.compare(box.getA())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
+			String objHash = (obj != null) ? ", " + obj.getHexHash() : "";
 			
-			out.a(tab, tab, i, ": ", o.getKey(), " = [", box.getA(), ", ", obj_output, objS, "]\n");
+			out.a(tab, tab, i, ": ", o.getKey(), " = [", box.getA(), var_actual_type, objHash, ", ", obj_output, objS, "]\n");
 		}
 		
 		return out.toString();

@@ -208,7 +208,7 @@ public class EnvisionTuple extends ClassInstance {
 	//---------------
 	
 	public EnvisionTuple flip() {
-		return new EnvisionTuple(tuple_type, list.flip());
+		return new EnvisionTuple(tuple_type, list.reverse());
 	}
 	
 	public EnvisionTuple shuffle() {

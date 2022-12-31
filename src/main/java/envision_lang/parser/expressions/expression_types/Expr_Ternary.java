@@ -8,7 +8,7 @@ import envision_lang.tokenizer.Token;
 public class Expr_Ternary implements Expression {
 	
 	public final Expression condition, ifTrue, ifFalse;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_Ternary(Expression conditionIn, Expression ifTrueIn, Expression ifFalseIn) {
 		condition = conditionIn;
@@ -33,7 +33,7 @@ public class Expr_Ternary implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

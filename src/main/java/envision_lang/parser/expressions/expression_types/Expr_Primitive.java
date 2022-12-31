@@ -14,10 +14,10 @@ import envision_lang.tokenizer.Token;
 public class Expr_Primitive implements Expression {
 	
 	public final IKeyword primitiveType;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_Primitive(Token datatypeToken) {
-		primitiveType = datatypeToken.keyword;
+		primitiveType = datatypeToken.getKeyword();
 		definingToken = datatypeToken;
 	}
 	
@@ -32,7 +32,7 @@ public class Expr_Primitive implements Expression {
 	}
 
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

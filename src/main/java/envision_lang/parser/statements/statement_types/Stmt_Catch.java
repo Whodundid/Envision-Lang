@@ -5,15 +5,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_Catch extends BasicStatement {
 	
-	public final Token type;
-	public final Token var;
-	public final EArrayList<Statement> body;
+	public final Token<?> type;
+	public final Token<?> var;
+	public final EList<Statement> body;
 	
-	public Stmt_Catch(Token start, Token typeIn, Token varIn, EArrayList<Statement> bodyIn) {
+	public Stmt_Catch(Token<?> start, Token<?> typeIn, Token<?> varIn, EList<Statement> bodyIn) {
 		super(start);
 		type = typeIn;
 		var = varIn;
@@ -23,7 +23,7 @@ public class Stmt_Catch extends BasicStatement {
 	@Override
 	public String toString() {
 		String b = (body != null && body.isEmpty()) ? "" : " " + body + " ";
-		return "catch (" + type.lexeme + " " + var.lexeme + ") {" + b + "}";
+		return "catch (" + type.getLexeme() + " " + var.getLexeme() + ") {" + b + "}";
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class Stmt_Catch extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

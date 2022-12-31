@@ -9,19 +9,19 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.StaticTypes;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Package_Envision extends ClassInstance {
 	
 	private static EnvisionObject userArgs = EnvisionNull.NULL;
 	private static Package_Envision instance;
 	
-	public static void init(EnvisionLang lang, IScope internalScope, EArrayList<String> programArgs) {
+	public static void init(EnvisionLang lang, IScope internalScope, EList<String> programArgs) {
 		instance = new Package_Envision(lang, programArgs);
 		internalScope.define("Envision", instance);
 	}
 	
-	private Package_Envision(EnvisionLang lang, EArrayList<String> programArgs) {
+	private Package_Envision(EnvisionLang lang, EList<String> programArgs) {
 		super(Package_EnvisionClass.ENVISION_CLASS);
 		setFinal();
 		

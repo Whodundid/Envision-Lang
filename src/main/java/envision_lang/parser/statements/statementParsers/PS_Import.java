@@ -22,13 +22,13 @@ public class PS_Import extends GenericParser {
 	 * @return ImportStatement
 	 */
 	public static Statement handleImport() {
-		Token importToken = consume(IMPORT, "Expected 'import' here!");
+		Token<?> importToken = consume(IMPORT, "Expected 'import' here!");
 		String m = "Expected a valid identifier for an import path name!";
 		boolean all = false;
 		
-		Token pathStart = consume(IDENTIFIER, m);
+		Token<?> pathStart = consume(IDENTIFIER, m);
 		
-		EStringBuilder path = new EStringBuilder(pathStart.lexeme);
+		EStringBuilder path = new EStringBuilder(pathStart.getLexeme());
 		while (match(PERIOD)) {
 			path.append(".");
 			
@@ -38,7 +38,7 @@ public class PS_Import extends GenericParser {
 				break;
 			}
 			else {
-				path.append(consume(IDENTIFIER, m).lexeme);
+				path.append(consume(IDENTIFIER, m).getLexeme());
 			}
 		}
 		
@@ -49,10 +49,10 @@ public class PS_Import extends GenericParser {
 			path.setSubstring(0, pos);
 		}
 		
-		Token pathToken = Token.create(path.toString(), pathStart.line);
-		Token objectToken = Token.create(object, pathStart.line);
+		Token<?> pathToken = Token.create(path.toString(), pathStart.getLineNum());
+		Token<?> objectToken = Token.create(object, pathStart.getLineNum());
 		
-		Token asName = null;
+		Token<?> asName = null;
 		if (match(AS)) {
 			asName = consume(IDENTIFIER, "Expected a valid identifier for which to map an import into!");
 		}

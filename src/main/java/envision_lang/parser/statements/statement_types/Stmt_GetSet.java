@@ -4,18 +4,18 @@ import envision_lang.lang.util.EnvisionVis;
 import envision_lang.parser.statements.BasicStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_GetSet extends BasicStatement {
 
 	public final EnvisionVis getVis, setVis;
 	public final boolean get, set;
-	public EArrayList<Token> vars;
+	public EList<Token<?>> vars;
 	
-	public Stmt_GetSet(Token start, EnvisionVis getVisIn, EnvisionVis setVisIn, boolean getIn, boolean setIn) {
+	public Stmt_GetSet(Token<?> start, EnvisionVis getVisIn, EnvisionVis setVisIn, boolean getIn, boolean setIn) {
 		this(start, getVisIn, setVisIn, getIn, setIn, null);
 	}
-	public Stmt_GetSet(Token start, EnvisionVis getVisIn, EnvisionVis setVisIn, boolean getIn, boolean setIn, EArrayList<Token> varsIn) {
+	public Stmt_GetSet(Token<?> start, EnvisionVis getVisIn, EnvisionVis setVisIn, boolean getIn, boolean setIn, EList<Token<?>> varsIn) {
 		super(start);
 		getVis = getVisIn;
 		setVis = setVisIn;
@@ -24,7 +24,7 @@ public class Stmt_GetSet extends BasicStatement {
 		vars = varsIn;
 	}
 	
-	public void setVars(EArrayList<Token> varsIn) {
+	public void setVars(EList<Token<?>> varsIn) {
 		vars = varsIn;
 	}
 	
@@ -49,7 +49,7 @@ public class Stmt_GetSet extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

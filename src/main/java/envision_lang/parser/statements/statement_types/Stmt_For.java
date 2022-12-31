@@ -7,20 +7,21 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /** Standard for loop. */
 public class Stmt_For extends BasicStatement {
 	
 	public final Statement init;
 	public final Expression cond;
-	public final EArrayList<Expression> post;
+	public final EList<Expression> post;
 	public final Statement body;
 	
-	public Stmt_For(Token start, Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
+	public Stmt_For(Token<?> start, Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
 		this(start, initIn, condIn, new EArrayList<>(postIn), bodyIn);
 	}
 	
-	public Stmt_For(Token start, Statement initIn, Expression condIn, EArrayList<Expression> postIn, Statement bodyIn) {
+	public Stmt_For(Token<?> start, Statement initIn, Expression condIn, EList<Expression> postIn, Statement bodyIn) {
 		super(start);
 		init = initIn;
 		cond = condIn;
@@ -48,7 +49,7 @@ public class Stmt_For extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

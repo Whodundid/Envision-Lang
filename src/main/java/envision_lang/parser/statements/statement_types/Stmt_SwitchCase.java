@@ -5,15 +5,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_SwitchCase extends BasicStatement {
 	
-	public final Token caseName;
-	public final EArrayList<Statement> body;
+	public final Token<?> caseName;
+	public final EList<Statement> body;
 	public final boolean isDefault;
 	
-	public Stmt_SwitchCase(Token start, Token caseNameIn, EArrayList<Statement> bodyIn, boolean isDefaultIn) {
+	public Stmt_SwitchCase(Token<?> start, Token<?> caseNameIn, EList<Statement> bodyIn, boolean isDefaultIn) {
 		super(start);
 		//caseName = VarExpression.of(caseNameIn);
 		caseName = caseNameIn;
@@ -38,7 +38,7 @@ public class Stmt_SwitchCase extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

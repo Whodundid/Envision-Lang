@@ -17,14 +17,13 @@ public class PS_If extends GenericParser {
 	 * @return Statement
 	 */
 	public static Statement ifStatement() {
-		Token ifToken = consume(IF, "Expected 'if' here!");
+		Token<?> ifToken = consume(IF, "Expected 'if' here!");
 		consume(PAREN_L, "Expected an expression start '(' after an if statement!");
 		Expression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected a ')' to end expression!");
 		
-		match(NEWLINE);
 		Statement thenBranch = declaration();
-		match(NEWLINE);
+		consumeEmptyLines();
 		Statement elseBranch = (match(ELSE)) ? declaration() : null;
 		
 		return new Stmt_If(ifToken, condition, thenBranch, elseBranch);

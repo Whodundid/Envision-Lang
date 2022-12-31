@@ -30,10 +30,10 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 	public void run(Stmt_Import s) {
 		Expr_Import impE = s.imp;
 		Token asName = s.asName;
-		String path = impE.path.lexeme;
-		String obj = impE.object.lexeme;
-		String as = (asName != null) ? asName.lexeme : null;
-		boolean all = s.importAll;
+		String path = impE.path.getLexeme();
+		String obj = impE.object.getLexeme();
+		String as = (asName != null) ? asName.getLexeme() : null;
+		boolean all = s.importAll || obj == null;
 		
 		//the def_name will be: 'as' if as is not null, OR will be 'obj' is obj is not null
 		//ORRR will simply be the 'path' given in the import expression.
@@ -101,9 +101,9 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 public void run(Stmt_Import s) {
 	Expr_Import impE = s.imp;
 	Token asName = s.asName;
-	String path = impE.path.lexeme;
-	String obj = impE.object.lexeme;
-	String as = (asName != null) ? asName.lexeme : null;
+	String path = impE.path.getLexeme();
+	String obj = impE.object.getLexeme();
+	String as = (asName != null) ? asName.getLexeme() : null;
 	
 	System.out.println(path + " : " + obj);
 	

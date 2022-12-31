@@ -40,7 +40,7 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 		//System.out.println("IE_FUNC_CALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = evaluate(expression.callee);
 		e = expression;
-		name = (e.name != null) ? e.name.lexeme : null;
+		name = (e.name != null) ? e.name.getLexeme() : null;
 		
 		//determine what type of object is being called
 		if (o instanceof EnvisionObject) {
@@ -53,6 +53,13 @@ public class IE_FunctionCall extends ExpressionExecutor<Expr_FunctionCall> {
 				if (obj.isPrimitive()) obj = obj.copy();
 				args[i] = obj;
 			}
+			
+			//String funcName = (name != null) ? name : String.valueOf(o);
+			//String argsOut = EStringUtil.toString(args, a -> ((a != null) ? a + a.getHexHash() : ""));
+			//String debugOut = " THE FUNC: " + funcName + "(" + argsOut + ")  :  " + o + " ";
+			
+			//System.out.println(scope());
+			//DebugToolKit.debugPrintWithTitle("IE_FunctionCall Debug", debugOut);
 			
 			//determine the type
 			if (o instanceof EnvisionCodeFile env_code) return importCall(env_code);

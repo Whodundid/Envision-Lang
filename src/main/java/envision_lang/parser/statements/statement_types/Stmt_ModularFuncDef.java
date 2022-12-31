@@ -7,21 +7,21 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.BoxList;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_ModularFuncDef extends BasicStatement {
 	
-	public final Token name;
-	public final BoxList<Token, Token> associations;
-	public final EArrayList<StatementParameter> methodParams;
-	public final EArrayList<Statement> body;
+	public final Token<?> name;
+	public final BoxList<Token<?>, Token<?>> associations;
+	public final EList<StatementParameter> methodParams;
+	public final EList<Statement> body;
 	public final ParserDeclaration declaration;
 	
-	public Stmt_ModularFuncDef(Token start, 
-							   Token nameIn,
-						   	   BoxList<Token, Token> associationsIn,
-						   	   EArrayList<StatementParameter> paramsIn,
-						   	   EArrayList<Statement> bodyIn,
+	public Stmt_ModularFuncDef(Token<?> start, 
+							   Token<?> nameIn,
+						   	   BoxList<Token<?>, Token<?>> associationsIn,
+						   	   EList<StatementParameter> paramsIn,
+						   	   EList<Statement> bodyIn,
 						   	   ParserDeclaration declarationIn)
 	{
 		super(start);
@@ -44,7 +44,7 @@ public class Stmt_ModularFuncDef extends BasicStatement {
 	@Override
 	public String toString() {
 		String p = (methodParams.isEmpty()) ? "" : methodParams.toString();
-		String n = (name != null) ? name.lexeme : "";
+		String n = (name != null) ? name.getLexeme() : "";
 		String b = (body != null && body.isNotEmpty()) ? " { " + body + " }" : "";
 		return declaration + " " + n + "(" + p + ")" + b;
 	}
@@ -60,7 +60,7 @@ public class Stmt_ModularFuncDef extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

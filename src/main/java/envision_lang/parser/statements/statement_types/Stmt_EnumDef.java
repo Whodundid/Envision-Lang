@@ -8,35 +8,36 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 public class Stmt_EnumDef extends BasicStatement {
 	
-	public final Token name;
+	public final Token<?> name;
 	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Var> superEnums = new EArrayList<>();
-	public final EArrayList<Expr_Enum> values = new EArrayList<>();
-	public final EArrayList<Statement> body = new EArrayList<>();
+	public final EList<Expr_Var> superEnums = new EArrayList<>();
+	public final EList<Expr_Enum> values = new EArrayList<>();
+	public final EList<Statement> body = new EArrayList<>();
 	
-	public Stmt_EnumDef(Token nameIn, ParserDeclaration declarationIn) {
+	public Stmt_EnumDef(Token<?> nameIn, ParserDeclaration declarationIn) {
 		super(nameIn);
 		name = nameIn;
 		declaration = declarationIn;
 	}
 	
-	public Stmt_EnumDef setSupers(EArrayList<Expr_Var> supersIn) {
+	public Stmt_EnumDef setSupers(EList<Expr_Var> supersIn) {
 		superEnums.clear();
 		superEnums.addAll(supersIn);
 		return this;
 	}
 	
-	public Stmt_EnumDef setValues(EArrayList<Expr_Enum> valuesIn) {
+	public Stmt_EnumDef setValues(EList<Expr_Enum> valuesIn) {
 		values.clear();
 		values.addAll(valuesIn);
 		return this;
 	}
 	
-	public Stmt_EnumDef setBody(EArrayList<Statement> bodyIn) {
+	public Stmt_EnumDef setBody(EList<Statement> bodyIn) {
 		body.clear();
 		body.addAll(bodyIn);
 		return this;
@@ -50,7 +51,7 @@ public class Stmt_EnumDef extends BasicStatement {
 	public String toString() {
 		String s = (superEnums.isEmpty()) ? "" : " " + superEnums.toString();
 		String b = (body != null && body.isNotEmpty()) ? " : {" + EStringUtil.toString(body, ", ") + " }" : "";
-		return declaration + " enum " + name.lexeme + s + " { " + values + b + " }";
+		return declaration + " enum " + name.getLexeme() + s + " { " + values + b + " }";
 	}
 	
 	@Override
@@ -64,7 +65,7 @@ public class Stmt_EnumDef extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

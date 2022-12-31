@@ -31,6 +31,7 @@ import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * As parsing can be broken into either parsing for statements or expressions,
@@ -70,7 +71,7 @@ public abstract class GenericParser {
 	public static Statement declaration() { return declaration(false); }
 	public static Statement declaration(boolean inMethod) {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
-		while (matchType(TERMINATOR)) return null;
+		consumeEmptyLines();
 		
 		//break out if the end of the tokens has been reached
 		if (atEnd()) return null;
@@ -162,16 +163,17 @@ public abstract class GenericParser {
 	
 	/**
 	 * Collects the statements inside of a { } block.
-	 * @return EArrayList<Statement>
+	 * @return EList<Statement>
 	 */
-	public static EArrayList<Statement> getBlock() { return getBlock(false); }
-	public static EArrayList<Statement> getBlock(boolean inMethod) {
-		EArrayList<Statement> statements = new EArrayList<>();
+	public static EList<Statement> getBlock() { return getBlock(false); }
+	public static EList<Statement> getBlock(boolean inMethod) {
+		EList<Statement> statements = new EArrayList<>();
+		consumeEmptyLines();
 		
 		while (!check(CURLY_R) && !atEnd()) {
 			Statement s = declaration(inMethod);
 			//remove any new lines
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			statements.addIf(s != null, s);
 		}
 		
@@ -184,13 +186,13 @@ public abstract class GenericParser {
 	 * @param types
 	 * @return Token[]
 	 */
-	public static Token[] getParameters() { return getParameters(null); }
-	public static Token[] getParameters(Token typeIn) {
-		EArrayList<Token> params = new EArrayList<>();
+	public static Token<?>[] getParameters() { return getParameters(null); }
+	public static Token<?>[] getParameters(Token typeIn) {
+		EList<Token<?>> params = new EArrayList<>();
 		
 		//check type
 		if (typeIn != null) {
-			Primitives datatype = Primitives.getDataType(typeIn);
+			Primitives datatype = Primitives.getPrimitiveType(typeIn);
 			
 			if (datatype != null) {
 				//check if base type can even have parameters
@@ -205,7 +207,7 @@ public abstract class GenericParser {
 		if (!check(GT)) {
 			//grab all parameters
 			do {
-				Token parameter = current();
+				Token<?> parameter = current();
 				errorIf(params.contains(parameter), "Duplicate parameter in type!");
 				params.add(parameter);
 				advance();
@@ -215,7 +217,7 @@ public abstract class GenericParser {
 		
 		consume(GT, "Expected '>' to end parameter types!");
 		
-		Token[] parr = new Token[params.size()];
+		Token<?>[] parr = new Token<?>[params.size()];
 		for (int i = 0; i < params.size(); i++) {
 			parr[i] = params.get(i);
 		}
@@ -227,19 +229,19 @@ public abstract class GenericParser {
 	// Parser Convenience Methods
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Token consume(IKeyword keyword, String errorMessage) {
+	public static Token<?> consume(IKeyword keyword, String errorMessage) {
 		return parser.consume(errorMessage, keyword);
 	}
 	
-	public static Token consume(String errorMessage, IKeyword... keywords) {
+	public static Token<?> consume(String errorMessage, IKeyword... keywords) {
 		return parser.consume(errorMessage, keywords);
 	}
 	
-	public static Token consumeType(KeywordType type, String errorMessage) {
+	public static Token<?> consumeType(KeywordType type, String errorMessage) {
 		return parser.consumeType(errorMessage, type);
 	}
 	
-	public static Token consumeType(String errorMessage, KeywordType... types) {
+	public static Token<?> consumeType(String errorMessage, KeywordType... types) {
 		return parser.consumeType(errorMessage, types);
 	}
 	
@@ -260,13 +262,13 @@ public abstract class GenericParser {
 	
 	public static boolean atEnd() { return current().isEOF(); }
 	public static void advance() { parser.advance(); }
-	public static Token getAdvance() { return parser.getAdvance(); }
+	public static Token<?> getAdvance() { return parser.getAdvance(); }
 	
 	public static void consumeEmptyLines() { parser.consumeEmptyLines(); }
 	
-	public static Token current() { return parser.current(); }
-	public static Token previous() { return parser.previous(); }
-	public static Token next() { return parser.next(); }
+	public static Token<?> current() { return parser.current(); }
+	public static Token<?> previous() { return parser.previous(); }
+	public static Token<?> next() { return parser.next(); }
 	
 	public static int getCurrentNum() { return parser.getCurrentIndex(); }
 	public static void setCurrentNum(int in) { parser.setCurrentIndex(in); }

@@ -22,7 +22,7 @@ import envision_lang.parser.statements.statement_types.Stmt_GetSet;
 import envision_lang.parser.statements.statement_types.Stmt_ModularFuncDef;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class IS_Class extends StatementExecutor<Stmt_Class> {
 
@@ -34,15 +34,15 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 	public void run(Stmt_Class statement) {
 		ParserDeclaration dec = statement.declaration;
 		
-		IDatatype name = NativeTypeManager.datatypeOf(statement.name.lexeme);
+		IDatatype name = NativeTypeManager.datatypeOf(statement.name.getLexeme());
 		//@InDevelopment
 		//EArrayList<Expr_Var> supers = statement.parentclasses;
-		EArrayList<Statement> body = statement.body;
-		EArrayList<Statement> staticMembers = statement.staticMembers;
-		EArrayList<Stmt_FuncDef> constructors = statement.initializers;
+		EList<Statement> body = statement.body;
+		EList<Statement> staticMembers = statement.staticMembers;
+		EList<Stmt_FuncDef> constructors = statement.initializers;
 		
 		//create the class framework
-		EnvisionClass theClass = new EnvisionClass(name.getType());
+		EnvisionClass theClass = new EnvisionClass(name.getStringValue());
 		Scope classScope = new Scope(scope());
 		
 		//set body and scope
@@ -102,7 +102,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//System.out.println();
 		
 		//define it
-		scope().define(name.getType(), name, theClass);
+		scope().define(name.getStringValue(), name, theClass);
 		interpreter.getTypeManager().defineType(name, theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));
 	}

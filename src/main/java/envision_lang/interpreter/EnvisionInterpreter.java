@@ -131,7 +131,7 @@ import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.statements.statement_types.Stmt_While;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.Box2;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * The primary class responsible for executing parsed Envision script
@@ -200,7 +200,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	
 	private int lastLineNum = -1;
-	private Token lastLineToken = null;
+	private Token<?> lastLineToken = null;
 	
 	private boolean runNext = false;
 	private boolean runningStatement = false;
@@ -218,12 +218,12 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	//---------------------------------------------------------------------------------
 	
-	public EnvisionInterpreter interpret(WorkingDirectory dirIn, EArrayList<String> userArgs) throws Exception {
+	public EnvisionInterpreter interpret(WorkingDirectory dirIn, EList<String> userArgs) throws Exception {
 		if (topDir == null) topDir = dirIn;
 		active_dir = dirIn;
 		
 		EnvPackage.ENV_PACKAGE.defineOn(this);
-		EArrayList<Statement> statements = startingFile.getStatements();
+		EList<Statement> statements = startingFile.getStatements();
 		
 		Package_Envision.init(envisionInstance, internalScope, userArgs);
 		
@@ -285,7 +285,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param statements The list of statements to be executed
 	 * @param scopeIn      The scope for which to execute the statements on
 	 */
-	public void executeBlock(EArrayList<Statement> statements, Scope scopeIn) {
+	public void executeBlock(EList<Statement> statements, IScope scopeIn) {
 		IScope prev = working_scope;
 		try {
 			working_scope = scopeIn;
@@ -426,7 +426,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		return object;
 	}
 	
-	public boolean isDefined(Token name) { return isDefined(name.lexeme); }
+	public boolean isDefined(Token name) { return isDefined(name.getLexeme()); }
 	public boolean isDefined(String name) {
 		try {
 			working_scope.get(name);

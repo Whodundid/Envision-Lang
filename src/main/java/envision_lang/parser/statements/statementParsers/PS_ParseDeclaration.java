@@ -14,6 +14,7 @@ import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_ParseDeclaration extends GenericParser {
 	
@@ -84,7 +85,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static void parseVisibility(ParserDeclaration dec) {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
-		Token vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
+		Token<?> vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
 		EnvisionVis visibility = EnvisionVis.parse(vis_token);
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
@@ -98,7 +99,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * @see DeclarationType
 	 */
 	public static void parseDataType(ParserDeclaration dec) {
-		Token t = current();
+		Token<?> t = current();
 		DeclarationType type = DeclarationType.parseType(t);
 		
 		if (type == VAR_DEF) {
@@ -132,11 +133,11 @@ public class PS_ParseDeclaration extends GenericParser {
 	 */
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers
-		EArrayList<DataModifier> modifiers = new EArrayList();
+		EList<DataModifier> modifiers = new EArrayList();
 		
 		while (checkType(DATA_MODIFIER)) {
-			Token mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
-			DataModifier m = DataModifier.of(mod_token.keyword);
+			Token<?> mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
+			DataModifier m = DataModifier.of(mod_token.getKeyword());
 			modifiers.addIf(m != null, m);
 		}
 		
@@ -148,14 +149,14 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EArrayList<Expr_Generic> generics = new EArrayList<>();
+		EList<Expr_Generic> generics = new EArrayList<>();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");
 			if (!check(GT)) {
 				do {
-					Token generic = consume(IDENTIFIER, "Expected generic type!");
-					Token extension = null;
+					Token<?> generic = consume(IDENTIFIER, "Expected generic type!");
+					Token<?> extension = null;
 					if (match(COLON)) {
 						extension = getAdvance();
 					}
@@ -173,7 +174,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	}
 	
 	public static void parseReturnType(ParserDeclaration dec) {
-		Token t = consume(IDENTIFIER, "Expected a name identifier!");
+		Token<?> t = consume(IDENTIFIER, "Expected a name identifier!");
 		dec.applyReturnType(t);
 	}
 	

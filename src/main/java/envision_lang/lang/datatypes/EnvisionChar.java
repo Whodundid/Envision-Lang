@@ -76,7 +76,7 @@ public class EnvisionChar extends EnvisionVariable {
 	}
 	
 	@Override
-	public Object get_i() {
+	public Character get_i() {
 		return char_val;
 	}
 	

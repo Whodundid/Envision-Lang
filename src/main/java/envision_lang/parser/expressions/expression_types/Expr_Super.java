@@ -4,17 +4,17 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 public class Expr_Super implements Expression {
 	
-	public final Token target;
-	public final EArrayList<Expression> args;
-	public final Token definingToken;
+	public final Token<?> target;
+	public final EList<Expression> args;
+	public final Token<?> definingToken;
 	
-	public Expr_Super(Token start, Token methodIn) { this(start, methodIn, null); }
-	public Expr_Super(Token start, Token methodIn, EArrayList<Expression> argsIn) {
+	public Expr_Super(Token start, Token<?> methodIn) { this(start, methodIn, null); }
+	public Expr_Super(Token start, Token<?> methodIn, EList<Expression> argsIn) {
 		target = methodIn;
 		args = argsIn;
 		definingToken = start;
@@ -23,7 +23,7 @@ public class Expr_Super implements Expression {
 	@Override
 	public String toString() {
 		String a = (args != null) ? "(" + ((args.isNotEmpty()) ? EStringUtil.toString(args, ", ") : "") + ")" : "";
-		return "super." + target.lexeme + a;
+		return "super." + target.getLexeme() + a;
 	}
 	
 	@Override
@@ -32,7 +32,7 @@ public class Expr_Super implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

@@ -10,9 +10,9 @@ public class Expr_Unary implements Expression {
 
 	public final Operator operator;
 	public final Expression right, left;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
-	public Expr_Unary(Token start, Operator operatorIn, Expression rightIn, Expression leftIn) {
+	public Expr_Unary(Token<?> start, Operator operatorIn, Expression rightIn, Expression leftIn) {
 		operator = operatorIn;
 		right = rightIn;
 		left = leftIn;
@@ -38,7 +38,7 @@ public class Expr_Unary implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

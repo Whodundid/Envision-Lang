@@ -149,7 +149,7 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		public IFunc_getParamTypes(E instIn) { super(LIST, "getParamTypes"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList types = EnvisionListClass.newList();
-			for (var p : inst.getParamTypes()) types.add(EnvisionStringClass.newString(p.getType()));
+			for (var p : inst.getParamTypes()) types.add(EnvisionStringClass.newString(p.getStringValue()));
 			ret(types);
 		}
 	}

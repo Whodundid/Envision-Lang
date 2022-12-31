@@ -8,16 +8,16 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Package;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_Package extends GenericParser {
 	
 	public static Statement packageDeclaration() { return packageDeclaration(new ParserDeclaration()); }
 	public static Statement packageDeclaration(ParserDeclaration declaration) {
-		Token packageName = consume(IDENTIFIER, "Expected a package name!");
+		Token<?> packageName = consume(IDENTIFIER, "Expected a package name!");
 		consume(CURLY_L, "Expected a '{' after package declaration!");
 		
-		EArrayList<Statement> body = getBlock();
+		EList<Statement> body = getBlock();
 		
 		return new Stmt_Package(declaration.getStartToken(), declaration, packageName, body);
 	}

@@ -38,10 +38,15 @@ public class IS_If extends StatementExecutor<Stmt_If> {
 		if (cond == null) throw new ExpressionError("The given if condition is null!");
 		
 		//check if true
-		if (isTrue(evaluate(cond)))
-			if (thenBranch != null) execute(thenBranch);
+		if (isTrue(evaluate(cond))) {
+			if (thenBranch != null) {
+				execute(thenBranch);
+			}
+		}
 		//otherwise if false
-		else if (elseBranch != null) execute(elseBranch);
+		else if (elseBranch != null) {
+			execute(elseBranch);
+		}
 	}
 	
 }

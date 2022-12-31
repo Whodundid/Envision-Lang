@@ -66,7 +66,7 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override public EnvisionInt copy() { return EnvisionIntClass.newInt(int_val); }
 	
 	@Override
-	public Object convertToJavaObject() {
+	public Long convertToJavaObject() {
 		return int_val;
 	}
 	
@@ -78,7 +78,7 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.newDouble(int_val); }
 	
 	@Override public EnvisionInt get() { return this; }
-	@Override public Object get_i() { return int_val; }
+	@Override public Long get_i() { return int_val; }
 	
 	@Override
 	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {

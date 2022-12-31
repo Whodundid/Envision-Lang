@@ -10,29 +10,34 @@ import envision_lang.lang.natives.Primitives;
  */
 public class Token<TYPE> {
 	
-	/** The global total number of created tokens. */
-	public static int total = 0;
-	/** The specific ID of this token. */
-	public int id;
 	/** The string representation of this token. */
-	public String lexeme;
+	private String lexeme;
 	/** The literal object value that this token holds (if applicable). */
-	public TYPE literal;
+	private TYPE literal;
 	/** The internal keyword that represents this token. */
-	public IKeyword keyword;
+	private IKeyword keyword;
 	/** The line number that this token was found on. */
-	public int line;
+	private int line;
+	/** The index (position) of where this token is on the line (0 is the first token on the line). */
+	private int lineIndex;
+	/** The index of this token on the line it was originally parsed from. */
+	private int lineTokenIndex;
 	/** True if the keyword representing this token is a reservedWord instead of an Operator. */
 	private boolean isReservedWord;
 	
 	//---------------------------------------------------------------------------
 	
 	public Token(IKeyword k, String lexemeIn, TYPE literalIn, int lineIn) {
-		id = total++;
+		this(k, lexemeIn, literalIn, lineIn, -1, -1);
+	}
+	
+	public Token(IKeyword k, String lexemeIn, TYPE literalIn, int lineIn, int lineIndexIn, int lineTokenIndexIn) {
 		keyword = k;
 		lexeme = lexemeIn;
 		literal = literalIn;
 		line = lineIn;
+		lineIndex = lineIndexIn;
+		lineTokenIndex = lineTokenIndexIn;
 		isReservedWord = k.isReservedWord();
 	}
 	
@@ -43,11 +48,13 @@ public class Token<TYPE> {
 		
 		if (in != null) {
 			line = in.line;
-			id = in.id;
+			lineIndex = in.lineIndex;
+			lineTokenIndex = in.lineTokenIndex;
 		}
 		else {
 			line = -1;
-			id = -1;
+			lineIndex = -1;
+			lineTokenIndex = -1;
 		}
 		
 		isReservedWord = keyword.isReservedWord();
@@ -72,7 +79,6 @@ public class Token<TYPE> {
 	
 	@Override
 	public boolean equals(Object in) {
-		if (in instanceof Integer i) return i == id;
 		if (in instanceof String s) return lexeme.equals(s);
 		return keyword == in;
 	}
@@ -88,14 +94,16 @@ public class Token<TYPE> {
 	public boolean isDatatype() { return (keyword != null && keyword.isDataType()); }
 	public boolean isReservedWord() { return isReservedWord; }
 	
-	public boolean checkID(int idIn) { return id == idIn; }
 	public boolean compareLexeme(Token t) { return lexeme.equals(t.lexeme); }
 	
-	public String getToken() { return lexeme; }
-	public IKeyword getKeyword() { return keyword; }
+	public String getLexeme() { return lexeme; }
 	public TYPE getLiteral() { return literal; }
+	public IKeyword getKeyword() { return keyword; }
+	public int getLineNum() { return line; }
+	public int getLineIndex() { return lineIndex; }
+	public int getLineTokenIndex() { return lineTokenIndex; }
 	
-	public Primitives getPrimitiveDataType() { return Primitives.getDataType(this); }
+	public Primitives getPrimitiveDataType() { return Primitives.getPrimitiveType(this); }
 	public Operator asOperator() { return keyword.asOperator(); }
 	public ReservedWord asReservedWord() { return keyword.asReservedWord();	}
 	
@@ -106,35 +114,39 @@ public class Token<TYPE> {
 	//---------------------------------------------------------------------------
 	
 	public static Token<Void> EOF(int lineIn) {
-		return new Token<Void>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn);
+		return new Token<>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn);
 	}
 	
 	public static Token<Void> newLine(int lineIn) {
-		return new Token<Void>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn);
+		return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn);
+	}
+	
+	public static Token<Void> newLine(int lineIn, int lineIndex, int lineTokenIndex) {
+		return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn, lineIndex, lineTokenIndex);
 	}
 	
 	public static Token<String> create(String lexemeIn, int lineIn) {
-		return new Token<String>(ReservedWord.STRING_LITERAL, lexemeIn, lexemeIn, lineIn);
+		return new Token<>(ReservedWord.STRING_LITERAL, lexemeIn, lexemeIn, lineIn);
 	}
 	
 	public static Token<Number> create(Number literalIn, int lineIn) {
-		return new Token<Number>(ReservedWord.NUMBER_LITERAL, String.valueOf(literalIn), literalIn, lineIn);
+		return new Token<>(ReservedWord.NUMBER_LITERAL, String.valueOf(literalIn), literalIn, lineIn);
 	}
 	
 	public static Token<Void> create(IKeyword keywordIn, String lexemeIn, int lineIn) {
-		return new Token<Void>(keywordIn, lexemeIn, null, lineIn);
+		return new Token<>(keywordIn, lexemeIn, null, lineIn);
 	}
 	
 	public static Token<Void> create(IKeyword keywordIn, int lineIn) {
-		return new Token<Void>(keywordIn, keywordIn.typeString(), null, lineIn);
+		return new Token<>(keywordIn, keywordIn.typeString(), null, lineIn);
 	}
 	
 	public static <TYPE> Token<TYPE> create(IKeyword keywordIn, Token<TYPE> in) {
-		return new Token<TYPE>(keywordIn, in.lexeme, in.literal, in.line);
+		return new Token<>(keywordIn, in.lexeme, in.literal, in.line);
 	}
 	
 	public static <TYPE> Token<TYPE> copy(Token<TYPE> in) {
-		return (in != null) ? new Token<TYPE>(in) : null;
+		return (in != null) ? new Token<>(in) : null;
 	}
 	
 }

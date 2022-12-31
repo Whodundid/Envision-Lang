@@ -19,7 +19,7 @@ public class IE_Primitive extends ExpressionExecutor<Expr_Primitive> {
 	
 	@Override
 	public EnvisionObject run(Expr_Primitive expression) {
-		Primitives type = Primitives.getDataType(expression.primitiveType);
+		Primitives type = Primitives.getPrimitiveType(expression.primitiveType);
 		return NativeTypeManager.getClassTypeOf(type);
 	}
 	

@@ -20,11 +20,12 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_For extends GenericParser {
 	
 	public static Statement forStatement() {
-		Token forToken = consume(FOR, "Expected 'for' here!");
+		Token<?> forToken = consume(FOR, "Expected 'for' here!");
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
 		//0 = normal, 1 = range (to), 2 = lambda
@@ -32,22 +33,22 @@ public class PS_For extends GenericParser {
 		
 		Statement initializer = null;
 		Expression middle = null;
-		EArrayList<Expression> post = new EArrayList<>();
+		EList<Expression> post = new EArrayList<>();
 		Statement body = null;
 		
 		Stmt_VarDef vars = null;
-		EArrayList<Expr_Range> ranges = null;
+		EList<Expr_Range> ranges = null;
 		
 		//Token valueType = null, var = null;
 		//Expression list = null;
 		
 		//determine the number of semicolons -- parts
 		int depth = 1, numSemi = 0;
-		EArrayList<Token> loopTokens = new EArrayList<>();
+		EList<Token<?>> loopTokens = new EArrayList<>();
 		int pos = getCurrentNum();
 		while (depth != 0 && !atEnd()) {
-			Token t = getAdvance();
-			IKeyword k = t.keyword;
+			Token<?> t = getAdvance();
+			IKeyword k = t.getKeyword();
 			
 			if (k == PAREN_L) depth++;
 			else if (k == PAREN_R) depth--;
@@ -61,7 +62,7 @@ public class PS_For extends GenericParser {
 		errorIf(numSemi > 2, "A for loop can at most have 3 statement declaration blocks!");
 		
 		//determine type
-		EArrayList<IKeyword> keys = loopTokens.map(t -> t.keyword);
+		EList<IKeyword> keys = loopTokens.map(t -> t.getKeyword());
 		
 		//check if lambda
 		if (keys.contains(Operator.LAMBDA)) type = 2;
@@ -91,7 +92,7 @@ public class PS_For extends GenericParser {
 					vars = new Stmt_VarDef(current(), new ParserDeclaration());
 					
 					do {
-						Token name = consume(IDENTIFIER, "Expected a lambda loop index variable name!");
+						Token<?> name = consume(IDENTIFIER, "Expected a lambda loop index variable name!");
 						Expression value = null;
 						if (match(ASSIGN)) {
 							value = ExpressionParser.parseExpression();

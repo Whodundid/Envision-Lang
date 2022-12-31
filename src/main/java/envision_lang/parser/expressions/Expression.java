@@ -7,7 +7,7 @@ public interface Expression {
 	
 	public EnvisionObject execute(ExpressionHandler handler);
 	public default Expression copy() { return null; }
-	public Token definingToken();
+	public Token<?> definingToken();
 	
 	public static Expression copy(Expression e) { return (e != null) ? e.copy() : null; }
 	

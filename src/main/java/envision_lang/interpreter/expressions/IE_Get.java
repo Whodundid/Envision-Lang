@@ -27,6 +27,7 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	@Override
 	public EnvisionObject run(Expr_Get e) {
 		EnvisionObject o = evaluate((expression = e).object);
+		System.out.println("GET '" + e + "' => " + o);
 		
 		if (o instanceof EnvisionClass clz) return getClassVal(clz);
 		if (o instanceof ClassInstance inst) return getInstanceVal(inst);
@@ -39,10 +40,10 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	//--------------------------------------------------------------------
 	
 	private EnvisionObject getClassVal(EnvisionClass in) {
-		EnvisionObject object = in.get(expression.name.lexeme);
+		EnvisionObject object = in.get(expression.name.getLexeme());
 		
 		//first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
+		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
 		//check if restricted
 		if (object.isRestricted()) {
@@ -59,10 +60,10 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	}
 	
 	private EnvisionObject getInstanceVal(ClassInstance in) {
-		EnvisionObject object = in.get(expression.name.lexeme);
+		EnvisionObject object = in.get(expression.name.getLexeme());
 		
 		//first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
+		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
 		//check if restricted
 		if (object.isRestricted()) {
@@ -79,10 +80,10 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	}
 	
 	private EnvisionObject getImportVal(EnvisionCodeFile in) {
-		EnvisionObject object = in.getValue(expression.name.lexeme);
+		EnvisionObject object = in.getValue(expression.name.getLexeme());
 		
 		//first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
+		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
 		//check if restricted
 		if (object.isRestricted()) {
@@ -92,7 +93,7 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 		//check if the object is actually visible
 		//if (!object.isPublic()) {
 			//if the current scope is not the same as the instance's scope, throw an error
-			//throw new NotVisibleError(expression.name.lexeme);
+			//throw new NotVisibleError(expression.name.getLexeme());
 		//}
 		
 		return object;
@@ -100,10 +101,10 @@ public class IE_Get extends ExpressionExecutor<Expr_Get> {
 	
 	/*
 	private Object getEnumValue(EnvisionEnum in) {
-		EnvisionObject object = in.getValue(expression.name.lexeme);
+		EnvisionObject object = in.getValue(expression.name.getLexeme());
 		
 		//first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.lexeme);
+		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
 		//if (object instanceof EnumValue) {
 		//	return object;

@@ -77,7 +77,10 @@ public class IPrototypeHandler {
 	 * @param scope The scope for which this handler is defining on
 	 */
 	public void defineOn(IScope scope) {
-		prototypes.forEach(p -> scope.define(p.getFunctionName(), StaticTypes.FUNC_TYPE, p));
+		for (var p : prototypes) {
+			var name = p.getFunctionName();
+			scope.defineIfNotPresent(name, StaticTypes.FUNC_TYPE, p);
+		}
 	}
 	
 }

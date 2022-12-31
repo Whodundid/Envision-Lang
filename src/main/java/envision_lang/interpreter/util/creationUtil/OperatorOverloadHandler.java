@@ -5,6 +5,7 @@ import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
@@ -34,7 +35,9 @@ public class OperatorOverloadHandler {
 		if (a == null) throw new NullVariableError();
 		
 		//if object is a primitive, handle native primitive overloads
-		if (a.isPrimitive()) return a.handleOperatorOverloads(interpreter, a_scopeName, op, obj);
+		if (a.isPrimitive() || a instanceof EnvisionList) {
+			return a.handleOperatorOverloads(interpreter, a_scopeName, op, obj);
+		}
 		
 		//if the base object directly supports the operator, grab the operator function and execute it
 		if (a.supportsOperator(op)) {

@@ -14,7 +14,7 @@ import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * A script variable representing a list of characters.
@@ -82,8 +82,8 @@ public class EnvisionString extends EnvisionVariable {
 	}
 	
 	@Override
-	public Object convertToJavaObject() {
-		return string_val;
+	public String convertToJavaObject() {
+		return string_val.toString();
 	}
 	
 	@Override
@@ -216,7 +216,7 @@ public class EnvisionString extends EnvisionVariable {
 		return c;
 	}
 	
-	public EArrayList<EnvisionObject> toList_i() { return toList().getInternalList(); }
+	public EList<EnvisionObject> toList_i() { return toList().getInternalList(); }
 	public EnvisionList toList() {
 		EnvisionList list = EnvisionListClass.newList(Primitives.CHAR);
 		for (int i = 0; i < string_val.length(); i++) {

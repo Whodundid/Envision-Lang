@@ -38,7 +38,7 @@ public class EnvisionDatatype implements IDatatype {
 	}
 	
 	protected EnvisionDatatype(Primitives in) {
-		type = in.string_type;
+		type = in.string_value;
 		primitive_type = in;
 	}
 	
@@ -51,6 +51,6 @@ public class EnvisionDatatype implements IDatatype {
 	
 	@Override public Primitives getPrimitive() { return primitive_type; }
 	@Override public EnvisionDatatype toDatatype() { return this; }
-	@Override public String getType() { return type; }
+	@Override public String getStringValue() { return type; }
 	
 }

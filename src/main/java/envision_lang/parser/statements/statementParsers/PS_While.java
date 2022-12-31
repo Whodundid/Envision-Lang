@@ -14,7 +14,7 @@ public class PS_While extends GenericParser {
 	
 	public static Statement whileStatement() {
 		if (match(DO)) {
-			Token start = previous();
+			Token<?> start = previous();
 			Statement body = declaration();
 			while (match(NEWLINE));
 			consume(WHILE, "Expected continuing 'while' statement after preceding 'do'!");
@@ -28,7 +28,7 @@ public class PS_While extends GenericParser {
 			return new Stmt_While(start, true, condition, body);
 		}
 		else if (match(WHILE)) {
-			Token start = previous();
+			Token<?> start = previous();
 			consume(PAREN_L, "Expected '(' after while declaration!");
 			while (match(NEWLINE));
 			Expression condition = ExpressionParser.parseExpression();

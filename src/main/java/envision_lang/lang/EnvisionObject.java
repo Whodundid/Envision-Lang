@@ -108,7 +108,7 @@ public abstract class EnvisionObject {
 	 */
 	public IDatatype getDatatype() { return internalType; }
 	public Primitives getPrimitiveType() { return internalType.getPrimitive(); }
-	public String getTypeString() { return internalType.getType(); }
+	public String getTypeString() { return internalType.getStringValue(); }
 	
 	public int getObjectHash() { return hashCode(); }
 	public String getHexHash() { return "#" + Integer.toHexString(hashCode()); }

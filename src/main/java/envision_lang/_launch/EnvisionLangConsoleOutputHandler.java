@@ -11,16 +11,18 @@ public class EnvisionLangConsoleOutputHandler {
 		inst = instance;
 	}
 	
-	public void print(String line) {
+	public void print(Object line) {
+		String lineString = String.valueOf(line);
 		var cr = inst.getConsoleReceiver();
-		if (cr != null) cr.onEnvisionPrint(line);
-		else System.out.print(line);
+		if (cr != null) cr.onEnvisionPrint(lineString);
+		else System.out.print(lineString);
 	}
 	
-	public void println(String line) {
+	public void println(Object line) {
+		String lineString = String.valueOf(line);
 		var cr = inst.getConsoleReceiver();
-		if (cr != null) cr.onEnvisionPrintln(line);
-		else System.out.println(line);
+		if (cr != null) cr.onEnvisionPrintln(lineString);
+		else System.out.println(lineString);
 	}
 	
 }

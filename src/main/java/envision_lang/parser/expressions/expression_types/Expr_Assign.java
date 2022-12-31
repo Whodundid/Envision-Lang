@@ -10,14 +10,14 @@ import eutil.datatypes.BoxList;
 public class Expr_Assign implements Expression {
 
 	public Expr_Assign leftAssign;
-	public Token name;
+	public Token<?> name;
 	public Operator operator;
 	public Expression value;
-	public final BoxList<Token, Token> modulars;
-	public final Token definingToken;
+	public final BoxList<Token<?>, Token<?>> modulars;
+	public final Token<?> definingToken;
 	
-	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn) { this(nameIn, operatorIn, valueIn, null); }
-	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn, BoxList<Token, Token> modularsIn) {
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, Expression valueIn) { this(nameIn, operatorIn, valueIn, null); }
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, Expression valueIn, BoxList<Token<?>, Token<?>> modularsIn) {
 		name = nameIn;
 		operator = operatorIn;
 		value = valueIn;
@@ -35,13 +35,13 @@ public class Expr_Assign implements Expression {
 	}
 	
 	public String getName() {
-		return name.lexeme;
+		return name.getLexeme();
 	}
 	
 	@Override
 	public String toString() {
 		String n = "";
-		if (name != null) n = name.lexeme;
+		if (name != null) n = name.getLexeme();
 		else if (modulars != null) n = modulars + "";
 		else n = leftAssign + "";
 		return n + " " + operator.typeString() + " " + value;
@@ -58,7 +58,7 @@ public class Expr_Assign implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

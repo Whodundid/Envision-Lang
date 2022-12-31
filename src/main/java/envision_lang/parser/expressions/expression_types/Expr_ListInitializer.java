@@ -9,10 +9,10 @@ import eutil.datatypes.EArrayList;
 public class Expr_ListInitializer implements Expression {
 
 	public final EArrayList<Expression> values;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
-	public Expr_ListInitializer(Token start) { this(start, new EArrayList<>()); }
-	public Expr_ListInitializer(Token start, EArrayList<Expression> valuesIn) {
+	public Expr_ListInitializer(Token<?> start) { this(start, new EArrayList<>()); }
+	public Expr_ListInitializer(Token<?> start, EArrayList<Expression> valuesIn) {
 		values = valuesIn;
 		definingToken = start;
 	}
@@ -33,7 +33,7 @@ public class Expr_ListInitializer implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

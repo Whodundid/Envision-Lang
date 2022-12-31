@@ -32,7 +32,7 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("contains", BOOLEAN, VAR).assignDynamicClass(IFunc_contains.class);
 		LIST_PROTOTYPES.define("copy", LIST).assignDynamicClass(IFunc_copy.class);
 		LIST_PROTOTYPES.define("fill", LIST, VAR_A).assignDynamicClass(IFunc_fill.class);
-		LIST_PROTOTYPES.define("flip", LIST).assignDynamicClass(IFunc_flip.class);
+		LIST_PROTOTYPES.define("reverse", LIST).assignDynamicClass(IFunc_reverse.class);
 		LIST_PROTOTYPES.define("get", VAR, INT).assignDynamicClass(IFunc_get.class);
 		LIST_PROTOTYPES.define("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
 		LIST_PROTOTYPES.define("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
@@ -243,12 +243,10 @@ public class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the list with elements in reversed order
 	 */
-	public static class IFunc_flip<E extends EnvisionList> extends InstanceFunction<E> {
-		public IFunc_flip() { super(LIST, "flip"); }
+	public static class IFunc_reverse<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_reverse() { super(LIST, "reverse"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst.flip());
-			int x = 5, c = 1;
-			x = 5;
+			ret(inst.reverse());
 		}
 	}
 	

@@ -6,18 +6,19 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_Return extends BasicStatement {
 
 	/** A condition for which to return on. */
 	public final Expression condition;
 	/** The value(s) being returned. */
-	public final EArrayList<Expression> retVals;
+	public final EList<Expression> retVals;
 	
 	public Stmt_Return(Token start, Expression valueIn) { this(start, null, new EArrayList<>(valueIn)); }
 	public Stmt_Return(Token start, Expression conditionIn, Expression valueIn) { this(start, conditionIn, new EArrayList<>(valueIn)); }
-	public Stmt_Return(Token start, EArrayList<Expression> retValsIn) { this(start, null, retValsIn); }
-	public Stmt_Return(Token start, Expression conditionIn, EArrayList<Expression> retValsIn) {
+	public Stmt_Return(Token start, EList<Expression> retValsIn) { this(start, null, retValsIn); }
+	public Stmt_Return(Token start, Expression conditionIn, EList<Expression> retValsIn) {
 		super(start);
 		condition = conditionIn;
 		retVals = new EArrayList<>(retValsIn);
@@ -57,7 +58,7 @@ public class Stmt_Return extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

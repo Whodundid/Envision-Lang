@@ -8,19 +8,20 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_LambdaFor extends BasicStatement {
 	
 	public final Statement init;
 	public final Expr_Lambda lambda;
-	public final EArrayList<Expression> post;
+	public final EList<Expression> post;
 	public final Statement body;
 	
-	public Stmt_LambdaFor(Token start, Statement initIn, Expr_Lambda lambdaIn, Expression postIn, Statement bodyIn) {
+	public Stmt_LambdaFor(Token<?> start, Statement initIn, Expr_Lambda lambdaIn, Expression postIn, Statement bodyIn) {
 		this(start, initIn, lambdaIn, new EArrayList<>(postIn), bodyIn);
 	}
 	
-	public Stmt_LambdaFor(Token start, Statement initIn, Expr_Lambda lambdaIn, EArrayList<Expression> postIn, Statement bodyIn) {
+	public Stmt_LambdaFor(Token<?> start, Statement initIn, Expr_Lambda lambdaIn, EList<Expression> postIn, Statement bodyIn) {
 		super(start);
 		init = initIn;
 		lambda = lambdaIn;
@@ -47,7 +48,7 @@ public class Stmt_LambdaFor extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

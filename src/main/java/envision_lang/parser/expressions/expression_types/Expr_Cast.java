@@ -13,11 +13,11 @@ import envision_lang.tokenizer.Token;
  */
 public class Expr_Cast implements Expression {
 	
-	public final Token toType;
+	public final Token<?> toType;
 	public final Expression target;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
-	public Expr_Cast(Token typeIn, Expression targetIn) {
+	public Expr_Cast(Token<?> typeIn, Expression targetIn) {
 		toType = typeIn;
 		target = targetIn;
 		definingToken = typeIn;
@@ -25,7 +25,7 @@ public class Expr_Cast implements Expression {
 	
 	@Override
 	public String toString() {
-		return "(" + toType.lexeme + ") " + target;
+		return "(" + toType.getLexeme() + ") " + target;
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class Expr_Cast implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

@@ -7,8 +7,8 @@ import envision_lang.tokenizer.Token;
 
 public class Expr_Var implements Expression {
 
-	public final Token name;
-	public final Token definingToken;
+	public final Token<?> name;
+	public final Token<?> definingToken;
 	
 	public Expr_Var(Token nameIn) {
 		name = nameIn;
@@ -16,7 +16,7 @@ public class Expr_Var implements Expression {
 	}
 	
 	public String getName() {
-		return (name != null) ? name.lexeme : null;
+		return (name != null) ? name.getLexeme() : null;
 	}
 	
 	@Override
@@ -31,7 +31,7 @@ public class Expr_Var implements Expression {
 	
 	@Override
 	public String toString() {
-		return name.lexeme + "";
+		return name.getLexeme() + "";
 	}
 	
 	public static Expr_Var of(Token in) {
@@ -39,7 +39,7 @@ public class Expr_Var implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

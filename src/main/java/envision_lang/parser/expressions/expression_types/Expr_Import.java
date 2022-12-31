@@ -7,11 +7,11 @@ import envision_lang.tokenizer.Token;
 
 public class Expr_Import implements Expression {
 
-	public final Token path;
-	public final Token object;
-	public final Token definingToken;
+	public final Token<?> path;
+	public final Token<?> object;
+	public final Token<?> definingToken;
 	
-	public Expr_Import(Token pathIn, Token objectIn) {
+	public Expr_Import(Token pathIn, Token<?> objectIn) {
 		path = pathIn;
 		object = objectIn;
 		definingToken = pathIn;
@@ -19,7 +19,7 @@ public class Expr_Import implements Expression {
 	
 	@Override
 	public String toString() {
-		String p = (path != null && path.lexeme != null) ? path.lexeme : "";
+		String p = (path != null && path.getLexeme() != null) ? path.getLexeme() : "";
 		String ip = (!p.isEmpty()) ? p + "." : "";
 		return ip + object;
 	}
@@ -35,7 +35,7 @@ public class Expr_Import implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 

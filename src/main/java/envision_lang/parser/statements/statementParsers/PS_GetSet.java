@@ -13,6 +13,7 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_GetSet extends GenericParser {
 	
@@ -21,7 +22,7 @@ public class PS_GetSet extends GenericParser {
 		declaration = (declaration == null) ? new ParserDeclaration().setStage(DeclarationStage.VISIBILITY) : declaration;
 		
 		Stmt_GetSet statement = parseGetSetVis(declaration);
-		EArrayList<Token> vars = new EArrayList();
+		EList<Token<?>> vars = new EArrayList();
 		
 		do vars.add(consume(ReservedWord.IDENTIFIER, "Expected a variable name!"));
 		while (match(Operator.COMMA));
@@ -45,7 +46,7 @@ public class PS_GetSet extends GenericParser {
 			curVis = EnvisionVis.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
 		}
 		
-		Token start = null;
+		Token<?> start = null;
 		
 		if (match(GET)) {
 			get = true;

@@ -13,4 +13,6 @@ public @interface EFunction {
 	/** The Envision code that relates to this field or function. */
 	String params() default "";
 	
+	String returnsType() default "";
+	
 }

@@ -79,7 +79,7 @@ public class EnvisionBoolean extends EnvisionVariable {
 	}
 	
 	@Override
-	public Object get_i() {
+	public Boolean get_i() {
 		return bool_val;
 	}
 	

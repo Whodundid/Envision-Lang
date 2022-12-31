@@ -7,18 +7,18 @@ import envision_lang.tokenizer.Token;
 
 public class Expr_This implements Expression {
 
-	public final Token keyword;
-	public final Token definingToken;
+	public final Token<?> keyword;
+	public final Token<?> definingToken;
 	
 	public Expr_This(Token start) { this(start, null); }
-	public Expr_This(Token start, Token keywordIn) {
+	public Expr_This(Token start, Token<?> keywordIn) {
 		keyword = keywordIn;
 		definingToken = start;
 	}
 	
 	@Override
 	public String toString() {
-		String k = (keyword != null) ? "." + keyword.lexeme : "";
+		String k = (keyword != null) ? "." + keyword.getLexeme() : "";
 		return "this" + k;
 	}
 	
@@ -28,7 +28,7 @@ public class Expr_This implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

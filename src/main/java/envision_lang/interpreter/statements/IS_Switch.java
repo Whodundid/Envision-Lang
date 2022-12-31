@@ -44,14 +44,14 @@ public class IS_Switch extends StatementExecutor<Stmt_SwitchDef> {
 			//find a matching case (if any)
 			for (Stmt_SwitchCase c : s.cases) {
 				if (!caseMatched && !c.isDefault) {
-					Token caseName = c.caseName;
+					Token<?> caseName = c.caseName;
 					EnvisionObject caseNameValue = null;
 					
 					//determine type of value the case name represents
 					if (caseName == null) throw new EnvisionLangError("Null switch case value!");
-					//else if (theEnum != null) caseNameValue = theEnum.getValue(caseName.lexeme);
-					else if (caseName.isLiteral()) caseNameValue = ObjectCreator.wrap(caseName.literal);
-					else caseNameValue = scope().get(caseName.lexeme);
+					//else if (theEnum != null) caseNameValue = theEnum.getValue(caseName.getLexeme());
+					else if (caseName.isLiteral()) caseNameValue = ObjectCreator.wrap(caseName.getLiteral());
+					else caseNameValue = scope().get(caseName.getLexeme());
 					
 					//not sure how to handle yet
 					if (isNull(caseNameValue)) throw new EnvisionException("NULL SWITCH CASE");

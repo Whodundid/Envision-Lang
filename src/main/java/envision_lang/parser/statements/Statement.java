@@ -8,6 +8,6 @@ public interface Statement {
 	public void execute(StatementHandler handler);
 	public default ParserDeclaration getDeclaration() { return null; }
 	public default Statement copy() { return null; }
-	public Token definingToken();
+	public Token<?> definingToken();
 	
 }

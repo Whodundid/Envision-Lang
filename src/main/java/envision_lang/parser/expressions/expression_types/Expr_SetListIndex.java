@@ -11,7 +11,7 @@ public class Expr_SetListIndex implements Expression {
 	public final Expr_ListIndex list;
 	public final Expression value;
 	public final Operator operator;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_SetListIndex(Expr_ListIndex listIn, Operator operatorIn, Expression valueIn) {
 		list = listIn;
@@ -36,7 +36,7 @@ public class Expr_SetListIndex implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

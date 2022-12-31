@@ -8,10 +8,10 @@ import eutil.datatypes.BoxList;
 
 public class Expr_Modular implements Expression {
 	
-	public final BoxList<Token, Token> modulars;
-	public final Token definingToken;
+	public final BoxList<Token<?>, Token<?>> modulars;
+	public final Token<?> definingToken;
 	
-	public Expr_Modular(Token start, BoxList<Token, Token> modularsIn) {
+	public Expr_Modular(Token start, BoxList<Token<?>, Token<?>> modularsIn) {
 		modulars = modularsIn;
 		definingToken = start;
 	}
@@ -28,7 +28,7 @@ public class Expr_Modular implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

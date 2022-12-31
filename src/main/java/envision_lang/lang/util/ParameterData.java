@@ -9,6 +9,7 @@ import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class ParameterData implements Iterable<EnvisionParameter> {
 	
@@ -41,7 +42,7 @@ public class ParameterData implements Iterable<EnvisionParameter> {
 		}
 	}
 	
-	public ParameterData(EArrayList<EnvisionObject> objectsIn) {
+	public ParameterData(EList<EnvisionObject> objectsIn) {
 		for (EnvisionObject o : objectsIn) {
 			if (o != null && !(o instanceof EnvisionNull)) {
 				add(o.getDatatype(), "");
@@ -123,8 +124,8 @@ public class ParameterData implements Iterable<EnvisionParameter> {
 	
 	public EnvisionParameter get(int i) { return params.get(i); }
 	
-	public EArrayList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
-	public EArrayList<String> getNames() { return params.map(p -> p.name); }
+	public EList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
+	public EList<String> getNames() { return params.map(p -> p.name); }
 	
 	//---------
 	// Setters

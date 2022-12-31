@@ -8,6 +8,7 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
+import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
@@ -84,11 +85,12 @@ public class ObjectCreator {
 		EnvisionObject obj = null;
 		
 		//if not primitive, check for default value and furthermore matching datatype
-		if (p_type == null)
+		if (p_type == null) {
 			if (valueIn == null) return EnvisionNull.NULL;
 			else if (valueIn instanceof ClassInstance ci && typeIn.compare(ci.getDatatype())) {
 				return ci;
 			}
+		}
 		
 		//check if creating a variable type
 		if (p_type.isVariableType()) {
@@ -100,7 +102,11 @@ public class ObjectCreator {
 				case NUMBER:
 				case DOUBLE: return EnvisionDoubleClass.newDouble();
 				case STRING: return EnvisionStringClass.newString();
-				default: throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
+//				case LIST:
+//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
+//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+//					return new_list;
+				default: throw new EnvisionLangError("Invalid Datatype: '" + p_type + "'! This should not be possible!");
 				}
 			}
 			else {
@@ -110,29 +116,34 @@ public class ObjectCreator {
 				case INT: obj = EnvisionIntClass.newInt(((Number) valueIn).longValue()); break;
 				case DOUBLE: obj = EnvisionDoubleClass.newDouble(((Number) valueIn).doubleValue()); break;
 				case STRING: obj = EnvisionStringClass.newString(stringify(valueIn)); break;
-				case NUMBER: 
+				case NUMBER:
 					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);
 					else obj = EnvisionDoubleClass.newDouble((double) valueIn);
 					break;
+//				case LIST:
+//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
+//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+//					return new_list;
 				default:
 					throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
 				}
 			}
 		}
-		
-		//check for other valid primitive types
-		switch (p_type) {
-		case LIST:
-			EnvisionList new_list = EnvisionListClass.newList(typeIn);
-			if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
-			obj = new_list;
-			break;
-			
-		case NULL:
-			obj = EnvisionNull.NULL;
-			break;
-			
-		default: break;
+		else {
+			//check for other valid primitive types
+			switch (p_type) {
+			case LIST:
+				EnvisionList new_list = EnvisionListClass.newList(typeIn);
+				if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+				obj = new_list;
+				break;
+				
+			case NULL:
+				obj = EnvisionNull.NULL;
+				break;
+				
+			default: break;
+			}
 		}
 		
 		//assign name and strong attribute
@@ -162,6 +173,10 @@ public class ObjectCreator {
 	 */
 	public static char charify(Object input) {
 		if (input == null) return '\0';
+		
+		if (input instanceof Integer i) return Character.valueOf((char) (int) i);
+		if (input instanceof Long l) return Character.valueOf((char) (long) l);
+		if (input instanceof EnvisionInt i) return Character.valueOf((char) (long) i.get_i());
 		
 		String s = String.valueOf(input);
 		

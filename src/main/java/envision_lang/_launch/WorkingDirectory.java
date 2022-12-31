@@ -7,7 +7,7 @@ import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.exceptions.errors.workingDirectory.MultipleMainsError;
 import envision_lang.packages.EnvisionLangPackage;
 import eutil.EUtil;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 
 /** Handles code file discovery and wrapping. */
@@ -18,11 +18,11 @@ public class WorkingDirectory {
 	/** True if the given directory is not null and actually exists. */
 	private final boolean isValid;
 	/** All successfully parsed code files. */
-	private final EArrayList<EnvisionCodeFile> codeFiles = new EArrayList<>();
+	private final EList<EnvisionCodeFile> codeFiles = EList.newList();
 	/** The main code file. */
 	private EnvisionCodeFile main = null;
 	/** Packages to be added to the interpreters at run time. */
-	private EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
+	private EList<EnvisionLangPackage> packages = EList.newList();
 	
 	//--------------
 	// Constructors
@@ -56,10 +56,10 @@ public class WorkingDirectory {
 			return;
 		}
 		
-		EArrayList<File> start = EUtil.toList(dir.listFiles());
-		EArrayList<File> found = new EArrayList<>();
-		EArrayList<File> directories = new EArrayList<>();
-		EArrayList<File> workList = new EArrayList<>();
+		EList<File> start = EList.newList(dir.listFiles());
+		EList<File> found = EList.newList();
+		EList<File> directories = EList.newList();
+		EList<File> workList = EList.newList();
 		
 		//add all envision code files to be found
 		found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
@@ -139,8 +139,8 @@ public class WorkingDirectory {
 	/** Returns the main code file (if there is one) from the parsed directory. */
 	public EnvisionCodeFile getMain() { return main; }
 	/** Returns all parsed Envision code files from the given directory. */
-	public EArrayList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
+	public EList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
 	/** Returns all packages to be added at program start. */
-	public EArrayList<EnvisionLangPackage> getBuildPackages() { return packages; }
+	public EList<EnvisionLangPackage> getBuildPackages() { return packages; }
 	
 }

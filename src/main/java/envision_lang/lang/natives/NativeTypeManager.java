@@ -39,7 +39,7 @@ public class NativeTypeManager {
 		if (nativesRegistered) return;
 		
 		for (Primitives p : Primitives.values()) {
-			native_types.put(p.string_type, p.toDatatype());
+			native_types.put(p.string_value, p.toDatatype());
 		}
 		
 		native_classes.put(Primitives.FUNCTION, EnvisionFunctionClass.FUNC_CLASS);
@@ -77,16 +77,16 @@ public class NativeTypeManager {
 	
 	public static EnvisionDatatype datatypeOf(Token type) {
 		if (type == null) return datatypeOf(Primitives.VAR);
-		else return datatypeOf(type.lexeme);
+		else return datatypeOf(type.getLexeme());
 	}
 	
 	public static EnvisionDatatype datatypeOf(Primitives type) {
-		var t = native_types.get(type.string_type);
+		var t = native_types.get(type.string_value);
 		//return singleton instance if it exists
 		if (t != null) return t;
 		//create new singleton
 		t = new EnvisionDatatype(type);
-		native_types.put(type.string_type, t);
+		native_types.put(type.string_value, t);
 		return t;
 	}
 	

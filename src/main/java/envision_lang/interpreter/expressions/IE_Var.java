@@ -36,7 +36,7 @@ public class IE_Var extends ExpressionExecutor<Expr_Var> {
 			throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
 		
 		//get name from interpreter
-		EnvisionObject obj = interpreter.lookUpVariable(e.name.lexeme);
+		EnvisionObject obj = interpreter.lookUpVariable(e.name.getLexeme());
 		
 		return obj;
 	}

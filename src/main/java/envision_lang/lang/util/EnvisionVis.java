@@ -22,7 +22,7 @@ public enum EnvisionVis {
 	}
 	
 	public static EnvisionVis parse(Token t) {
-		return parse(t.keyword);
+		return parse(t.getKeyword());
 	}
 	
 	public static EnvisionVis parse(IKeyword k) {

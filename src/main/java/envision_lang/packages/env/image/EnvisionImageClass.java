@@ -39,7 +39,7 @@ public class EnvisionImageClass extends EnvisionClass {
 	//--------------
 	
 	private EnvisionImageClass() {
-		super(IMAGE_DATATYPE.getType());
+		super(IMAGE_DATATYPE.getStringValue());
 	}
 	
 	/**

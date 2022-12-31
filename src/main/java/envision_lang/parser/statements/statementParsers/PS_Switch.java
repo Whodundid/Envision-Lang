@@ -14,11 +14,12 @@ import envision_lang.parser.statements.statement_types.Stmt_SwitchDef;
 import envision_lang.tokenizer.Token;
 import eutil.EUtil;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_Switch extends GenericParser {
 	
 	public static Statement switchStatement() {
-		Token switchToken = consume(SWITCH, "Expected 'switch' here!");
+		Token<?> switchToken = consume(SWITCH, "Expected 'switch' here!");
 		consumeEmptyLines();
 		consume(PAREN_L, "Expected '(' after while declaration!");
 		consumeEmptyLines();
@@ -28,7 +29,7 @@ public class PS_Switch extends GenericParser {
 		consumeEmptyLines();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
-		EArrayList<Stmt_SwitchCase> cases = new EArrayList();
+		EList<Stmt_SwitchCase> cases = new EArrayList<>();
 		Stmt_SwitchCase defaultCase = null;
 		boolean hasDefault = false;
 		
@@ -37,8 +38,8 @@ public class PS_Switch extends GenericParser {
 		if (!check(CURLY_R)) {
 			while (check(CASE, DEFAULT) && !atEnd()) {
 				
-				Token caseToken = null;
-				Token caseName = null;
+				Token<?> caseToken = null;
+				Token<?> caseName = null;
 				boolean isDefault = match(DEFAULT);
 				
 				//prevent multiple defaults
@@ -56,7 +57,7 @@ public class PS_Switch extends GenericParser {
 				}
 				
 				consumeEmptyLines();
-				EArrayList<Statement> body = new EArrayList();
+				EList<Statement> body = new EArrayList<>();
 				
 				if (check(COLON)) {
 					consume(COLON, "Expected a ':' after case name!");
@@ -91,10 +92,10 @@ public class PS_Switch extends GenericParser {
 		return new Stmt_SwitchDef(switchToken, switchExpression, cases, defaultCase);
 	}
 	
-	private static boolean hasCase(EArrayList<Stmt_SwitchCase> cases, Token t) {
+	private static boolean hasCase(EList<Stmt_SwitchCase> cases, Token<?> t) {
 		if (t == null) throw new EnvisionLangError("Switch Error: Token is null!");
 		for (Stmt_SwitchCase c : cases) {
-			if (EUtil.isEqual(c.caseName.lexeme, t.lexeme)) return true;
+			if (EUtil.isEqual(c.caseName.getLexeme(), t.getLexeme())) return true;
 		}
 		return false;
 	}

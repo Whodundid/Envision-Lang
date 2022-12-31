@@ -11,17 +11,19 @@ import envision_lang._launch.EnvisionLangConsoleOutputHandler;
 import envision_lang._launch.EnvisionLangConsoleReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLaunchSettings;
+import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError;
 import envision_lang.exceptions.errors.workingDirectory.NoMainError;
+import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.natives.Primitives;
 import envision_lang.packages.EnvisionLangPackage;
 import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 import eutil.debug.Experimental;
 import eutil.debug.InDevelopment;
@@ -157,7 +159,7 @@ public class EnvisionLang {
 	/**
 	 * Packages to be loaded upon program compilation.
 	 */
-	private final EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
+	private final EList<EnvisionLangPackage> packages = EList.newList();
 	
 	/**
 	 * A handler which is referenced when an EnvisionError is thrown.
@@ -199,7 +201,6 @@ public class EnvisionLang {
 	
 	/** Creates a new Envision workspace with standard launch settings. */
 	public EnvisionLang() {
-		Primitives.initPrimitives();
 		NativeTypeManager.initNativeClasses();
 	}
 	
@@ -210,7 +211,7 @@ public class EnvisionLang {
 	private void applyEnvSettings() throws Exception {
 		if (launchSettings == null) return;
 		
-		for (EnvisionLaunchSettings.LaunchSetting arg : launchSettings.getEnvArgs()) {
+		for (var arg : launchSettings.getEnvArgs()) {
 			switch (arg) {
 			case PRELOAD_LANGUAGE: preloadLanguage = true; EnvisionLoader.loadLang(); break;
 			case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
@@ -241,6 +242,7 @@ public class EnvisionLang {
 		
 		//load build packages into dir
 		try {
+			packages.addAll(program.getBundledPackages());
 			packages.forEach(dir::addBuildPackage);
 		}
 		catch (Exception err) {
@@ -281,6 +283,16 @@ public class EnvisionLang {
 			//throw interpret error if the file could not be loaded
 			if (!main.load(this, dir)) throw new InterpreterCreationError();
 			
+			//load any program bundled envision java objects into the main's interpreter scope
+			var interpreter = dir.getMain().getInterpreter();
+			for (EnvisionJavaObject obj : program.getEnvisionJavaObjects()) {
+				var name = obj.getClass().getSimpleName();
+				var type = obj.getInternalClass().getDatatype();
+				var classObj = obj.getInternalClass();
+				
+				interpreter.defineIfNot(name, type, classObj);
+			}
+			
 			//track program start time
 			start_time = System.currentTimeMillis();
 			//actually execute the built program
@@ -314,6 +326,11 @@ public class EnvisionLang {
 	
 	public EnvisionLang setLaunchSettings(EnvisionLaunchSettings settingsIn) {
 		launchSettings = settingsIn;
+		return this;
+	}
+	
+	public EnvisionLang setLaunchSettings(LaunchSetting... settings) {
+		launchSettings = EnvisionLaunchSettings.of(settings);
 		return this;
 	}
 	

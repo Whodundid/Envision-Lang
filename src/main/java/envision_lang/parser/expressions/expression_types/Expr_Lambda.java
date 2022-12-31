@@ -9,9 +9,9 @@ public class Expr_Lambda implements Expression {
 	
 	public final Expr_Compound inputs;
 	public final Expr_Compound production;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
-	public Expr_Lambda(Token start, Expression inputsIn, Expression productionIn) {
+	public Expr_Lambda(Token<?> start, Expression inputsIn, Expression productionIn) {
 		inputs = Expr_Compound.wrap(start, inputsIn);
 		production = Expr_Compound.wrap(start, productionIn);
 		definingToken = start;
@@ -28,7 +28,7 @@ public class Expr_Lambda implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

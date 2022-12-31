@@ -5,13 +5,14 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_Block extends BasicStatement {
 
-	public final EArrayList<Statement> statements;
+	public final EList<Statement> statements;
 	
-	public Stmt_Block(Token start) { this(start, new EArrayList<>()); }
-	public Stmt_Block(Token start, EArrayList<Statement> in) {
+	public Stmt_Block(Token<?> start) { this(start, new EArrayList<>()); }
+	public Stmt_Block(Token<?> start, EList<Statement> in) {
 		super(start);
 		statements = in;
 	}
@@ -23,11 +24,11 @@ public class Stmt_Block extends BasicStatement {
 	
 	@Override
 	public String toString() {
-		String b = "'BLOCK' {";
+		String b = "{";
 		if (statements.isNotEmpty()) { b += " "; }
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);
-			b += s + ((i < statements.size() - 1) ? "; " : ";");
+			b += s + ((i < statements.size() - 1) ? " " : "");
 		}
 		return b + ((statements.isEmpty()) ? "" : " ") + "}";
 	}
@@ -38,7 +39,7 @@ public class Stmt_Block extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

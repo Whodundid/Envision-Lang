@@ -11,7 +11,7 @@ public class Expr_Binary implements Expression	{
 	public final Expression left, right;
 	public Operator operator;
 	public boolean modular;
-	public final Token definingToken;
+	public final Token<?>  definingToken;
 	
 	public Expr_Binary(Expression leftIn, Operator operatorIn, Expression rightIn) { this(leftIn, operatorIn, rightIn, false); }
 	public Expr_Binary(Expression leftIn, Operator operatorIn, Expression rightIn, boolean modularIn) {
@@ -39,7 +39,7 @@ public class Expr_Binary implements Expression	{
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?>  definingToken() {
 		return definingToken;
 	}
 	

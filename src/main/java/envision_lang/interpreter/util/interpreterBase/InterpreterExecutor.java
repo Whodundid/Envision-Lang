@@ -13,7 +13,7 @@ import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.Statement;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public abstract class InterpreterExecutor {
 	
@@ -29,7 +29,7 @@ public abstract class InterpreterExecutor {
 	
 	public void execute(Statement s) { interpreter.execute(s); }
 	public EnvisionObject evaluate(Expression e) { return interpreter.evaluate(e); }
-	public void executeBlock(EArrayList<Statement> statements, Scope env) { interpreter.executeBlock(statements, env); }
+	public void executeBlock(EList<Statement> statements, Scope env) { interpreter.executeBlock(statements, env); }
 	
 	public boolean isTrue(EnvisionObject obj) { return interpreter.isTrue(obj); }
 	public boolean isEqual(EnvisionObject a, EnvisionObject b) { return interpreter.isEqual_i(a, b); }
@@ -47,7 +47,7 @@ public abstract class InterpreterExecutor {
 	}
 	
 	protected boolean isDefined(Token name) {
-		return interpreter.isDefined(name.lexeme);
+		return interpreter.isDefined(name.getLexeme());
 	}
 	
 	protected boolean isDefined(String name) {

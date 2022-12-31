@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 import eutil.debug.Unused;
 
@@ -16,9 +17,9 @@ import eutil.debug.Unused;
 public class EnvisionLaunchSettings {
 	
 	/** Arguments passed to the Envision Language. */
-	private EArrayList<LaunchSetting> envArgs = new EArrayList<>();
+	private EList<LaunchSetting> envArgs = new EArrayList<>();
 	/** Arguments passed to programs running on the Envision Language. */
-	private EArrayList<String> userArgs = new EArrayList<>();
+	private EList<String> userArgs = new EArrayList<>();
 	
 	//--------------
 	// Constructors
@@ -57,8 +58,8 @@ public class EnvisionLaunchSettings {
 		}
 	}
 	
-	public EArrayList<LaunchSetting> getEnvArgs() { return envArgs; }
-	public EArrayList<String> getUserArgs() { return userArgs; }
+	public EList<LaunchSetting> getEnvArgs() { return envArgs; }
+	public EList<String> getUserArgs() { return userArgs; }
 	
 	public void addUserArg(String arg) { userArgs.add(arg); }
 	public void addLaunchArg(LaunchSetting arg) { envArgs.addIfNotContains(arg); }
@@ -107,6 +108,7 @@ public class EnvisionLaunchSettings {
 	public static EnvisionLaunchSettings of(String... args) { return new EnvisionLaunchSettings(args); }
 	public static EnvisionLaunchSettings of(LaunchSetting... args) { return new EnvisionLaunchSettings(args); }
 	public static EnvisionLaunchSettings of(List<String> args) { return new EnvisionLaunchSettings(args); }
+	public static EnvisionLaunchSettings of(EList<String> args) { return new EnvisionLaunchSettings(args); }
 	public static EnvisionLaunchSettings preload() { return new EnvisionLaunchSettings(LaunchSetting.PRELOAD_LANGUAGE); }
 	public static EnvisionLaunchSettings live() { return new EnvisionLaunchSettings(LaunchSetting.LIVE_MODE); }
 	public static EnvisionLaunchSettings tokenize() { return new EnvisionLaunchSettings(LaunchSetting.TOKENIZE); }

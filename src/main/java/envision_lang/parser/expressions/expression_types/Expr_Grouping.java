@@ -8,7 +8,7 @@ import envision_lang.tokenizer.Token;
 public class Expr_Grouping implements Expression {
 
 	public final Expression expression;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_Grouping(Expression expressionIn) {
 		expression = expressionIn;
@@ -27,7 +27,7 @@ public class Expr_Grouping implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

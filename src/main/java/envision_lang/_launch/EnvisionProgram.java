@@ -4,8 +4,9 @@ import java.io.File;
 
 import envision_lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.interpreter.util.throwables.EnvisionException;
+import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.packages.EnvisionLangPackage;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.file.EFileUtil;
 
 /**
@@ -28,6 +29,9 @@ public class EnvisionProgram {
 	private WorkingDirectory dir;
 	/** The settings to run the Envision Scripting Language with. */
 	private EnvisionLaunchSettings settings;
+	
+	private EList<EnvisionLangPackage> bundledProgramPackages = EList.newList();
+	private EList<EnvisionJavaObject> envisionJavaObjects = EList.newList();
 	
 	//--------------
 	// Constructors
@@ -70,11 +74,12 @@ public class EnvisionProgram {
 	 * @param programDirIn The directory to use for the program
 	 */
 	public EnvisionProgram(File programDirIn) {
-		this(programDirIn, new EArrayList<EnvisionLangPackage>());
+		this(programDirIn, EList.newList());
 	}
 	
-	public EnvisionProgram(File programDirIn, EArrayList<EnvisionLangPackage> buildPackages) {
+	public EnvisionProgram(File programDirIn, EList<EnvisionLangPackage> buildPackages) {
 		programDir = programDirIn;
+		bundledProgramPackages.addAll(buildPackages);
 		
 		//if null -- error on invalid program path
 		if (programDir == null) throw new EnvisionException("Invalid Envision program path!");
@@ -100,15 +105,14 @@ public class EnvisionProgram {
 		
 		//attempt to check if the working dir is actually valid
 		if (!dir.isValid()) throw new BadDirError(dir);
-		
-		//build the working directory
-		try {
-			buildPackages.forEach(dir::addBuildPackage);
-		}
-		catch (Exception err) {
-			err.printStackTrace();
-			throw new RuntimeException(err);
-		}
+	}
+	
+	//=========
+	// Methods
+	//=========
+	
+	public void addJavaObjectToProgram(EnvisionJavaObject object) {
+		envisionJavaObjects.add(object);
 	}
 	
 	//------------------
@@ -158,6 +162,9 @@ public class EnvisionProgram {
 	 * @return The launch settings for this program
 	 */
 	public EnvisionLaunchSettings getLaunchArgs() { return settings; }
+	
+	public EList<EnvisionLangPackage> getBundledPackages() { return bundledProgramPackages; }
+	public EList<EnvisionJavaObject> getEnvisionJavaObjects() { return envisionJavaObjects; }
 	
 	//---------
 	// Setters

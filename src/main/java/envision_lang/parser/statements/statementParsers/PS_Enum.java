@@ -14,12 +14,13 @@ import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_Enum extends GenericParser {
 	
 	public static Statement enumDeclaration() { return enumDeclaration(new ParserDeclaration()); }
 	public static Statement enumDeclaration(ParserDeclaration declaration) {
-		Token name = consume(IDENTIFIER, "Expected an enum name!");
+		Token<?> name = consume(IDENTIFIER, "Expected an enum name!");
 		
 		if (declaration == null) { declaration = new ParserDeclaration(); }
 		if (declaration.getVisibility() == null) { declaration.applyVisibility(EnvisionVis.SCOPE); }
@@ -42,8 +43,8 @@ public class PS_Enum extends GenericParser {
 			while (match(NEWLINE));
 			if (match(SEMICOLON, CURLY_R)) { break; }
 			
-			Token valueName = consume(IDENTIFIER, "Expected an enum value name!");
-			EArrayList<Expression> valueArgs = new EArrayList();
+			Token<?> valueName = consume(IDENTIFIER, "Expected an enum value name!");
+			EList<Expression> valueArgs = new EArrayList<>();
 			
 			if (match(PAREN_L)) {
 				if (!check(PAREN_R)) {
@@ -60,7 +61,7 @@ public class PS_Enum extends GenericParser {
 			if (check(COMMA)) { advance(); }
 		}
 		
-		if (previous().keyword != CURLY_R) {
+		if (previous().getKeyword() != CURLY_R) {
 			//set enum body
 			s.setBody(getBlock());
 		}

@@ -6,23 +6,23 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_FuncDef extends BasicStatement {
 	
-	public Token name;
-	public final Token operator;
-	public final EArrayList<StatementParameter> methodParams;
-	public final EArrayList<Statement> body;
+	public Token<?> name;
+	public final Token<?> operator;
+	public final EList<StatementParameter> methodParams;
+	public final EList<Statement> body;
 	public final ParserDeclaration declaration;
 	public final boolean isConstructor;
 	public final boolean isOperator;
 	
-	public Stmt_FuncDef(Token start,
-					    Token nameIn,
-						Token operatorIn,
-						EArrayList<StatementParameter> paramsIn,
-						EArrayList<Statement> bodyIn,
+	public Stmt_FuncDef(Token<?> start,
+					    Token<?> nameIn,
+						Token<?> operatorIn,
+						EList<StatementParameter> paramsIn,
+						EList<Statement> bodyIn,
 						ParserDeclaration declarationIn,
 						boolean isConstructorIn,
 						boolean isOperatorIn)
@@ -52,7 +52,7 @@ public class Stmt_FuncDef extends BasicStatement {
 	public String toString() {
 		//String c = (isConstructor) ? "Initializer: " : "Method: ";
 		String p = (methodParams.isEmpty()) ? "" : methodParams.toString();
-		String n = (name == null) ? ((isConstructor) ? "init" : ((isOperator) ? "OPERATOR_" + operator.lexeme : " null")) : name.lexeme;
+		String n = (name == null) ? ((isConstructor) ? "init" : ((isOperator) ? "OPERATOR_" + operator.getLexeme() : " null")) : name.getLexeme();
 		String b = (body != null && body.isNotEmpty()) ? " {" + body + "}" : "";
 		return declaration + "" + n + "(" + p + ")" + b;
 	}
@@ -68,7 +68,7 @@ public class Stmt_FuncDef extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

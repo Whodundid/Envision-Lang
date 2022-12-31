@@ -8,10 +8,10 @@ import envision_lang.tokenizer.Token;
 public class Expr_Set implements Expression {
 
 	public final Expression object, value;
-	public final Token name;
-	public final Token definingToken;
+	public final Token<?> name;
+	public final Token<?> definingToken;
 	
-	public Expr_Set(Expression objectIn, Token nameIn, Expression valueIn) {
+	public Expr_Set(Expression objectIn, Token<?> nameIn, Expression valueIn) {
 		object = objectIn;
 		name = nameIn;
 		value = valueIn;
@@ -34,7 +34,7 @@ public class Expr_Set implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

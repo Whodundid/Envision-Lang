@@ -8,7 +8,7 @@ public class StrongVarReassignmentError extends EnvisionLangError {
 	
 	public StrongVarReassignmentError(EnvisionVariable var, Object value) {
 		super("Attempted to reassign the value of a strong dynamic variable: [" + var + ":"
-				+ var.getDatatype() + "] to [" + value + ":" + Primitives.getDataType(value)
+				+ var.getDatatype() + "] to [" + value + ":" + Primitives.getPrimitiveType(value)
 				+ "]!");
 	}
 	

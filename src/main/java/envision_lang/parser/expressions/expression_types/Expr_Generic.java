@@ -7,11 +7,11 @@ import envision_lang.tokenizer.Token;
 
 public class Expr_Generic implements Expression	{
 	
-	public final Token generic;
-	public final Token extension;
-	public final Token definingToken;
+	public final Token<?> generic;
+	public final Token<?> extension;
+	public final Token<?> definingToken;
 	
-	public Expr_Generic(Token genericIn, Token extensionIn) {
+	public Expr_Generic(Token genericIn, Token<?> extensionIn) {
 		generic = genericIn;
 		extension = extensionIn;
 		definingToken = genericIn;
@@ -19,8 +19,8 @@ public class Expr_Generic implements Expression	{
 	
 	@Override
 	public String toString() {
-		String g = (extension == null) ? "" : " extends " + extension.lexeme;
-		return generic.lexeme + g;
+		String g = (extension == null) ? "" : " extends " + extension.getLexeme();
+		return generic.getLexeme() + g;
 	}
 	
 	@Override
@@ -29,7 +29,7 @@ public class Expr_Generic implements Expression	{
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

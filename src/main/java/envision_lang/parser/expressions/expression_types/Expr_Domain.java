@@ -8,10 +8,10 @@ import envision_lang.tokenizer.Token;
 public class Expr_Domain implements Expression	{
 
 	public final Expression left, middle, right;
-	public final Token lower, upper;
-	public final Token definingToken;
+	public final Token<?> lower, upper;
+	public final Token<?> definingToken;
 	
-	public Expr_Domain(Expression leftIn, Token lowerIn, Expression middleIn, Token upperIn, Expression rightIn) {
+	public Expr_Domain(Expression leftIn, Token<?> lowerIn, Expression middleIn, Token<?> upperIn, Expression rightIn) {
 		left = leftIn;
 		lower = lowerIn;
 		middle = middleIn;
@@ -22,7 +22,7 @@ public class Expr_Domain implements Expression	{
 	
 	@Override
 	public String toString() {
-		return left + " " + lower.lexeme + " " + middle + " " + upper.lexeme + " " + right;
+		return left + " " + lower.getLexeme() + " " + middle + " " + upper.getLexeme() + " " + right;
 	}
 	
 	@Override
@@ -31,7 +31,7 @@ public class Expr_Domain implements Expression	{
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

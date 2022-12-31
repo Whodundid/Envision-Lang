@@ -63,7 +63,7 @@ public class ClassInstance extends EnvisionObject {
 	 * 
 	 * @param derivingClassIn
 	 */
-	protected ClassInstance(EnvisionClass derivingClassIn) {
+	public ClassInstance(EnvisionClass derivingClassIn) {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = new Scope(derivingClassIn.staticScope);
@@ -301,8 +301,8 @@ public class ClassInstance extends EnvisionObject {
 		EnvisionObject obj = instanceScope.get(funcName);
 		
 		if (obj == null) {
-			System.out.println("NO FUNC!");
-			System.out.println(this.getScope());
+			interpreter.envision().getConsoleHandler().println("NO FUNC!");
+			interpreter.envision().getConsoleHandler().println(this.getScope());
 			throw new UndefinedFunctionError(funcName, this);
 		}
 		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);

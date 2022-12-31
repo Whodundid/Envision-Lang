@@ -8,19 +8,19 @@ public class VariableDeclaration {
 	public final Token<String> name;
 	public final Expression assignment_value;
 	
-	public VariableDeclaration(Token nameIn, Expression valueIn) {
+	public VariableDeclaration(Token<String> nameIn, Expression valueIn) {
 		name = nameIn;
 		assignment_value = valueIn;
 	}
 	
 	public String getName() {
-		return name.lexeme;
+		return name.getLexeme();
 	}
 	
 	@Override
 	public String toString() {
 		String v = (assignment_value != null) ? " = " + assignment_value.toString() : "";
-		return name.lexeme + v;
+		return name.getLexeme() + v;
 	}
 	
 }

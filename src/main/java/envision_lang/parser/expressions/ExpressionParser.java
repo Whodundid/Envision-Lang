@@ -30,6 +30,7 @@ import envision_lang.parser.expressions.expression_types.Expr_VarDef;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class ExpressionParser extends GenericParser {
 	
@@ -237,7 +238,7 @@ public class ExpressionParser extends GenericParser {
 			//check if accessing member object
 			else if (match(PERIOD)) {
 				//grab the name of the member being accessed
-				Token name = consume("Expected property name after '.'!", IDENTIFIER);
+				Token<?> name = consume("Expected property name after '.'!", IDENTIFIER);
 				
 				//check if member function call
 				if (check(PAREN_L)) e = new Expr_FunctionCall(e, name, collectFuncArgs());
@@ -250,8 +251,8 @@ public class ExpressionParser extends GenericParser {
 		return e;
 	}
 	
-	public static EArrayList<Expression> collectFuncArgs() {
-		EArrayList<Expression> args = new EArrayList();
+	public static EList<Expression> collectFuncArgs() {
+		EList<Expression> args = new EArrayList<>();
 		
 		//arguments
 		consume(PAREN_L, "Expected '(' to begin arguments!");
@@ -276,7 +277,7 @@ public class ExpressionParser extends GenericParser {
 		
 		//if (match(Keyword.MODULAR_VALUE)) return e = new ModularExpression(ParserStage.modularValues);
 		if (match(INIT)) return new Expr_Var(previous());
-		if (matchType(OPERATOR)) return new Expr_Literal(previous(), previous().keyword);
+		if (matchType(OPERATOR)) return new Expr_Literal(previous(), previous().getKeyword());
 		
 		if ((e = checkLiteral()) != null) return e;
 		if ((e = checkLists()) != null) return e;
@@ -297,7 +298,7 @@ public class ExpressionParser extends GenericParser {
 		if (match(FALSE)) return new Expr_Literal(previous(), false);
 		if (match(TRUE)) return new Expr_Literal(previous(), true);
 		if (match(NULL)) return new Expr_Literal(previous(), null);
-		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previous(), previous().literal);
+		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previous(), previous().getLiteral());
 		return null;
 	}
 	
@@ -305,7 +306,7 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkLists() {
 		if (match(TO)) {
-			Token start = previous();
+			Token<?> start = previous();
 			Expression right = range();
 			Expression by = null;
 			if (match(BY)) {
@@ -340,8 +341,8 @@ public class ExpressionParser extends GenericParser {
 		if (!match(PAREN_L)) return null;
 		
 		Expression e = null;
-		Token start = previous();
-		EArrayList<Expression> expressions = null;
+		Token<?> start = previous();
+		EList<Expression> expressions = null;
 		
 		if (!check(PAREN_R)) {
 			e = parseExpression();
@@ -360,7 +361,7 @@ public class ExpressionParser extends GenericParser {
 		
 		//check for cast expressions
 		if (e instanceof Expr_VarDef var_def) {
-			Token type = var_def.type;
+			Token<?> type = var_def.type;
 			//can only be a cast expression if either a datatype or a object type
 			if (type.isDatatype() || type.isReference()) {
 				Expression target = parseExpression();
@@ -398,9 +399,9 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkObject() {
 		if (match(THIS)) {
-			Token start = previous();
+			Token<?> start = previous();
 			if (match(PAREN_L)) {
-				EArrayList<Expression> args = new EArrayList();
+				EList<Expression> args = new EArrayList<>();
 				if (!check(PAREN_R)) {
 					do {
 						if (args.size() >= 255) {
@@ -419,12 +420,12 @@ public class ExpressionParser extends GenericParser {
 		}
 		
 		if (match(SUPER)) {
-			Token start = previous();
+			Token<?> start = previous();
 			consume(PERIOD, "Expected '.' after super call!");
-			Token m = consume(IDENTIFIER, "Expected superclass method name!");
+			Token<?> m = consume(IDENTIFIER, "Expected superclass method name!");
 			
 			if (match(PAREN_L)) {
-				EArrayList<Expression> args = new EArrayList();
+				EList<Expression> args = new EArrayList<>();
 				if (!check(PAREN_R)) {
 					do {
 						args.add(parseExpression());
@@ -465,8 +466,8 @@ public class ExpressionParser extends GenericParser {
 	
 	private static Expression checkVariable() {
 		if (match(IDENTIFIER) || matchType(DATATYPE)) {
-			Token type = previous();
-			EArrayList<Token> params = null;
+			Token<?> type = previous();
+			EList<Token<?>> params = null;
 			
 			//check if primitive type
 			if (type.isDatatype()) return new Expr_Primitive(type);
@@ -479,7 +480,7 @@ public class ExpressionParser extends GenericParser {
 					if (check(IDENTIFIER, TERNARY) || checkType(DATATYPE)) {
 						params.add(getAdvance());
 					}
-					else error("Invalid parameter type for variable declaration expression! '" + current().lexeme + "'");
+					else error("Invalid parameter type for variable declaration expression! '" + current().getLexeme() + "'");
 				}
 			}
 			

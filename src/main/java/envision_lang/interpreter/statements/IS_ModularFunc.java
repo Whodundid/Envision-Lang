@@ -17,6 +17,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.debug.Experimental;
 
 @Experimental
@@ -34,38 +35,38 @@ public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 	
 	@Override
 	public void run(Stmt_ModularFuncDef s) {
-		BoxList<Token, Token> associations = s.associations;
+		BoxList<Token<?>, Token<?>> associations = s.associations;
 		
-		for (Box2<Token, Token> modAssociation : associations) {
+		for (Box2<Token<?>, Token<?>> modAssociation : associations) {
 			//Token refName = s.name;
-			//String methName = ((refName.isModular()) ? "" : refName.lexeme) + modAssociation.getA().lexeme;
-			//String methName = refName.lexeme;
+			//String methName = ((refName.isModular()) ? "" : refName.getLexeme()) + modAssociation.getA().getLexeme();
+			//String methName = refName.getLexeme();
 			
 			//attempt to find any already existing base method within the given scope
-			EnvisionObject base = scope().get(s.name.lexeme);
+			EnvisionObject base = scope().get(s.name.getLexeme());
 			
 			//if there is already an existing method of the same name, this is invalid!
 			if (base != null) {
-				throw new AlreadyDefinedError(s.name.lexeme);
+				throw new AlreadyDefinedError(s.name.getLexeme());
 			}
 			else {
 				//if the statement is valid, iterate across all of the method's scope statements
 				//and replace MODULAR_VALUE tokens with the association value.
-				EArrayList<Statement> statements = s.body;
-				EArrayList<Statement> newStatements = new EArrayList();
+				EList<Statement> statements = s.body;
+				EList<Statement> newStatements = new EArrayList();
 				
 				for (Statement stmt : statements) {
 					
 					//unbox block statements
 					if (stmt instanceof Stmt_Block) {
-						EArrayList<Statement> found = ((Stmt_Block) stmt).statements;
-						EArrayList<Stmt_Block> workList = new EArrayList();
+						EList<Statement> found = ((Stmt_Block) stmt).statements;
+						EList<Stmt_Block> workList = new EArrayList();
 						
 						while (workList.isNotEmpty()) {
-							EArrayList<Stmt_Block> newWork = new EArrayList();
+							EList<Stmt_Block> newWork = new EArrayList();
 							
 							for (Stmt_Block bs : workList) {
-								EArrayList<Statement> bsStatements = bs.statements;
+								EList<Statement> bsStatements = bs.statements;
 								for (Statement bss : bsStatements)
 									if (bss instanceof Stmt_Block) newWork.add((Stmt_Block) bss);
 									else found.add(bss);
@@ -89,7 +90,7 @@ public class IS_ModularFunc extends StatementExecutor<Stmt_ModularFuncDef> {
 						replaceModular(copy, modAssociation.getB());
 					}
 					
-					//System.out.println(s.name.lexeme + modAssociation.getA().lexeme + " : " + s);
+					//System.out.println(s.name.getLexeme() + modAssociation.getA().getLexeme() + " : " + s);
 				}
 				
 				//build the method against the current scope from the given declaration

@@ -64,7 +64,7 @@ public abstract class EnvisionNumber extends EnvisionVariable {
 	
 	
 	@Override
-	public Object convertToJavaObject() {
+	public Number convertToJavaObject() {
 		return doubleVal_i();
 	}
 	

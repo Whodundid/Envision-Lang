@@ -10,7 +10,7 @@ public class Expr_Logic implements Expression {
 
 	public final Expression left, right;
 	public final Operator operator;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_Logic(Expression leftIn, Operator operatorIn, Expression rightIn) {
 		left = leftIn;
@@ -35,7 +35,7 @@ public class Expr_Logic implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

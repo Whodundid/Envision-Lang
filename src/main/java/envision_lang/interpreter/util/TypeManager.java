@@ -34,13 +34,13 @@ public class TypeManager {
 	public TypeManager() {
 		//load primitive types
 		
-		types.put(Primitives.BOOLEAN.string_type, EnvisionBooleanClass.BOOLEAN_CLASS);
-		types.put(Primitives.INT.string_type, EnvisionIntClass.INT_CLASS);
-		types.put(Primitives.DOUBLE.string_type, EnvisionDoubleClass.DOUBLE_CLASS);
-		types.put(Primitives.CHAR.string_type, EnvisionCharClass.CHAR_CLASS);
-		types.put(Primitives.STRING.string_type, EnvisionStringClass.STRING_CLASS);
-		types.put(Primitives.LIST.string_type, EnvisionListClass.LIST_CLASS);
-		types.put(Primitives.NUMBER.string_type, EnvisionNumberClass.NUMBER_CLASS);
+		types.put(Primitives.BOOLEAN.string_value, EnvisionBooleanClass.BOOLEAN_CLASS);
+		types.put(Primitives.INT.string_value, EnvisionIntClass.INT_CLASS);
+		types.put(Primitives.DOUBLE.string_value, EnvisionDoubleClass.DOUBLE_CLASS);
+		types.put(Primitives.CHAR.string_value, EnvisionCharClass.CHAR_CLASS);
+		types.put(Primitives.STRING.string_value, EnvisionStringClass.STRING_CLASS);
+		types.put(Primitives.LIST.string_value, EnvisionListClass.LIST_CLASS);
+		types.put(Primitives.NUMBER.string_value, EnvisionNumberClass.NUMBER_CLASS);
 		
 	}
 	
@@ -55,11 +55,11 @@ public class TypeManager {
 	public void defineType(IDatatype typeIn, EnvisionClass objectType) {
 		if (objectType == null) throw new EnvisionLangError("TypeManager: Null user defined type!");
 		
-		if (types.containsKey(typeIn.getType())) {
+		if (types.containsKey(typeIn.getStringValue())) {
 			throw new EnvisionWarning("TypeManager: Potentially unwanted type reassignment. '" + typeIn + "'");
 		}
 			
-		types.put(typeIn.getType(), objectType);
+		types.put(typeIn.getStringValue(), objectType);
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class TypeManager {
 	 */
 	public boolean isTypeDefined(IDatatype typeIn) {
 		if (typeIn != null && typeIn.isPrimitive()) return true;
-		return types.containsKey(typeIn.getType());
+		return types.containsKey(typeIn.getStringValue());
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public class TypeManager {
 	 * @return the EnvisionClass of the user-defined type
 	 */
 	public EnvisionClass getTypeClass(IDatatype typeIn) {
-		return types.get(typeIn.getType());
+		return types.get(typeIn.getStringValue());
 	}
 	
 	/**

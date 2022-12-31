@@ -190,5 +190,8 @@ public enum Operator implements IKeyword {
 		default -> false;
 		};
 	}
+
+	@Override public boolean isOperator() { return true; }
+	@Override public boolean isReservedWord() { return false; }
 	
 }

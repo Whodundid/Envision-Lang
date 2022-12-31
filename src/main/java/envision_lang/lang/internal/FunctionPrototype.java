@@ -180,7 +180,7 @@ public class FunctionPrototype extends EnvisionObject {
 		//NOTE: building needs to take into account the scope that it is coming from
 		
 		//check if already built and return built_func
-		//if (built) return built_func;
+		if (built) return built_func;
 		
 		//check if there is even a dynamic class to build from
 		if (func_class == null) {

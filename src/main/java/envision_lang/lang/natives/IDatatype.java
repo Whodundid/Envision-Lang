@@ -38,7 +38,7 @@ public interface IDatatype {
 	 * 
 	 * @return String
 	 */
-	public String getType();
+	public String getStringValue();
 	
 	//-------------------
 	// Default Functions
@@ -207,7 +207,7 @@ public interface IDatatype {
 		}
 		
 		//check string type
-		return typeIn.getType().equals(this.getType());
+		return typeIn.getStringValue().equals(this.getStringValue());
 	}
 	
 	//--------
@@ -230,7 +230,7 @@ public interface IDatatype {
 	 */
 	public static IDatatype dynamicallyDetermineType(Object obj) {
 		if (obj instanceof EnvisionObject o) return o.getDatatype();
-		Primitives type = Primitives.getDataType(obj);
+		Primitives type = Primitives.getPrimitiveType(obj);
 		return NativeTypeManager.datatypeOf(type);
 	}
 	

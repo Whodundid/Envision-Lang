@@ -22,8 +22,8 @@ public class Stmt_If extends BasicStatement {
 	
 	@Override
 	public String toString() {
-		String e = (elseBranch != null) ? " else { " + elseBranch + " }" : "";
-		return "if (" + condition + ") { " + thenBranch + " }" + e;
+		String e = (elseBranch != null) ? " else " + elseBranch : "";
+		return "if (" + condition + ") " + thenBranch + e;
 	}
 	
 	@Override

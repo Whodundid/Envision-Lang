@@ -20,6 +20,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /**
@@ -33,7 +34,7 @@ public class EnvisionList extends ClassInstance {
 	/**
 	 * Internal Array list.
 	 */
-	private final EArrayList<EnvisionObject> list = new EArrayList<>();
+	private final EList<EnvisionObject> list = new EArrayList<>();
 	
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
@@ -55,7 +56,7 @@ public class EnvisionList extends ClassInstance {
 		list_type = typeIn;
 	}
 	
-	protected EnvisionList(IDatatype typeIn, EArrayList listIn) {
+	protected EnvisionList(IDatatype typeIn, EList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
 		list.addAll(listIn);
@@ -67,7 +68,7 @@ public class EnvisionList extends ClassInstance {
 		list.addAll(in.list);
 	}
 	
-	protected EnvisionList(EnvisionList in, EArrayList listIn) {
+	protected EnvisionList(EnvisionList in, EList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = in.list_type;
 		list.addAll(listIn);
@@ -186,6 +187,7 @@ public class EnvisionList extends ClassInstance {
 		case "removeFirst" -> removeFirst();
 		case "removeLast" -> removeLast();
 		case "removeRandom" -> removeRandom();
+		case "reverse" -> reverse();
 		case "set" -> set((EnvisionInt) args[0], args[1]);
 		case "setSize" -> setSize(args);
 		case "setFirst" -> setFirst(args[0]);
@@ -203,7 +205,7 @@ public class EnvisionList extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EArrayList<EnvisionObject> getInternalList() { return list; }
+	public EList<EnvisionObject> getInternalList() { return list; }
 	
 	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
 	public long size_i() { return list.size(); }
@@ -365,12 +367,12 @@ public class EnvisionList extends ClassInstance {
 		return this;
 	}
 	
-	public EnvisionList flip() {
-		return new EnvisionList(list_type, list.flip());
+	public EnvisionList reverse() {
+		return new EnvisionList(list_type, list.reverse());
 	}
 	
 	public EnvisionList shuffle() {
-		EArrayList<EnvisionObject> l = new EArrayList<>(list);
+		EList<EnvisionObject> l = new EArrayList<>(list);
 		Collections.shuffle(l);
 		return new EnvisionList(this, l);
 	}

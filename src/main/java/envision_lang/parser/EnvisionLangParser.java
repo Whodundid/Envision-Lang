@@ -5,12 +5,13 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.parser.statements.Statement;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
-import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.EUtil;
+import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /**
@@ -25,13 +26,13 @@ public class EnvisionLangParser {
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** The tokens of each line, line by line. Used to generate error messages. */
-	private EArrayList<EArrayList<Token<?>>> tokenLines;
+	private BoxList<Integer, EList<Token<?>>> tokenLines;
 	/** A complete list of all tokens within the file currently being parsed. */
-	private EArrayList<Token<?>> tokens;
+	private EList<Token<?>> tokens;
 	/** A non tokenized version of the file being parsed.
 	 *  This is simply each line of the file in a list.
 	 *  Used to help generate error messages. */
-	private EArrayList<String> lines;
+	private EList<String> lines;
 	/** A counter to keep track of the current token as parsing continues. */
 	private int current = 0;
 	
@@ -54,7 +55,7 @@ public class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EArrayList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
+	public static EList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
 		//error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
@@ -62,7 +63,7 @@ public class EnvisionLangParser {
 		EnvisionLangParser p = new EnvisionLangParser();
 		
 		//unpack the code file's tokenized values
-		EArrayList<Statement> statements = new EArrayList();
+		EList<Statement> statements = new EArrayList<>();
 		p.tokenLines = codeFile.getLineTokens();
 		p.tokens = codeFile.getTokens();
 		p.lines = codeFile.getLines();
@@ -72,6 +73,12 @@ public class EnvisionLangParser {
 		
 		//ignore empty files and return an empty statement list
 		if (p.tokens.isEmpty()) return statements;
+		
+//		System.out.println();
+//		for (int i = 0; i < p.tokens.size(); i++) {
+//			System.out.println(i + ": " + p.tokens.get(i));
+//		}
+//		System.out.println();
 		
 		try {
 			//continue until the end of the file
@@ -86,6 +93,12 @@ public class EnvisionLangParser {
 			//error = new ParsingError(e);
 			throw e;
 		}
+		
+//		System.out.println();
+//		for (int i = 0; i < statements.size(); i++) {
+//			System.out.println(i + ": " + statements.get(i));
+//		}
+//		System.out.println();
 		
 		//throw the wrapped error (if there is one)
 		//if (error != null) throw error;
@@ -135,7 +148,8 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The consumed if matching.
 	 */
-	protected Token consume(String errorMessage, IKeyword... toCheck) {
+	protected Token<?> consume(String errorMessage, IKeyword... toCheck) {
+		consumeEmptyLines();
 		if (check(toCheck)) return getAdvance();
 		throw error(errorMessage);
 	}
@@ -162,7 +176,8 @@ public class EnvisionLangParser {
 	 * 					
 	 * @return The consumed if matching.
 	 */
-	protected Token consumeType(String errorMessage, KeywordType... typesToCheck) {
+	protected Token<?> consumeType(String errorMessage, KeywordType... typesToCheck) {
+		consumeEmptyLines();
 		if (checkType(typesToCheck)) return getAdvance();
 		throw error(errorMessage);
 	}
@@ -211,8 +226,8 @@ public class EnvisionLangParser {
 	
 	protected boolean matchBoth(IKeyword first, IKeyword second) {
 		if (check(first)) {
-			Token n = next();
-			if (n != null && n.keyword == second) {
+			Token<?> n = next();
+			if (n != null && n.getKeyword() == second) {
 				advance();
 				advance();
 				return true;
@@ -225,7 +240,7 @@ public class EnvisionLangParser {
 		if (in.length == 0) return false;
 		int i = 0;
 		for (IKeyword k : in) {
-			Token t = tokens.get(current + i++);
+			Token<?> t = tokens.get(current + i++);
 			//System.out.println(i + " : " + t);
 			if (!check(t, k)) return false;
 		}
@@ -236,13 +251,15 @@ public class EnvisionLangParser {
 	protected boolean checkNext(IKeyword... val) { return check(next(), val); }
 	protected boolean checkPrevious(IKeyword... val) { return check(previous(), val); }
 	
-	protected boolean check(Token t, IKeyword... val) {
+	protected boolean check(Token<?> t, IKeyword... val) {
 		if (atEnd()) {
-			for (var k : val) if (k == ReservedWord.EOF) return true;
+			for (var k : val) {
+				if (k == ReservedWord.EOF) return true;
+			}
 			return false;
 		}
 		for (var k : val) {
-			if (t.keyword == k) return true;
+			if (t.getKeyword() == k) return true;
 		}
 		return false;
 	}
@@ -251,11 +268,11 @@ public class EnvisionLangParser {
 	protected boolean checkNextType(KeywordType... val) { return checkType(next(), val); }
 	protected boolean checkPreviousType(KeywordType... val) { return checkType(previous(), val); }
 	
-	private boolean checkType(Token t, KeywordType... type) {
+	private boolean checkType(Token<?> t, KeywordType... type) {
 		//if at end of file, check if the given keyword types contains TERMINATOR
 		if (atEnd()) return EUtil.contains(type, KeywordType.TERMINATOR);
 		for (var kt : type) {
-			if (t.keyword.hasType(kt)) return true;
+			if (t.getKeyword().hasType(kt)) return true;
 		}
 		return false;
 	}
@@ -290,8 +307,8 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The current token
 	 */
-	protected Token getAdvance() {
-		Token cur = current();
+	protected Token<?> getAdvance() {
+		Token<?> cur = current();
 		advance();
 		return cur;
 	}
@@ -301,7 +318,7 @@ public class EnvisionLangParser {
 	 * semicolon.
 	 */
 	protected void consumeEmptyLines() {
-		while (match(ReservedWord.NEWLINE, Operator.SEMICOLON));
+		while (!atEnd() && matchType(KeywordType.TERMINATOR));
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
@@ -314,7 +331,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token at the current parsing position
 	 */
-	protected Token current() {
+	protected Token<?> current() {
 		return tokens.get(current);
 	}
 	
@@ -324,7 +341,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token in front of the current parsing position
 	 */
-	protected Token previous() {
+	protected Token<?> previous() {
 		return tokens.get(current - 1);
 	}
 	
@@ -334,7 +351,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token directly after the current parsing position
 	 */
-	protected Token next() {
+	protected Token<?> next() {
 		return tokens.get(current + 1);
 	}
 	
@@ -405,63 +422,28 @@ public class EnvisionLangParser {
 		if (current().isEOF()) setPrevious();
 		
 		//grab the problematic token's line number
-		int theLine = current().line;
+		int theLine = current().getLineNum();
 		//if (theLine > tokenLines.size()) theLine -= 1;
+		
+		String tab = "    ";
 		
 		//The individual parts of the error message to be generated
 		String border = "";
-		String title = "\tParsing Error!";
-		String lineNumber = "\tLine " + theLine + ":";
-		String line = "\t\t" + lines.get(theLine - 1);
+		String title = tab + "Parsing Error!";
+		String lineNumber = tab + "Line " + theLine + ":";
+		String line = tab + tab + lines.get(theLine - 1);
 		String arrow = "";
-		String error = "\t" + message + "   ->   '" + current() + "'";
+		String error = tab + message + "   ->   '" + current() + "'";
 		
 		//determine border length
 		String longest = EStringUtil.getLongest(title, lineNumber, line, error);
-		border = EStringUtil.repeatString("-", longest.length() + 16);
+		border = EStringUtil.repeatString("-", longest.length() + 4);
 		
-		//find arrow position
-		EArrayList<Token<?>> tokenLine = tokenLines.get(theLine - 1);
-		int problem_token_pos = 0;
-		for (int i = 0; i < tokenLine.size(); i++) {
-			if (tokenLine.get(i).checkID(current().id)) {
-				problem_token_pos = i;
-				break;
-			}
-		}
-		
-		//counter to keep track of the number of individual spaces that should
-		//come before the arrow
-		int spaces_before_arrow = 0;
-		String actual_line = lines.get(theLine - 1);
-		
-		//iterate across each token in the line that is before the problem token
-		//and add that token's string length to the spaces_before_arrow counter.
-		for (int i = 0; i < problem_token_pos; i++) {
-			Token t = tokenLine.get(i);
-			int len = t.lexeme.length();
-			//add the same number of spaces as the length of the token
-			spaces_before_arrow += len;
-			
-			actual_line = actual_line.substring(len);
-			StringBuilder spacer = new StringBuilder();
-			
-			//increment by 1 for any actual space
-			for (int j = 0; j < actual_line.length(); j++) {
-				if (actual_line.charAt(j) != ' ') {
-					break;
-				}
-				spacer.append(" ");
-			}
-			
-			//add the number of spaces
-			spaces_before_arrow += spacer.length();
-			//move onto the next token string-wise
-			actual_line = actual_line.substring(spacer.length());
-		}
+		//get arrow position
+		int arrow_pos = current().getLineIndex();
 		
 		//position arrow in string
-		arrow = "\t\t" + EStringUtil.repeatString(" ", spaces_before_arrow) + "^";
+		arrow = "\t\t" + EStringUtil.repeatString(" ", arrow_pos) + "^";
 		
 		//assemble the generated error message parts
 		var generatedError = new StringBuilder();

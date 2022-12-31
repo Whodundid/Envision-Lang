@@ -14,11 +14,11 @@ import eutil.datatypes.EArrayList;
 public class Expr_FuncDef implements Expression {
 	
 	public final Stmt_FuncDef declaration;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
-	public Expr_FuncDef(Token start, Token nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
+	public Expr_FuncDef(Token start, Token<?> nameIn, EArrayList<StatementParameter> paramsIn, EArrayList<Statement> bodyIn) {
 		ParserDeclaration d = new ParserDeclaration();
-		d.applyReturnType(Token.create(ReservedWord.VAR, "var", nameIn.line));
+		d.applyReturnType(Token.create(ReservedWord.VAR, "var", nameIn.getLineNum()));
 		declaration = new Stmt_FuncDef(start, nameIn, null, paramsIn, bodyIn, d, false, false);
 		definingToken = start;
 	}
@@ -34,7 +34,7 @@ public class Expr_FuncDef implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

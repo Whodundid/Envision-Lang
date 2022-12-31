@@ -24,7 +24,7 @@ public class IE_VarDec extends ExpressionExecutor<Expr_VarDef> {
 	@Override
 	public EnvisionObject run(Expr_VarDef e) {
 		Token typeToken = e.type;
-		IKeyword k = typeToken.keyword;
+		IKeyword k = typeToken.getKeyword();
 		
 		if (k.isDataType()) {
 			var type = NativeTypeManager.datatypeOf(typeToken.getPrimitiveDataType());

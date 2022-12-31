@@ -23,6 +23,7 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * The EnvisionClass is the primary component for which all
@@ -62,14 +63,14 @@ public class EnvisionClass extends EnvisionObject {
 	 * 
 	 * @see ClassConstruct
 	 */
-	private ClassConstruct classConstruct;
+	protected ClassConstruct classConstruct;
 	
 	/**
 	 * The constructor function that enables instance creation. Note:
 	 * objects without a constructor can still be defined as a default
 	 * constructor will be automatically generated.
 	 */
-	private EnvisionFunction constructor;
+	protected EnvisionFunction constructor;
 	
 	/**
 	 * The static scope of this class. Any static
@@ -96,26 +97,26 @@ public class EnvisionClass extends EnvisionObject {
 	/**
 	 * A list of all static members on this class.
 	 */
-	protected EArrayList<EnvisionObject> staticMembers = new EArrayList();
+	protected EList<EnvisionObject> staticMembers = new EArrayList<>();
 	
 	/**
 	 * The entire list of static statements that have been declared within
 	 * this class declaration.
 	 */
-	protected EArrayList<Statement> staticStatements = new EArrayList();
+	protected EList<Statement> staticStatements = new EArrayList<>();
 	
 	/**
 	 * The entire list of non-static statements that have been declared within
 	 * this class declaration. These statements are used by class constructs
 	 * to help improve instance creation.
 	 */
-	protected EArrayList<Statement> bodyStatements = new EArrayList();
+	protected EList<Statement> bodyStatements = new EArrayList<>();
 	
 	/**
 	 * The entire list of constructor (initializer) statements that have been
 	 * declared within this class declaration.
 	 */
-	protected EArrayList<Stmt_FuncDef> constructorStatements = new EArrayList();
+	protected EList<Stmt_FuncDef> constructorStatements = new EArrayList<>();
 	
 	private static final IPrototypeHandler OBJ_PROTOS = new IPrototypeHandler();
 	
@@ -168,7 +169,7 @@ public class EnvisionClass extends EnvisionObject {
 		super(primitiveType.toDatatype());
 		
 		//assign primitive class name
-		className = primitiveType.string_type;
+		className = primitiveType.string_value;
 		//assign default empty primitive class scope
 		staticScope = new Scope();
 		//assign native class object
@@ -272,8 +273,7 @@ public class EnvisionClass extends EnvisionObject {
 		interpreter.executeBlock(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
-		EArrayList<EnvisionObject> methods = instanceScope.locals().filter(o -> o instanceof EnvisionFunction && ((EnvisionFunction) o).isOperator());
-		EArrayList<EnvisionFunction> operators = methods.map(m -> (EnvisionFunction) m);
+		EList<EnvisionFunction> operators = instanceScope.functions().filter(f -> f.isOperator());
 		
 		//set the overloaded operators onto the class instance
 		for (EnvisionFunction op : operators) {
@@ -443,16 +443,16 @@ public class EnvisionClass extends EnvisionObject {
 	//---------------------------------------------------------------------------
 	
 	//public EArrayList<InheritableObject> getParents() { return parents; }
-	public EArrayList<EnvisionObject> getStaticMembers() { return staticMembers; }
-	public EArrayList<Statement> getStaticStatements() { return staticStatements; }
-	public EArrayList<Statement> getBody() { return bodyStatements; }
+	public EList<EnvisionObject> getStaticMembers() { return staticMembers; }
+	public EList<Statement> getStaticStatements() { return staticStatements; }
+	public EList<Statement> getBody() { return bodyStatements; }
 
 	//---------------------------------------------------------------------------
 	
 	//public InheritableObject setParents(EArrayList<InheritableObject> in) { parents = in; return this; }
-	public EnvisionClass setStatics(EArrayList<Statement> in) { staticStatements = in; return this; }
-	public EnvisionClass setBody(EArrayList<Statement> in) { bodyStatements = in; return this; }
-	public EnvisionClass setConstructors(EArrayList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
+	public EnvisionClass setStatics(EList<Statement> in) { staticStatements = in; return this; }
+	public EnvisionClass setBody(EList<Statement> in) { bodyStatements = in; return this; }
+	public EnvisionClass setConstructors(EList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
 	
 	//---------------------------------------------------------------------------
 	
@@ -510,7 +510,7 @@ public class EnvisionClass extends EnvisionObject {
 	public static class IFunc_type<E extends ClassInstance> extends InstanceFunction<E> {
 		public IFunc_type() { super(STRING, "type"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var type = inst.getDatatype().getType();
+			var type = inst.getDatatype().getStringValue();
 			ret(EnvisionStringClass.newString(type));
 		}
 	}
@@ -518,7 +518,7 @@ public class EnvisionClass extends EnvisionObject {
 	public static class IFunc_typeString<E extends ClassInstance> extends InstanceFunction<E> {
 		public IFunc_typeString() { super(STRING, "typeString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var typeString = inst.getDatatype().getType() + "_" + inst.getHexHash();
+			var typeString = inst.getDatatype().getStringValue() + "_" + inst.getHexHash();
 			ret(EnvisionStringClass.newString(typeString));
 		}
 	}

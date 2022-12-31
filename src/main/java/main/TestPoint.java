@@ -19,8 +19,8 @@ public class TestPoint extends EnvisionJavaObject {
 	// Constructors
 	//--------------
 	
-	@EConstructor
-	public TestPoint() { this(0, 0); }
+//	@EConstructor
+//	public TestPoint() { this(0, 0); }
 	@EConstructor
 	public TestPoint(int x, int y) {
 		init_bridge();
@@ -35,7 +35,8 @@ public class TestPoint extends EnvisionJavaObject {
 	@Override
 	@EFunction
 	public String toString() {
-		return "<{x}, {y}>:({w})";
+		System.out.println("[" + x + ", " + y + "]");
+		return "<{x}, {y}>";
 	}
 	
 	//-----------
@@ -54,9 +55,9 @@ public class TestPoint extends EnvisionJavaObject {
 		return new TestPoint(this.x - x, this.y - y);
 	}
 	
-	//@EFunction
-	public void cat(Object c, int a, TestPoint t) {
-		System.out.println("FROM TestPoint 'cat' HOI!");
+	@EFunction
+	public void cat(byte b, float f, String s ) {
+		System.out.println("FROM TestPoint 'cat' HOI! [" + b + ", " + f + ", " + s + "]");
 	}
 	
 	//--------------------

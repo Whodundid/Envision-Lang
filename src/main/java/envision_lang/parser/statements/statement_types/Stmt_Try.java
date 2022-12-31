@@ -5,15 +5,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_Try extends BasicStatement {
 	
 	public final Statement tryBlock;
-	public final EArrayList<Stmt_Catch> catches;
+	public final EList<Stmt_Catch> catches;
 	public final Statement finallyBlock;
 	
-	public Stmt_Try(Token start, Statement tryIn, EArrayList<Stmt_Catch> catchesIn, Statement finallyIn) {
+	public Stmt_Try(Token<?> start, Statement tryIn, EList<Stmt_Catch> catchesIn, Statement finallyIn) {
 		super(start);
 		tryBlock = tryIn;
 		catches = catchesIn;
@@ -43,7 +43,7 @@ public class Stmt_Try extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

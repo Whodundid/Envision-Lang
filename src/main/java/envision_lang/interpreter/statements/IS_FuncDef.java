@@ -29,7 +29,7 @@ public class IS_FuncDef extends StatementExecutor<Stmt_FuncDef> {
 		if (base != null) base.addOverload(m.getParams(), s.body);
 		//if there was not a base method, define the newly built method as is
 		else {
-			String n = (s.name != null) ? s.name.lexeme : "OP(" + s.operator.lexeme + ")";
+			String n = (s.name != null) ? s.name.getLexeme() : "OP(" + s.operator.getLexeme() + ")";
 			scope().define(n, m);
 		}
 	}

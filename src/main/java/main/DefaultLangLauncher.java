@@ -4,7 +4,10 @@ import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLaunchSettings;
 import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
+import envision_lang._launch.EnvisionProgram;
 import envision_lang.exceptions.EnvisionLangError;
+import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.lang.EnvisionObject;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
@@ -34,20 +37,20 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		
 		EnvisionLang env = null;
 		env = new EnvisionLang();
-		//env = new EnvisionLang(PRELOAD_LANGUAGE);
-		//env = new EnvisionLang(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
-		//env = new EnvisionLang(PARSE_STATEMENTS, TOKENIZE);
 		env.setErrorCallback(this);
 		
-		//testThing();
+		TestPoint t = new TestPoint(0, 0);
+		EnvisionProgram program = new EnvisionProgram("program");
+		//program.addJavaObjectToProgram(t);
 		
 		//long preStart = System.currentTimeMillis();
 		//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
-		//env.setLaunchSettings(EnvisionLaunchSettings.of(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE));
-		env.runProgram("program");
+		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
+		env.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE);
+		env.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");
 		
@@ -61,8 +64,13 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//System.out.println(" Total: " + (System.currentTimeMillis() - preStart) + " ms");
 	}
 
-	private void testThing() {
-		TestPoint t = new TestPoint();
+	private void testThing(EnvisionInterpreter interpreter) {
+		TestPoint t = new TestPoint(0, 0);
+		
+		var c = t.getInternalClass();
+		var scope = c.getClassScope();
+		
+		var inst = c.newInstance(interpreter, new EnvisionObject[0]);
 	}
 	
 	@Override
@@ -88,6 +96,19 @@ public class Vector {
 		Vector add(v) -> Vector(x + v.x, y + v.y, z + v.z)
 		Vector sub(v) -> Vector(x - v.x, y - v.y, z - v.z)
 	}
+}
+*/
+
+/*
++class Vector {
+	-int x, y, z
+	
+	+init(x, y, z)
+	
+	+func toString() -> "<{x}, {y}, {z}>"
+	
+	+func Vector [add:+, sub:-](Vector v) -> Vector(x @ v.x, y @ v.y, z @ v.z)
+	+operator Vector [+:add(v), -:sub(v)](Vector v) -> @
 }
 */
 

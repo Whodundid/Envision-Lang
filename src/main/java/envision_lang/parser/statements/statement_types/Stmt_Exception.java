@@ -7,6 +7,7 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * Declares the start of an exception object. Exceptions are defined in
@@ -16,24 +17,24 @@ import eutil.datatypes.EArrayList;
  */
 public class Stmt_Exception extends BasicStatement {
 	
-	public final Token name;
+	public final Token<?> name;
 	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Var> superclasses = new EArrayList<>();
-	public final EArrayList<Statement> body = new EArrayList<>();
+	public final EList<Expr_Var> superclasses = new EArrayList<>();
+	public final EList<Statement> body = new EArrayList<>();
 	
-	public Stmt_Exception(Token nameIn, ParserDeclaration declarationIn) {
+	public Stmt_Exception(Token<?> nameIn, ParserDeclaration declarationIn) {
 		super(nameIn);
 		name = nameIn;
 		declaration = declarationIn;
 	}
 	
-	public Stmt_Exception setSupers(EArrayList<Expr_Var> supersIn) {
+	public Stmt_Exception setSupers(EList<Expr_Var> supersIn) {
 		superclasses.clear();
 		superclasses.addAll(supersIn);
 		return this;
 	}
 	
-	public Stmt_Exception setBody(EArrayList<Statement> bodyIn) {
+	public Stmt_Exception setBody(EList<Statement> bodyIn) {
 		body.clear();
 		body.addAll(bodyIn);
 		return this;
@@ -49,7 +50,7 @@ public class Stmt_Exception extends BasicStatement {
 		for (int i = 0; i < body.size(); i++) {
 			b += body.get(i);
 		}
-		return declaration + " exception " + name.lexeme + s + " {\n" + b + "}";
+		return declaration + " exception " + name.getLexeme() + s + " {\n" + b + "}";
 	}
 	
 	@Override
@@ -63,7 +64,7 @@ public class Stmt_Exception extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

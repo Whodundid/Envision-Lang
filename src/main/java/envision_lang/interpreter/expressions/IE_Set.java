@@ -21,7 +21,7 @@ public class IE_Set extends ExpressionExecutor<Expr_Set> {
 	
 	@Override
 	public EnvisionObject run(Expr_Set expression) {
-		String name = expression.name.lexeme;
+		String name = expression.name.getLexeme();
 		EnvisionObject baseObject = evaluate(expression.object);
 		EnvisionObject value = evaluate(expression.value);
 		

@@ -28,7 +28,7 @@ public class PS_LoopControl extends GenericParser {
 	public static Statement handleBreak() {
 		if (match(BREAK)) return new Stmt_LoopControl(previous(), true);
 		
-		Token start = consume(BREAKIF, "Expected a 'breakif' statement!");
+		Token<?> start = consume(BREAKIF, "Expected a 'breakif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
 		Expression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
@@ -46,7 +46,7 @@ public class PS_LoopControl extends GenericParser {
 	public static Statement handleContinue() {
 		if (match(CONTINUE)) return new Stmt_LoopControl(previous(), false);
 		
-		Token start = consume(CONTIF, "Expected a 'contif' statement!");
+		Token<?> start = consume(CONTIF, "Expected a 'contif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
 		Expression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");

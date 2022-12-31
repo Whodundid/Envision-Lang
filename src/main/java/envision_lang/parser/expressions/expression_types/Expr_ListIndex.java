@@ -9,7 +9,7 @@ public class Expr_ListIndex implements Expression {
 	
 	public final Expression list;
 	public final Expression index;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_ListIndex(Expression listIn, Expression indexIn) {
 		list = listIn;
@@ -33,7 +33,7 @@ public class Expr_ListIndex implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

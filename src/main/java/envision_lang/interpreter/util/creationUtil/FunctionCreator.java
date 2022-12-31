@@ -14,7 +14,7 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /** Utility class designed to help with function creation and overloading. */
 public class FunctionCreator {
@@ -57,9 +57,9 @@ public class FunctionCreator {
 		EnvisionFunction f = null;
 		
 		//create operator overload function if operator
-		if (isOperator) 		f = new EnvisionFunction(s.operator.keyword.asOperator(), data);
+		if (isOperator) 		f = new EnvisionFunction(s.operator.getKeyword().asOperator(), data);
 		else if (isConstructor) f = new EnvisionFunction(data);
-		else 					f = new EnvisionFunction(function_return_datatype, s.name.lexeme, data);
+		else 					f = new EnvisionFunction(function_return_datatype, s.name.getLexeme(), data);
 		
 		
 		//---------------------------------------------------------
@@ -105,14 +105,14 @@ public class FunctionCreator {
 	*/
 	
 	/** Builds the method parameter data from the given method declaration statement. */
-	public static ParameterData buildParameters(EnvisionInterpreter in, EArrayList<StatementParameter> params) {
+	public static ParameterData buildParameters(EnvisionInterpreter in, EList<StatementParameter> params) {
 		ParameterData parameterData = new ParameterData();
 		
 		for (StatementParameter p : params) {
-			Token name = p.name;
-			Token type = p.type;
+			Token<?> name = p.name;
+			Token<?> type = p.type;
 			
-			String theName = name.lexeme;
+			String theName = name.getLexeme();
 			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : StaticTypes.VAR_TYPE;
 			
 			Expression assign = p.assignment;
@@ -128,8 +128,8 @@ public class FunctionCreator {
 	}
 	
 	/** Attempts to find a method of the same name within the given scope. */
-	public static EnvisionFunction getBaseFunction(Token name, Token operator, IScope scopeIn) {
-		String n = (name != null) ? name.lexeme : "OP(" + operator.lexeme + ")";
+	public static EnvisionFunction getBaseFunction(Token<?> name, Token<?> operator, IScope scopeIn) {
+		String n = (name != null) ? name.getLexeme() : "OP(" + operator.getLexeme() + ")";
 		
 		//placeholder variable check
 		EnvisionObject o = scopeIn.get(n);

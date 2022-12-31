@@ -66,7 +66,7 @@ public class EnvisionDouble extends EnvisionNumber {
 	@Override public EnvisionDouble copy() { return EnvisionDoubleClass.newDouble(double_val); }
 	
 	@Override
-	public Object convertToJavaObject() {
+	public Double convertToJavaObject() {
 		return double_val;
 	}
 	

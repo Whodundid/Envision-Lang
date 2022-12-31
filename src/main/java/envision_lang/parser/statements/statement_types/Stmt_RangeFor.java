@@ -8,14 +8,15 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_RangeFor extends BasicStatement {
 	
 	public final Statement init;
-	public final EArrayList<Expr_Range> ranges = new EArrayList<>();
+	public final EList<Expr_Range> ranges = new EArrayList<>();
 	public final Statement body;
 	
-	public Stmt_RangeFor(Token start, Statement initIn, Statement bodyIn) {
+	public Stmt_RangeFor(Token<?> start, Statement initIn, Statement bodyIn) {
 		super(start);
 		init = initIn;
 		body = bodyIn;
@@ -46,13 +47,13 @@ public class Stmt_RangeFor extends BasicStatement {
 		return this;
 	}
 	
-	public Stmt_RangeFor addAll(EArrayList<Expr_Range> rangesIn) {
-		if (rangesIn != null) { ranges.addAll(rangesIn); }
+	public Stmt_RangeFor addAll(EList<Expr_Range> rangesIn) {
+		if (rangesIn != null) ranges.addAll(rangesIn);
 		return this;
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

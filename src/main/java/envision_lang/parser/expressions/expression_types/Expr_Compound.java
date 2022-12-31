@@ -5,20 +5,21 @@ import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /** A grouping of multiple expressions to be executed together. */
 public class Expr_Compound implements Expression {
 	
-	public final EArrayList<Expression> expressions;
-	public final Token definingToken;
+	public final EList<Expression> expressions;
+	public final Token<?> definingToken;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public Expr_Compound(Token start) { this(start, new EArrayList<Expression>()); }
-	public Expr_Compound(Token start, EArrayList<Expression> expressionsIn) {
+	public Expr_Compound(Token<?> start) { this(start, new EArrayList<>()); }
+	public Expr_Compound(Token<?> start, EList<Expression> expressionsIn) {
 		expressions = expressionsIn;
 		definingToken = start;
 	}
@@ -53,7 +54,7 @@ public class Expr_Compound implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	
@@ -78,7 +79,7 @@ public class Expr_Compound implements Expression {
 	/** Returns the expression wrapped inside of a compound expression.
 	 *  If the expression already was a CompoundExpression, the expression
 	 *  is simply returned as is. */
-	public static Expr_Compound wrap(Token definingToken, Expression in) {
+	public static Expr_Compound wrap(Token<?> definingToken, Expression in) {
 		if (in instanceof Expr_Compound) return (Expr_Compound) in;
 		else return new Expr_Compound(definingToken, in);
 	}

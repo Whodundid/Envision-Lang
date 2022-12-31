@@ -13,4 +13,6 @@ public @interface EOperator {
 	/** The Envision code that relates to this field or function. */
 	String value() default "";
 	
+	String returnsType() default "";
+	
 }

@@ -46,7 +46,7 @@ public class Package_EnvisionClass extends EnvisionClass {
 	//--------------
 	
 	private Package_EnvisionClass() {
-		super(ENVISION_DATATYPE.getType());
+		super(ENVISION_DATATYPE.getStringValue());
 	}
 	
 	//-----------

@@ -1,8 +1,5 @@
 package envision_lang.tokenizer;
 
-import eutil.datatypes.EArrayList;
-import eutil.strings.EStringBuilder;
-
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
@@ -14,31 +11,41 @@ import java.io.InputStreamReader;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
+import eutil.datatypes.BoxList;
+import eutil.datatypes.util.EList;
+import eutil.strings.EStringBuilder;
 
 public class Tokenizer {
 	
 	/** The code file being tokenized. */
 	private EnvisionCodeFile theFile;
 	/** Each tokenized line in the code file. */
-	private final EArrayList<EArrayList<Token<?>>> lineTokens = new EArrayList<>();
+	private final BoxList<Integer, EList<Token<?>>> lineTokens = new BoxList<>();
 	/** All of the parsed tokens from the given code file. */
-	private final EArrayList<Token<?>> tokens = new EArrayList<>();
+	private final EList<Token<?>> tokens = EList.newList();
 	/** Each line in string form. */
-	private final EArrayList<String> lines = new EArrayList<>();
+	private final EList<String> lines = EList.newList();
 	/** Comment tokens. */
-	private final EArrayList<Token<?>> commentTokens = new EArrayList<>();
+	private final EList<Token<?>> commentTokens = EList.newList();
 	/** Used to keep track of multi-line comments. */
 	private boolean inComment = false;
 	/** Used to keep track of multi-line comments. */
 	private boolean inString = false;
-	
 	/** Used to keep track of the current line internally. */
 	private int lineNum = 1;
-	private String source;
+	/** Used to keep track of the exact line index for where this token came from. */
+	private int lineIndex = 0;
+	/** Used to keep track of the index of this token on the line it was parsed from. */
+	private int lineTokenIndex = 0;
+	/** The actual line actively being parsed. */
+	private String currentLineSource;
+	/** The 'start' position for where a token begins. */
 	private int start = 0;
+	/** The 'current' position on the line that is being tracked to parse a token. */
 	private int cur = 0;
 	
-	private EArrayList<Token<?>> createdTokens;
+	/** The (active) set of tokens currently being parsed for a given line. */
+	private EList<Token<?>> parsedLineTokens;
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
@@ -55,20 +62,21 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	/** Separates a single input line's characters into valid Envision tokens. */
-	private EArrayList<Token<?>> tokenizeLine(String line, int lineNum) {
-		createdTokens = new EArrayList();
-		source = line.trim();
+	private EList<Token<?>> tokenizeLine(String line, int lineNum) {
+		parsedLineTokens = EList.newList();
+		currentLineSource = line.trim();
 		cur = 0;
+		lineIndex = 0;
 		
 		//check for basic comment
-		if (source.startsWith(COMMENT_SINGLE.typeString)) return createdTokens;
+		if (currentLineSource.startsWith(COMMENT_SINGLE.typeString)) return parsedLineTokens;
 		
 		while (!atEnd()) {
 			start = cur;
 			scanToken();
 		}
 		
-		return createdTokens;
+		return parsedLineTokens;
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
@@ -87,15 +95,24 @@ public class Tokenizer {
 		//don't continue if still in multi-line comment or if at end of line
 		if (inComment || atEnd()) return;
 		
-		//match char to token
+		//advance to the next char in the source string
 		char c = advance();
+		
+		//ignore whitespace and jump to the next non-whitespace character
+		if (isWhiteSpace(c)) c = consumeWhiteSpace();
+		
+		//match char to token
 		switch (c) {
-		case '{': addToken(CURLY_L); break;										// '{'
-		case '}': addToken(CURLY_R); break;										// '}'
-		case '(': addToken(PAREN_L); break;										// '('
-		case ')': addToken(PAREN_R); break;										// ')'
-		case '[': addToken(BRACKET_L); break;									// '['
-		case ']': addToken(BRACKET_R); break;									// ']'
+		
+		//break on null chars
+		case '\0': break;
+		
+		case '{': addToken(CURLY_L); break;											// '{'
+		case '}': addToken(CURLY_R); break;											// '}'
+		case '(': addToken(PAREN_L); break;											// '('
+		case ')': addToken(PAREN_R); break;											// ')'
+		case '[': addToken(BRACKET_L); break;										// '['
+		case ']': addToken(BRACKET_R); break;										// ']'
 		case ';': addToken(SEMICOLON); break;										// ';'
 		case ',': addToken(COMMA); break;											// ','
 		case ':': addToken(COLON); break;											// ':'
@@ -145,19 +162,34 @@ public class Tokenizer {
 			break; 
 		case '%': addToken((match('=')) ? MOD_ASSIGN : MOD); break;					// '%=', '%'
 		
-		case ' ':
-		case '\r':
-		case '\t': break; //ignore whitespace
-		
-		case '"': string(); break;
-		case '\'': parse_char(); break;
+		case '"': string(); break;													// string literals
+		case '\'': parse_char(); break;												// char literals
 		
 		default:
-			if (isDigit(c)) number();
-			else if (isLetter(c)) identifier();
-			else throw new EnvisionLangError("Envision: Tokenization failed -> unexpected character! -> Line: "
-										 + lineNum + " + '" + c + "'");
+			if (isDigit(c)) number();												// number literals
+			else if (isLetter(c)) identifier();										// variable/object names
+			else throw new EnvisionLangError("Envision: Tokenization failed -> unexpected character! -> Line: " +
+										      lineNum + " + '" + c + "'");
 		}
+	}
+	
+	private boolean isWhiteSpace(char c) { return c == ' ' || c == '\r' || c == '\t'; }
+	private char consumeWhiteSpace() {
+		char next = peek();
+		boolean endCheck = atEnd();
+		boolean whiteSpaceCheck = isWhiteSpace(next);
+		
+		while (!endCheck && whiteSpaceCheck) {
+			advance();
+			endCheck = atEnd();
+			next = peek();
+			whiteSpaceCheck = isWhiteSpace(next);
+		}
+		
+		//advance start past the (now) consumed whitespace
+		start = cur++;
+		
+		return next;
 	}
 	
 	/**
@@ -167,9 +199,16 @@ public class Tokenizer {
 	 */
 	private void identifier() {
 		while (isLetterOrNum(peek())) advance();
-		String text = source.substring(start, cur);
+		
+		String text = currentLineSource.substring(start, cur);
 		ReservedWord k = ReservedWord.getKeyword(text);
-		if (k == null) k = IDENTIFIER;
+		
+		if (k == null) {
+			k = IDENTIFIER;
+			addToken(k);
+			return;
+		}
+		
 		if (k == TRUE) addToken(k, true);
 		else if (k == FALSE) addToken(k, false);
 		else addToken(k);
@@ -204,8 +243,8 @@ public class Tokenizer {
 			}
 		}
 		
-		if (decimal) addToken(ReservedWord.NUMBER_LITERAL, Double.parseDouble(source.substring(start, cur)));
-		else addToken(ReservedWord.NUMBER_LITERAL, Long.parseLong(source.substring(start, cur)));
+		if (decimal) addToken(ReservedWord.NUMBER_LITERAL, Double.parseDouble(currentLineSource.substring(start, cur)));
+		else addToken(ReservedWord.NUMBER_LITERAL, Long.parseLong(currentLineSource.substring(start, cur)));
 	}
 	
 	/**
@@ -225,7 +264,7 @@ public class Tokenizer {
 		}
 		
 		//IF NOT HANDLED BY INTERPRETER -- USE 'start + 1, cur - 1' FOR BOUNDARY
-		String value = source.substring(start + 1, cur - 1);
+		String value = currentLineSource.substring(start + 1, cur - 1);
 		addToken(ReservedWord.STRING_LITERAL, value);
 	}
 	
@@ -246,7 +285,7 @@ public class Tokenizer {
 		if (peek() != '\'' || atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
 		else advance();
 		
-		addToken(ReservedWord.CHAR_LITERAL, source.substring(start + 1, cur - 1));
+		addToken(ReservedWord.CHAR_LITERAL, currentLineSource.substring(start + 1, cur - 1));
 	}
 	
 	/**
@@ -257,7 +296,7 @@ public class Tokenizer {
 	 * @return true if the same
 	 */
 	private boolean check(char expected) {
-		return (!atEnd() && source.charAt(cur) == expected);
+		return (!atEnd() && currentLineSource.charAt(cur) == expected);
 	}
 	
 	/**
@@ -291,7 +330,7 @@ public class Tokenizer {
 	 * @return true if the char matches
 	 */
 	private boolean match(char expected) {
-		if (atEnd() || source.charAt(cur) != expected) return false;
+		if (atEnd() || currentLineSource.charAt(cur) != expected) return false;
 		cur++;
 		return true;
 	}
@@ -318,8 +357,8 @@ public class Tokenizer {
 		return r;
 	}
 	
-	private char peek() { return (atEnd()) ? '\0' : source.charAt(cur); }
-	private char peekNext() { return (cur + 1 >= source.length()) ? '\0' : source.charAt(cur + 1); }
+	private char peek() { return (atEnd()) ? '\0' : currentLineSource.charAt(cur); }
+	private char peekNext() { return (cur + 1 >= currentLineSource.length()) ? '\0' : currentLineSource.charAt(cur + 1); }
 	
 	/**
 	 * Peeks at the char at the (cur + nextAmount) position.
@@ -328,14 +367,14 @@ public class Tokenizer {
 	 * @return The char at the offset position
 	 */
 	private char peekNext(int nextAmount) {
-		return (cur + nextAmount >= source.length()) ? '\0' : source.charAt(cur + nextAmount); 
+		return (cur + nextAmount >= currentLineSource.length()) ? '\0' : currentLineSource.charAt(cur + nextAmount); 
 	}
 	
-	private char advance() { return source.charAt(cur++); }
+	private char advance() { return currentLineSource.charAt(cur++); }
 	private boolean isLetter(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
 	private boolean isDigit(char c) { return c >= '0' && c <= '9'; }
 	private boolean isLetterOrNum(char c) { return isLetter(c) || isDigit(c); }
-	private boolean atEnd() { return cur >= source.length(); }
+	private boolean atEnd() { return cur >= currentLineSource.length(); }
 	private int getCurrent() { return cur; }
 	private void setCurrent(int in) { cur = in; }
 	
@@ -352,61 +391,52 @@ public class Tokenizer {
 	}
 	
 	private boolean tokenizeFile_I() throws IOException {
-		if (theFile.isValid()) {
-			
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(theFile.getSystemFile())))) {
-				String l = reader.readLine();
-				while (l != null) {
-					l = l.replace("\t", "");
-					boolean empty = l.isBlank();
+		if (!theFile.isValid()) return false;
+		
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(theFile.getSystemFile())))) {
+			String l = reader.readLine();
+			while (l != null) {
+				l = l.replace("\t", "");
+				boolean empty = l.isBlank();
+				
+				lines.add(l);
+				
+				if (!empty) {
+					var list = tokenizeLine(l, lineNum);
+					var nl = Token.newLine(lineNum);
+					list.add(nl);
 					
-					if (!empty) {
-						EArrayList<Token<?>> list = tokenizeLine(l, lineNum);
-						lineTokens.add(list);
-						tokens.addAll(list);
-					}
-					else {
-						Token nl = Token.newLine(lineNum);
-						lineTokens.add(new EArrayList<>(nl));
-						tokens.add(nl);
-					}
-					
-					lines.add(l);
-					
-					//check for end of file
-					l = reader.readLine();
-					if (l != null) {
-						Token nl = Token.newLine(lineNum++);
-						if (!empty) {
-							lineTokens.getLast().add(nl);
-							tokens.add(nl);
-							//lines.add(stripComments(l));
-						}
-					}
-					else {
-						Token EOF = Token.EOF(lineNum);
-						lineTokens.getLast().add(EOF);
-						tokens.add(EOF);
-						lines.add("EOF");
-					}
+					lineTokenIndex = 0;
+					lineTokens.add(lineNum, list);
+					tokens.addAll(list);
 				}
 				
-				if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
+				//check for end of file
+				l = reader.readLine();
+				if (l == null) {
+					var EOF = Token.EOF(lineNum);
+					lineTokens.getLast().getB().add(EOF);
+					tokens.add(EOF);
+					lines.add("EOF");
+				}
 				
-				return true;
+				lineNum++;
 			}
+			
+			if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
+			
+			return true;
 		}
-		return false;
 	}
 	
 	/** Tokenizes a single line. */
 	public boolean tokenizeLine(String lineIn) {
 		lineIn = lineIn.replace("\t", "");
-		EArrayList<Token<?>> list = tokenizeLine(lineIn, 0);
+		var list = tokenizeLine(lineIn, 0);
 		if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
-		lineTokens.add(list);
+		lineTokens.add(lineNum, list);
 		tokens.addAll(list);
-		tokens.add(Token.newLine(0));
+		tokens.add(Token.newLine(-1));
 		lines.add(stripComments(lineIn));
 		lines.add("EOF");
 		return true;
@@ -416,18 +446,18 @@ public class Tokenizer {
 	// Getters
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public EArrayList<EArrayList<Token<?>>> getLineTokens() { return lineTokens; }
-	public EArrayList<Token<?>> getTokens() { return tokens; }
-	public EArrayList<String> getLines() { return lines; }
-	public EArrayList<Token<?>> getCommentTokens() { return createdTokens; }
+	public BoxList<Integer, EList<Token<?>>> getLineTokens() { return lineTokens; }
+	public EList<Token<?>> getTokens() { return tokens; }
+	public EList<String> getLines() { return lines; }
+	public EList<Token<?>> getCommentTokens() { return commentTokens; }
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	private void addToken(IKeyword keyword) { addToken(keyword, null); }
 	private <TYPE> void addToken(IKeyword keyword, TYPE literal) {
-		String text = source.substring(start, cur);
-		createdTokens.add(new Token<TYPE>(keyword, text, literal, lineNum));
+		String text = currentLineSource.substring(start, cur);
+		parsedLineTokens.add(new Token<TYPE>(keyword, text, literal, lineNum, start, lineTokenIndex++));
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ import envision_lang.tokenizer.Token;
 public class Expr_Range implements Expression {
 	
 	public final Expression left, right, by;
-	public final Token definingToken;
+	public final Token<?> definingToken;
 	
 	public Expr_Range(Expression leftIn, Expression rightIn, Expression byIn) {
 		left = leftIn;
@@ -29,7 +29,7 @@ public class Expr_Range implements Expression {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	

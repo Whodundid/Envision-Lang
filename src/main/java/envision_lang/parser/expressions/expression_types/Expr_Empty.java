@@ -24,7 +24,7 @@ public class Expr_Empty implements Expression {
 	}
 
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return null;
 	}
 	

@@ -6,15 +6,18 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import java.util.Iterator;
 
 import envision_lang.parser.GenericParser;
+import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.DeclarationStage;
 import envision_lang.parser.util.ParserDeclaration;
+import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class PS_Class extends GenericParser {
 	
@@ -25,7 +28,7 @@ public class PS_Class extends GenericParser {
 	public static Statement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
 	public static Statement classDeclaration(ParserDeclaration declaration) {
 		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
-		Token name = consume(IDENTIFIER, "Expected a valid class name!");
+		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		//ParserStage.curClassName = name;
 		
 		//removing class parameter parsing for now
@@ -41,26 +44,26 @@ public class PS_Class extends GenericParser {
 		Stmt_Class cs = new Stmt_Class(declaration.getStartToken(), name, declaration);
 		
 		//removing parent class parsing for now
-		/*
+		
 		if (match(COLON)) {
 			do {
 				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
-				else if (checkType(DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
+				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
 				else error("Expected a valid super class type!");
 				cs.addSuper(new Expr_Var(previous()));
 			}
 			while (match(COMMA));
 		}
-		*/
+		
 		
 		//read in class body
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors
-		EArrayList<Statement> body = getBlock();
-		EArrayList<Statement> staticMembers = new EArrayList();
+		EList<Statement> body = getBlock();
+		EList<Statement> staticMembers = new EArrayList<>();
 		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
+		EList<Stmt_FuncDef> constructors = new EArrayList<>();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
@@ -97,8 +100,8 @@ public class PS_Class extends GenericParser {
 		for (int i = 0; i < bodySize; i++) {
 			Statement s = body.get(i);
 			
-			if (s instanceof Stmt_Block) {
-				constructors.addAll(isolateConstructors((Stmt_Block) s));
+			if (s instanceof Stmt_Block b) {
+				constructors.addAll(isolateConstructors(b));
 				//System.out.println("add: " + constructors);
 			}
 			
@@ -132,8 +135,8 @@ public class PS_Class extends GenericParser {
 		return cs;
 	}
 	
-	private static EArrayList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
+	private static EList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
+		EList<Stmt_FuncDef> constructors = new EArrayList<>();
 		Iterator<Statement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {
@@ -143,7 +146,7 @@ public class PS_Class extends GenericParser {
 				constructors.addAll(isolateConstructors(bs));
 			}
 			else if (s instanceof Stmt_FuncDef mds && mds.isConstructor) {
-				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.line);
+				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.getLineNum());
 				constructors.add(mds);
 				it.remove();
 			}

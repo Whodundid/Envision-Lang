@@ -77,7 +77,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	//--------------
 	
 	private EnvisionFileClass() {
-		super(FILE_DATATYPE.getType());
+		super(FILE_DATATYPE.getStringValue());
 	}
 
 	/**

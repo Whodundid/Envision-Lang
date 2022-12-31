@@ -22,6 +22,8 @@ public enum ReservedWord implements IKeyword {
 	
 	/** Used to reference code/data in other envision program files. */
 	IMPORT("import"),
+	/** Denotes a package. */
+	PACKAGE("package"),
 	/** Used in conjunction with 'import' statements to denote how to specifically refer to a given import. */
 	AS("as"),
 	/** Denotes standard function declarations. */
@@ -104,6 +106,7 @@ public enum ReservedWord implements IKeyword {
 	
 	ENUM("enum", KeywordType.DATATYPE),
 	LIST("list", KeywordType.DATATYPE),
+	TUPLE("tuple", KeywordType.DATATYPE),
 	
 	//-------
 	// loops
@@ -213,14 +216,17 @@ public enum ReservedWord implements IKeyword {
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
 	public static Primitives getDataType(String in) {
-		return EUtil.nullApplyR(getKeyword(in), k -> k.getDataType(), Primitives.NULL);
+		return EUtil.nullApplyR(getKeyword(in), k -> k.getPrimitiveType(), Primitives.NULL);
 	}
 	
 	/**
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
 	public static Primitives getDataType(ReservedWord in) {
-		return EUtil.nullApplyR(in, k -> k.getDataType(), Primitives.NULL);
+		return EUtil.nullApplyR(in, k -> k.getPrimitiveType(), Primitives.NULL);
 	}
+	
+	@Override public boolean isOperator() { return false; }
+	@Override public boolean isReservedWord() { return true; }
 	
 }

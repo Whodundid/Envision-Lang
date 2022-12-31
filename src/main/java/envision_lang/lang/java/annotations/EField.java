@@ -13,4 +13,6 @@ public @interface EField {
 	/** The Envision code that relates to this field or function. */
 	String value() default "";
 	
+	String envisionType() default "";
+	
 }

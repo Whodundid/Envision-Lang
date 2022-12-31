@@ -5,15 +5,15 @@ import envision_lang.parser.statements.Statement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 public class Stmt_Package extends BasicStatement {
 	
 	public final ParserDeclaration declaration;
-	public final Token name;
-	public final EArrayList<Statement> body;
+	public final Token<?> name;
+	public final EList<Statement> body;
 	
-	public Stmt_Package(Token start, ParserDeclaration declarationIn, Token nameIn, EArrayList<Statement> bodyIn) {
+	public Stmt_Package(Token<?> start, ParserDeclaration declarationIn, Token<?> nameIn, EList<Statement> bodyIn) {
 		super(start);
 		declaration = declarationIn;
 		name = nameIn;
@@ -23,7 +23,7 @@ public class Stmt_Package extends BasicStatement {
 	@Override
 	public String toString() {
 		String b = (body != null && body.isEmpty()) ? "" : " " + body + " ";
-		return declaration + "package " + name.lexeme + " {" + b + "}";
+		return declaration + "package " + name.getLexeme() + " {" + b + "}";
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class Stmt_Package extends BasicStatement {
 	}
 	
 	@Override
-	public Token definingToken() {
+	public Token<?> definingToken() {
 		return definingToken;
 	}
 	
