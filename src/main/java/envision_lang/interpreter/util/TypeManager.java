@@ -34,13 +34,13 @@ public class TypeManager {
 	public TypeManager() {
 		//load primitive types
 		
-		types.put(Primitives.BOOLEAN.string_value, EnvisionBooleanClass.BOOLEAN_CLASS);
-		types.put(Primitives.INT.string_value, EnvisionIntClass.INT_CLASS);
-		types.put(Primitives.DOUBLE.string_value, EnvisionDoubleClass.DOUBLE_CLASS);
-		types.put(Primitives.CHAR.string_value, EnvisionCharClass.CHAR_CLASS);
-		types.put(Primitives.STRING.string_value, EnvisionStringClass.STRING_CLASS);
-		types.put(Primitives.LIST.string_value, EnvisionListClass.LIST_CLASS);
-		types.put(Primitives.NUMBER.string_value, EnvisionNumberClass.NUMBER_CLASS);
+//		types.put(Primitives.BOOLEAN.string_value, EnvisionBooleanClass.BOOLEAN_CLASS);
+//		types.put(Primitives.INT.string_value, EnvisionIntClass.INT_CLASS);
+//		types.put(Primitives.DOUBLE.string_value, EnvisionDoubleClass.DOUBLE_CLASS);
+//		types.put(Primitives.CHAR.string_value, EnvisionCharClass.CHAR_CLASS);
+//		types.put(Primitives.STRING.string_value, EnvisionStringClass.STRING_CLASS);
+//		types.put(Primitives.LIST.string_value, EnvisionListClass.LIST_CLASS);
+//		types.put(Primitives.NUMBER.string_value, EnvisionNumberClass.NUMBER_CLASS);
 		
 	}
 	

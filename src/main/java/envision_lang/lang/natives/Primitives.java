@@ -39,12 +39,12 @@ public enum Primitives implements IDatatype {
 	
 	// native language types
 	
-	VOID("void"),
+	VOID("//void"),
 	NULL("//_null_"),
 	CLASS("//class"),
 	CLASS_INSTANCE("//class_inst"),
 	INTERFACE("//interface"),
-	PACKAGE("package"),
+	PACKAGE("//package"),
 	CODE_FILE("//code_file"),
 	FUNCTION("//function"),
 	//OPERATOR("operator"),
@@ -52,19 +52,19 @@ public enum Primitives implements IDatatype {
 	
 	// basic types
 	
-	BOOLEAN("boolean"),
-	CHAR("char"),
-	INT("int"),
-	DOUBLE("double"),
-	NUMBER("number"),
-	STRING("string"),
-	LIST("list"),
-	TUPLE("tuple"),
+	BOOLEAN("//boolean"),
+	CHAR("//char"),
+	INT("//int"),
+	DOUBLE("//double"),
+	NUMBER("//number"),
+	STRING("//string"),
+	LIST("//list"),
+	TUPLE("//tuple"),
 	
 	// dynamic object types
 	
 	VAR("//var_type"),
-	ENUM("enum"),
+	ENUM("//enum"),
 	ENUM_TYPE("//enum_type"),
 	
 	// array types
@@ -107,12 +107,12 @@ public enum Primitives implements IDatatype {
 	/** The internal mapping of all known primitive type values. */
 	private static final EList<Primitives> primitivesList = new EArrayList<>();
 	
-	/** Maps envision IKeyword types directly to primitive types. */
-	private static final Map<IKeyword, Primitives> keywordMap = new HashMap<>();
 	/** Maps string representations of primitives directly to its actual primitive type. */
-	private static final Map<String, Primitives> keywordStringMap = new HashMap<>();
+	private static final Map<String, Primitives> stringValueToPrimitiveMap = new HashMap<>();
+	/** Maps envision IKeyword types directly to primitive types. */
+	private static final Map<IKeyword, Primitives> keywordToPrimitiveMap = new HashMap<>();
 	/** Maps Java datatypes directly to an envision datatype (if applicable). */
-	private static final Map<JavaDatatype, Primitives> datatypeMap = new HashMap<>();
+	private static final Map<JavaDatatype, Primitives> javaDatatypeToPrimitiveMap = new HashMap<>();
 	
 	/** A set of all primitives that can have parameters. */
 	private static final Set<Primitives> primitivesThatCanBeParameterized = new HashSet<>();
@@ -123,8 +123,8 @@ public enum Primitives implements IDatatype {
 	private static final Set<Primitives> numberPrimitives = new HashSet<>();
 	/** The set of all primitive types that could be used as a class field in envision. */
 	private static final Set<Primitives> fieldPrimitives = new HashSet<>();
-	/** The set of all primitive types that are native types in envision. */
-	private static final Set<Primitives> nativeVariablePrimitives = new HashSet<>();
+	/** The set of all primitive types that are natively passed by value in envision. */
+	private static final Set<Primitives> passByValuePrimitives = new HashSet<>();
 	
 	//=============
 	// Static init
@@ -133,47 +133,60 @@ public enum Primitives implements IDatatype {
 	static {
 		for (Primitives p : values()) {
 			primitivesList.add(p);
-			keywordStringMap.put(p.string_value, p);
+			stringValueToPrimitiveMap.put(p.string_value, p);
 		}
 		
-		keywordMap.put(ReservedWord.TRUE, BOOLEAN);
-		keywordMap.put(ReservedWord.FALSE, BOOLEAN);
-		keywordMap.put(ReservedWord.VOID, VOID);
-		keywordMap.put(ReservedWord.NULL, NULL);
-		keywordMap.put(ReservedWord.CLASS, CLASS);
-		keywordMap.put(ReservedWord.INTERFACE, INTERFACE);
-		keywordMap.put(ReservedWord.PACKAGE, PACKAGE);
-		keywordMap.put(ReservedWord.FUNC, FUNCTION);
-		keywordMap.put(ReservedWord.BOOLEAN, BOOLEAN);
-		keywordMap.put(ReservedWord.CHAR, CHAR);
-		keywordMap.put(ReservedWord.INT, INT);
-		keywordMap.put(ReservedWord.DOUBLE, DOUBLE);
-		keywordMap.put(ReservedWord.STRING, STRING);
-		keywordMap.put(ReservedWord.NUMBER, NUMBER);
-		keywordMap.put(ReservedWord.LIST, LIST);
-		keywordMap.put(ReservedWord.TUPLE, TUPLE);
-		keywordMap.put(ReservedWord.VAR, VAR);
-		keywordMap.put(ReservedWord.ENUM, ENUM);
+		stringValueToPrimitiveMap.put(ReservedWord.VAR.typeString, VAR);
+		stringValueToPrimitiveMap.put(ReservedWord.VOID.typeString, VOID);
+		stringValueToPrimitiveMap.put(ReservedWord.NULL.typeString, NULL);
+		stringValueToPrimitiveMap.put(ReservedWord.BOOLEAN.typeString, BOOLEAN);
+		stringValueToPrimitiveMap.put(ReservedWord.NUMBER.typeString, NUMBER);
+		stringValueToPrimitiveMap.put(ReservedWord.INT.typeString, INT);
+		stringValueToPrimitiveMap.put(ReservedWord.DOUBLE.typeString, DOUBLE);
+		stringValueToPrimitiveMap.put(ReservedWord.CHAR.typeString, CHAR);
+		stringValueToPrimitiveMap.put(ReservedWord.STRING.typeString, STRING);
+		stringValueToPrimitiveMap.put(ReservedWord.ENUM.typeString, ENUM);
+		stringValueToPrimitiveMap.put(ReservedWord.LIST.typeString, LIST);
+		stringValueToPrimitiveMap.put(ReservedWord.TUPLE.typeString, TUPLE);
 		
-		datatypeMap.put(JavaDatatype.BOOLEAN, BOOLEAN);
-		datatypeMap.put(JavaDatatype.CHAR, CHAR);
-		datatypeMap.put(JavaDatatype.BYTE, INT);
-		datatypeMap.put(JavaDatatype.SHORT, INT);
-		datatypeMap.put(JavaDatatype.INT, INT);
-		datatypeMap.put(JavaDatatype.LONG, INT);
-		datatypeMap.put(JavaDatatype.FLOAT, DOUBLE);
-		datatypeMap.put(JavaDatatype.DOUBLE, DOUBLE);
-		datatypeMap.put(JavaDatatype.STRING, STRING);
-		datatypeMap.put(JavaDatatype.NUMBER, NUMBER);
-		datatypeMap.put(JavaDatatype.OBJECT, VAR);
-		datatypeMap.put(JavaDatatype.ARRAY, LIST);
-		datatypeMap.put(JavaDatatype.INTERFACE, INTERFACE);
-		datatypeMap.put(JavaDatatype.CONSTRUCTOR, FUNCTION);
-		datatypeMap.put(JavaDatatype.METHOD, FUNCTION);
-		datatypeMap.put(JavaDatatype.CLASS, CLASS);
-		datatypeMap.put(JavaDatatype.ENUM, ENUM);
-		datatypeMap.put(JavaDatatype.VOID, VOID);
-		datatypeMap.put(JavaDatatype.NULL, NULL);
+		keywordToPrimitiveMap.put(ReservedWord.TRUE, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.FALSE, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.VOID, VOID);
+		keywordToPrimitiveMap.put(ReservedWord.NULL, NULL);
+		keywordToPrimitiveMap.put(ReservedWord.CLASS, CLASS);
+		keywordToPrimitiveMap.put(ReservedWord.INTERFACE, INTERFACE);
+		keywordToPrimitiveMap.put(ReservedWord.PACKAGE, PACKAGE);
+		keywordToPrimitiveMap.put(ReservedWord.FUNC, FUNCTION);
+		keywordToPrimitiveMap.put(ReservedWord.BOOLEAN, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.CHAR, CHAR);
+		keywordToPrimitiveMap.put(ReservedWord.INT, INT);
+		keywordToPrimitiveMap.put(ReservedWord.DOUBLE, DOUBLE);
+		keywordToPrimitiveMap.put(ReservedWord.STRING, STRING);
+		keywordToPrimitiveMap.put(ReservedWord.NUMBER, NUMBER);
+		keywordToPrimitiveMap.put(ReservedWord.LIST, LIST);
+		keywordToPrimitiveMap.put(ReservedWord.TUPLE, TUPLE);
+		keywordToPrimitiveMap.put(ReservedWord.VAR, VAR);
+		keywordToPrimitiveMap.put(ReservedWord.ENUM, ENUM);
+		
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.BOOLEAN, BOOLEAN);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CHAR, CHAR);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.BYTE, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.SHORT, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.INT, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.LONG, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.FLOAT, DOUBLE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.DOUBLE, DOUBLE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.STRING, STRING);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.NUMBER, NUMBER);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.OBJECT, VAR);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.ARRAY, LIST);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.INTERFACE, INTERFACE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CONSTRUCTOR, FUNCTION);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.METHOD, FUNCTION);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CLASS, CLASS);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.ENUM, ENUM);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.VOID, VOID);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.NULL, NULL);
 		
 		primitivesThatCanBeParameterized.add(LIST);
 		primitivesThatCanBeParameterized.add(FUNCTION);
@@ -202,14 +215,14 @@ public enum Primitives implements IDatatype {
 		//fieldPrimitives.add(INTERFACE);
 		//fieldPrimitives.add(PACKAGE);
 		
-		nativeVariablePrimitives.add(BOOLEAN);
-		nativeVariablePrimitives.add(CHAR);
-		nativeVariablePrimitives.add(INT);
-		nativeVariablePrimitives.add(DOUBLE);
-		nativeVariablePrimitives.add(NUMBER);
-		nativeVariablePrimitives.add(STRING);
-		//nativeVariablePrimitives.add(LIST);
-		//nativeVariablePrimitives.add(TUPLE);
+		passByValuePrimitives.add(BOOLEAN);
+		passByValuePrimitives.add(CHAR);
+		passByValuePrimitives.add(INT);
+		passByValuePrimitives.add(DOUBLE);
+		passByValuePrimitives.add(NUMBER);
+		passByValuePrimitives.add(STRING);
+		//passByValuePrimitives.add(LIST);
+		//passByValuePrimitives.add(TUPLE);
 	}
 	
 	//-----------
@@ -237,13 +250,23 @@ public enum Primitives implements IDatatype {
 	}
 	
 	/**
-	 * Returns true if this type is a primitive variable.
+	 * Returns true if this type is passed-by-value.
 	 * I.E. boolean, int, double, etc.
 	 * 
-	 * @return true if a variable
+	 * @return true if this primitive follows pass-by-value rules
 	 */
-	public boolean isVariableType() {
-		return nativeVariablePrimitives.contains(this);
+	public boolean isPassByValue() {
+		return passByValuePrimitives.contains(this);
+	}
+	
+	/**
+	 * Returns true if this type is passed-by-reference.
+	 * I.E. list, tuple, function, etc.
+	 * 
+	 * @return true if this primitive follows pass-by-reference rules
+	 */
+	public boolean isPassByReference() {
+		return !isPassByValue();
 	}
 	
 	/**
@@ -317,17 +340,17 @@ public enum Primitives implements IDatatype {
 	
 	public static Primitives getPrimitiveType(IKeyword keyword) {
 		if (keyword.isOperator()) return null;
-		return keywordMap.getOrDefault(keyword, null);
+		return keywordToPrimitiveMap.getOrDefault(keyword, null);
 	}
 	
 	public static Primitives getPrimitiveType(String typeIn) {
 		if (typeIn == null) return null;
-		return keywordStringMap.getOrDefault(typeIn, null);
+		return stringValueToPrimitiveMap.getOrDefault(typeIn, null);
 	}
 	
 	public static Primitives getPrimitiveType(JavaDatatype typeIn) {
 		if (typeIn == null) return null;
-		return datatypeMap.getOrDefault(typeIn, null);
+		return javaDatatypeToPrimitiveMap.getOrDefault(typeIn, null);
 	}
 	
 	public static Primitives getPrimitiveType(EnvisionObject obj) {
@@ -366,27 +389,27 @@ public enum Primitives implements IDatatype {
 	 * Returns true if this datatype can be assigned from the specified
 	 * type.
 	 */
-	public boolean canBeAssignedFrom(Primitives type) {
-		return switch (this) {
-		//these are wildcard values so they should be able to take on any type and any value
-		case VAR -> true;
-		//these types can only ever be assigned by their respective type
-		case ENUM -> this == ENUM;
-		case FUNCTION -> this == FUNCTION;
-		case CLASS -> this == CLASS;
-		//case EXCEPTION: return this == EXCEPTION;
-		//these can never be assigned
-		case VOID, NULL -> false;
-		//variable types
-		case BOOLEAN -> type == BOOLEAN;
-		case CHAR -> type == CHAR;
-		case INT -> type == NUMBER || type == INT;
-		case DOUBLE -> type == NUMBER || type == INT || type == DOUBLE;
-		case STRING -> type == CHAR || type == STRING;
-		case NUMBER -> type == NUMBER || type == INT || type == DOUBLE || type == CHAR;
-		//assume false by default
-		default -> false;
-		};
-	}
+//	public boolean canBeAssignedFrom(Primitives type) {
+//		return switch (this) {
+//		//these are wildcard values so they should be able to take on any type and any value
+//		case VAR -> true;
+//		//these types can only ever be assigned by their respective type
+//		case ENUM -> this == ENUM;
+//		case FUNCTION -> this == FUNCTION;
+//		case CLASS -> this == CLASS;
+//		//case EXCEPTION: return this == EXCEPTION;
+//		//these can never be assigned
+//		case VOID, NULL -> false;
+//		//variable types
+//		case BOOLEAN -> type == BOOLEAN;
+//		case CHAR -> type == CHAR;
+//		case INT -> type == NUMBER || type == INT;
+//		case DOUBLE -> type == NUMBER || type == INT || type == DOUBLE;
+//		case STRING -> type == CHAR || type == STRING;
+//		case NUMBER -> type == NUMBER || type == INT || type == DOUBLE || type == CHAR;
+//		//assume false by default
+//		default -> false;
+//		};
+//	}
 	
 }

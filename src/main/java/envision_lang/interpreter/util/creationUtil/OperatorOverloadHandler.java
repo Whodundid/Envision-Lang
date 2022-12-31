@@ -3,9 +3,12 @@ package envision_lang.interpreter.util.creationUtil;
 import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
+import envision_lang.lang.datatypes.EnvisionString;
+import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
@@ -36,11 +39,18 @@ public class OperatorOverloadHandler {
 		
 		//if object is a primitive, handle native primitive overloads
 		if (a.isPrimitive() || a instanceof EnvisionList) {
-			return a.handleOperatorOverloads(interpreter, a_scopeName, op, obj);
+			//natively support right-handed string concatenations
+			if (op == Operator.ADD && obj instanceof EnvisionString) {
+				return EnvisionStringClass.concatenate(interpreter, a, obj);
+			}
+			//otherwise, allow the primitive class to try and find a valid Operator:Object handle
+			else {
+				return a.handleOperatorOverloads(interpreter, a_scopeName, op, obj);
+			}
 		}
-		
-		//if the base object directly supports the operator, grab the operator function and execute it
-		if (a.supportsOperator(op)) {
+		//otherwise, attempt to find a user-defined operator overload function on a user-defined class
+		//if the defined object directly supports the given operator, grab the operator function and execute it
+		else if (a.supportsOperator(op)) {
 			EnvisionFunction op_func = getOperatorFunc(a, op, obj);
 			//if the operator function is null -- skip this and jump to throwing error
 			if (op_func != null) return op_func.invoke_r(interpreter, obj);

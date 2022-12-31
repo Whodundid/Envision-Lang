@@ -184,7 +184,7 @@ public interface IDatatype {
 	 */
 	public default boolean isPrimitiveVariableType() {
 		var p = getPrimitive();
-		return (p != null) ? p.isVariableType() : false;
+		return (p != null) ? p.isPassByValue() : false;
 	}
 	
 	/**

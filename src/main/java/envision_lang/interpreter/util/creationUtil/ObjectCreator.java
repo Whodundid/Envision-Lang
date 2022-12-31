@@ -93,7 +93,7 @@ public class ObjectCreator {
 		}
 		
 		//check if creating a variable type
-		if (p_type.isVariableType()) {
+		if (p_type.isPassByValue()) {
 			if (defaultIn) {
 				switch (p_type) {
 				case BOOLEAN: return EnvisionBooleanClass.newBoolean();

@@ -39,7 +39,7 @@ public class NativeTypeManager {
 		if (nativesRegistered) return;
 		
 		for (Primitives p : Primitives.values()) {
-			native_types.put(p.string_value, p.toDatatype());
+			p.toDatatype();
 		}
 		
 		native_classes.put(Primitives.FUNCTION, EnvisionFunctionClass.FUNC_CLASS);

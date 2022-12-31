@@ -1,10 +1,13 @@
 package envision_lang.tokenizer;
 
-import eutil.EUtil;
-
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import envision_lang.lang.natives.Primitives;
+import eutil.EUtil;
 
 /**
  *  The complete set of Envision reserved keywords and operators.
@@ -178,10 +181,20 @@ public enum ReservedWord implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	private static HashMap<String, ReservedWord> keywords = new HashMap();
+	public static final Map<String, ReservedWord> KEYWORDS;
+	public static final Set<ReservedWord> DATATYPES;
 	
 	static {
-		for (var k : values()) keywords.put(k.typeString, k);
+		Map<String, ReservedWord> keywords_build = new HashMap<>();
+		Set<ReservedWord> d_types = new HashSet<>();
+		
+		for (var k : values()) {
+			keywords_build.put(k.typeString, k);
+			if (k.isDataType()) d_types.add(k);
+		}
+		
+		KEYWORDS = Collections.unmodifiableMap(keywords_build);
+		DATATYPES = Collections.unmodifiableSet(d_types);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -195,7 +208,7 @@ public enum ReservedWord implements IKeyword {
 	 * If no keywords match, null is returned instead.
 	 */
 	public static ReservedWord getKeyword(String in) {
-		return keywords.getOrDefault(in, null);
+		return KEYWORDS.getOrDefault(in, null);
 	}
 	
 	/**

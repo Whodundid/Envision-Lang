@@ -15,6 +15,7 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
+import envision_lang.lang.natives.StaticTypes;
 
 /**
  * Contains functions which pertain to object types and potential
@@ -67,13 +68,16 @@ public class CastingUtil {
 		}
 		
 		//grab primitive types
-		Primitives expected_ptype = expected.getPrimitive();
-		Primitives toCheck_ptype = toCheck.getPrimitive();
+		//IDatatype expected_ptype = expected.getPrimitive();
+		//Primitives toCheck_ptype = toCheck.getPrimitive();
+		
+		System.out.println(StaticTypes.VAR_TYPE + " : " + StaticTypes.VAR_TYPE.hashCode());
+		System.out.println(expected + " : " + expected.hashCode());
 		
 		//check for null passes
-		if (toCheck_ptype == Primitives.NULL) {
-			return;
-		}
+		//if (toCheck_ptype == Primitives.NULL) {
+		//	return;
+		//}
 		
 		//-----------------------------------------------------------------------------
 		// While this system works, it does not account for these kinds of situations
@@ -86,16 +90,16 @@ public class CastingUtil {
 		//-----------------------------------------------------------------------------
 		
 		//accept any type if the base is 'var'
-		if (expected_ptype == Primitives.VAR) return;
+		if (StaticTypes.VAR_TYPE.compare(expected)) return;
 		
 		//check if a char is going into a string
-		if (expected_ptype == STRING && toCheck_ptype == CHAR) return;
+		if (StaticTypes.STRING_TYPE.compare(expected) && StaticTypes.CHAR_TYPE.compare(toCheck)) return;
 		
 		//check if an int or double is going into number
-		if (expected_ptype == NUMBER && toCheck_ptype.isNumber() || toCheck_ptype == BOOLEAN) return;
+		if (StaticTypes.NUMBER_TYPE.compare(expected) && toCheck.isNumber() || StaticTypes.BOOL_TYPE.compare(toCheck)) return;
 		
 		//check if an int is going into a double
-		if (expected_ptype == DOUBLE && toCheck_ptype == INT) return;
+		if (StaticTypes.DOUBLE_TYPE.compare(DOUBLE) && StaticTypes.INT_TYPE.compare(toCheck)) return;
 		
 		//if none of above, check for exact datatype match
 		if (!expected.compare(toCheck)) {

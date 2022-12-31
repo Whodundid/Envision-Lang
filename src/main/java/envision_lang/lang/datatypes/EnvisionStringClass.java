@@ -6,6 +6,7 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.ArgLengthError;
 import envision_lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
@@ -116,6 +117,12 @@ public class EnvisionStringClass extends EnvisionClass {
 	 */
 	public static EnvisionString concatenate(EnvisionString a, EnvisionString b) {
 		return newString(a.string_val.append(b.string_val));
+	}
+	
+	public static EnvisionString concatenate(EnvisionInterpreter interpreter, EnvisionObject a, EnvisionObject b) {
+		var a_str = EnvisionStringFormatter.formatPrint(interpreter, a);
+		var b_str = EnvisionStringFormatter.formatPrint(interpreter, b);
+		return newString(a_str + b_str);
 	}
 	
 	/**
