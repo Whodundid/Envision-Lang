@@ -8,15 +8,14 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.util.DataModifier;
 import envision_lang.lang.util.EnvisionVis;
-import envision_lang.parser.GenericParser;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_ParseDeclaration extends GenericParser {
+public class PS_ParseDeclaration extends ParserHead {
 	
 	/**
 	 * Attempts to parse a complete statement declaration from current
@@ -133,7 +132,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 */
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers
-		EList<DataModifier> modifiers = new EArrayList();
+		EList<DataModifier> modifiers = EList.newList();
 		
 		while (checkType(DATA_MODIFIER)) {
 			Token<?> mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
@@ -149,7 +148,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EList<Expr_Generic> generics = new EArrayList<>();
+		EList<Expr_Generic> generics = EList.newList();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");

@@ -6,12 +6,11 @@ import java.io.IOException;
 import envision_lang.EnvisionLang;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
-import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.EnvisionLangParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
@@ -28,9 +27,9 @@ import eutil.strings.EStringUtil;
  */
 public class EnvisionCodeFile extends EnvisionObject {
 	
-	//--------
+	//========
 	// Fields
-	//--------
+	//========
 	
 	/** The name of the code file itself. */
 	private final String fileName;
@@ -45,7 +44,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The tokenized version of each line. */
 	private BoxList<Integer, EList<Token<?>>> lineTokens = new BoxList<>();
 	/** The parsed Statements from the code file. */
-	private EList<Statement> statements = EList.newList();
+	private EList<ParsedStatement> statements = EList.newList();
 	/** True if this file is actually a proper Envision code file. */
 	private final boolean isValid;
 	/** True if this file has already been parsed by the Envision Parser. */
@@ -57,7 +56,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** True if this file has been successfully tokenized. */
 	private boolean isTokenized = false;
 	/** The Interpreter associated with this specific code file. */
-	private EnvisionInterpreter interpreter;
+	private IScope codeFileScope;
 	/** The Tokenizer associated with this specific code file. */
 	private Tokenizer tokenizer;
 	/** The paired WorkingDirectory for this CodeFile. */
@@ -131,7 +130,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	 * @return true if successfully loaded
 	 * @throws Exception
 	 */
-	public boolean load(EnvisionLang instance, WorkingDirectory dir) throws Exception {
+	public boolean load(WorkingDirectory dir) throws Exception {
 		isLoaded = false;
 		
 		//if not tokenized, attempt to tokenize
@@ -149,7 +148,6 @@ public class EnvisionCodeFile extends EnvisionObject {
 		//prep interpreter
 		try {
 			workingDir = dir;
-			interpreter = new EnvisionInterpreter(instance, this);
 			dir.getBuildPackages().forEach(p -> p.defineOn(interpreter));
 			isLoaded = true;
 		}
@@ -160,21 +158,12 @@ public class EnvisionCodeFile extends EnvisionObject {
 		return isLoaded;
 	}
 	
-	public void execute() throws Exception {
-		execute(EList.newList());
-	}
-	
-	public void execute(EList<String> programArgs) throws Exception {
-		if (isLoaded) interpreter.interpret(workingDir, programArgs);
-	}
-	
-	//---------
+	//=========
 	// Getters
-	//---------
+	//=========
 	
 	public EnvisionObject getValue(String identifier) {
-		if (interpreter != null) return interpreter.scope().get(identifier);
-		return null;
+		return (codeFileScope != null) ? codeFileScope.get(identifier) : null;
 	}
 	
 	/** Returns true if this code file is actually valid and can be executed. */
@@ -190,11 +179,11 @@ public class EnvisionCodeFile extends EnvisionObject {
 	public EList<String> getLines() { return lines; }
 	public EList<Token<?>> getTokens() { return tokens; }
 	public BoxList<Integer, EList<Token<?>>> getLineTokens() { return lineTokens; }
-	public EList<Statement> getStatements() { return statements; }
-	public EnvisionInterpreter getInterpreter() { return interpreter; }
+	public EList<ParsedStatement> getStatements() { return statements; }
+	public WorkingDirectory getWorkingDir() { return workingDir; }
 	
 	/** Returns the scope of this code file's interpreter scope. */
-	public IScope scope() { return interpreter.scope(); }
+	public IScope scope() { return codeFileScope; }
 	
 	//-----------------------------------------------------
 	
@@ -236,7 +225,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		out.println("'" + getFileName() + "' Parsed Statements:");
 		var lines = new EStringBuilder();
 		int cur = 1;
-		for (Statement s : statements) {
+		for (ParsedStatement s : statements) {
 			lines.a('\t');
 			lines.append(cur++);
 			lines.append(". ");

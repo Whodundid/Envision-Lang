@@ -1,33 +1,39 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
-public class Stmt_FuncDef extends BasicStatement {
+public class Stmt_FuncDef extends ParsedStatement {
+	
+	//========
+	// Fields
+	//========
 	
 	public Token<?> name;
 	public final Token<?> operator;
 	public final EList<StatementParameter> methodParams;
-	public final EList<Statement> body;
-	public final ParserDeclaration declaration;
+	public final EList<ParsedStatement> body;
 	public final boolean isConstructor;
 	public final boolean isOperator;
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Stmt_FuncDef(Token<?> start,
 					    Token<?> nameIn,
 						Token<?> operatorIn,
 						EList<StatementParameter> paramsIn,
-						EList<Statement> bodyIn,
+						EList<ParsedStatement> bodyIn,
 						ParserDeclaration declarationIn,
 						boolean isConstructorIn,
 						boolean isOperatorIn)
 	{
-		super(start);
+		super(start, declarationIn);
 		name = nameIn;
 		operator = operatorIn;
 		methodParams = paramsIn;
@@ -37,16 +43,9 @@ public class Stmt_FuncDef extends BasicStatement {
 		isOperator = isOperatorIn;
 	}
 	
-	public void printValues() {
-		System.out.println("Method Declaration:");
-		System.out.println("\tName: " + name);
-		System.out.println("\tOperator: " + operator);
-		System.out.println("\tParams: " + methodParams);
-		System.out.println("\tBody: " + body);
-		System.out.println("\tDeclaration: " + declaration);
-		System.out.println("\tIs Initializer: " + isConstructor);
-		System.out.println("\tIs Operator: " + isOperator);
-	}
+	//===========
+	// Overrides
+	//===========
 
 	@Override
 	public String toString() {
@@ -58,18 +57,23 @@ public class Stmt_FuncDef extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return declaration;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleMethodStatement(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
+	//=========
+	// Methods
+	//=========
+	
+	public void debug_printValues() {
+		System.out.println("Method Declaration:");
+		System.out.println("\tName: " + name);
+		System.out.println("\tOperator: " + operator);
+		System.out.println("\tParams: " + methodParams);
+		System.out.println("\tBody: " + body);
+		System.out.println("\tDeclaration: " + declaration);
+		System.out.println("\tIs Initializer: " + isConstructor);
+		System.out.println("\tIs Operator: " + isOperator);
 	}
 	
 }

@@ -4,26 +4,25 @@ import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.util.EnvisionVis;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Enum;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_Enum extends GenericParser {
+public class PS_Enum extends ParserHead {
 	
-	public static Statement enumDeclaration() { return enumDeclaration(new ParserDeclaration()); }
-	public static Statement enumDeclaration(ParserDeclaration declaration) {
+	public static ParsedStatement enumDeclaration() { return enumDeclaration(new ParserDeclaration()); }
+	public static ParsedStatement enumDeclaration(ParserDeclaration declaration) {
 		Token<?> name = consume(IDENTIFIER, "Expected an enum name!");
 		
-		if (declaration == null) { declaration = new ParserDeclaration(); }
-		if (declaration.getVisibility() == null) { declaration.applyVisibility(EnvisionVis.SCOPE); }
+		if (declaration == null) declaration = new ParserDeclaration();
+		if (declaration.getVisibility() == null) declaration.applyVisibility(EnvisionVis.SCOPE);
 		
 		Stmt_EnumDef s = new Stmt_EnumDef(name, declaration);
 		
@@ -44,7 +43,7 @@ public class PS_Enum extends GenericParser {
 			if (match(SEMICOLON, CURLY_R)) { break; }
 			
 			Token<?> valueName = consume(IDENTIFIER, "Expected an enum value name!");
-			EList<Expression> valueArgs = new EArrayList<>();
+			EList<ParsedExpression> valueArgs = EList.newList();
 			
 			if (match(PAREN_L)) {
 				if (!check(PAREN_R)) {
@@ -58,7 +57,7 @@ public class PS_Enum extends GenericParser {
 			}
 			
 			s.addValue(new Expr_Enum(valueName, valueArgs));
-			if (check(COMMA)) { advance(); }
+			if (check(COMMA)) advance();
 		}
 		
 		if (previous().getKeyword() != CURLY_R) {

@@ -3,13 +3,12 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 /**
@@ -17,7 +16,7 @@ import eutil.datatypes.util.EList;
  * 
  * @author Hunter Bragg
  */
-public class PS_Return extends GenericParser {
+public class PS_Return extends ParserHead {
 	
 	/**
 	 * Parses return statements and its conditional counterpart. Returns
@@ -30,7 +29,7 @@ public class PS_Return extends GenericParser {
 	 * 
 	 * @return The parsed return statement
 	 */
-	public static Statement returnStatement() {
+	public static ParsedStatement returnStatement() {
 		return returnStatement(false);
 	}
 	
@@ -45,7 +44,7 @@ public class PS_Return extends GenericParser {
 	 * 
 	 * @return The parsed return statement
 	 */
-	public static Statement returnStatement(boolean parseForCondition) {
+	public static ParsedStatement returnStatement(boolean parseForCondition) {
 		Token<?> returnToken;
 		if (check(LAMBDA, RETURN)) returnToken = getAdvance();
 		else returnToken = previous();
@@ -53,7 +52,7 @@ public class PS_Return extends GenericParser {
 		consumeEmptyLines();
 		
 		//handle condition stuff
-		Expression cond = null;
+		ParsedExpression cond = null;
 		if (parseForCondition) {
 			consume(PAREN_L, "Expected a '(' to begin if expression!");
 			cond = ExpressionParser.parseExpression();
@@ -61,7 +60,7 @@ public class PS_Return extends GenericParser {
 		}
 		
 		//get return values
-		EList<Expression> retVals = new EArrayList<>();
+		EList<ParsedExpression> retVals = EList.newList();
 		if (!check(SEMICOLON, NEWLINE)) {
 			do {
 				retVals.add(ExpressionParser.parseExpression());

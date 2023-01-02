@@ -5,10 +5,10 @@ import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.natives.Primitives;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionParser;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statementParsers.PS_Class;
 import envision_lang.parser.statements.statementParsers.PS_Enum;
 import envision_lang.parser.statements.statementParsers.PS_For;
@@ -30,7 +30,6 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 /**
@@ -42,7 +41,7 @@ import eutil.datatypes.util.EList;
  * 
  * @author Hunter Bragg
  */
-public abstract class GenericParser {
+public abstract class ParserHead {
 	
 	public static EnvisionLangParser parser;
 	
@@ -56,7 +55,7 @@ public abstract class GenericParser {
 	/**
 	 * Begin the parsing process attempting to find a valid statement.
 	 */
-	public static Statement parse(EnvisionLangParser parserIn) {
+	public static ParsedStatement parse(EnvisionLangParser parserIn) {
 		parser = parserIn;
 		return declaration();
 	}
@@ -68,8 +67,8 @@ public abstract class GenericParser {
 	// token -- These are any tokens which signify the beginning of a language level declaration.
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Statement declaration() { return declaration(false); }
-	public static Statement declaration(boolean inMethod) {
+	public static ParsedStatement declaration() { return declaration(false); }
+	public static ParsedStatement declaration(boolean inMethod) {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
 		consumeEmptyLines();
 		
@@ -129,7 +128,7 @@ public abstract class GenericParser {
 	 * Returns a statement of some kind that is not the start of a declaration.
 	 * @return Statement
 	 */
-	public static Statement parseStatement() {
+	public static ParsedStatement parseStatement() {
 		if (match(CURLY_L))				return new Stmt_Block(previous(), getBlock());
 		if (check(IMPORT))				return PS_Import.handleImport();
 		if (check(TRY))					return PS_Try.tryStatement();
@@ -150,8 +149,8 @@ public abstract class GenericParser {
 	 * Attempts to parse an expression from tokens.
 	 * @return Statement
 	 */
-	public static Statement expressionStatement() {
-		Expression e = ExpressionParser.parseExpression();
+	public static ParsedStatement expressionStatement() {
+		ParsedExpression e = ExpressionParser.parseExpression();
 		
 		errorIf(e instanceof Expr_Literal, "Invalid declaration start!");
 		//errorIf(!match(SEMICOLON, NEWLINE, EOF), "An expression must be followed by either a ';' or a new line!");
@@ -163,15 +162,15 @@ public abstract class GenericParser {
 	
 	/**
 	 * Collects the statements inside of a { } block.
-	 * @return EList<Statement>
+	 * @return EList<ParsedStatement>
 	 */
-	public static EList<Statement> getBlock() { return getBlock(false); }
-	public static EList<Statement> getBlock(boolean inMethod) {
-		EList<Statement> statements = new EArrayList<>();
+	public static EList<ParsedStatement> getBlock() { return getBlock(false); }
+	public static EList<ParsedStatement> getBlock(boolean inMethod) {
+		EList<ParsedStatement> statements = EList.newList();
 		consumeEmptyLines();
 		
 		while (!check(CURLY_R) && !atEnd()) {
-			Statement s = declaration(inMethod);
+			ParsedStatement s = declaration(inMethod);
 			//remove any new lines
 			consumeEmptyLines();
 			statements.addIf(s != null, s);
@@ -188,7 +187,7 @@ public abstract class GenericParser {
 	 */
 	public static Token<?>[] getParameters() { return getParameters(null); }
 	public static Token<?>[] getParameters(Token typeIn) {
-		EList<Token<?>> params = new EArrayList<>();
+		EList<Token<?>> params = EList.newList();
 		
 		//check type
 		if (typeIn != null) {

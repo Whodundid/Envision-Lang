@@ -1,15 +1,13 @@
 package envision_lang.exceptions.errors;
 
 import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.natives.Primitives;
+import envision_lang.lang.natives.IDatatype;
 
 public class StrongVarReassignmentError extends EnvisionLangError {
 	
-	public StrongVarReassignmentError(EnvisionVariable var, Object value) {
-		super("Attempted to reassign the value of a strong dynamic variable: [" + var + ":"
-				+ var.getDatatype() + "] to [" + value + ":" + Primitives.getPrimitiveType(value)
-				+ "]!");
+	public StrongVarReassignmentError(IDatatype expected, IDatatype got) {
+		super("Attempted to reassign the value of a STRONG dynamic variable! Expected: ['" + expected
+			  + "' or 'NULL'], but got: '" + got + "' instead!");
 	}
 	
 }

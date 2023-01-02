@@ -5,11 +5,11 @@ import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.util.DataModifier;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
@@ -23,7 +23,7 @@ import eutil.datatypes.util.EList;
  * 
  * @author Hunter Bragg
  */
-public class PS_Function extends GenericParser {
+public class PS_Function extends ParserHead {
 	
 	//-------------------------------------------------------------------------------------
 	// Function Declaration Parsing
@@ -89,7 +89,7 @@ public class PS_Function extends GenericParser {
 	//
 	//--------------------------------------------------
 	
-	public static Statement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
+	public static ParsedStatement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
 		if (declaration == null) declaration = new ParserDeclaration();
 		checkDeclaration(declaration);
 		
@@ -125,7 +125,7 @@ public class PS_Function extends GenericParser {
 		//start parsing for function parameters
 		EList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
 		//attempt to parse function body
-		EList<Statement> body = getFunctionBody(constructor);
+		EList<ParsedStatement> body = getFunctionBody(constructor);
 		
 		return new Stmt_FuncDef(declaration.getStartToken(), name, op, parameters, body, declaration, constructor, operator);
 	}
@@ -179,7 +179,7 @@ public class PS_Function extends GenericParser {
 	 */
 	public static EList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
 	public static EList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
-		EList<StatementParameter> parameters = new EArrayList();
+		EList<StatementParameter> parameters = EList.newList();
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
@@ -228,7 +228,7 @@ public class PS_Function extends GenericParser {
 					if (match(VARARGS)) varargs = true;
 					Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 					
-					Expression assign = null;
+					ParsedExpression assign = null;
 					if (matchType(ASSIGNMENT)) {
 						assign = ExpressionParser.parseExpression();
 					}
@@ -257,9 +257,9 @@ public class PS_Function extends GenericParser {
 	 * @param constructor : don't necessarily have a body
 	 * @return EArrayList<Statement> : list of all parsed method body statements
 	 */
-	public static EList<Statement> getFunctionBody() { return getFunctionBody(false); }
-	public static EList<Statement> getFunctionBody(boolean constructor) {
-		EList<Statement> body = null;
+	public static EList<ParsedStatement> getFunctionBody() { return getFunctionBody(false); }
+	public static EList<ParsedStatement> getFunctionBody(boolean constructor) {
+		EList<ParsedStatement> body = null;
 		
 		//consume newlines
 		//while (match(NEWLINE));

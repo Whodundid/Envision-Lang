@@ -1,23 +1,34 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
-public class Expr_Enum implements Expression {
+public class Expr_Enum extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
 	
 	public final Token<?> name;
-	public final EList<Expression> args;
-	public final Token<?> definingToken;
+	public final EList<ParsedExpression> args;
 	
-	public Expr_Enum(Token<?> nameIn, EList<Expression> argsIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Enum(Token<?> nameIn, EList<ParsedExpression> argsIn) {
+		super(nameIn);
 		name = nameIn;
 		args = argsIn;
-		definingToken = nameIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -26,13 +37,8 @@ public class Expr_Enum implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleEnum_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

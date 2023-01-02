@@ -23,7 +23,7 @@ import envision_lang.lang.natives.Primitives;
  * 
  * @author Hunter Bragg
  */
-public class TypeManager {
+public class UserDefinedTypeManager {
 	
 	/**
 	 * A collection of all user defined datatypes along with
@@ -31,7 +31,7 @@ public class TypeManager {
 	 */
 	private HashMap<String, EnvisionClass> types = new HashMap();
 	
-	public TypeManager() {
+	public UserDefinedTypeManager() {
 		//load primitive types
 		
 //		types.put(Primitives.BOOLEAN.string_value, EnvisionBooleanClass.BOOLEAN_CLASS);

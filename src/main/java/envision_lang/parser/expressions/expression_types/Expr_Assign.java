@@ -1,42 +1,52 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.BoxList;
 
-public class Expr_Assign implements Expression {
+public class Expr_Assign extends ParsedExpression {
 
+	//========
+	// Fields
+	//========
+	
 	public Expr_Assign leftAssign;
 	public Token<?> name;
 	public Operator operator;
-	public Expression value;
+	public ParsedExpression value;
 	public final BoxList<Token<?>, Token<?>> modulars;
-	public final Token<?> definingToken;
 	
-	public Expr_Assign(Token<?> nameIn, Operator operatorIn, Expression valueIn) { this(nameIn, operatorIn, valueIn, null); }
-	public Expr_Assign(Token<?> nameIn, Operator operatorIn, Expression valueIn, BoxList<Token<?>, Token<?>> modularsIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, ParsedExpression valueIn) {
+		this(nameIn, operatorIn, valueIn, null);
+	}
+	
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, ParsedExpression valueIn, BoxList<Token<?>, Token<?>> modularsIn) {
+		super(nameIn);
 		name = nameIn;
 		operator = operatorIn;
 		value = valueIn;
 		modulars = modularsIn;
-		definingToken = nameIn;
 	}
 	
-	public Expr_Assign(Expr_Assign left, Operator operatorIn, Expression valueIn) {
+	public Expr_Assign(Expr_Assign left, Operator operatorIn, ParsedExpression valueIn) {
+		super(left);
 		leftAssign = left;
 		name = null;
 		operator = operatorIn;
 		value = valueIn;
 		modulars = null;
-		definingToken = left.definingToken;
 	}
 	
-	public String getName() {
-		return name.getLexeme();
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -53,13 +63,16 @@ public class Expr_Assign implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleAssign_E(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
+	//=========
+	// Getters
+	//=========
+	
+	public String getName() {
+		return name.getLexeme();
 	}
 	
 }

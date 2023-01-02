@@ -1,9 +1,8 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.BasicStatement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
 /**
@@ -12,19 +11,31 @@ import envision_lang.tokenizer.Token;
  * 
  * @author Hunter
  */
-public class Stmt_LoopControl extends BasicStatement {
+public class Stmt_LoopControl extends ParsedStatement {
+	
+	//========
+	// Fields
+	//========
 	
 	public final boolean isBreak;
 	public final boolean isContinue;
-	public final Expression condition;
+	public final ParsedExpression condition;
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Stmt_LoopControl(Token start, boolean isBreakIn) { this(start, isBreakIn, null); }
-	public Stmt_LoopControl(Token start, boolean isBreakIn, Expression conditionIn) {
+	public Stmt_LoopControl(Token start, boolean isBreakIn, ParsedExpression conditionIn) {
 		super(start);
 		isBreak = isBreakIn;
 		isContinue = !isBreakIn;
 		condition = conditionIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -34,18 +45,8 @@ public class Stmt_LoopControl extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleLoopControlStatement(this);
-	}
-	
-	@Override
-	public Token definingToken() {
-		return definingToken;
 	}
 	
 }

@@ -1,28 +1,43 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.BasicStatement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class Stmt_Return extends BasicStatement {
+public class Stmt_Return extends ParsedStatement {
 
-	/** A condition for which to return on. */
-	public final Expression condition;
-	/** The value(s) being returned. */
-	public final EList<Expression> retVals;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_Return(Token start, Expression valueIn) { this(start, null, new EArrayList<>(valueIn)); }
-	public Stmt_Return(Token start, Expression conditionIn, Expression valueIn) { this(start, conditionIn, new EArrayList<>(valueIn)); }
-	public Stmt_Return(Token start, EList<Expression> retValsIn) { this(start, null, retValsIn); }
-	public Stmt_Return(Token start, Expression conditionIn, EList<Expression> retValsIn) {
+	/** A condition for which to return on. */
+	public final ParsedExpression condition;
+	/** The value(s) being returned. */
+	public final EList<ParsedExpression> retVals = EList.newList();
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Return(Token start, ParsedExpression retValIn) { this(start, null, retValIn); }
+	public Stmt_Return(Token start, ParsedExpression conditionIn, ParsedExpression retValIn) {
 		super(start);
 		condition = conditionIn;
-		retVals = new EArrayList<>(retValsIn);
+		retVals.addIfNotNull(retValIn);
 	}
+	
+	public Stmt_Return(Token start, EList<ParsedExpression> retValsIn) { this(start, null, retValsIn); }
+	public Stmt_Return(Token start, ParsedExpression conditionIn, EList<ParsedExpression> retValsIn) {
+		super(start);
+		condition = conditionIn;
+		if (retValsIn != null) retVals.addAll(retValsIn);
+	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -42,24 +57,14 @@ public class Stmt_Return extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
-	}
-	
-	@Override
 	public Stmt_Return copy() {
-		Expression cond = (condition != null) ? condition.copy() : null;
-		return new Stmt_Return(definingToken.copy(), cond, retVals);
+		ParsedExpression cond = (condition != null) ? condition.copy() : null;
+		return new Stmt_Return(getStartingToken().copy(), cond, retVals);
 	}
 	
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleReturnStatement(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

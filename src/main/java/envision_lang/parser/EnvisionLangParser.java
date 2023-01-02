@@ -2,7 +2,7 @@ package envision_lang.parser;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.ReservedWord;
@@ -21,7 +21,7 @@ import eutil.strings.EStringUtil;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionLangParser {
+public final class EnvisionLangParser {
 	
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
@@ -55,7 +55,7 @@ public class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
+	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) throws Exception {
 		//error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
@@ -63,7 +63,7 @@ public class EnvisionLangParser {
 		EnvisionLangParser p = new EnvisionLangParser();
 		
 		//unpack the code file's tokenized values
-		EList<Statement> statements = new EArrayList<>();
+		EList<ParsedStatement> statements = new EArrayList<>();
 		p.tokenLines = codeFile.getLineTokens();
 		p.tokens = codeFile.getTokens();
 		p.lines = codeFile.getLines();
@@ -74,16 +74,10 @@ public class EnvisionLangParser {
 		//ignore empty files and return an empty statement list
 		if (p.tokens.isEmpty()) return statements;
 		
-//		System.out.println();
-//		for (int i = 0; i < p.tokens.size(); i++) {
-//			System.out.println(i + ": " + p.tokens.get(i));
-//		}
-//		System.out.println();
-		
 		try {
 			//continue until the end of the file
 			while (!p.atEnd()) {
-				Statement s = GenericParser.parse(p);
+				ParsedStatement s = ParserHead.parse(p);
 				//only add non-null statements
 				statements.addIf(s != null, s);
 			}
@@ -93,12 +87,6 @@ public class EnvisionLangParser {
 			//error = new ParsingError(e);
 			throw e;
 		}
-		
-//		System.out.println();
-//		for (int i = 0; i < statements.size(); i++) {
-//			System.out.println(i + ": " + statements.get(i));
-//		}
-//		System.out.println();
 		
 		//throw the wrapped error (if there is one)
 		//if (error != null) throw error;
@@ -119,13 +107,13 @@ public class EnvisionLangParser {
 	 * @return A valid statement
 	 * @throws Exception In the event a statement is invalid or incomplete
 	 */
-	public static Statement parseStatement(String lineIn) throws Exception {
+	public static ParsedStatement parseStatement(String lineIn) throws Exception {
 		Tokenizer t = new Tokenizer(lineIn);
 		EnvisionLangParser p = new EnvisionLangParser();
 		p.tokenLines = t.getLineTokens();
 		p.tokens = t.getTokens();
 		p.lines = t.getLines();
-		return GenericParser.parse(p);
+		return ParserHead.parse(p);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
@@ -148,7 +136,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The consumed if matching.
 	 */
-	protected Token<?> consume(String errorMessage, IKeyword... toCheck) {
+	Token<?> consume(String errorMessage, IKeyword... toCheck) {
 		consumeEmptyLines();
 		if (check(toCheck)) return getAdvance();
 		throw error(errorMessage);
@@ -176,7 +164,7 @@ public class EnvisionLangParser {
 	 * 					
 	 * @return The consumed if matching.
 	 */
-	protected Token<?> consumeType(String errorMessage, KeywordType... typesToCheck) {
+	Token<?> consumeType(String errorMessage, KeywordType... typesToCheck) {
 		consumeEmptyLines();
 		if (checkType(typesToCheck)) return getAdvance();
 		throw error(errorMessage);
@@ -194,7 +182,7 @@ public class EnvisionLangParser {
 	 * @return true if the current token matches any of the given
 	 *         'toCheck' Keywords
 	 */
-	protected boolean match(IKeyword... toCheck) {
+	boolean match(IKeyword... toCheck) {
 		for (var o : toCheck)
 			if (check(o)) {
 				advance();
@@ -215,7 +203,7 @@ public class EnvisionLangParser {
 	 * @return true if the current token type matches any of the given
 	 *         'toCheck' KeywordTypes
 	 */
-	protected boolean matchType(KeywordType... type) {
+	boolean matchType(KeywordType... type) {
 		for (var t : type)
 			if (checkType(t)) {
 				advance();
@@ -224,7 +212,7 @@ public class EnvisionLangParser {
 		return false;
 	}
 	
-	protected boolean matchBoth(IKeyword first, IKeyword second) {
+	boolean matchBoth(IKeyword first, IKeyword second) {
 		if (check(first)) {
 			Token<?> n = next();
 			if (n != null && n.getKeyword() == second) {
@@ -236,7 +224,7 @@ public class EnvisionLangParser {
 		return false;
 	}
 	
-	protected boolean checkAll(IKeyword... in) {
+	boolean checkAll(IKeyword... in) {
 		if (in.length == 0) return false;
 		int i = 0;
 		for (IKeyword k : in) {
@@ -247,11 +235,11 @@ public class EnvisionLangParser {
 		return true;
 	}
 	
-	protected boolean check(IKeyword... val) { return check(current(), val); }
-	protected boolean checkNext(IKeyword... val) { return check(next(), val); }
-	protected boolean checkPrevious(IKeyword... val) { return check(previous(), val); }
+	boolean check(IKeyword... val) { return check(current(), val); }
+	boolean checkNext(IKeyword... val) { return check(next(), val); }
+	boolean checkPrevious(IKeyword... val) { return check(previous(), val); }
 	
-	protected boolean check(Token<?> t, IKeyword... val) {
+	boolean check(Token<?> t, IKeyword... val) {
 		if (atEnd()) {
 			for (var k : val) {
 				if (k == ReservedWord.EOF) return true;
@@ -264,9 +252,9 @@ public class EnvisionLangParser {
 		return false;
 	}
 	
-	protected boolean checkType(KeywordType... val) { return checkType(current(), val); }
-	protected boolean checkNextType(KeywordType... val) { return checkType(next(), val); }
-	protected boolean checkPreviousType(KeywordType... val) { return checkType(previous(), val); }
+	boolean checkType(KeywordType... val) { return checkType(current(), val); }
+	boolean checkNextType(KeywordType... val) { return checkType(next(), val); }
+	boolean checkPreviousType(KeywordType... val) { return checkType(previous(), val); }
 	
 	private boolean checkType(Token<?> t, KeywordType... type) {
 		//if at end of file, check if the given keyword types contains TERMINATOR
@@ -277,19 +265,19 @@ public class EnvisionLangParser {
 		return false;
 	}
 	
-	protected boolean checkAdvance(IKeyword k) {
+	boolean checkAdvance(IKeyword k) {
 		boolean val = check(k);
 		if (val) advance();
 		return val;
 	}
 	
-	protected boolean checkAdvance(KeywordType k) {
+	boolean checkAdvance(KeywordType k) {
 		boolean val = checkType(k);
 		if (val) advance();
 		return val;
 	}
 	
-	protected boolean atEnd() {
+	boolean atEnd() {
 		return current().isEOF();
 	}
 	
@@ -297,7 +285,7 @@ public class EnvisionLangParser {
 	 * Increments the current parsing position by 1 unless already at
 	 * the end of the file/line.
 	 */
-	protected void advance() {
+	void advance() {
 		if (!atEnd()) current++;
 	}
 	
@@ -307,7 +295,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The current token
 	 */
-	protected Token<?> getAdvance() {
+	Token<?> getAdvance() {
 		Token<?> cur = current();
 		advance();
 		return cur;
@@ -317,7 +305,7 @@ public class EnvisionLangParser {
 	 * Continuously consumes empty lines or lines which only contain a
 	 * semicolon.
 	 */
-	protected void consumeEmptyLines() {
+	void consumeEmptyLines() {
 		while (!atEnd() && matchType(KeywordType.TERMINATOR));
 	}
 	
@@ -331,7 +319,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token at the current parsing position
 	 */
-	protected Token<?> current() {
+	Token<?> current() {
 		return tokens.get(current);
 	}
 	
@@ -341,7 +329,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token in front of the current parsing position
 	 */
-	protected Token<?> previous() {
+	Token<?> previous() {
 		return tokens.get(current - 1);
 	}
 	
@@ -351,7 +339,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token directly after the current parsing position
 	 */
-	protected Token<?> next() {
+	Token<?> next() {
 		return tokens.get(current + 1);
 	}
 	
@@ -364,7 +352,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @return the current parsing position.
 	 */
-	protected int getCurrentIndex() {
+	int getCurrentIndex() {
 		return current;
 	}
 	
@@ -375,7 +363,7 @@ public class EnvisionLangParser {
 	 * 
 	 * @param in
 	 */
-	protected void setCurrentIndex(int in) {
+	void setCurrentIndex(int in) {
 		current = in;
 		if (current < 0) current = 0;
 	}
@@ -385,7 +373,7 @@ public class EnvisionLangParser {
 	 * In the event that the current position is already at the start,
 	 * no action is performed.
 	 */
-	protected void setPrevious() {
+	void setPrevious() {
 		if (current == 0) return;
 		current--;
 	}
@@ -403,7 +391,7 @@ public class EnvisionLangParser {
 	 * @param message The error message to be displayed
 	 * @return The generated error
 	 */
-	public EnvisionLangError error(String message) {
+	EnvisionLangError error(String message) {
 		return new EnvisionLangError("\n\n" + getErrorMessage(message) + "\n");
 	}
 	
@@ -415,7 +403,7 @@ public class EnvisionLangParser {
 	 * @param message The error message to be displayed
 	 * @return The generated error message
 	 */
-	public String getErrorMessage(String message) {
+	private String getErrorMessage(String message) {
 		//In the event that the problematic token is at the end of the file,
 		//set the current token to the previous so that the problematic token
 		//is not a hidden token.

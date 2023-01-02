@@ -103,7 +103,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		
 		//define it
 		scope().define(name.getStringValue(), name, theClass);
-		interpreter.getTypeManager().defineType(name, theClass);
+		interpreter.getUserDefinedTypeManager().defineType(name, theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));
 	}
 	

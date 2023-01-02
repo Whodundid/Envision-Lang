@@ -7,7 +7,6 @@ import envision_lang.parser.expressions.expression_types.Expr_Cast;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Domain;
 import envision_lang.parser.expressions.expression_types.Expr_Enum;
-import envision_lang.parser.expressions.expression_types.Expr_FuncDef;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.expressions.expression_types.Expr_Get;
@@ -49,8 +48,6 @@ public interface ExpressionHandler {
 	EnvisionObject handleLiteral_E(Expr_Literal e);
 	EnvisionObject handleLogical_E(Expr_Logic e);
 	EnvisionObject handleMethodCall_E(Expr_FunctionCall e);
-	EnvisionObject handleMethodDec_E(Expr_FuncDef e);
-	//EnvisionObject handleModular_E(ModularExpression e);
 	EnvisionObject handlePrimitive_E(Expr_Primitive e);
 	EnvisionObject handleRange_E(Expr_Range e);
 	EnvisionObject handleSet_E(Expr_Set e);

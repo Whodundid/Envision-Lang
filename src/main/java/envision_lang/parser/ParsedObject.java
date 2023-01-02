@@ -1,9 +1,8 @@
 package envision_lang.parser;
 
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.util.EList;
 
-public class ParserLineTrackedObject {
+public abstract class ParsedObject {
 	
 	//========
 	// Fields
@@ -11,27 +10,24 @@ public class ParserLineTrackedObject {
 	
 	private Token startingToken;
 	private int startingLine;
-	private int endingLine;
-	private EList<Token> tokens;
 	
 	//==============
 	// Constructors
 	//==============
 	
-	protected ParserLineTrackedObject(Token startingTokenIn) {
+	protected ParsedObject(Token startingTokenIn) {
 		startingToken = startingTokenIn;
 		startingLine = startingToken.getLineNum();
-		tokens.add(startingToken);
 	}
 	
 	//=========
 	// Methods
 	//=========
 	
-	public void addToken(Token toAdd) {
-		if (toAdd == null) return;
-		tokens.add(toAdd);
-		endingLine = toAdd.getLineNum();
+	public abstract ParsedObject copy();
+	
+	public static ParsedObject copy(ParsedObject o) {
+		return (o != null) ? o.copy() : null;
 	}
 	
 	//=========
@@ -40,7 +36,5 @@ public class ParserLineTrackedObject {
 	
 	public Token getStartingToken() { return startingToken; }
 	public int getStartingLine() { return startingLine; }
-	public int getEndingLine() { return endingLine; }
-	public EList<Token> getTokens() { return tokens; }
 	
 }

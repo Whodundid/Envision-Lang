@@ -3,13 +3,12 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.expressions.expression_types.Expr_Empty;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_For;
 import envision_lang.parser.statements.statement_types.Stmt_LambdaFor;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
@@ -19,22 +18,21 @@ import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_For extends GenericParser {
+public class PS_For extends ParserHead {
 	
-	public static Statement forStatement() {
+	public static ParsedStatement forStatement() {
 		Token<?> forToken = consume(FOR, "Expected 'for' here!");
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
 		//0 = normal, 1 = range (to), 2 = lambda
 		int type = 0;
 		
-		Statement initializer = null;
-		Expression middle = null;
-		EList<Expression> post = new EArrayList<>();
-		Statement body = null;
+		ParsedStatement initializer = null;
+		ParsedExpression middle = null;
+		EList<ParsedExpression> post = EList.newList();
+		ParsedStatement body = null;
 		
 		Stmt_VarDef vars = null;
 		EList<Expr_Range> ranges = null;
@@ -44,7 +42,7 @@ public class PS_For extends GenericParser {
 		
 		//determine the number of semicolons -- parts
 		int depth = 1, numSemi = 0;
-		EList<Token<?>> loopTokens = new EArrayList<>();
+		EList<Token<?>> loopTokens = EList.newList();
 		int pos = getCurrentNum();
 		while (depth != 0 && !atEnd()) {
 			Token<?> t = getAdvance();
@@ -93,7 +91,7 @@ public class PS_For extends GenericParser {
 					
 					do {
 						Token<?> name = consume(IDENTIFIER, "Expected a lambda loop index variable name!");
-						Expression value = null;
+						ParsedExpression value = null;
 						if (match(ASSIGN)) {
 							value = ExpressionParser.parseExpression();
 						}
@@ -116,10 +114,10 @@ public class PS_For extends GenericParser {
 				middle = ExpressionParser.parseExpression();
 				
 				errorIf(!(middle instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
-				ranges = new EArrayList((Expr_Range) middle);
+				ranges = EList.of((Expr_Range) middle);
 				
 				while (match(COMMA)) {
-					Expression e = ExpressionParser.parseExpression();
+					ParsedExpression e = ExpressionParser.parseExpression();
 					errorIf(!(e instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
 					Expr_Range range = (Expr_Range) e;
 					ranges.add(range);
@@ -134,10 +132,11 @@ public class PS_For extends GenericParser {
 		//check for post actions
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				if (check(PAREN_R)) post.add(new Expr_Empty());
+				if (check(PAREN_R)) {}
 				else {
 					//gather all expressions separated by commas
 					do {
+						consumeEmptyLines();
 						post.add(ExpressionParser.parseExpression());
 					}
 					while (match(COMMA));
@@ -152,10 +151,10 @@ public class PS_For extends GenericParser {
 		
 		body = declaration();
 		
-		Statement forStatement = null;
+		ParsedStatement forStatement = null;
 		switch (type) {
 		case 0: forStatement = new Stmt_For(forToken, initializer, middle, post, body); break;
-		case 1: forStatement = new Stmt_RangeFor(forToken, initializer, body).addAll(ranges); break;
+		case 1: forStatement = new Stmt_RangeFor(forToken, initializer, body, ranges); break;
 		case 2: forStatement = new Stmt_LambdaFor(forToken, vars, (Expr_Lambda) middle, post, body); break;
 		default: error("INVALID FOR LOOP TYPE! (" + type + ") -- THIS SHOULDN'T BE POSSIBLE!!");
 		}

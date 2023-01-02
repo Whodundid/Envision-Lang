@@ -15,7 +15,6 @@ import envision_lang.parser.statements.statement_types.Stmt_Import;
 import envision_lang.parser.statements.statement_types.Stmt_InterfaceDef;
 import envision_lang.parser.statements.statement_types.Stmt_LambdaFor;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
-import envision_lang.parser.statements.statement_types.Stmt_ModularFuncDef;
 import envision_lang.parser.statements.statement_types.Stmt_Package;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
@@ -43,7 +42,6 @@ public interface StatementHandler {
 	public void handleInterfaceStatement(Stmt_InterfaceDef s);
 	public void handleLambdaForStatement(Stmt_LambdaFor s);
 	public void handleMethodStatement(Stmt_FuncDef s);
-	public void handleModularMethodStatement(Stmt_ModularFuncDef s);
 	public void handlePackageStatement(Stmt_Package s);
 	public void handleRangeForStatement(Stmt_RangeFor s);
 	public void handleReturnStatement(Stmt_Return s);

@@ -5,9 +5,9 @@ import static envision_lang.tokenizer.ReservedWord.*;
 
 import java.util.Iterator;
 
-import envision_lang.parser.GenericParser;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
@@ -19,14 +19,14 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_Class extends GenericParser {
+public class PS_Class extends ParserHead {
 	
 	/**
 	 * Attempts to parse a class from tokens.
 	 * @return Statement
 	 */
-	public static Statement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
-	public static Statement classDeclaration(ParserDeclaration declaration) {
+	public static ParsedStatement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
+	public static ParsedStatement classDeclaration(ParserDeclaration declaration) {
 		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
 		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		//ParserStage.curClassName = name;
@@ -60,21 +60,21 @@ public class PS_Class extends GenericParser {
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors
-		EList<Statement> body = getBlock();
-		EList<Statement> staticMembers = new EArrayList<>();
+		EList<ParsedStatement> body = getBlock();
+		EList<ParsedStatement> staticMembers = EList.newList();
 		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EList<Stmt_FuncDef> constructors = new EArrayList<>();
+		EList<Stmt_FuncDef> constructors = EList.newList();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
 		
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			//check if constructor -- remove from body
 			if (s instanceof Stmt_Block) {
 				Stmt_Block b = (Stmt_Block) body.remove(i);
 				bodySize--;
-				for (Statement bs : b.statements) {
+				for (ParsedStatement bs : b.statements) {
 					body.add(i, bs);
 					bodySize++;
 					i++;
@@ -85,7 +85,7 @@ public class PS_Class extends GenericParser {
 		
 		//isolate static members
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			ParserDeclaration dec = s.getDeclaration();
 			
 			//check if static -- remove from body
@@ -98,7 +98,7 @@ public class PS_Class extends GenericParser {
 		
 		//isolate constructors and methods
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			
 			if (s instanceof Stmt_Block b) {
 				constructors.addAll(isolateConstructors(b));
@@ -137,10 +137,10 @@ public class PS_Class extends GenericParser {
 	
 	private static EList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
 		EList<Stmt_FuncDef> constructors = new EArrayList<>();
-		Iterator<Statement> it = in.statements.iterator();
+		Iterator<ParsedStatement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {
-			Statement s = it.next();
+			ParsedStatement s = it.next();
 			
 			if (s instanceof Stmt_Block bs) {
 				constructors.addAll(isolateConstructors(bs));

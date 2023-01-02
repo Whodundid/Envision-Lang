@@ -4,7 +4,7 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
 import envision_lang.parser.expressions.expression_types.Expr_Cast;
@@ -32,7 +32,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class ExpressionParser extends GenericParser {
+public class ExpressionParser extends ParserHead {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
@@ -44,19 +44,19 @@ public class ExpressionParser extends GenericParser {
 	 * 
 	 * @return A built expression
 	 */
-	public static Expression parseExpression() {
+	public static ParsedExpression parseExpression() {
 		return assignment();
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression assignment() {
-		Expression e = or();
+	public static ParsedExpression assignment() {
+		ParsedExpression e = or();
 		
 		if (matchType(ASSIGNMENT)) {
 			Operator operator = previous().asOperator();
-			Expression value = assignment();
-			Expression check = null;
+			ParsedExpression value = assignment();
+			ParsedExpression check = null;
 			
 			if (e instanceof Expr_Var v) check = new Expr_Assign(v.name, operator, value);
 			//if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
@@ -78,12 +78,12 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression or() {
-		Expression e = And();
+	public static ParsedExpression or() {
+		ParsedExpression e = And();
 		
 		while (match(OR)) {
 			Operator operator = previous().asOperator();
-			Expression right = And();
+			ParsedExpression right = And();
 			e = new Expr_Logic(e, operator, right);
 		}
 		
@@ -92,12 +92,12 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression And() {
-		Expression e = equality();
+	public static ParsedExpression And() {
+		ParsedExpression e = equality();
 		
 		while (match(AND)) {
 			Operator operator = previous().asOperator();
-			Expression right = equality();
+			ParsedExpression right = equality();
 			e = new Expr_Logic(e, operator, right);
 		}
 		
@@ -106,12 +106,12 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression equality() {
-		Expression e = lambda();
+	public static ParsedExpression equality() {
+		ParsedExpression e = lambda();
 		
 		if (match(NOT_EQUALS, EQUALS, GT, GTE, LT, LTE)) {
 			Operator operator = previous().asOperator();
-			Expression right = lambda();
+			ParsedExpression right = lambda();
 			e = new Expr_Binary(e, operator, right);
 		}
 		
@@ -130,11 +130,11 @@ public class ExpressionParser extends GenericParser {
 		if (check(NEGATE) && checkNext(TYPEOF)) {
 			advance(); //consume the '!'
 			advance(); //consume the 'typeof'
-			Expression right = lambda();
+			ParsedExpression right = lambda();
 			e = new Expr_TypeOf(e, false, right);
 		}
 		else if (match(TYPEOF)) {
-			Expression right = lambda();
+			ParsedExpression right = lambda();
 			e = new Expr_TypeOf(e, true, right);
 		}
 		
@@ -143,8 +143,8 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression lambda() {
-		Expression e = arithmetic();
+	public static ParsedExpression lambda() {
+		ParsedExpression e = arithmetic();
 		
 		while (match(LAMBDA)) {
 			e = new Expr_Lambda(previous(), e, parseExpression());
@@ -155,24 +155,24 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression arithmetic() {
-		Expression e = factor();
+	public static ParsedExpression arithmetic() {
+		ParsedExpression e = factor();
 		
 		while (match(ADD, SUB)) {
 			Operator operator = previous().asOperator();
-			Expression right = factor();
+			ParsedExpression right = factor();
 			e = new Expr_Binary(e, operator, right);
 		}
 		
 		return e;
 	}
 	
-	public static Expression factor() {
-		Expression e = unary();
+	public static ParsedExpression factor() {
+		ParsedExpression e = unary();
 		
 		while (match(MUL, DIV, MOD)) {
 			Operator operator = previous().asOperator();
-			Expression right = unary();
+			ParsedExpression right = unary();
 			e = new Expr_Binary(e, operator, right);
 		}
 		
@@ -181,16 +181,16 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression unary() {
+	public static ParsedExpression unary() {
 		if (check(NEGATE, SUB, DEC, INC) && checkNext(IDENTIFIER, TYPEOF, FALSE, TRUE)) {
 			match(NEGATE, SUB, DEC, INC);
 			Operator operator = previous().asOperator();
-			Expression right = unary();
-			Expression e = new Expr_Unary(previous(), operator, right, null);
+			ParsedExpression right = unary();
+			ParsedExpression e = new Expr_Unary(previous(), operator, right, null);
 			return e;
 		}
 		
-		Expression e = range();
+		ParsedExpression e = range();
 		
 		if (match(DEC, INC)) {
 			Operator o = previous().asOperator();
@@ -202,12 +202,12 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression range() {
-		Expression e = functionCall();
+	public static ParsedExpression range() {
+		ParsedExpression e = functionCall();
 		
 		if (!(e instanceof Expr_Range) && match(TO)) {
-			Expression right = range();
-			Expression by = null;
+			ParsedExpression right = range();
+			ParsedExpression by = null;
 			if (match(BY)) {
 				by = range();
 			}
@@ -219,8 +219,8 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression functionCall() {
-		Expression e = primary();
+	public static ParsedExpression functionCall() {
+		ParsedExpression e = primary();
 		
 		while (true) {
 			//check if standard function call
@@ -230,7 +230,7 @@ public class ExpressionParser extends GenericParser {
 			}
 			//check if accessing array element
 			else if (match(BRACKET_L)) {
-				Expression index = parseExpression();
+				ParsedExpression index = parseExpression();
 				consume(BRACKET_R, "Expected ']' after list index!");
 				e = new Expr_ListIndex(e, index);
 				//requireTerminator();
@@ -251,15 +251,15 @@ public class ExpressionParser extends GenericParser {
 		return e;
 	}
 	
-	public static EList<Expression> collectFuncArgs() {
-		EList<Expression> args = new EArrayList<>();
+	public static EList<ParsedExpression> collectFuncArgs() {
+		EList<ParsedExpression> args = new EArrayList<>();
 		
 		//arguments
 		consume(PAREN_L, "Expected '(' to begin arguments!");
 		if (!check(PAREN_R)) {
 			do {
 				if (args.size() >= 255) error("Can't have more than 255 args!");
-				Expression exp = parseExpression();
+				ParsedExpression exp = parseExpression();
 				args.add(exp);
 			}
 			while (match(COMMA));
@@ -272,8 +272,8 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static Expression primary() {
-		Expression e = null;
+	public static ParsedExpression primary() {
+		ParsedExpression e = null;
 		
 		//if (match(Keyword.MODULAR_VALUE)) return e = new ModularExpression(ParserStage.modularValues);
 		if (match(INIT)) return new Expr_Var(previous());
@@ -294,7 +294,7 @@ public class ExpressionParser extends GenericParser {
 	// Primary Types
 	//---------------
 	
-	private static Expression checkLiteral() {
+	private static ParsedExpression checkLiteral() {
 		if (match(FALSE)) return new Expr_Literal(previous(), false);
 		if (match(TRUE)) return new Expr_Literal(previous(), true);
 		if (match(NULL)) return new Expr_Literal(previous(), null);
@@ -304,11 +304,11 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	private static Expression checkLists() {
+	private static ParsedExpression checkLists() {
 		if (match(TO)) {
 			Token<?> start = previous();
-			Expression right = range();
-			Expression by = null;
+			ParsedExpression right = range();
+			ParsedExpression by = null;
 			if (match(BY)) {
 				by = range();
 			}
@@ -337,18 +337,18 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	private static Expression checkLambda() {
+	private static ParsedExpression checkLambda() {
 		if (!match(PAREN_L)) return null;
 		
-		Expression e = null;
+		ParsedExpression e = null;
 		Token<?> start = previous();
-		EList<Expression> expressions = null;
+		EList<ParsedExpression> expressions = null;
 		
 		if (!check(PAREN_R)) {
 			e = parseExpression();
 			
 			if (match(COMMA)) {
-				expressions = new EArrayList<>();
+				expressions = EList.newList();
 				expressions.add(e);
 				do {
 					expressions.add(parseExpression());
@@ -362,22 +362,22 @@ public class ExpressionParser extends GenericParser {
 		//check for cast expressions
 		if (e instanceof Expr_VarDef var_def) {
 			Token<?> type = var_def.type;
-			//can only be a cast expression if either a datatype or a object type
+			//can only be a cast ParsedExpression if either a datatype or a object type
 			if (type.isDatatype() || type.isReference()) {
-				Expression target = parseExpression();
+				ParsedExpression target = parseExpression();
 				e = new Expr_Cast(type, target);
 				return e;
 			}
 		}
 		
 		if (match(TERNARY)) {
-			Expression t = parseExpression();
+			ParsedExpression t = parseExpression();
 			consume(COLON, "Expected a ':' in between ternary expressions!");
-			Expression f = parseExpression();
+			ParsedExpression f = parseExpression();
 			return new Expr_Ternary(e, t, f);
 		}
 		else if (e == null && !check(LAMBDA) && expressions != null && expressions.isEmpty()) {
-			error("An empty expression can only be followed with a lambda expression!");
+			error("An empty ParsedExpression can only be followed with a lambda expression!");
 		}
 		else {
 			//parser.pd("CUR PRI: " + current());
@@ -397,11 +397,11 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	private static Expression checkObject() {
+	private static ParsedExpression checkObject() {
 		if (match(THIS)) {
 			Token<?> start = previous();
 			if (match(PAREN_L)) {
-				EList<Expression> args = new EArrayList<>();
+				EList<ParsedExpression> args = EList.newList();
 				if (!check(PAREN_R)) {
 					do {
 						if (args.size() >= 255) {
@@ -425,7 +425,7 @@ public class ExpressionParser extends GenericParser {
 			Token<?> m = consume(IDENTIFIER, "Expected superclass method name!");
 			
 			if (match(PAREN_L)) {
-				EList<Expression> args = new EArrayList<>();
+				EList<ParsedExpression> args = EList.newList();
 				if (!check(PAREN_R)) {
 					do {
 						args.add(parseExpression());
@@ -445,14 +445,14 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	private static Expression checkTernary() {
+	private static ParsedExpression checkTernary() {
 		if (match(IDENTIFIER, THIS)) {
 			Expr_Var e = new Expr_Var(previous());
 			
 			if (match(TERNARY)) {
-				Expression t = parseExpression();
+				ParsedExpression t = parseExpression();
 				consume(COLON, "Expected a ':' in between ternary expressions!");
-				Expression f = parseExpression();
+				ParsedExpression f = parseExpression();
 				return new Expr_Ternary(e, t, f);
 			}
 			
@@ -464,7 +464,7 @@ public class ExpressionParser extends GenericParser {
 	
 	//-----------------------------------------------------------------------------------------------------
 	
-	private static Expression checkVariable() {
+	private static ParsedExpression checkVariable() {
 		if (match(IDENTIFIER) || matchType(DATATYPE)) {
 			Token<?> type = previous();
 			EList<Token<?>> params = null;

@@ -1,62 +1,37 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class Stmt_Class extends BasicStatement {
+public class Stmt_Class extends ParsedStatement {
 
+	//========
+	// Fields
+	//========
+	
 	public final Token<?> name;
-	public final ParserDeclaration declaration;
-	public final EList<Expr_Var> parentclasses = new EArrayList<>();
-	public final EList<Statement> body = new EArrayList<>();
-	public final EList<Statement> staticMembers = new EArrayList<>();
-	public final EList<Stmt_FuncDef> methods = new EArrayList<>();
-	public final EList<Stmt_FuncDef> initializers = new EArrayList<>();
+	public final EList<Expr_Var> parentclasses = EList.newList();
+	public final EList<ParsedStatement> body = EList.newList();
+	public final EList<ParsedStatement> staticMembers = EList.newList();
+	public final EList<Stmt_FuncDef> methods = EList.newList();
+	public final EList<Stmt_FuncDef> initializers = EList.newList();
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Stmt_Class(Token<?> start, Token<?> nameIn, ParserDeclaration declarationIn) {
-		super(start);
+		super(start, declarationIn);
 		name = nameIn;
-		declaration = declarationIn;
 	}
 	
-	public Stmt_Class setSupers(EList<Expr_Var> supersIn) {
-		parentclasses.clear();
-		parentclasses.addAll(supersIn);
-		return this;
-	}
-	
-	public Stmt_Class setBody(EList<Statement> bodyIn) {
-		body.clear();
-		body.addAll(bodyIn);
-		return this;
-	}
-	
-	public Stmt_Class setStaticMembers(EList<Statement> staticsIn) {
-		staticMembers.clear();
-		staticMembers.addAll(staticsIn);
-		return this;
-	}
-	
-	public Stmt_Class setMethods(EList<Stmt_FuncDef> methodsIn) {
-		methods.clear();
-		methods.addAll(methodsIn);
-		return this;
-	}
-	
-	public Stmt_Class setInitializers(EList<Stmt_FuncDef> constructorsIn) {
-		initializers.clear();
-		initializers.addAll(constructorsIn);
-		return this;
-	}
-	
-	public Stmt_Class addSuper(Expr_Var in) { parentclasses.add(in); return this; }
-	public Stmt_Class addStatement(Statement in) { body.add(in); return this; }
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -71,18 +46,21 @@ public class Stmt_Class extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return declaration;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleClassStatement(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
-	}
+	//=========
+	// Methods
+	//=========
+	
+	public void addSuper(Expr_Var in) { parentclasses.add(in); }
+	public void addStatement(ParsedStatement in) { body.add(in); }
+	
+	public void setSupers(EList<Expr_Var> supersIn) { parentclasses.clearThenAddAll(supersIn); }
+	public void setBody(EList<ParsedStatement> bodyIn) { body.clearThenAddAll(bodyIn); }
+	public void setStaticMembers(EList<ParsedStatement> staticsIn) { staticMembers.clearThenAddAll(staticsIn); }
+	public void setMethods(EList<Stmt_FuncDef> methodsIn) { methods.clearThenAddAll(methodsIn); }
+	public void setInitializers(EList<Stmt_FuncDef> constructorsIn) { initializers.clearThenAddAll(constructorsIn); }
 	
 }

@@ -1,24 +1,34 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
-public class Stmt_If extends BasicStatement {
+public class Stmt_If extends ParsedStatement {
 
-	public final Expression condition;
-	public final Statement thenBranch;
-	public final Statement elseBranch;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_If(Token start, Expression conditionIn, Statement thenIn, Statement elseIn) {
+	public final ParsedExpression condition;
+	public final ParsedStatement thenBranch;
+	public final ParsedStatement elseBranch;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_If(Token start, ParsedExpression conditionIn, ParsedStatement thenIn, ParsedStatement elseIn) {
 		super(start);
 		condition = conditionIn;
 		thenBranch = thenIn;
 		elseBranch = elseIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -27,18 +37,8 @@ public class Stmt_If extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleIfStatement(this);
-	}
-	
-	@Override
-	public Token definingToken() {
-		return definingToken;
 	}
 	
 }

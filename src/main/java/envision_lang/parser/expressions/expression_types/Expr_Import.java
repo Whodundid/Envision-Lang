@@ -1,21 +1,32 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Import implements Expression {
-
+public class Expr_Import extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
+	
 	public final Token<?> path;
 	public final Token<?> object;
-	public final Token<?> definingToken;
 	
-	public Expr_Import(Token pathIn, Token<?> objectIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Import(Token<?> pathIn, Token<?> objectIn) {
+		super(pathIn);
 		path = pathIn;
 		object = objectIn;
-		definingToken = pathIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -30,13 +41,8 @@ public class Expr_Import implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleImport_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 
 }

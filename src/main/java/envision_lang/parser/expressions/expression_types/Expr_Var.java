@@ -1,27 +1,34 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Var implements Expression {
-
+public class Expr_Var extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
+	
 	public final Token<?> name;
-	public final Token<?> definingToken;
 	
-	public Expr_Var(Token nameIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Var(Token<?> nameIn) {
+		super(nameIn);
 		name = nameIn;
-		definingToken = nameIn;
 	}
 	
-	public String getName() {
-		return (name != null) ? name.getLexeme() : null;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
-		return handler.handleVar_E(this);
+	public String toString() {
+		return name.getLexeme() + "";
 	}
 	
 	@Override
@@ -30,17 +37,24 @@ public class Expr_Var implements Expression {
 	}
 	
 	@Override
-	public String toString() {
-		return name.getLexeme() + "";
+	public EnvisionObject evaluate(ExpressionHandler handler) {
+		return handler.handleVar_E(this);
 	}
+	
+	//=========
+	// Getters
+	//=========
+	
+	public String getName() {
+		return (name != null) ? name.getLexeme() : null;
+	}
+	
+	//================
+	// Static Methods
+	//================
 	
 	public static Expr_Var of(Token in) {
 		return new Expr_Var(in);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

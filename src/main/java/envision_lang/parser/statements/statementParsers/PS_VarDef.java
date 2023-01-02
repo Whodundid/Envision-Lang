@@ -6,19 +6,19 @@ import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifier;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
-public class PS_VarDef extends GenericParser {
+public class PS_VarDef extends ParserHead {
 	
-	public static Statement variableDeclaration() {
+	public static ParsedStatement variableDeclaration() {
 		return variableDeclaration(PS_ParseDeclaration.parseScopeVar());
 	}
 	
@@ -26,7 +26,7 @@ public class PS_VarDef extends GenericParser {
 	 * Attempts to parse a variable(s) from tokens.
 	 * @return Statement
 	 */
-	public static Statement variableDeclaration(ParserDeclaration declaration) {
+	public static ParsedStatement variableDeclaration(ParserDeclaration declaration) {
 		errorIf(declaration.hasGenerics(), "Variables can not declare generic types in their declaration!");
 		
 		Token<?> type = null;
@@ -39,7 +39,7 @@ public class PS_VarDef extends GenericParser {
 		//check for list-set-expression
 		if (check(BRACKET_L)) {
 			setPrevious();
-			Expression listIndexSet = ExpressionParser.parseExpression();
+			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
 			return new Stmt_Expression(listIndexSet);
 		}
 		
@@ -63,7 +63,7 @@ public class PS_VarDef extends GenericParser {
 		//check for type-less variable creation
 		if (check(ASSIGN)) {
 			setPrevious();
-			Expression typeless_varDec = ExpressionParser.parseExpression();
+			ParsedExpression typeless_varDec = ExpressionParser.parseExpression();
 			return new Stmt_Expression(typeless_varDec);
 		}
 		
@@ -75,7 +75,7 @@ public class PS_VarDef extends GenericParser {
 			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
 			//parse for initializer (if there is one)
-			Expression initializer = null;
+			ParsedExpression initializer = null;
 			if (match(ASSIGN)) initializer = ExpressionParser.parseExpression();
 			
 			//add variable to statement

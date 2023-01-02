@@ -3,15 +3,15 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
 import envision_lang.tokenizer.Token;
 import eutil.strings.EStringBuilder;
 import eutil.strings.EStringUtil;
 
-public class PS_Import extends GenericParser {
+public class PS_Import extends ParserHead {
 	
 	/**
 	 * Parses an expression which will map to a specific package or file to be
@@ -21,7 +21,7 @@ public class PS_Import extends GenericParser {
 	 * 
 	 * @return ImportStatement
 	 */
-	public static Statement handleImport() {
+	public static ParsedStatement handleImport() {
 		Token<?> importToken = consume(IMPORT, "Expected 'import' here!");
 		String m = "Expected a valid identifier for an import path name!";
 		boolean all = false;

@@ -3,23 +3,22 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.ParserHead;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Catch;
 import envision_lang.parser.statements.statement_types.Stmt_Try;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_Try extends GenericParser {
+public class PS_Try extends ParserHead {
 	
-	public static Statement tryStatement() {
+	public static ParsedStatement tryStatement() {
 		Token<?> tryToken = consume(TRY, "Expected 'try' here!");
 		Token<?> blockStart = consume(CURLY_L, "Expected block start after try declaration!");
 		Stmt_Block tryBlock = new Stmt_Block(blockStart, getBlock());
 		
-		EList<Stmt_Catch> catches = new EArrayList<>();
+		EList<Stmt_Catch> catches = EList.newList();
 		
 		consumeEmptyLines();
 		

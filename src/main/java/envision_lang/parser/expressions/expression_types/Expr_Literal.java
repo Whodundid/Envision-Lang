@@ -1,19 +1,30 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Literal implements Expression {
+public class Expr_Literal extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
 	
 	public final Object value;
-	public final Token<?> definingToken;
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Expr_Literal(Token<?> start, Object valueIn) {
+		super(start);
 		value = valueIn;
-		definingToken = start;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -22,17 +33,12 @@ public class Expr_Literal implements Expression {
 	
 	@Override
 	public Expr_Literal copy() {
-		return new Expr_Literal(definingToken.copy(), value);
+		return new Expr_Literal(getStartingToken(), value);
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleLiteral_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

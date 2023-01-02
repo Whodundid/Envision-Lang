@@ -1,24 +1,34 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
-import envision_lang.tokenizer.Token;
 
-public class Expr_SetListIndex implements Expression {
-
-	public final Expr_ListIndex list;
-	public final Expression value;
-	public final Operator operator;
-	public final Token<?> definingToken;
+public class Expr_SetListIndex extends ParsedExpression {
 	
-	public Expr_SetListIndex(Expr_ListIndex listIn, Operator operatorIn, Expression valueIn) {
+	//========
+	// Fields
+	//========
+	
+	public final Expr_ListIndex list;
+	public final ParsedExpression value;
+	public final Operator operator;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_SetListIndex(Expr_ListIndex listIn, Operator operatorIn, ParsedExpression valueIn) {
+		super(listIn);
 		list = listIn;
 		operator = operatorIn;
 		value = valueIn;
-		definingToken = listIn.definingToken;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -31,13 +41,8 @@ public class Expr_SetListIndex implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleListIndexSet_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

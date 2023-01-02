@@ -1,24 +1,40 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Domain implements Expression	{
-
-	public final Expression left, middle, right;
-	public final Token<?> lower, upper;
-	public final Token<?> definingToken;
+public class Expr_Domain extends ParsedExpression {
 	
-	public Expr_Domain(Expression leftIn, Token<?> lowerIn, Expression middleIn, Token<?> upperIn, Expression rightIn) {
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression left, middle, right;
+	public final Token<?> lower, upper;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Domain(ParsedExpression leftIn,
+					   Token<?> lowerIn,
+					   ParsedExpression middleIn,
+					   Token<?> upperIn,
+					   ParsedExpression rightIn)
+	{
+		super(leftIn);
 		left = leftIn;
 		lower = lowerIn;
 		middle = middleIn;
 		upper = upperIn;
 		right = rightIn;
-		definingToken = leftIn.definingToken();
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -26,13 +42,8 @@ public class Expr_Domain implements Expression	{
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleDomain_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

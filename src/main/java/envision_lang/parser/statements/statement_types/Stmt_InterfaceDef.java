@@ -1,42 +1,45 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
-import envision_lang.parser.statements.BasicStatement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class Stmt_InterfaceDef extends BasicStatement {
+public class Stmt_InterfaceDef extends ParsedStatement {
 	
-	public final ParserDeclaration declaration;
-	public final EArrayList<Expr_Generic> generics = new EArrayList<>();
+	//========
+	// Fields
+	//========
 	
-	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn) { this(start, declarationIn, new EArrayList<>()); }
-	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn, EArrayList<Expr_Generic> genericsIn) {
-		super(start);
-		declaration = declarationIn;
-		generics.addAll(genericsIn);
+	public final EList<Expr_Generic> generics = EList.newList();
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn) { this(start, declarationIn, null); }
+	public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn, EList<Expr_Generic> genericsIn) {
+		super(start, declarationIn);
+		if (genericsIn != null) generics.addAll(genericsIn);
 	}
 	
-	public Stmt_InterfaceDef addGeneric(Expr_Generic in) {
-		generics.add(in);
-		return this;
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return declaration;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleInterfaceStatement(this);
 	}
 	
-	@Override
-	public Token definingToken() {
-		return definingToken;
+	//=========
+	// Methods
+	//=========
+	
+	public void addGeneric(Expr_Generic in) {
+		generics.add(in);
 	}
 	
 }

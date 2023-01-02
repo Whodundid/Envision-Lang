@@ -1,12 +1,10 @@
 package envision_lang.parser.statements.statement_types;
 
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 /**
@@ -15,33 +13,24 @@ import eutil.datatypes.util.EList;
  * members/methods/etc too. The primary difference between the two is that
  * an exception can be thrown where as a class cannot.
  */
-public class Stmt_Exception extends BasicStatement {
+public class Stmt_Exception extends ParsedStatement {
+	
+	//========
+	// Fields
+	//========
 	
 	public final Token<?> name;
-	public final ParserDeclaration declaration;
-	public final EList<Expr_Var> superclasses = new EArrayList<>();
-	public final EList<Statement> body = new EArrayList<>();
+	public final EList<Expr_Var> superclasses = EList.newList();
+	public final EList<ParsedStatement> body = EList.newList();
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Stmt_Exception(Token<?> nameIn, ParserDeclaration declarationIn) {
-		super(nameIn);
+		super(nameIn, declarationIn);
 		name = nameIn;
-		declaration = declarationIn;
 	}
-	
-	public Stmt_Exception setSupers(EList<Expr_Var> supersIn) {
-		superclasses.clear();
-		superclasses.addAll(supersIn);
-		return this;
-	}
-	
-	public Stmt_Exception setBody(EList<Statement> bodyIn) {
-		body.clear();
-		body.addAll(bodyIn);
-		return this;
-	}
-	
-	public Stmt_Exception addSuper(Expr_Var in) { superclasses.add(in); return this; }
-	public Stmt_Exception addStatement(Statement in) { body.add(in); return this; }
 	
 	@Override
 	public String toString() {
@@ -53,19 +42,23 @@ public class Stmt_Exception extends BasicStatement {
 		return declaration + " exception " + name.getLexeme() + s + " {\n" + b + "}";
 	}
 	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return declaration;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleExceptionStatement(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
-	}
+	//=========
+	// Methods
+	//=========
+	
+	public void addSuper(Expr_Var in) { superclasses.add(in); }
+	public void addStatement(ParsedStatement in) { body.add(in); }
+
+	public void setSupers(EList<Expr_Var> supersIn) { superclasses.clearThenAddAll(supersIn); }
+	public void setBody(EList<ParsedStatement> bodyIn) { body.clearThenAddAll(bodyIn); }
 	
 }

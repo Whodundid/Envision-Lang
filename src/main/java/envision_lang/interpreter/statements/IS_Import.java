@@ -16,18 +16,9 @@ import eutil.debug.InDevelopment;
 
 @Broken
 @InDevelopment
-public class IS_Import extends StatementExecutor<Stmt_Import> {
+public class IS_Import {
 
-	public IS_Import(EnvisionInterpreter in) {
-		super(in);
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_Import s) {
-		new IS_Import(in).run(s);
-	}
-
-	@Override
-	public void run(Stmt_Import s) {
+	public static void run(EnvisionInterpreter interpreter, Stmt_Import s) {
 		Expr_Import impE = s.imp;
 		Token asName = s.asName;
 		String path = impE.path.getLexeme();
@@ -42,12 +33,12 @@ public class IS_Import extends StatementExecutor<Stmt_Import> {
 		//check for self importing -- causes infinite recursion
 		if (interpreter.fileName.equals(path)) throw new SelfImportError(interpreter.codeFile());
 		
-		WorkingDirectory dir = workingDir();
+		WorkingDirectory dir = interpreter.workingDir();
 		EnvisionCodeFile imp = dir.getFile(path);
 		
 		try {
 			if (!imp.isLoaded()) {
-				imp.load(envision(), dir);
+				imp.load(dir);
 				imp.execute();
 			}
 			

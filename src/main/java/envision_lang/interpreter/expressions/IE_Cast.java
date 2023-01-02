@@ -2,7 +2,7 @@ package envision_lang.interpreter.expressions;
 
 import envision_lang.exceptions.errors.UndefinedTypeError;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.TypeManager;
+import envision_lang.interpreter.util.UserDefinedTypeManager;
 import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
@@ -27,7 +27,7 @@ public class IE_Cast extends ExpressionExecutor<Expr_Cast> {
 		Expression target_expr = e.target;
 		
 		//grab typeClass
-		TypeManager typeMan = interpreter.getTypeManager();
+		UserDefinedTypeManager typeMan = interpreter.getUserDefinedTypeManager();
 		EnvisionClass typeClass = typeMan.getTypeClass(toType);
 		
 		System.out.println("CAST: " + typeClass);

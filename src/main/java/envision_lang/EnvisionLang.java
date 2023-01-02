@@ -7,8 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang._launch.EnvisionLangConsoleOutputHandler;
-import envision_lang._launch.EnvisionLangConsoleReceiver;
+import envision_lang._launch.EnvisionConsoleOutputReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLaunchSettings;
 import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
@@ -64,6 +63,30 @@ public class EnvisionLang {
 	
 	public static final Logger envisionLogger = LoggerFactory.getLogger(EnvisionLang.class);
 	
+	//=================
+	// Static Instance
+	//=================
+	
+	private static EnvisionLang langInstance;
+	
+	public static EnvisionLang getInstance() {
+		if (langInstance != null) return langInstance;
+		return (langInstance = new EnvisionLang());
+	}
+	
+	public static void init() {
+		getInstance();
+		
+		NativeTypeManager.initNativeClasses();
+	}
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	/** Creates a new Envision workspace with standard launch settings. */
+	private EnvisionLang() {}
+	
 	//----------------------------------------------------------------------------------------------------------------
 	
 	/**
@@ -73,7 +96,7 @@ public class EnvisionLang {
 	 */
 	@Unused
 	@Experimental
-	private boolean allowClassFileStatements = false;
+	private static boolean allowClassFileStatements = false;
 	
 	/**
 	 * When declaring a class, only specific statements are permitted within the
@@ -119,7 +142,7 @@ public class EnvisionLang {
 	 */
 	@Unused
 	@Experimental
-	private boolean allowClassBodyStatements = false;
+	private static boolean allowClassBodyStatements = false;
 	
 	/**
 	 * Due to the nature of how Java loads programs on a per-class basis, the simple
@@ -134,37 +157,37 @@ public class EnvisionLang {
 	 * loaded should execute much more smoothly and responsively.
 	 */
 	@Broken
-	private boolean preloadLanguage = false;
+	private static boolean preloadLanguage = false;
 	
 	/**
 	 * If enabled, bundled program code files will be tokenized and displayed in the
 	 * order they are read.
 	 */
-	private boolean tokenize = false;
+	private static boolean tokenize = false;
 	
 	/**
 	 * If enabled, bundled program code files will be tokenized and then attempt to
 	 * be parsed into logical Envision statements and displayed.
 	 */
-	private boolean parse_statements = false;
+	private static boolean parse_statements = false;
 	
 	/**
 	 * If disabled, no program code will actually be executed at run time. This flag
 	 * is primarily used for debugging and testing.
 	 */
-	private boolean execute_code = true;
+	private static boolean execute_code = true;
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Packages to be loaded upon program compilation.
 	 */
-	private final EList<EnvisionLangPackage> packages = EList.newList();
+	private static final EList<EnvisionLangPackage> packages = EList.newList();
 	
 	/**
 	 * A handler which is referenced when an EnvisionError is thrown.
 	 */
-	private EnvisionLangErrorCallBack errorCallback = null;
+	private static EnvisionLangErrorCallBack errorCallback = null;
 	
 	/**
 	 * A receiver for all Envision code outputs which would normally be intended for
@@ -173,42 +196,27 @@ public class EnvisionLang {
 	 * Note: if this receiver is null, the default Java Out PrintStream will be used
 	 * instead.
 	 */
-	private EnvisionLangConsoleReceiver consoleReceiver = null;
-	
-	/**
-	 * Used to direct all console output to either the specified console receiver
-	 * (if there is one) or to the standard Java Out PrintStream.
-	 */
-	private final EnvisionLangConsoleOutputHandler consoleOutputHandler = new EnvisionLangConsoleOutputHandler(this);
+	private static EnvisionConsoleOutputReceiver consoleReceiver = null;
 	
 	/**
 	 * Settings which will be applied to the Envision Scripting Language and (or) given to
 	 * programs executing at runtime.
 	 */
-	private EnvisionLaunchSettings launchSettings = null;
+	private static EnvisionLaunchSettings launchSettings = null;
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
 	/** The actively bound program. */
-	private EnvisionProgram program;
+	private static EnvisionProgram program;
 	
 	/** The active working directory. */
-	private WorkingDirectory dir;
-	
-	//--------------
-	// Constructors
-	//--------------
-	
-	/** Creates a new Envision workspace with standard launch settings. */
-	public EnvisionLang() {
-		NativeTypeManager.initNativeClasses();
-	}
+	private static WorkingDirectory dir;
 	
 	//------------------
 	// Envision Methods
 	//------------------
 	
-	private void applyEnvSettings() throws Exception {
+	private static void applyEnvSettings() throws Exception {
 		if (launchSettings == null) return;
 		
 		for (var arg : launchSettings.getEnvArgs()) {
@@ -226,16 +234,16 @@ public class EnvisionLang {
 		}
 	}
 	
-	public void buildProgram(String pathIn) throws Exception {
-		//this.program
+	public static EnvisionProgram buildProgram(String pathIn) throws Exception {
+		return new EnvisionProgram(pathIn);
 	}
 	
-	public void runProgram(String pathIn) throws Exception { runProgram(new File(pathIn)); }
-	public void runProgram(File pathIn) throws Exception { runProgram(new EnvisionProgram(pathIn)); }
-	public void runProgram(EnvisionProgram in) throws Exception { runProgramI(in); }
+	public static void runProgram(String pathIn) throws Exception { runProgram(new File(pathIn)); }
+	public static void runProgram(File pathIn) throws Exception { runProgram(new EnvisionProgram(pathIn)); }
+	public static void runProgram(EnvisionProgram in) throws Exception { runProgramI(in); }
 	
 	/** Internal run program call. */
-	private void runProgramI(EnvisionProgram programIn) throws Exception {
+	private static void runProgramI(EnvisionProgram programIn) throws Exception {
 		program = programIn;
 		dir = programIn.getWorkingDir();
 		programDir = dir.getDirFile();
@@ -281,7 +289,7 @@ public class EnvisionLang {
 			var programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<String>();
 			
 			//throw interpret error if the file could not be loaded
-			if (!main.load(this, dir)) throw new InterpreterCreationError();
+			if (!main.load(dir)) throw new InterpreterCreationError();
 			
 			//load any program bundled envision java objects into the main's interpreter scope
 			var interpreter = dir.getMain().getInterpreter();
@@ -314,29 +322,26 @@ public class EnvisionLang {
 	}
 	
 	@Broken(since="Forever")
-	private void liveMode(EnvisionCodeFile main) throws Exception {
-		Scanner reader = new Scanner(System.in);
-		while (liveMode) {
-			String line = reader.nextLine();
-			if (!line.isEmpty()) main.getInterpreter().execute(EnvisionLangParser.parseStatement(line));
-			reader.reset();
-		}
-		reader.close();
+	private static void liveMode(EnvisionCodeFile main) throws Exception {
+//		Scanner reader = new Scanner(System.in);
+//		while (liveMode) {
+//			String line = reader.nextLine();
+//			if (!line.isEmpty()) main.getInterpreter().execute(EnvisionLangParser.parseStatement(line));
+//			reader.reset();
+//		}
+//		reader.close();
 	}
 	
-	public EnvisionLang setLaunchSettings(EnvisionLaunchSettings settingsIn) {
+	public static void setLaunchSettings(EnvisionLaunchSettings settingsIn) {
 		launchSettings = settingsIn;
-		return this;
 	}
 	
-	public EnvisionLang setLaunchSettings(LaunchSetting... settings) {
+	public static void setLaunchSettings(LaunchSetting... settings) {
 		launchSettings = EnvisionLaunchSettings.of(settings);
-		return this;
 	}
 	
-	public EnvisionLang addBuildPackage(EnvisionLangPackage... pkg) {
+	public static void addBuildPackage(EnvisionLangPackage... pkg) {
 		for (var p : pkg) packages.add(p);
-		return this;
 	}
 	
 	/**
@@ -347,30 +352,24 @@ public class EnvisionLang {
 	 * @param callbackIn The specified class to be sent thrown errors
 	 * @return This Envision instance
 	 */
-	public <T extends EnvisionLangErrorCallBack> EnvisionLang setErrorCallback(T callbackIn) {
+	public static <T extends EnvisionLangErrorCallBack> void setErrorCallback(T callbackIn) {
 		errorCallback = callbackIn;
-		return this;
 	}
 	
-	public <T extends EnvisionLangConsoleReceiver> EnvisionLang setConsoleReceiver(T receiverIn) {
+	public static <T extends EnvisionConsoleOutputReceiver> void setConsoleReceiver(T receiverIn) {
 		consoleReceiver = receiverIn;
-		return this;
 	}
 	
 	//---------
 	// Getters
 	//---------
 	
-	public WorkingDirectory getWorkingDirectory() {
+	public static WorkingDirectory getWorkingDirectory() {
 		return dir;
 	}
 	
-	public EnvisionLangConsoleReceiver getConsoleReceiver() {
+	public static EnvisionConsoleOutputReceiver getConsoleReceiver() {
 		return consoleReceiver;
-	}
-	
-	public EnvisionLangConsoleOutputHandler getConsoleHandler() {
-		return consoleOutputHandler;
 	}
 	
 	public static String getVersionString() {

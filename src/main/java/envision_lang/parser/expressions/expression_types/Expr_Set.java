@@ -1,22 +1,33 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Set implements Expression {
-
-	public final Expression object, value;
-	public final Token<?> name;
-	public final Token<?> definingToken;
+public class Expr_Set extends ParsedExpression {
 	
-	public Expr_Set(Expression objectIn, Token<?> nameIn, Expression valueIn) {
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression object, value;
+	public final Token<?> name;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Set(ParsedExpression objectIn, Token<?> nameIn, ParsedExpression valueIn) {
+		super(objectIn);
 		object = objectIn;
 		name = nameIn;
 		value = valueIn;
-		definingToken = objectIn.definingToken();
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -29,13 +40,8 @@ public class Expr_Set implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleSet_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

@@ -3,38 +3,38 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_While;
 import envision_lang.tokenizer.Token;
 
-public class PS_While extends GenericParser {
+public class PS_While extends ParserHead {
 	
-	public static Statement whileStatement() {
+	public static ParsedStatement whileStatement() {
 		if (match(DO)) {
 			Token<?> start = previous();
-			Statement body = declaration();
-			while (match(NEWLINE));
+			ParsedStatement body = declaration();
+			consumeEmptyLines();
 			consume(WHILE, "Expected continuing 'while' statement after preceding 'do'!");
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			consume(PAREN_L, "Expected '(' after while declaration!");
-			while (match(NEWLINE));
-			Expression condition = ExpressionParser.parseExpression();
-			while (match(NEWLINE));
+			consumeEmptyLines();
+			ParsedExpression condition = ExpressionParser.parseExpression();
+			consumeEmptyLines();
 			consume(PAREN_R, "Expected ')' after while condition!");
-			while (match(NEWLINE));
+			consumeEmptyLines();
 			return new Stmt_While(start, true, condition, body);
 		}
 		else if (match(WHILE)) {
 			Token<?> start = previous();
 			consume(PAREN_L, "Expected '(' after while declaration!");
-			while (match(NEWLINE));
-			Expression condition = ExpressionParser.parseExpression();
+			consumeEmptyLines();
+			ParsedExpression condition = ExpressionParser.parseExpression();
 			consume(PAREN_R, "Expected ')' after while condition!");
-			while (match(NEWLINE));
-			Statement body = declaration();
+			consumeEmptyLines();
+			ParsedStatement body = declaration();
 			return new Stmt_While(start, false, condition, body);
 		}
 		error("Expected either a 'do' or a 'while' at this point!");

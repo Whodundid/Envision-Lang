@@ -25,7 +25,7 @@ import envision_lang.tokenizer.Token;
  * <li> The TypeManager manages user-defined class types.
  * <li> The NativeTypeManager manages Envision's native class/object types.
  */
-public class NativeTypeManager {
+public final class NativeTypeManager {
 
 	/** The internal native Envision class list. */
 	private static final HashMap<Primitives, EnvisionClass> native_classes = new HashMap<>();
@@ -74,6 +74,10 @@ public class NativeTypeManager {
 	
 	/** Hide Constructor. */
 	private NativeTypeManager() {}
+	
+	//=================
+	// Manager Methods
+	//=================
 	
 	public static EnvisionDatatype datatypeOf(Token type) {
 		if (type == null) return datatypeOf(Primitives.VAR);

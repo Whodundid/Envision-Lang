@@ -1,24 +1,34 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
-public class Stmt_Catch extends BasicStatement {
+public class Stmt_Catch extends ParsedStatement {
+	
+	//========
+	// Fields
+	//========
 	
 	public final Token<?> type;
 	public final Token<?> var;
-	public final EList<Statement> body;
+	public final EList<ParsedStatement> body;
 	
-	public Stmt_Catch(Token<?> start, Token<?> typeIn, Token<?> varIn, EList<Statement> bodyIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Catch(Token<?> start, Token<?> typeIn, Token<?> varIn, EList<ParsedStatement> bodyIn) {
 		super(start);
 		type = typeIn;
 		var = varIn;
 		body = bodyIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -27,18 +37,8 @@ public class Stmt_Catch extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleCatchStatement(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

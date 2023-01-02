@@ -7,7 +7,7 @@ import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
 
-public class IS_LoopControl extends StatementExecutor<Stmt_LoopControl> {
+public class IS_LoopControl {
 
 	public IS_LoopControl(EnvisionInterpreter in) {
 		super(in);

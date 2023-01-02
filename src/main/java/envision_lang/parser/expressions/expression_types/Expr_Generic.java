@@ -1,21 +1,32 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
 
-public class Expr_Generic implements Expression	{
+public class Expr_Generic extends ParsedExpression	{
+	
+	//========
+	// Fields
+	//========
 	
 	public final Token<?> generic;
 	public final Token<?> extension;
-	public final Token<?> definingToken;
+	
+	//==============
+	// Constructors
+	//==============
 	
 	public Expr_Generic(Token genericIn, Token<?> extensionIn) {
+		super(genericIn);
 		generic = genericIn;
 		extension = extensionIn;
-		definingToken = genericIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -24,13 +35,8 @@ public class Expr_Generic implements Expression	{
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleGeneric_E(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

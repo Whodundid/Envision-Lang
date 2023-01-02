@@ -1,6 +1,6 @@
 package envision_lang._launch;
 
-public interface EnvisionLangConsoleReceiver {
+public interface EnvisionConsoleOutputReceiver {
 
 	/**
 	 * Called whenever executed Envision code is printing to the console.

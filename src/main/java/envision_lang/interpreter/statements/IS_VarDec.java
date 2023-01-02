@@ -7,7 +7,7 @@ import envision_lang.exceptions.errors.UndefinedTypeError;
 import envision_lang.exceptions.errors.VoidAssignmentError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
-import envision_lang.interpreter.util.TypeManager;
+import envision_lang.interpreter.util.UserDefinedTypeManager;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.lang.EnvisionObject;
@@ -37,7 +37,7 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 
 	@Override
 	public void run(Stmt_VarDef statement) {
-		TypeManager typeMan = interpreter.getTypeManager();
+		UserDefinedTypeManager typeMan = interpreter.getUserDefinedTypeManager();
 		
 		//extract base statement parts
 		ParserDeclaration statement_declaration = statement.getDeclaration();

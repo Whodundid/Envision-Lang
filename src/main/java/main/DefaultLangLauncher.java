@@ -34,10 +34,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 	
 	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
-		
-		EnvisionLang env = null;
-		env = new EnvisionLang();
-		env.setErrorCallback(this);
+		EnvisionLang.setErrorCallback(this);
 		
 		TestPoint t = new TestPoint(0, 0);
 		EnvisionProgram program = new EnvisionProgram("program");
@@ -49,8 +46,8 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
 		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
-		env.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE);
-		env.runProgram(program);
+		EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE);
+		EnvisionLang.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");
 		

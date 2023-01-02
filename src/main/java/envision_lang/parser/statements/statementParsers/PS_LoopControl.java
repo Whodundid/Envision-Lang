@@ -3,10 +3,10 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
 import envision_lang.tokenizer.Token;
 
@@ -16,7 +16,7 @@ import envision_lang.tokenizer.Token;
  * 
  * @author Hunter Bragg
  */
-public class PS_LoopControl extends GenericParser {
+public class PS_LoopControl extends ParserHead {
 	
 	/**
 	 * Parses break statements. Break statements can have conditional
@@ -25,12 +25,12 @@ public class PS_LoopControl extends GenericParser {
 	 * 
 	 * @return The parsed break statement.
 	 */
-	public static Statement handleBreak() {
+	public static ParsedStatement handleBreak() {
 		if (match(BREAK)) return new Stmt_LoopControl(previous(), true);
 		
 		Token<?> start = consume(BREAKIF, "Expected a 'breakif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
-		Expression condition = ExpressionParser.parseExpression();
+		ParsedExpression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
 		return new Stmt_LoopControl(start, true, condition);
@@ -43,12 +43,12 @@ public class PS_LoopControl extends GenericParser {
 	 * 
 	 * @return The parsed continue statement.
 	 */
-	public static Statement handleContinue() {
+	public static ParsedStatement handleContinue() {
 		if (match(CONTINUE)) return new Stmt_LoopControl(previous(), false);
 		
 		Token<?> start = consume(CONTIF, "Expected a 'contif' statement!");
 		consume(PAREN_L, "Expected the start of an expression! '('");
-		Expression condition = ExpressionParser.parseExpression();
+		ParsedExpression condition = ExpressionParser.parseExpression();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
 		return new Stmt_LoopControl(start, false, condition);

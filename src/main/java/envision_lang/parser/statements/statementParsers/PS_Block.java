@@ -2,26 +2,25 @@ package envision_lang.parser.statements.statementParsers;
 
 import static envision_lang.tokenizer.Operator.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.ParserHead;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_Block extends GenericParser {
+public class PS_Block extends ParserHead {
 	
-	public static EList<Statement> handleBlock() {
-		EList<Statement> b = new EArrayList<>();
+	public static EList<ParsedStatement> handleBlock() {
+		EList<ParsedStatement> b = EList.newList();
 		
 		consume(CURLY_L, "Expected a '}' to start scope block!");
 		
 		do {
-			Statement s = declaration();
+			ParsedStatement s = declaration();
 			
 			if (s != null) {
 				//unpack blocks
 				if (s instanceof Stmt_Block block) {
-					for (Statement bs : block.statements) b.add(bs);
+					for (ParsedStatement bs : block.statements) b.add(bs);
 				}
 				else b.add(s);
 			}

@@ -1,33 +1,52 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 /** Standard for loop. */
-public class Stmt_For extends BasicStatement {
+public class Stmt_For extends ParsedStatement {
 	
-	public final Statement init;
-	public final Expression cond;
-	public final EList<Expression> post;
-	public final Statement body;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_For(Token<?> start, Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
-		this(start, initIn, condIn, new EArrayList<>(postIn), bodyIn);
+	public final ParsedStatement init;
+	public final ParsedExpression cond;
+	public final EList<ParsedExpression> post;
+	public final ParsedStatement body;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_For(Token<?> start,
+					ParsedStatement initIn,
+					ParsedExpression condIn,
+					ParsedExpression postIn,
+					ParsedStatement bodyIn)
+	{
+		this(start, initIn, condIn, EList.newList(postIn), bodyIn);
 	}
 	
-	public Stmt_For(Token<?> start, Statement initIn, Expression condIn, EList<Expression> postIn, Statement bodyIn) {
+	public Stmt_For(Token<?> start,
+					ParsedStatement initIn,
+					ParsedExpression condIn,
+					EList<ParsedExpression> postIn,
+					ParsedStatement bodyIn)
+	{
 		super(start);
 		init = initIn;
 		cond = condIn;
 		post = postIn;
 		body = bodyIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -39,18 +58,8 @@ public class Stmt_For extends BasicStatement {
 	}
 	
 	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
-	}
-	
-	@Override
 	public void execute(StatementHandler handler) {
 		handler.handleForStatement(this);
-	}
-	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
 	}
 	
 }

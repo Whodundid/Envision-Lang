@@ -1,33 +1,38 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.statements.BasicStatement;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class Stmt_Block extends BasicStatement {
+public class Stmt_Block extends ParsedStatement {
 
-	public final EList<Statement> statements;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_Block(Token<?> start) { this(start, new EArrayList<>()); }
-	public Stmt_Block(Token<?> start, EList<Statement> in) {
+	public final EList<ParsedStatement> statements = EList.newList();
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Block(Token<?> start) { this(start, null); }
+	public Stmt_Block(Token<?> start, EList<ParsedStatement> in) {
 		super(start);
-		statements = in;
+		if (in != null) statements.addAll(in);
 	}
 	
-	public Stmt_Block addStatement(Statement in) {
-		statements.add(in);
-		return this;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
 		String b = "{";
 		if (statements.isNotEmpty()) { b += " "; }
 		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
+			ParsedStatement s = statements.get(i);
 			b += s + ((i < statements.size() - 1) ? " " : "");
 		}
 		return b + ((statements.isEmpty()) ? "" : " ") + "}";
@@ -38,9 +43,12 @@ public class Stmt_Block extends BasicStatement {
 		handler.handleBlockStatement(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
+	//=========
+	// Methods
+	//=========
+	
+	public void addStatement(ParsedStatement in) {
+		statements.add(in);
 	}
 	
 }

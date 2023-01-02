@@ -4,25 +4,24 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.util.EnvisionVis;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.ParserHead;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;
 import envision_lang.parser.util.DeclarationStage;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
-public class PS_GetSet extends GenericParser {
+public class PS_GetSet extends ParserHead {
 	
-	public static Statement getSet() { return getSet(new ParserDeclaration()); }
-	public static Statement getSet(ParserDeclaration declaration) {
+	public static ParsedStatement getSet() { return getSet(new ParserDeclaration()); }
+	public static ParsedStatement getSet(ParserDeclaration declaration) {
 		declaration = (declaration == null) ? new ParserDeclaration().setStage(DeclarationStage.VISIBILITY) : declaration;
 		
 		Stmt_GetSet statement = parseGetSetVis(declaration);
-		EList<Token<?>> vars = new EArrayList();
+		EList<Token<?>> vars = EList.newList();
 		
 		do vars.add(consume(ReservedWord.IDENTIFIER, "Expected a variable name!"));
 		while (match(Operator.COMMA));
@@ -36,8 +35,8 @@ public class PS_GetSet extends GenericParser {
 	public static Stmt_GetSet parseGetSetVis(EnvisionVis visIn) {
 		//parse for getset modifiers
 		EnvisionVis curVis = visIn;
-		EnvisionVis getVis = EnvisionVis.SCOPE;
-		EnvisionVis setVis = EnvisionVis.SCOPE;
+		EnvisionVis getVis = null;
+		EnvisionVis setVis = null;
 		boolean get = false, set = false;
 		
 		//parse for first getset (if there is one)
@@ -76,7 +75,7 @@ public class PS_GetSet extends GenericParser {
 		}
 		else error("Expected either 'get' or 'set' here!");
 		
-		return new Stmt_GetSet(start, getVis, setVis, get, set);
+		return new Stmt_GetSet(start, getVis, setVis);
 	}
 	
 }

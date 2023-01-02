@@ -1,26 +1,32 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class Expr_ListInitializer implements Expression {
-
-	public final EArrayList<Expression> values;
-	public final Token<?> definingToken;
+public class Expr_ListInitializer extends ParsedExpression {
 	
-	public Expr_ListInitializer(Token<?> start) { this(start, new EArrayList<>()); }
-	public Expr_ListInitializer(Token<?> start, EArrayList<Expression> valuesIn) {
-		values = valuesIn;
-		definingToken = start;
+	//========
+	// Fields
+	//========
+	
+	public final EList<ParsedExpression> values;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_ListInitializer(Token<?> start) { this(start, EList.newList()); }
+	public Expr_ListInitializer(Token<?> start, EList<ParsedExpression> valuesIn) {
+		super(start);
+		values = EList.of(valuesIn);
 	}
 	
-	public Expr_ListInitializer addValue(Expression in) {
-		values.add(in);
-		return this;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -28,13 +34,16 @@ public class Expr_ListInitializer implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleListInitializer_E(this);
 	}
 	
-	@Override
-	public Token<?> definingToken() {
-		return definingToken;
+	//=========
+	// Methods
+	//=========
+	
+	public void addValue(ParsedExpression in) {
+		values.add(in);
 	}
 	
 }
