@@ -5,12 +5,12 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.ArithmeticError;
 import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.exceptions.errors.InvalidTargetError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.creationUtil.OperatorOverloadHandler;
-import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
@@ -28,33 +28,23 @@ import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
 
-public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
+public class IE_Assign extends AbstractInterpreterExecutor {
 
-	private String name;
-	private Integer dist;
-	private Operator op;
-	private EnvisionObject obj;
-	private EnvisionObject value;
+	//private String name;
+	//private Integer dist;
+	//private Operator op;
+	//private EnvisionObject obj;
+	//private EnvisionObject value;
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	protected IE_Assign(EnvisionInterpreter in) {
-		super(in);
-	}
-	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Assign e) {
-		return new IE_Assign(in).run(e);
-	}
 
-	public static EnvisionObject handleAssign(EnvisionInterpreter in, Expr_Binary e, Operator opIn) {
+	public static EnvisionObject handleAssign(EnvisionInterpreter interpreter, Expr_Binary e, Operator opIn) {
 		if (e.left instanceof Expr_Var v) {
-			IE_Assign inst = new IE_Assign(in);
-			
 			String name = v.getName();
-			EnvisionObject value = in.evaluate(e.right);
+			EnvisionObject value = interpreter.evaluate(e.right);
 			Operator op = opIn;
 			
-			return inst.execute(name, value, op);
+			return executeAssign(interpreter, name, value, op);
 		}
 		
 		throw new InvalidTargetError("Expected a valid BinaryExpression with a left-handed var assignment model! Got: '" + e + "' instead!");
@@ -62,12 +52,11 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	@Override
-	public EnvisionObject run(Expr_Assign expression) {
+	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Assign expression) {
 		Token name_token = expression.name;
 		String name = (name_token != null) ? name_token.getLexeme() : null;
 		//Expr_Assign leftAssign = expression.leftAssign;
-		EnvisionObject value = evaluate(expression.value);
+		EnvisionObject value = interpreter.evaluate(expression.value);
 		Operator op = expression.operator;
 		
 		//handle left-hand assignment expressions
@@ -83,16 +72,20 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 			//else throw new InvalidTargetError("The object '" + left_result + "' is an invalid assignment target!");
 		//}
 		
-		return execute(name, value, op);
+		return executeAssign(interpreter, name, value, op);
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	private EnvisionObject execute(String nameIn, EnvisionObject valueIn, Operator opIn) {
-		name = nameIn;
-		value = valueIn;
-		op = opIn;
-		obj = scope().get(name);
+	private static EnvisionObject executeAssign(EnvisionInterpreter interpreter,
+												String nameIn,
+												EnvisionObject valueIn,
+												Operator opIn)
+	{
+		String name = nameIn;
+		EnvisionObject value = valueIn;
+		Operator op = opIn;
+		EnvisionObject obj = interpreter.scope().get(name);
 		
 		//if the given object is a class instance and supports
 		//the given operator, run the operator overload
@@ -104,7 +97,9 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		}
 		
 		//otherwise, handle default assignment
-		if (op == Operator.ASSIGN) return assign();
+		if (op == Operator.ASSIGN) {
+			return assign(interpreter, name, obj, value);
+		}
 		/*
 		return switch (op) {
 		case ASSIGN -> assign();
@@ -125,10 +120,6 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 		//error if this point is reached
 		throw new EnvisionLangError("Invalid assignment operator! " + op);
 	}
-
-	private EnvisionObject assign() {
-		return assign(interpreter, name, obj, value);
-	}
 	
 	/**
 	 * Direct variable value assignment.
@@ -137,7 +128,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	 * If the given 'obj' does not exist, then a new variable under the given
 	 * 'name' will be created instead.
 	 * 
-	 * @param interpreter
+	 * @param executor
 	 * @param name the name of the variable
 	 * @param obj the object being assigned (if present)
 	 * @param value the new value to be assigned
@@ -767,7 +758,7 @@ public class IE_Assign extends ExpressionExecutor<Expr_Assign> {
 	
 	//---------------------------------------------------------------------------
 	
-	private void assert_number(IDatatype type) {
+	private static void assert_number(IDatatype type) {
 		if (!type.isNumber()) {
 			throw new ArithmeticError("Invalid operation: '" + type + "'! Can only operate on numbers!'");
 		}

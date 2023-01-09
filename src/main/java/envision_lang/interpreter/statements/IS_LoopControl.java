@@ -1,30 +1,21 @@
 package envision_lang.interpreter.statements;
 
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.Continue;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
 
-public class IS_LoopControl {
-
-	public IS_LoopControl(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IS_LoopControl extends AbstractInterpreterExecutor {
 	
-	public static void run(EnvisionInterpreter in, Stmt_LoopControl s) {
-		new IS_LoopControl(in).run(s);
-	}
-
-	@Override
-	public void run(Stmt_LoopControl s) {
-		Expression condition = s.condition;
+	public static void run(EnvisionInterpreter interpreter, Stmt_LoopControl s) {
+		ParsedExpression condition = s.condition;
 		
 		//if there is a condition, evaluate condition and
 		//only break/continue if true
 		if (condition != null) {
-			if (isTrue(evaluate(condition))) {
+			if (interpreter.isTrue(interpreter.evaluate(condition))) {
 				if (s.isBreak) throw Break.instance;
 				else throw Continue.instance;
 			}

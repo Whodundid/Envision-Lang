@@ -12,10 +12,10 @@ import envision_lang.lang.natives.StaticTypes;
 import envision_lang.packages.EnvisionLangPackage;
 import eutil.strings.EStringBuilder;
 
-public class DebugScope extends EnvisionFunction {
+public class DebugScopeFull extends EnvisionFunction {
 	
-	public DebugScope() {
-		super(StaticTypes.VOID_TYPE, "scope");
+	public DebugScopeFull() {
+		super(StaticTypes.VOID_TYPE, "scopeFull");
 	}
 	
 	@Override
@@ -25,7 +25,7 @@ public class DebugScope extends EnvisionFunction {
 			//IScope p = s.getParent();
 			var out = new EStringBuilder("\n");
 			out.a("------------------------------------------------------------");
-			out.a("\nSCOPE DEBUG (Local)\n", s/*, ((p != null) ? "\n" + p : "")*/);
+			out.a("\nFULL SCOPE DEBUG (Local)\n", IScope.printFullStack(s));
 			out.a("\n------------------------------------------------------------");
 			System.out.println(out.toString());
 		}
@@ -36,7 +36,7 @@ public class DebugScope extends EnvisionFunction {
 				IScope inst_scope = inst.getClassScope();
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
-				out.a("\nCLASS SCOPE: (", type, " : ", o, ")\n", inst_scope, "\n", inst_scope.getParent());
+				out.a("\nFULL CLASS SCOPE: (", type, " : ", o, ")\n", IScope.printFullStack(inst_scope));
 				out.a("\n------------------------------------------------------------");
 				System.out.println(out.toString());
 			}
@@ -45,22 +45,22 @@ public class DebugScope extends EnvisionFunction {
 				IScope inst_scope = inst.getScope();
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
-				out.a("\nCLASS INSTANCE SCOPE: (", type, " : ", o, ")\n", inst_scope, "\n", inst_scope.getParent());
+				out.a("\nFULL CLASS INSTANCE SCOPE: (", type, " : ", o, ")\n", IScope.printFullStack(inst_scope));
 				out.a("\n------------------------------------------------------------");
 				System.out.println(out.toString());
 			}
 			else if (o instanceof EnvisionCodeFile code) {
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
-				out.a("\nCODE FILE SCOPE: (", code, " : ", o, ")\n", code.scope(), "\n");
-				out.a("------------------------------------------------------------");
+				out.a("\nFULL CODE FILE SCOPE: (", code, " : ", o, ")\n", IScope.printFullStack(code.scope()));
+				out.a("\n------------------------------------------------------------");
 				System.out.println(out.toString());
 			}
 			else if (o instanceof EnvisionLangPackage pkg) {
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
-				out.a("\nPACKAGE SCOPE: (", pkg.getPackageName(), " : ", o, ")\n", pkg.getScope(), "\n");
-				out.a("------------------------------------------------------------");
+				out.a("\nFULL PACKAGE SCOPE: (", pkg.getPackageName(), " : ", o, ")\n", IScope.printFullStack(pkg.getScope()));
+				out.a("\n------------------------------------------------------------");
 				System.out.println(out.toString());
 			}
 			else {

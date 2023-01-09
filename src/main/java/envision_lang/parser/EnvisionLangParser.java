@@ -2,7 +2,9 @@ package envision_lang.parser;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
+import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.ReservedWord;
@@ -107,13 +109,24 @@ public final class EnvisionLangParser {
 	 * @return A valid statement
 	 * @throws Exception In the event a statement is invalid or incomplete
 	 */
-	public static ParsedStatement parseStatement(String lineIn) throws Exception {
+	public static ParsedStatement parseStatement(String lineIn) {
 		Tokenizer t = new Tokenizer(lineIn);
 		EnvisionLangParser p = new EnvisionLangParser();
 		p.tokenLines = t.getLineTokens();
 		p.tokens = t.getTokens();
 		p.lines = t.getLines();
 		return ParserHead.parse(p);
+	}
+	
+	public static ParsedExpression parseExpression(String lineIn) {
+		Tokenizer t = new Tokenizer(lineIn);
+		EnvisionLangParser p = new EnvisionLangParser();
+		p.tokenLines = t.getLineTokens();
+		p.tokens = t.getTokens();
+		p.lines = t.getLines();
+		ParsedStatement s = ParserHead.parse(p);
+		if (s instanceof Stmt_Expression e) return e.expression;
+		throw new RuntimeException("Parsed type was not an expression! Was a '" + s.getClass() + "' instead!");
 	}
 	
 	//-----------------------------------------------------------------------------------------------------

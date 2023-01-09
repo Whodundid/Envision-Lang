@@ -83,6 +83,7 @@ public class UserDefinedTypeManager {
 	 * @return the EnvisionClass of the user-defined type
 	 */
 	public EnvisionClass getTypeClass(IDatatype typeIn) {
+		if (typeIn.isPrimitive()) return NativeTypeManager.getClassTypeOf(typeIn.getPrimitive());
 		return types.get(typeIn.getStringValue());
 	}
 	

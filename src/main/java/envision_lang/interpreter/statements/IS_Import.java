@@ -6,7 +6,7 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.SelfImportError;
 import envision_lang.exceptions.errors.UndefinedValueError;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
@@ -39,35 +39,33 @@ public class IS_Import {
 		try {
 			if (!imp.isLoaded()) {
 				imp.load(dir);
-				imp.execute();
+				EnvisionInterpreter.interpret(imp, null);
 			}
 			
-			EnvisionInterpreter impInterpreter = imp.getInterpreter();
+			IScope impScope = imp.scope();
 			
 			//import literally everything (including the code file itself)
 			if (all) {
 				//define the code file as an object within this scope
-				scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
+				interpreter.scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
 				//define import object's scope level members
-				for (var b : impInterpreter.scope().values().entrySet()) {
-					var box = b.getValue();
+				for (var b : impScope.values().entrySet()) {
 					var n = b.getKey();
-					var t = box.getA();
-					var o = box.getB();
+					var e = b.getValue();
 					//System.out.println("IMPORTING: " + n + " : " + o.isPublic());
 					//if (o.isPublic()) {
-						scope().define(n, t, o);
+					interpreter.scope().define(n, e);
 					//}
 				}
 			}
 			//if there's no object to import, simply import the code file as an object inside of this interpreter
 			else if (obj == null) {
 				//System.out.println("DEFINING CODE FILE");
-				scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
+				interpreter.scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
 			}
 			//otherwise, import the specific object from the given file (if it exists)
 			else {
-				var impObject = impInterpreter.scope().get(obj);
+				var impObject = impScope.get(obj);
 				
 				if (impObject == null) {
 					throw new UndefinedValueError("The specified import target '" +
@@ -75,7 +73,7 @@ public class IS_Import {
 												  imp.getFileName() + "'!");
 				}
 				
-				scope().defineImportVal(def_name, impObject);
+				interpreter.scope().defineImportVal(def_name, impObject);
 			}
 		}
 		catch (Exception e) {

@@ -53,6 +53,18 @@ public abstract class EnvisionObject {
 	 */
 	protected final boolean isPrimitive;
 	
+	/**
+	 * True if this object will follow pass-by-value rules. As in, whenever
+	 * this object is given as an argument to a receiving target (such as a
+	 * function, class initializer, variable assignment, etc.) it will be deep
+	 * copied and then given to its target. Otherwise, this object is passed by
+	 * reference.
+	 * <p>
+	 * Most primitives follow pass-by-value rules with the exception of Lists
+	 * and Tuples which follow pass-by-reference rules instead.
+	 */
+	protected final boolean isPassByValue;
+	
 	//--------------
 	// Constructors
 	//--------------
@@ -67,6 +79,7 @@ public abstract class EnvisionObject {
 		
 		//assign primitive flag
 		isPrimitive = internalTypeIn.isPrimitiveVariableType();
+		isPassByValue = (isPrimitive) ? internalType.getPrimitive().isPassByValue() : false;
 	}
 	
 	//-----------
@@ -121,6 +134,18 @@ public abstract class EnvisionObject {
 	 * @return true if this is a primitive object class
 	 */
 	public boolean isPrimitive() { return isPrimitive; }
+	
+	/**
+	 * If this object is a primitive type AND it is set to pass-by-value, then
+	 * any time that this object is 'passed' to another scope [I.E. Function,
+	 * Class, File, etc.] it will be deep copied into the new scope.
+	 * <p>
+	 * If this object is not pass-by-value, then this exact object reference
+	 * will be passed instead.
+	 * 
+	 * @return true if this object follows pass-by-value rules
+	 */
+	public boolean isPassByValue() { return isPassByValue; }
 	
 	/**
 	 * @return This object's visibility

@@ -1,46 +1,56 @@
 package envision_lang.interpreter.statements;
 
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_For;
 import eutil.datatypes.util.EList;
 
-public class IS_For extends StatementExecutor<Stmt_For> {
+public class IS_For extends AbstractInterpreterExecutor {
 
-	public IS_For(EnvisionInterpreter in) {
-		super(in);
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_For s) {
-		new IS_For(in).run(s);
-	}
-
-	@Override
-	public void run(Stmt_For statement) {
-		Statement init = statement.init;
-		Statement body = statement.body;
-		Expression cond = statement.cond;
-		EList<Expression> post = statement.post;
+	public static void run(EnvisionInterpreter interpreter, Stmt_For statement) {
+		ParsedStatement init = statement.init;
+		ParsedStatement body = statement.body;
+		ParsedExpression cond = statement.cond;
+		EList<ParsedExpression> post = statement.post;
 		
-		pushScope();
+		interpreter.pushScope();
 		
 		//inits
-		execute(init);
+		if (init != null) {
+			interpreter.execute(init);
+		}
+		
+		//true by default
+		boolean conditionValue = true;
+		if (cond != null) {
+			conditionValue = isTrue(interpreter.evaluate(cond));
+		}
 		
 		//body
-		while (isTrue(evaluate(cond))) {
-			pushScope();
-			execute(body);
-			//post
-			for (Expression postExp : post) {
-				evaluate(postExp);
+		while (conditionValue) {
+			interpreter.pushScope();
+			if (body != null) {
+				interpreter.execute(body);
 			}
-			popScope();
+			//post
+			if (post != null) {
+				for (ParsedExpression postExp : post) {
+					if (postExp != null) {
+						interpreter.evaluate(postExp);
+					}
+				}
+			}
+			interpreter.popScope();
+			
+			//re-evaluate condition
+			if (cond != null) {
+				conditionValue = isTrue(interpreter.evaluate(cond));
+			}
 		}
-				
-		popScope();
+		
+		interpreter.popScope();
 	}
 	
 }

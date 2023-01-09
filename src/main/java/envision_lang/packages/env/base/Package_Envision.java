@@ -18,7 +18,7 @@ public class Package_Envision extends ClassInstance {
 	
 	public static void init(EnvisionLang lang, IScope internalScope, EList<String> programArgs) {
 		instance = new Package_Envision(lang, programArgs);
-		internalScope.define("Envision", instance);
+		internalScope.defineImportVal("Envision", instance);
 	}
 	
 	private Package_Envision(EnvisionLang lang, EList<String> programArgs) {
@@ -28,8 +28,10 @@ public class Package_Envision extends ClassInstance {
 		Package_EnvisionClass.ENVISION_CLASS.defineFunctionScopeMembers(this);
 		
 		EnvisionList list = EnvisionListClass.newList(StaticTypes.STRING_TYPE);
-		for (String arg : programArgs) {
-			list.add(EnvisionStringClass.newString(arg));
+		if (programArgs != null) {
+			for (String arg : programArgs) {
+				list.add(EnvisionStringClass.newString(arg));
+			}
 		}
 		userArgs = list;
 		

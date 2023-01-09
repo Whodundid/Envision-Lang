@@ -1,7 +1,7 @@
 package envision_lang.interpreter.statements;
 
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import eutil.debug.Broken;
 import eutil.debug.InDevelopment;
@@ -10,16 +10,11 @@ import eutil.debug.Unused;
 @Unused
 @Broken
 @InDevelopment
-public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
-
-	public IS_Enum(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IS_Enum extends AbstractInterpreterExecutor {
 
 	// this needs a lot of work..
 	
-	@Override
-	public void run(Stmt_EnumDef s) {
+	public static void run(EnvisionInterpreter interpreter, Stmt_EnumDef s) {
 		/*
 		ParserDeclaration dec = s.declaration;
 		String name = s.name.lexeme;
@@ -52,10 +47,6 @@ public class IS_Enum extends StatementExecutor<Stmt_EnumDef> {
 		
 		scope().define(name, en);
 		*/
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_EnumDef s) {
-		new IS_Enum(in).run(s);
 	}
 	
 }

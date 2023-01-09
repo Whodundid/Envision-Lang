@@ -11,6 +11,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
@@ -19,9 +20,8 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.Operator;
-import eutil.datatypes.Box2;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
@@ -47,7 +47,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * Every time the function is invoked, this list of statements is
 	 * executed.
 	 */
-	protected EList<Statement> statements = new EArrayList();
+	protected EList<ParsedStatement> statements = new EArrayList();
 	
 	/**
 	 * The scope that this function was derived from.
@@ -286,7 +286,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction addOverload(ParameterData paramsIn, EList<ParsedStatement> bodyIn) {
 		return addOverload(returnType, paramsIn, bodyIn);
 	}
 	
@@ -300,7 +300,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EList<ParsedStatement> bodyIn) {
 		if (hasOverload(paramsIn)) throw new DuplicateOverloadError(functionName, paramsIn);
 		overloads.add(makeOverload(rt, paramsIn, bodyIn));
 		return this;
@@ -316,7 +316,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @return The new overload function
 	 */
-	public EnvisionFunction makeOverload(IDatatype rt, ParameterData paramsIn, EList<Statement> bodyIn) {
+	public EnvisionFunction makeOverload(IDatatype rt, ParameterData paramsIn, EList<ParsedStatement> bodyIn) {
 		EnvisionFunction overload = new EnvisionFunction(rt, functionName, paramsIn);
 		overload.setBody(bodyIn);
 		return overload;
@@ -546,17 +546,19 @@ public class EnvisionFunction extends ClassInstance {
 				String arg_name = m.params.getNames().get(i);
 				EnvisionObject arg_obj = callArgs.get(i);
 				
-				Box2<IDatatype, EnvisionObject> scopeValue = ps.getTyped(arg_name);
+				ScopeEntry scopeValue = ps.getTyped(arg_name);
+				//System.out.println("FUNC SCOPE: " + ps + "\n" + ps.getParent() + "\n" + ps.getParent().getParent());
+				//System.out.println(arg_name + " : " + scopeValue);
 				if (scopeValue == null) continue;
 				
-				IDatatype scope_var_type = scopeValue.getA();
+				IDatatype scope_var_type = scopeValue.getDatatype();
 				IDatatype incoming_type = arg_obj.getDatatype();
 				
 				if (scope_var_type.compare(incoming_type)) {
 					ps.set(arg_name, arg_obj);
 				}
-				else if (IDatatype.isNumber(scopeValue.getA())) {
-					EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getA());
+				else if (IDatatype.isNumber(scopeValue.getDatatype())) {
+					EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getDatatype());
 					ps.set(arg_name, obj);
 				}
 				else throw new InvalidArgumentError(functionName, scope_var_type, incoming_type);
@@ -576,7 +578,7 @@ public class EnvisionFunction extends ClassInstance {
 		//if (isConstructor) throw new ReturnValue(scope.get("this"));
 	}
 	
-	public EnvisionFunction addStatement(Statement statementIn) {
+	public EnvisionFunction addStatement(ParsedStatement statementIn) {
 		return statements.addR(statementIn, this);
 	}
 	
@@ -589,9 +591,9 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public String getFunctionName() { return functionName; }
 	public ParameterData getParams() { return params; }
-	public EList<Statement> getStatements() { return statements; }
+	public EList<ParsedStatement> getStatements() { return statements; }
 	public EList<EnvisionFunction> getOverloads() { return overloads; }
-	public EList<Statement> getBody() { return statements; }
+	public EList<ParsedStatement> getBody() { return statements; }
 	public EList<IDatatype> getParamTypes() { return params.getDataTypes(); }
 	public EList<String> getParamNames() { return params.getNames(); }
 	public EnvisionFunction getSuper() { return superFunction; }
@@ -607,7 +609,7 @@ public class EnvisionFunction extends ClassInstance {
 	// Setters
 	//---------
 	
-	public EnvisionFunction setBody(EList<Statement> in) {
+	public EnvisionFunction setBody(EList<ParsedStatement> in) {
 		statements.clear();
 		statements.addAll(in);
 		return this;

@@ -10,7 +10,7 @@ import envision_lang.lang.natives.StaticTypes;
 import envision_lang.lang.util.DataModifier;
 import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.Token;
@@ -40,7 +40,7 @@ public class FunctionCreator {
 		//constructors don't have return types
 		if (isConstructor) function_return_datatype = null;
 		else {
-			var dec_return_type = s.declaration.getReturnType();
+			var dec_return_type = s.getDeclaration().getReturnType();
 			//wrap the return type if not null
 			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
 			//otherwise, assign var as return type
@@ -66,8 +66,8 @@ public class FunctionCreator {
 		
 		
 		f.setScope(scopeIn);
-		f.setVisibility(s.declaration.getVisibility());
-		for (DataModifier mod : s.declaration.getMods()) f.setModifier(mod, true);
+		f.setVisibility(s.getDeclaration().getVisibility());
+		for (DataModifier mod : s.getDeclaration().getMods()) f.setModifier(mod, true);
 		if (s.body != null) f.setBody(s.body);
 		
 		return f;
@@ -115,7 +115,7 @@ public class FunctionCreator {
 			String theName = name.getLexeme();
 			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : StaticTypes.VAR_TYPE;
 			
-			Expression assign = p.assignment;
+			ParsedExpression assign = p.assignment;
 			
 			EnvisionParameter newParam = null;
 			if (assign != null) newParam = new EnvisionParameter(theType, theName, in.evaluate(assign));

@@ -71,8 +71,8 @@ public class CastingUtil {
 		//IDatatype expected_ptype = expected.getPrimitive();
 		//Primitives toCheck_ptype = toCheck.getPrimitive();
 		
-		System.out.println(StaticTypes.VAR_TYPE + " : " + StaticTypes.VAR_TYPE.hashCode());
-		System.out.println(expected + " : " + expected.hashCode());
+		//System.out.println(StaticTypes.VAR_TYPE + " : " + StaticTypes.VAR_TYPE.hashCode());
+		//System.out.println(expected + " : " + expected.hashCode());
 		
 		//check for null passes
 		//if (toCheck_ptype == Primitives.NULL) {
@@ -91,6 +91,9 @@ public class CastingUtil {
 		
 		//accept any type if the base is 'var'
 		if (StaticTypes.VAR_TYPE.compare(expected)) return;
+		
+		//accept all incoming null values
+		if (StaticTypes.NULL_TYPE.compare(toCheck)) return;
 		
 		//check if a char is going into a string
 		if (StaticTypes.STRING_TYPE.compare(expected) && StaticTypes.CHAR_TYPE.compare(toCheck)) return;

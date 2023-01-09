@@ -1,9 +1,9 @@
 package envision_lang.interpreter.statements;
 
 import envision_lang.exceptions.errors.classErrors.InvalidClassStatement;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.FunctionCreator;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.EnvisionClass;
@@ -12,38 +12,32 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifier;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
 import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;
-import envision_lang.parser.statements.statement_types.Stmt_ModularFuncDef;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.util.EList;
 
-public class IS_Class extends StatementExecutor<Stmt_Class> {
-
-	public IS_Class(EnvisionInterpreter in) {
-		super(in);
-	}
-
-	@Override
-	public void run(Stmt_Class statement) {
-		ParserDeclaration dec = statement.declaration;
+public class IS_Class extends AbstractInterpreterExecutor {
+	
+	public static void run(EnvisionInterpreter interpreter, Stmt_Class statement) {
+		ParserDeclaration dec = statement.getDeclaration();
 		
 		IDatatype name = NativeTypeManager.datatypeOf(statement.name.getLexeme());
 		//@InDevelopment
 		//EArrayList<Expr_Var> supers = statement.parentclasses;
-		EList<Statement> body = statement.body;
-		EList<Statement> staticMembers = statement.staticMembers;
+		EList<ParsedStatement> body = statement.body;
+		EList<ParsedStatement> staticMembers = statement.staticMembers;
 		EList<Stmt_FuncDef> constructors = statement.initializers;
 		
 		//create the class framework
 		EnvisionClass theClass = new EnvisionClass(name.getStringValue());
-		Scope classScope = new Scope(scope());
+		Scope classScope = new Scope(interpreter.scope());
 		
 		//set body and scope
 		theClass.setScope(classScope);
@@ -62,7 +56,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		for (DataModifier d : dec.getMods()) theClass.setModifier(d, true);
 		
 		//go through statements and process valid ones (Variable declarations, Method declarations, Objects)
-		for (Statement s : body) checkValid(s);
+		for (ParsedStatement s : body) checkValid(s);
 		//for (Statement s : staticMembers) checkValid(s);
 		
 		//gather visible parent members
@@ -86,7 +80,7 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		*/
 		
 		//execute the static members against the class's scope
-		executeBlock(staticMembers, classScope);
+		interpreter.executeBlock(staticMembers, classScope);
 		
 		//build constructor functions -- inherently static
 		for (Stmt_FuncDef constructor : constructors) {
@@ -102,8 +96,8 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 		//System.out.println();
 		
 		//define it
-		scope().define(name.getStringValue(), name, theClass);
-		interpreter.getUserDefinedTypeManager().defineType(name, theClass);
+		interpreter.scope().define(name.getStringValue(), name, theClass);
+		interpreter.getTypeManager().defineType(name, theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));
 	}
 	
@@ -129,20 +123,15 @@ public class IS_Class extends StatementExecutor<Stmt_Class> {
 	}
 	*/
 	
-	private void checkValid(Statement s) {
+	private static void checkValid(ParsedStatement s) {
 		if (s instanceof Stmt_Class) return;
 		if (s instanceof Stmt_Block) return;
 		if (s instanceof Stmt_EnumDef) return;
 		if (s instanceof Stmt_FuncDef) return;
-		if (s instanceof Stmt_ModularFuncDef) return;
 		if (s instanceof Stmt_VarDef) return;
 		if (s instanceof Stmt_Expression) return;
 		if (s instanceof Stmt_GetSet) return;
 		throw new InvalidClassStatement(s);
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_Class s) {
-		new IS_Class(in).run(s);
 	}
 	
 }

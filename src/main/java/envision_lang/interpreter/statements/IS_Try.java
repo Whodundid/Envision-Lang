@@ -1,27 +1,22 @@
 package envision_lang.interpreter.statements;
 
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.interpreter.util.throwables.ReturnValue;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Try;
 import eutil.debug.Broken;
 import eutil.debug.InDevelopment;
 
 @Broken
 @InDevelopment
-public class IS_Try extends StatementExecutor<Stmt_Try> {
+public class IS_Try extends AbstractInterpreterExecutor {
 
-	public IS_Try(EnvisionInterpreter in) {
-		super(in);
-	}
-
-	@Override
-	public void run(Stmt_Try statement) {
-		Statement tryBlock = statement.tryBlock;
-		Statement finallyBlock = statement.finallyBlock;
+	public static void run(EnvisionInterpreter interpreter, Stmt_Try statement) {
+		ParsedStatement tryBlock = statement.tryBlock;
+		ParsedStatement finallyBlock = statement.finallyBlock;
 		
 		RuntimeException thrownVal = null;
 		
@@ -46,10 +41,6 @@ public class IS_Try extends StatementExecutor<Stmt_Try> {
 		//last but not least, if there was some kind of early breakout executed from the
 		//try block -- throw it again so that it actually gets out!
 		if (thrownVal != null) throw thrownVal;
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_Try s) {
-		new IS_Try(in).run(s);
 	}
 	
 }

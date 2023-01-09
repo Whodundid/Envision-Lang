@@ -5,7 +5,6 @@ import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.exceptions.errors.NoOverloadError;
 import envision_lang.exceptions.errors.NullVariableError;
-import envision_lang.exceptions.errors.StrongVarReassignmentError;
 import envision_lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
@@ -130,7 +129,7 @@ public class EnvisionChar extends EnvisionVariable {
 		{
 			//due to the fact that char additions require the datatype being
 			//upgraded to a string, check for strong char and error if true
-			if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
 			//only accept char or string objects
 			if (obj_type != StaticTypes.CHAR_TYPE && obj_type != StaticTypes.STRING_TYPE)
@@ -153,7 +152,7 @@ public class EnvisionChar extends EnvisionVariable {
 		{
 			//due to the fact that char mul_additions require the datatype being
 			//upgraded to a string, check for strong char and error if true
-			if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
 			//only accept int objects
 			if (obj_type != StaticTypes.INT_TYPE)

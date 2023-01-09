@@ -80,7 +80,7 @@ public class ClassInstance extends EnvisionObject {
 	
 	@Override
 	public String toString() {
-		return getDatatype() + "_" + Integer.toHexString(hashCode());
+		return getDatatype() + "_#" + Integer.toHexString(hashCode());
 	}
 	
 	//---------
@@ -211,7 +211,7 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The matching function
 	 */
 	public EnvisionFunction getFunction(String funcName) {
-		return instanceScope.functions().getFirst(f -> f.compare(funcName));
+		return instanceScope.function_objects().getFirst(f -> f.compare(funcName));
 	}
 	
 	/**
@@ -223,7 +223,7 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The matching function
 	 */
 	public EnvisionFunction getFunction(String funcName, ParameterData params) {
-		return instanceScope.functions().getFirst(f -> f.compare(funcName, params));
+		return instanceScope.function_objects().getFirst(f -> f.compare(funcName, params));
 	}
 	
 	/**
@@ -301,8 +301,8 @@ public class ClassInstance extends EnvisionObject {
 		EnvisionObject obj = instanceScope.get(funcName);
 		
 		if (obj == null) {
-			interpreter.envision().getConsoleHandler().println("NO FUNC!");
-			interpreter.envision().getConsoleHandler().println(this.getScope());
+			//interpreter.envision().getConsoleHandler().println("NO FUNC!");
+			//interpreter.envision().getConsoleHandler().println(this.getScope());
 			throw new UndefinedFunctionError(funcName, this);
 		}
 		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);

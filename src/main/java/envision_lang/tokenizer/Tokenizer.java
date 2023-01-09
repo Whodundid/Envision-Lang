@@ -438,8 +438,15 @@ public class Tokenizer {
 		tokens.addAll(list);
 		tokens.add(Token.newLine(-1));
 		lines.add(stripComments(lineIn));
+		var EOF = Token.EOF(-1);
+		lineTokens.getLast().getB().add(EOF);
+		tokens.add(EOF);
 		lines.add("EOF");
 		return true;
+	}
+	
+	public static Tokenizer tokenize(String line) {
+		return new Tokenizer(line);
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ public class Stmt_For extends ParsedStatement {
 					ParsedExpression postIn,
 					ParsedStatement bodyIn)
 	{
-		this(start, initIn, condIn, EList.newList(postIn), bodyIn);
+		this(start, initIn, condIn, (postIn != null) ? EList.newList(postIn) : null, bodyIn);
 	}
 	
 	public Stmt_For(Token<?> start,

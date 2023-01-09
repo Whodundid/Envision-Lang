@@ -20,7 +20,7 @@ import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -103,14 +103,14 @@ public class EnvisionClass extends EnvisionObject {
 	 * The entire list of static statements that have been declared within
 	 * this class declaration.
 	 */
-	protected EList<Statement> staticStatements = new EArrayList<>();
+	protected EList<ParsedStatement> staticStatements = new EArrayList<>();
 	
 	/**
 	 * The entire list of non-static statements that have been declared within
 	 * this class declaration. These statements are used by class constructs
 	 * to help improve instance creation.
 	 */
-	protected EList<Statement> bodyStatements = new EArrayList<>();
+	protected EList<ParsedStatement> bodyStatements = new EArrayList<>();
 	
 	/**
 	 * The entire list of constructor (initializer) statements that have been
@@ -273,7 +273,7 @@ public class EnvisionClass extends EnvisionObject {
 		interpreter.executeBlock(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
-		EList<EnvisionFunction> operators = instanceScope.functions().filter(f -> f.isOperator());
+		EList<EnvisionFunction> operators = instanceScope.function_objects().filter(f -> f.isOperator());
 		
 		//set the overloaded operators onto the class instance
 		for (EnvisionFunction op : operators) {
@@ -444,14 +444,14 @@ public class EnvisionClass extends EnvisionObject {
 	
 	//public EArrayList<InheritableObject> getParents() { return parents; }
 	public EList<EnvisionObject> getStaticMembers() { return staticMembers; }
-	public EList<Statement> getStaticStatements() { return staticStatements; }
-	public EList<Statement> getBody() { return bodyStatements; }
+	public EList<ParsedStatement> getStaticStatements() { return staticStatements; }
+	public EList<ParsedStatement> getBody() { return bodyStatements; }
 
 	//---------------------------------------------------------------------------
 	
 	//public InheritableObject setParents(EArrayList<InheritableObject> in) { parents = in; return this; }
-	public EnvisionClass setStatics(EList<Statement> in) { staticStatements = in; return this; }
-	public EnvisionClass setBody(EList<Statement> in) { bodyStatements = in; return this; }
+	public EnvisionClass setStatics(EList<ParsedStatement> in) { staticStatements = in; return this; }
+	public EnvisionClass setBody(EList<ParsedStatement> in) { bodyStatements = in; return this; }
 	public EnvisionClass setConstructors(EList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
 	
 	//---------------------------------------------------------------------------
@@ -527,7 +527,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_members() { super(LIST, "members"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList members = EnvisionListClass.newList();
-			members.addAll(inst.instanceScope.getObjectsAsList());
+			members.addAll(inst.instanceScope.objects());
 			ret(members);
 		}
 	}

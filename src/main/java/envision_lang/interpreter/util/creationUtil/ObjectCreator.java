@@ -74,7 +74,9 @@ public class ObjectCreator {
 	}
 	
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
-		if (typeIn == null || typeIn == StaticTypes.NULL_TYPE || valueIn == EnvisionNull.NULL) return EnvisionNull.NULL;
+		if (typeIn == null || StaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
+			return EnvisionNull.NULL;
+		}
 		
 		//format incomming arguments
 		//convert var type to definitive type

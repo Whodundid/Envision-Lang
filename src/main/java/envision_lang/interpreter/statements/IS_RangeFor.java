@@ -1,9 +1,9 @@
 package envision_lang.interpreter.statements;
 
 import envision_lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.NumberHelper;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.lang.EnvisionObject;
@@ -13,10 +13,10 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.natives.StaticTypes;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
@@ -24,38 +24,33 @@ import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 
 @Broken(value="Appears to not increment up to correct 2nd value", since="9/28/2022")
-public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
+public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
-	public IS_RangeFor(EnvisionInterpreter intIn) {
-		super(intIn);
-	}
-	
-	@Override
-	public void run(Stmt_RangeFor statement) {
-		EList<Expr_Range> ranges = statement.ranges;
+	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {
+		EList<Expr_Range> ranges = s.ranges;
 		EList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList<>();
-		Statement body = statement.body;
-		pushScope();
+		ParsedStatement body = s.body;
+		interpreter.pushScope();
 		
 		//handle initializers (if there are any)
-		if (statement.init != null) interpreter.execute(statement.init);
+		if (s.init != null) interpreter.execute(s.init);
 		
 		//build range values
 		for (int i = 0; i < ranges.size(); i++) {
 			Expr_Range range_expr = ranges.get(i);
 			
-			Expression left_expr = range_expr.left;
-			Expression right_expr = range_expr.right;
-			Expression by_expr = range_expr.by;
+			ParsedExpression left_expr = range_expr.left;
+			ParsedExpression right_expr = range_expr.right;
+			ParsedExpression by_expr = range_expr.by;
 			
 			// There is an issue here where actual arithmetic expressions are being created as compound expressions.
 			
 			//System.out.println(left + " : " + right + " : " + by);
 			//System.out.println(right.getClass());
 			
-			EnvisionObject left = handleLeft(left_expr);
-			EnvisionObject right = evaluate(right_expr);
-			EnvisionObject by = (by_expr != null) ? evaluate(by_expr) : EnvisionIntClass.newInt(1);
+			EnvisionObject left = handleLeft(interpreter, left_expr);
+			EnvisionObject right = interpreter.evaluate(right_expr);
+			EnvisionObject by = (by_expr != null) ? interpreter.evaluate(by_expr) : EnvisionIntClass.newInt(1);
 			
 			EnvisionVariable leftObject = null;
 			
@@ -103,7 +98,7 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 			while (checkLess(lastRange)) {
 				try {
 					//run body
-					execute(body);
+					interpreter.execute(body);
 					//increment
 				}
 				catch (Continue c) { inc(lastRange.a, lastRange.c); break; }
@@ -139,43 +134,41 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 			}
 		}
 		
-		popScope();
+		interpreter.popScope();
 	}
 	
-	public static void run(EnvisionInterpreter in, Stmt_RangeFor s) {
-		new IS_RangeFor(in).run(s);
-	}
+
 	
 	//-------------------------------
 	
-	private void inc(EnvisionObject obj, Number amount) {
+	private static void inc(EnvisionObject obj, Number amount) {
 		NumberHelper.increment(obj, amount, true);
 	}
 	
-	private void inc(Box3<EnvisionVariable, Long, Long> range) {
+	private static void inc(Box3<EnvisionVariable, Long, Long> range) {
 		NumberHelper.increment(range.a, range.c, true);
 	}
 	
-	private void zeroOut(Box3<EnvisionVariable, Long, Long> range) {
+	private static void zeroOut(Box3<EnvisionVariable, Long, Long> range) {
 		range.a.set_i(0l);
 	}
 	
-	private boolean checkLess(Box3<EnvisionVariable, Long, Long> range) {
+	private static boolean checkLess(Box3<EnvisionVariable, Long, Long> range) {
 		return (long) range.a.get_i() < range.b;
 	}
 	
-	private boolean checkLessOne(Box3<EnvisionVariable, Long, Long> range) {
+	private static boolean checkLessOne(Box3<EnvisionVariable, Long, Long> range) {
 		return (long) range.a.get_i() + 1 < range.b;
 	}
 	
-	private EnvisionObject handleLeft(Expression left) {
+	private static EnvisionObject handleLeft(EnvisionInterpreter interpreter, ParsedExpression left) {
 		if (left instanceof Expr_Var var) {
-			return defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionIntClass.newInt());
+			return interpreter.defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionIntClass.newInt());
 		}
-		return evaluate(left);
+		return interpreter.evaluate(left);
 	}
 	
-	private boolean checkKeepGoing(EList<Box3<EnvisionVariable, Long, Long>> list) {
+	private static boolean checkKeepGoing(EList<Box3<EnvisionVariable, Long, Long>> list) {
 		//calculate whether or not the loop is done
 		for (var box : list) {
 			long a = (long) box.a.get_i();

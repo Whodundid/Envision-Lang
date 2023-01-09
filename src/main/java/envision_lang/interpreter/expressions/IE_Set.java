@@ -3,27 +3,18 @@ package envision_lang.interpreter.expressions;
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.errors.InvalidTargetError;
 import envision_lang.exceptions.errors.NullVariableError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 
-public class IE_Set extends ExpressionExecutor<Expr_Set> {
-
-	public IE_Set(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IE_Set extends AbstractInterpreterExecutor {
 	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Set e) {
-		return new IE_Set(in).run(e);
-	}
-	
-	@Override
-	public EnvisionObject run(Expr_Set expression) {
+	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Set expression) {
 		String name = expression.name.getLexeme();
-		EnvisionObject baseObject = evaluate(expression.object);
-		EnvisionObject value = evaluate(expression.value);
+		EnvisionObject baseObject = interpreter.evaluate(expression.object);
+		EnvisionObject value = interpreter.evaluate(expression.value);
 		
 		//don't allow java null to continue!
 		//java null indicates something fundamentally went wrong inside of the interpreter
@@ -42,7 +33,7 @@ public class IE_Set extends ExpressionExecutor<Expr_Set> {
 		throw new InvalidTargetError(baseObject + " cannot have values on it modified!");
 	}
 	
-	private EnvisionObject setValue_CI(ClassInstance inst, String name, EnvisionObject value) {
+	private static EnvisionObject setValue_CI(ClassInstance inst, String name, EnvisionObject value) {
 		//check if the object is actually visible
 		//if (object.isPrivate()) {
 			//if the current scope is not the class instance's scope, throw an error
@@ -55,7 +46,7 @@ public class IE_Set extends ExpressionExecutor<Expr_Set> {
 		return value;
 	}
 	
-	private EnvisionObject setValue_CF(EnvisionCodeFile cf, String name, EnvisionObject value) {
+	private static EnvisionObject setValue_CF(EnvisionCodeFile cf, String name, EnvisionObject value) {
 		cf.scope().set(name, value);
 		return value;
 	}

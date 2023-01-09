@@ -1,8 +1,8 @@
 package envision_lang.packages;
 
 import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 
 /**
@@ -51,10 +51,9 @@ public class EnvisionPackage extends EnvisionObject {
 		Scope incomming_scope = pkg.packageScope;
 		for (var obj : incomming_scope.values.entrySet()) {
 			String import_val_name = obj.getKey();
-			IDatatype import_val_type = obj.getValue().getA();
-			EnvisionObject import_val_obj = obj.getValue().getB();
+			ScopeEntry import_entry = obj.getValue();
 			
-			packageScope.define(import_val_name, import_val_type, import_val_obj);
+			packageScope.define(import_val_name, import_entry);
 		}
 	}
 	

@@ -11,6 +11,7 @@ public class DebugPackage extends EnvisionLangPackage {
 	@Override
 	public void buildFunctions() {
 		define(new DebugScope());
+		define(new DebugScopeFull());
 		define(new DebugInfo());
 		define(new DebugParsed());
 	}

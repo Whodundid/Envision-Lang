@@ -2,9 +2,9 @@ package envision_lang.interpreter.statements;
 
 import envision_lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.exceptions.errors.InvalidTargetError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.NumberHelper;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
@@ -13,98 +13,87 @@ import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.StaticTypes;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_LambdaFor;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.VariableDeclaration;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
+public class IS_LambdaFor extends AbstractInterpreterExecutor {
 
-	Stmt_LambdaFor s;
-	Iterable iterable;
-	//if there is a reference made to the internal counter, this will keep track of it
-	EnvisionInt index = null;
-	Expr_Compound production;
-	boolean hasPostArgs = false;
-	
-	//----------------------------------------------
-	
-	public IS_LambdaFor(EnvisionInterpreter in) {
-		super(in);
-	}
-	
-	//----------------------------------------------
 
-	public static void run(EnvisionInterpreter in, Stmt_LambdaFor s) {
-		new IS_LambdaFor(in).run(s);
-	}
-	
-	//----------------------------------------------------------------------
-	
-	@Override
-	public void run(Stmt_LambdaFor s) {
+
+	public static void run(EnvisionInterpreter interpreter, Stmt_LambdaFor s) {
+		
 		//first check if the lambda is iterating over an iterable object
-		Expr_Lambda lambda = (this.s = s).lambda;
+		Expr_Lambda lambda = s.lambda;
 		Expr_Compound input = lambda.inputs;
 		if (input.isEmpty()) throw new InvalidTargetError("Lambda For loops must specify a target!");
 		if (!input.hasOne()) throw new InvalidTargetError("Too many targets! Lambda For loops can ONLY specify ONE target!");
-		iterable = new Iterable(evaluate(input.getFirst()));
-		production = lambda.production;
-		Statement body = s.body;
+		Iterable iterable = new Iterable(interpreter.evaluate(input.getFirst()));
+		Expr_Compound production = lambda.production;
+		ParsedStatement body = s.body;
+		
+		//if there is a reference made to the internal counter, this will keep track of it
+		EnvisionInt index = null;
 		
 		//push initializer scope
-		pushScope();
+		interpreter.pushScope();
 		//process init block
-		handleInit();
-		hasPostArgs = s.post != null && s.post.isNotEmpty();
+		index = handleInit(interpreter, s);
+		boolean hasPostArgs = s.post != null && s.post.isNotEmpty();
 		
 		while (index.int_val < iterable.size()) {
 			//push loop iteration scope
-			pushScope();
+			interpreter.pushScope();
 			
 			//execute lambda then body
-			handleLambdaProductions(index.int_val);
-			if (body != null) execute(body);
+			handleLambdaProductions(interpreter, s, production, iterable, index.int_val);
+			if (body != null) interpreter.execute(body);
 			
 			//pop loop iteration scope
-			popScope();
+			interpreter.popScope();
 			
 			if (!hasPostArgs) {
 				NumberHelper.increment(index, false);
 			}
 			else {
-				for (Expression postExp : s.post) evaluate(postExp);
+				for (ParsedExpression postExp : s.post) {
+					interpreter.evaluate(postExp);
+				}
 			}
 		}
 		
 		//pop initializer scope
-		popScope();
+		interpreter.popScope();
 	}
 	
-	private void handleInit() {
+	private static EnvisionInt handleInit(EnvisionInterpreter interpreter, Stmt_LambdaFor s) {
+		EnvisionInt index = null;
+		
 		if (s.init == null) {
 			index = EnvisionIntClass.newInt();
-			return;
+			return index;
 		}
 		
 		if (s.init instanceof Stmt_VarDef var_stmt) {
 			Stmt_VarDef initVars = (Stmt_VarDef) s.init;
-			EArrayList<VariableDeclaration> vars = initVars.vars;
+			EList<VariableDeclaration> vars = initVars.vars;
 			
 			//declare and initialize each variable, the first var will be used as the internal counter reference
 			for (int i = 0; i < vars.size(); i++) {
 				VariableDeclaration varDec = vars.get(i);
 				String name = varDec.getName();
-				Expression var_assignment = varDec.assignment_value;
-				EnvisionObject value = (var_assignment != null) ? evaluate(var_assignment) : null;
+				ParsedExpression var_assignment = varDec.assignment_value;
+				EnvisionObject value = (var_assignment != null) ? interpreter.evaluate(var_assignment) : null;
 				
 				//first check if the variable is already defined
-				EnvisionObject obj = scope().get(name);
+				EnvisionObject obj = interpreter.scope().get(name);
 				
 				//If this is the first variable index -- attempt to assign as the loop's index reference
 				if (i == 0) {
@@ -120,16 +109,16 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 					else if (value != null) {
 						if (value instanceof EnvisionInt l_value) {
 							index = l_value;
-							scope().define(name, StaticTypes.INT_TYPE, index);
+							interpreter.scope().define(name, StaticTypes.INT_TYPE, index);
 						}
 						//define the variable anyways but also automatically define the index
 						else {
 							//define index
 							EnvisionInt new_int = EnvisionIntClass.newInt();
 							index = new_int;
-							scope().define(name, StaticTypes.INT_TYPE, new_int);
+							interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
 							//define variable
-							scope().define(name, value.getDatatype(), value);
+							interpreter.scope().define(name, value.getDatatype(), value);
 							//throw new InvalidDataTypeError("invilsuqird");
 						}
 					}
@@ -138,25 +127,25 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 					else {
 						EnvisionInt new_int = EnvisionIntClass.newInt();
 						index = new_int;
-						scope().define(name, StaticTypes.INT_TYPE, new_int);
+						interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
 					}
 				}
 				//this is not the first object, attempt to create new loop-level variable
 				else if (obj != null) {
 					if (obj instanceof EnvisionVariable env_var) env_var.set_i(value);
-					else scope().set(name, value);
+					else interpreter.scope().set(name, value);
 				}
 				else if (value != null) {
 					//because EnvisionVariables natively support copying, attempt to cast as such
 					if (value instanceof EnvisionVariable env_var) {
-						scope().define(name, env_var.getDatatype(), env_var.copy());
+						interpreter.scope().define(name, env_var.getDatatype(), env_var.copy());
 					}
 					else {
-						scope().define(name, value.getDatatype(), value);
+						interpreter.scope().define(name, value.getDatatype(), value);
 					}
 				}
 				else {
-					scope().define(name, EnvisionNull.NULL);
+					interpreter.scope().define(name, EnvisionNull.NULL);
 				}
 			}
 		}
@@ -168,13 +157,20 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 		if (index == null) {
 			index = EnvisionIntClass.newInt();
 		}
+		
+		return index;
 	}
 	
-	private void handleLambdaProductions(long i) {
+	private static void handleLambdaProductions(EnvisionInterpreter interpreter,
+												Stmt_LambdaFor s,
+												Expr_Compound production,
+												Iterable iterable,
+												long i)
+	{
 		boolean first = true;
-		for (Expression e : production.expressions) {
+		for (ParsedExpression e : production.expressions) {
 			if (!first) {
-				evaluate(e);
+				interpreter.evaluate(e);
 				continue;
 			}
 			
@@ -188,7 +184,7 @@ public class IS_LambdaFor extends StatementExecutor<Stmt_LambdaFor> {
 				}
 				else created_obj = cur_obj;
 				
-				scope().define(name, created_obj.getDatatype(), created_obj);
+				interpreter.scope().define(name, created_obj.getDatatype(), created_obj);
 			}
 			else {
 				throw new InvalidTargetError("The given expression '" + e + "' is an invalid target for"

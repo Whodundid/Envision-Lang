@@ -1,7 +1,6 @@
 package envision_lang.interpreter.util.scope;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
@@ -19,17 +18,18 @@ import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.Box2;
 import eutil.datatypes.BoxList;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
+import eutil.math.ENumUtil;
 import eutil.strings.EStringBuilder;
+import eutil.strings.EStringUtil;
 
 public interface IScope {
 	
 	/** Returns the immediate local values of this scope. */
-	Map<String, Box2<IDatatype, EnvisionObject>> values();
+	Map<String, ScopeEntry> values();
 	/** Returns the values that have been imported into this scope from another. */
-	Map<String, Box2<IDatatype, EnvisionObject>> imports();
+	Map<String, ScopeEntry> imports();
 	
 	//---------
 	// Parents
@@ -83,30 +83,29 @@ public interface IScope {
 		// for each element on this scope, create an entirely new deep copy of each (if possible)
 		for (var o : values().entrySet()) {
 			String name = o.getKey();
-			IDatatype datatype = o.getValue().getA();
-			EnvisionObject object = o.getValue().getB();
+			ScopeEntry entry = o.getValue();
 			
 			// only copy if the underlying object can actually be copied
-			EnvisionObject copy = null;
+			ScopeEntry copy = null;
 			try {
-				copy = object.copy();
+				copy = entry.deepCopy();
 			}
 			catch (CopyNotSupportedError e) {
 				// objects that can't be copied will be ignored
 			}
 			
 			if (copy != null) {
-				c.define(name, datatype, copy);
+				c.define(name, copy);
 			}
 		}
 		
 		// shallow copy imports
 		for (var o : imports().entrySet()) {
 			String name = o.getKey();
-			IDatatype datatype = o.getValue().getA();
-			EnvisionObject object = o.getValue().getB();
+			ScopeEntry entry = o.getValue();
+			ScopeEntry shallowCopy = entry.shallowCopy();
 			
-			c.defineImportVal(name, datatype, object);
+			c.defineImportVal(name, shallowCopy);
 		}
 		
 		return c;
@@ -145,16 +144,17 @@ public interface IScope {
 		return define(name, type, object);
 	}
 	
-	default EnvisionObject define(String name, IDatatype type, EnvisionObject obj) {
-		/*
-		if (interpreter.codeFile().getFileName().equals(name) && !(obj instanceof EnvisionClass)) {
-			throw new EnvisionError(
-					"Only classes are permitted to be defined under the same name as the containing file! ("
-							+ name + ")");
-		}
-		*/
-		values().put(name, new Box2<>(type, obj));
-		return obj;
+	default EnvisionObject define(String name, IDatatype typeIn, EnvisionObject obj) {
+		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
+		var entry = new ScopeEntry(type, obj);
+		return define(name, entry);
+	}
+	
+	default EnvisionObject define(String name, ScopeEntry entry) {
+		if (name == null) throw new IllegalArgumentException("Scope object cannot have a 'NULL' name!");
+		if (entry == null) throw new IllegalArgumentException("Scope entries cannot be entirely 'NULL' !");
+		values().put(name, entry);
+		return entry.getObject();
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public interface IScope {
 	 * @return The defined function
 	 */
 	default EnvisionFunction defineFunction(EnvisionFunction func) {
-		values().put(func.getFunctionName(), new Box2<>(func.getDatatype(), func));
+		define(func.getFunctionName(), func.getDatatype(), func);
 		return func;
 	}
 	
@@ -191,8 +191,7 @@ public interface IScope {
 	 * @return The defined prototype
 	 */
 	default FunctionPrototype defineFunctionPrototype(FunctionPrototype prototype) {
-		var boxedType = new Box2<IDatatype, EnvisionObject>(prototype.getDatatype(), prototype);
-		values().put(prototype.getFunctionName(), boxedType);
+		define(prototype.getFunctionName(), prototype.getDatatype(), prototype);
 		return prototype;
 	}
 	
@@ -203,9 +202,7 @@ public interface IScope {
 	 * @return The class being defined
 	 */
 	default EnvisionClass defineClass(EnvisionClass the_class) {
-		Box2<IDatatype, EnvisionObject> typedObject = new Box2();
-		typedObject.set(the_class.getDatatype(), the_class);
-		values().put(the_class.getClassName(), typedObject);
+		define(the_class.getClassName(), the_class.getDatatype(), the_class);
 		return the_class;
 	}
 	
@@ -222,7 +219,7 @@ public interface IScope {
 	 */
 	default EnvisionObject defineAt(int dist, String name, IDatatype typeIn, EnvisionObject object) {
 		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
-		parentAt(dist).values().put(name, new Box2<>(type, object));
+		parentAt(dist).define(name, type, object);
 		return object;
 	}
 	
@@ -239,43 +236,89 @@ public interface IScope {
 	 */
 	default EnvisionObject defineImportVal(String name, IDatatype typeIn, EnvisionObject object) {
 		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
-		imports().put(name, new Box2(type, object));
-		return object;
+		var entry = new ScopeEntry(type, object);
+		return defineImportVal(name, entry);
+	}
+	
+	/**
+	 * Defines an imported variable on this scope.
+	 */
+	default EnvisionObject defineImportVal(String name, ScopeEntry entry) {
+		if (name == null) throw new IllegalArgumentException("Scope object cannot have a 'NULL' name!");
+		if (entry == null) throw new IllegalArgumentException("Scope entries cannot be entirely 'NULL' !");
+		imports().put(name, entry);
+		return entry.getObject();
 	}
 	
 	//----------------
 	// Mapped Getters
 	//----------------
 	
+	default Stream<EnvisionObject> objectsAsStream() {
+		return values().entrySet().stream()
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject());
+	}
+	
+	default EList<EnvisionObject> objects() {
+		return values().entrySet().stream()
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject())
+								  .collect(EList.toEList());
+	}
+	
+	default EList<EnvisionClass> classes() {
+		return values().entrySet().stream()
+								  .map(b -> b.getValue())
+								  .filter(b -> b.isClassType())
+								  .map(b -> b.getObject())
+								  .map(b -> (EnvisionClass) b)
+								  .collect(EList.toEList());
+	}
+	
 	/**
 	 * Returns a list of all values on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EArrayList<EnvisionObject> locals() {
+	default EList<EnvisionObject> locals() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue().getB())
-								  .collect(EArrayList.toEArrayList());
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject())
+								  .collect(EList.toEList());
 	}
 	
 	/**
 	 * Returns a list of all fields on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EArrayList<EnvisionObject> fields() {
+	default EList<EnvisionObject> field_objects() {
 		return values().entrySet().stream()
-								  .filter(b -> !b.getValue().getB().getDatatype().isFunction())
-								  .map(b -> b.getValue().getB()).collect(EArrayList.toEArrayList());
+								  .filter(b -> b.getValue().isFieldType())
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject())
+								  .collect(EList.toEList());
+	}
+	
+	/**
+	 * Returns a list of all fields on this immediate scope. Does not
+	 * check parents.
+	 */
+	default EList<ScopeEntry> fields() {
+		return values().entrySet().stream()
+								  .filter(b -> b.getValue().isFieldType())
+								  .map(b -> b.getValue())
+								  .collect(EList.toEList());
 	}
 	
 	/**
 	 * Returns a BoxList containing all values and their associated field name
 	 * within this immediate scope. Does not check parent scopes.
 	 */
-	default BoxList<String, EnvisionObject> named_fields() {
-		BoxList<String, EnvisionObject> named_fields = new BoxList<>();
+	default BoxList<String, ScopeEntry> named_fields() {
+		BoxList<String, ScopeEntry> named_fields = new BoxList<>();
 		values().entrySet().stream()
-						   .filter(b -> !b.getValue().getB().getDatatype().isFunction())
-						   .forEach(b -> named_fields.add(b.getKey(), b.getValue().getB()));
+						   .filter(b -> b.getValue().isFieldType())
+						   .forEach(b -> named_fields.add(b.getKey(), b.getValue()));
 		return named_fields;
 	}
 	
@@ -283,23 +326,50 @@ public interface IScope {
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EArrayList<EnvisionFunction> functions() {
+	default EList<EnvisionFunction> function_objects() {
 		return values().entrySet().stream()
-								  .filter(b -> b.getValue().getB().getDatatype().isFunction())
-								  .map(b -> b.getValue().getB()).map(b -> (EnvisionFunction) b)
-								  .collect(EArrayList.toEArrayList());
+								  .filter(b -> b.getValue().isFunctionType())
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject())
+								  .map(b -> (EnvisionFunction) b)
+								  .collect(EList.toEList());
 	}
 	
 	/**
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EArrayList<EnvisionFunction> operators() {
+	default EList<ScopeEntry> functions() {
 		return values().entrySet().stream()
-								  .filter(b -> b.getValue().getB().getDatatype().isFunction())
-								  .map(b -> b.getValue().getB()).map(b -> (EnvisionFunction) b)
+								  .filter(b -> b.getValue().isFunctionType())
+								  .map(b -> b.getValue())
+								  .collect(EList.toEList());
+	}
+	
+	/**
+	 * Returns a list of all functions on this immediate scope. Does not
+	 * check parents.
+	 */
+	default EList<EnvisionFunction> operator_objects() {
+		return values().entrySet().stream()
+								  .filter(b -> b.getValue().isFunctionType())
+								  .map(b -> b.getValue())
+								  .map(b -> b.getObject())
+								  .map(b -> (EnvisionFunction) b)
 								  .filter(b -> b.isOperator())
-								  .collect(EArrayList.toEArrayList());
+								  .collect(EList.toEList());
+	}
+	
+	/**
+	 * Returns a list of all functions on this immediate scope. Does not
+	 * check parents.
+	 */
+	default EList<ScopeEntry> operators() {
+		return values().entrySet().stream()
+								  .filter(b -> b.getValue().isFunctionType())
+								  .filter(b -> ((EnvisionFunction) b.getValue().getObject()).isOperator())
+								  .map(b -> b.getValue())
+								  .collect(EList.toEList());
 	}
 	
 	/**
@@ -323,30 +393,6 @@ public interface IScope {
 		}
 	}
 	
-	default Stream<EnvisionObject> getObjectsAsStream() {
-		return values().entrySet().stream().map(b -> b.getValue().getB());
-	}
-	
-	default List<EnvisionObject> getObjectsAsList() {
-		return getObjectsAsStream().toList();
-	}
-	
-	default List<EnvisionObject> getFields() {
-		return getObjectsAsStream().filter(o -> o.getDatatype().isField()).toList();
-	}
-	
-	default List<EnvisionFunction> getFunctions() {
-		return getObjectsAsStream().filter(o -> o.getDatatype().isFunction())
-								   .map(o -> (EnvisionFunction) o)
-				   				   .toList();
-	}
-	
-	default List<EnvisionClass> getClasses() {
-		return getObjectsAsStream().filter(o -> o.getDatatype().isClass())
-								   .map(o -> (EnvisionClass) o)
-				   				   .toList();
-	}
-	
 	//---------
 	// Getters
 	//---------
@@ -359,7 +405,7 @@ public interface IScope {
 	 */
 	default EnvisionObject get(String name) {
 		var box = getTyped(name);
-		return (box != null) ? box.getB() : null;
+		return (box != null) ? box.getObject() : null;
 	}
 	
 	/**
@@ -380,7 +426,7 @@ public interface IScope {
 	 * 
 	 * (extracts the lexeme of a Token for the name)
 	 */
-	default Box2<IDatatype, EnvisionObject> getTyped(Token name) {
+	default ScopeEntry getTyped(Token name) {
 		return getTyped(name.getLexeme());
 	}
 	
@@ -388,7 +434,7 @@ public interface IScope {
 	 * Attempts to return an object of the same name from this scope as
 	 * well as any encompassing parent scopes.
 	 */
-	default Box2<IDatatype, EnvisionObject> getTyped(String name) {
+	default ScopeEntry getTyped(String name) {
 		var obj = values().getOrDefault(name, imports().get(name));
 		
 		if (obj == null) {
@@ -417,8 +463,7 @@ public interface IScope {
 	 * Returns an already defined object at a specific depth.
 	 */
 	default EnvisionObject getAt(int dist, String name) {
-		var b = parentAt(dist).values().get(name);
-		return (b != null) ? b.getB() : null;
+		return parentAt(dist).get(name);
 	}
 	
 	/**
@@ -433,7 +478,7 @@ public interface IScope {
 	 */
 	default EnvisionObject getLocal(String name) {
 		var typedBox = values().get(name);
-		return (typedBox != null) ? typedBox.getB() : null;
+		return (typedBox != null) ? typedBox.getObject() : null;
 	}
 	
 	/**
@@ -446,7 +491,7 @@ public interface IScope {
 	 * @param name The name of a variable to be searched for
 	 * @return A variable and its type under the given name
 	 */
-	default Box2<IDatatype, EnvisionObject> getTypedLocal(String name) {
+	default ScopeEntry getTypedLocal(String name) {
 		return values().get(name);
 	}
 	
@@ -467,7 +512,7 @@ public interface IScope {
 		var b = getTyped(name);
 		if (b == null) throw new UndefinedValueError(name);
 		if (value == null) throw new NullVariableError();
-		b.setB(value);
+		b.set(value);
 	}
 	
 	/**
@@ -482,22 +527,60 @@ public interface IScope {
 		
 		//assign new type
 		if (typedBox != null) {
-			typedBox.setA(newType);
+			typedBox.modifyDatatype(newType);
 		}
 		
-		return (typedBox != null) ? typedBox.getB() : null;
+		return (typedBox != null) ? typedBox.getObject() : null;
 	}
 	
 	//-------------------
 	// Utility Functions
 	//-------------------
 	
+	public static String printFullStack(IScope scopeIn) {
+		if (scopeIn == null) return null;
+		
+		var sb = new EStringBuilder("FULL SCOPE: {\n");
+		
+		class Indenter {
+			int level = 0;
+			private String get() { return EStringUtil.repeatString(" ", level * 4); }
+			public String addIndent() { ENumUtil.clamp(level++, 0, level); return get(); }
+			public String subIndent() { ENumUtil.clamp(level--, 0, level); return get(); }
+			public String indent(String in) {
+				String[] lines = in.replace("\t", "    ").split("\n");
+				var builder = new EStringBuilder();
+				if (lines.length == 1) builder.a(get(), lines[0]);
+				else for (String l : lines) builder.a(get(), l, "\n");
+				return builder.toString();
+			}
+		}
+		
+		var indenter = new Indenter();
+		indenter.addIndent();
+		
+		IScope cur = scopeIn;
+		int depth = 0;
+		do {
+			sb.a(indenter.indent("DEPTH=" + depth), "\n");
+			sb.a(indenter.indent(asString(cur)));
+			depth++;
+			cur = cur.getParent();
+			if (cur != null) sb.println();
+		}
+		while (cur != null);
+		indenter.subIndent();
+		sb.a("}");
+		
+		return sb.toString();
+	}
+	
 	/**
 	 * Converts this scope to an easier to understand visual representation.
 	 * 
 	 * @return ToString for IScope objects
 	 */
-	static String asString(IScope scopeIn) {
+	public static String asString(IScope scopeIn) {
 		return asString(scopeIn, false);
 	}
 	
@@ -506,7 +589,7 @@ public interface IScope {
 	 * 
 	 * @return ToString for IScope objects
 	 */
-	static String asString(IScope scopeIn, boolean printParent) {
+	public static String asString(IScope scopeIn, boolean printParent) {
 		EStringBuilder out = new EStringBuilder("Scope: {");
 		
 		var values = scopeIn.values();
@@ -519,7 +602,11 @@ public interface IScope {
 			if (!importedValues.isEmpty()) {
 				out.a("\n   Imported:\n");
 				int i = 0;
-				for (Map.Entry<String, Box2<IDatatype, EnvisionObject>> o : importedValues.entrySet()) {
+				var importsSorted = importedValues.entrySet().stream()
+															 .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
+															 .collect(EList.toEList());
+				
+				for (var o : importsSorted) {
 					out.a("      ", i++, ": ", o.getKey(), " = ", o.getValue(), "\n");
 				}
 			}
@@ -530,22 +617,22 @@ public interface IScope {
 				// packages
 				out.a(convertMapping(tab, "Packages",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getA().isPackage())
+										 .filter(b -> b.getValue().isPackageType())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// fields
 				out.a(convertMapping(tab, "Fields",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getA().isField())
+										 .filter(b -> b.getValue().isFieldType())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// methods
 				out.a(convertMapping(tab, "Functions",
 						values.entrySet().stream()
-										 .filter(b -> b.getValue().getA().isFunction())
+										 .filter(b -> b.getValue().isFunctionType())
 										 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 				// classes
 				out.a(convertMapping(tab, "Classes",
 						values.entrySet().stream()
-						 				 .filter(b -> b.getValue().getA().isClass())
+						 				 .filter(b -> b.getValue().isClassType())
 						 				 .sorted((a, b) -> a.getKey().compareTo(b.getKey())).iterator()));
 			}
 		}
@@ -559,14 +646,15 @@ public interface IScope {
 		return out.toString();
 	}
 	
-	private static String convertMapping(String tab, String catName, Iterator<Entry<String, Box2<IDatatype, EnvisionObject>>> objects) {
+	private static String convertMapping(String tab, String catName, Iterator<Entry<String, ScopeEntry>> objects) {
 		//if there aren't any values for the given type, return empty
 		if (!objects.hasNext()) return "";
 		
 		EStringBuilder out = EStringBuilder.of(tab, catName, ":\n");
 		for (int i = 0; objects.hasNext(); i++) {
-			Entry<String, Box2<IDatatype, EnvisionObject>> o = objects.next();
-			EnvisionObject obj = o.getValue().getB();
+			Entry<String, ScopeEntry> o = objects.next();
+			ScopeEntry entry = o.getValue();
+			EnvisionObject obj = entry.getObject();
 			
 			EStringBuilder objS = new EStringBuilder();
 			if (obj != null) {
@@ -576,15 +664,14 @@ public interface IScope {
 				if (obj.isStrong()) objS.a("_strong");
 			}
 			
-			Box2<IDatatype, EnvisionObject> box = o.getValue();
 			EStringBuilder obj_output = EStringBuilder.of(obj.getVisibility().lexeme);
 			if (obj instanceof EnvisionString) obj_output.a("\"", obj_output, "\"");
 			else if (obj instanceof EnvisionChar) obj_output.a("'", obj_output, "'");
 			else obj_output.a(obj);
-			String var_actual_type = (StaticTypes.VAR_TYPE.compare(box.getA())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
+			String var_actual_type = (StaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
 			String objHash = (obj != null) ? ", " + obj.getHexHash() : "";
 			
-			out.a(tab, tab, i, ": ", o.getKey(), " = [", box.getA(), var_actual_type, objHash, ", ", obj_output, objS, "]\n");
+			out.a(tab, tab, i, ": ", o.getKey(), " = [", entry.getDatatype(), var_actual_type, objHash, ", ", obj_output, objS, "]\n");
 		}
 		
 		return out.toString();

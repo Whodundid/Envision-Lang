@@ -46,18 +46,19 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
 		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
-		EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE);
-		EnvisionLang.runProgram(program);
+		//EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE);
+		//EnvisionLang.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");
 		
-		//long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		{
+			EnvisionLang.runProgram(program);
 			//env.runProgram("program");
 			//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 			//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		}
-		//System.out.print("END: " + (System.currentTimeMillis() - start) + " ms");
+		System.out.print("END: " + (System.currentTimeMillis() - start) + " ms");
 		//System.out.println(" Total: " + (System.currentTimeMillis() - preStart) + " ms");
 	}
 

@@ -1,33 +1,24 @@
 package envision_lang.interpreter.expressions;
 
 import envision_lang.exceptions.errors.UndefinedTypeError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.UserDefinedTypeManager;
-import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Cast;
 
-public class IE_Cast extends ExpressionExecutor<Expr_Cast> {
-
-	public IE_Cast(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IE_Cast extends AbstractInterpreterExecutor {
 	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Cast e) {
-		return new IE_Cast(in).run(e);
-	}
-	
-	@Override
-	public EnvisionObject run(Expr_Cast e) {
+	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Cast e) {
 		String toType = e.toType.getLexeme();
-		Expression target_expr = e.target;
+		ParsedExpression target_expr = e.target;
 		
 		//grab typeClass
-		UserDefinedTypeManager typeMan = interpreter.getUserDefinedTypeManager();
+		UserDefinedTypeManager typeMan = interpreter.getTypeManager();
 		EnvisionClass typeClass = typeMan.getTypeClass(toType);
 		
 		System.out.println("CAST: " + typeClass);
@@ -37,7 +28,7 @@ public class IE_Cast extends ExpressionExecutor<Expr_Cast> {
 		if (typeClass == null) throw UndefinedTypeError.badType(toType);
 		
 		IDatatype cast_type = typeClass.getDatatype();
-		EnvisionObject target_obj = evaluate(target_expr);
+		EnvisionObject target_obj = interpreter.evaluate(target_expr);
 		
 		//attempt to handle cast
 		if (target_obj instanceof ClassInstance inst) {

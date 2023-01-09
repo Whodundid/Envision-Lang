@@ -20,7 +20,7 @@ public class OperatorOverloadHandler {
 	 * If the base class instance natively supports the given operator overload,
 	 * then attempt to directly run the given operator overload function.
 	 * 
-	 * @param interpreter
+	 * @param executor
 	 * @param a_scopeName
 	 * @param op
 	 * @param a

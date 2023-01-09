@@ -148,7 +148,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		//prep interpreter
 		try {
 			workingDir = dir;
-			dir.getBuildPackages().forEach(p -> p.defineOn(interpreter));
+			dir.getBuildPackages().forEach(p -> p.defineOn(codeFileScope));
 			isLoaded = true;
 		}
 		catch (EnvisionLangError e) {

@@ -2,10 +2,10 @@ package envision_lang.packages;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.IDatatype;
 
 /**
  * A special type of package that is natively imported at program
@@ -38,16 +38,18 @@ public abstract class EnvisionLangPackage extends EnvisionPackage implements Bui
 	}
 	
 	public void defineOn(EnvisionInterpreter interpreter) {
+		defineOn(interpreter.internalScope());
+	}
+	
+	public void defineOn(IScope scope) {
 		//add each object within the incoming package's scope
-		IScope incoming_scope = interpreter.internalScope();
 		for (var obj : packageScope.values.entrySet()) {
 			String import_val_name = obj.getKey();
-			IDatatype import_val_type = obj.getValue().getA();
-			EnvisionObject import_val_obj = obj.getValue().getB();
+			ScopeEntry import_entry = obj.getValue();
 			
-			incoming_scope.define(import_val_name, import_val_type, import_val_obj);
+			scope.defineImportVal(import_val_name, import_entry);
 		}
-		incoming_scope.define(packageName, this);
+		scope.defineImportVal(packageName, this);
 	}
 	
 }

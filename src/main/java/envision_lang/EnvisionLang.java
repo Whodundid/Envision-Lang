@@ -1,7 +1,6 @@
 package envision_lang;
 
 import java.io.File;
-import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +16,10 @@ import envision_lang._launch.WorkingDirectory;
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError;
 import envision_lang.exceptions.errors.workingDirectory.NoMainError;
+import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.packages.EnvisionLangPackage;
-import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
@@ -292,19 +291,19 @@ public class EnvisionLang {
 			if (!main.load(dir)) throw new InterpreterCreationError();
 			
 			//load any program bundled envision java objects into the main's interpreter scope
-			var interpreter = dir.getMain().getInterpreter();
+			var interpreter = dir.getMain().scope();
 			for (EnvisionJavaObject obj : program.getEnvisionJavaObjects()) {
 				var name = obj.getClass().getSimpleName();
 				var type = obj.getInternalClass().getDatatype();
 				var classObj = obj.getInternalClass();
 				
-				interpreter.defineIfNot(name, type, classObj);
+				interpreter.defineIfNotPresent(name, type, classObj);
 			}
 			
 			//track program start time
 			start_time = System.currentTimeMillis();
 			//actually execute the built program
-			main.execute(programArgs);
+			EnvisionInterpreter.interpret(main, programArgs);
 			
 			//do live interpreting
 			//if (liveMode) liveMode(main);

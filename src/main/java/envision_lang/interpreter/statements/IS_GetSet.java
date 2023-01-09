@@ -1,8 +1,8 @@
 package envision_lang.interpreter.statements;
 
 import envision_lang.exceptions.errors.AlreadyDefinedError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
@@ -17,20 +17,9 @@ import eutil.debug.InDevelopment;
 
 @Broken
 @InDevelopment
-public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
-
-	public IS_GetSet(EnvisionInterpreter in) {
-		super(in);
-	}
-
+public class IS_GetSet extends AbstractInterpreterExecutor {
+	
 	public static void run(EnvisionInterpreter in, Stmt_GetSet s) {
-		new IS_GetSet(in).run(s);
-	}
-	
-	//----------------------------------------------------------------------
-	
-	@Override
-	public void run(Stmt_GetSet s) {
 		/*
 		ParserDeclaration dec = s.declaration;
 		boolean get = s.get;
@@ -54,17 +43,24 @@ public class IS_GetSet extends StatementExecutor<Stmt_GetSet> {
 	// Private Internal Methods
 	//--------------------------
 	
-	private void tryDefine(boolean get, Scope scope, EnvisionObject theVar, ParserDeclaration dec, String methName, Token var) {
+	private static void tryDefine(EnvisionInterpreter interpreter,
+								  boolean get,
+								  Scope scope,
+								  EnvisionObject theVar,
+								  ParserDeclaration dec,
+								  String methName,
+								  Token var)
+	{
 		//check if get method for variable already exists
 		//format: get + capitalFirst(token)
-		EnvisionObject checkExist = scope().get(methName);
+		EnvisionObject checkExist = interpreter.scope().get(methName);
 		if (checkExist != null) throw new AlreadyDefinedError(methName);
 		
 		//create new getter/setter method and define it on scope
 		EnvisionFunction meth = buildMethod(get, theVar, dec, methName, var);
-		meth.setScope(scope());
+		meth.setScope(interpreter.scope());
 		
-		scope().define(methName, meth);
+		interpreter.scope().define(methName, meth);
 	}
 	
 	private static EnvisionFunction buildMethod(boolean isGet, EnvisionObject theVar, ParserDeclaration dec, String methName, Token var) {

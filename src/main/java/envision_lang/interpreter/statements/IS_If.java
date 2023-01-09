@@ -1,10 +1,10 @@
 package envision_lang.interpreter.statements;
 
 import envision_lang.exceptions.errors.ExpressionError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_If;
 
 /**
@@ -18,34 +18,27 @@ import envision_lang.parser.statements.statement_types.Stmt_If;
  * 
  * @author Hunter Bragg
  */
-public class IS_If extends StatementExecutor<Stmt_If> {
-
-	public IS_If(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IS_If extends AbstractInterpreterExecutor {
 	
-	public static void run(EnvisionInterpreter in, Stmt_If s) {
-		new IS_If(in).run(s);
-	}
-
-	@Override
-	public void run(Stmt_If statement) {
-		Expression cond = statement.condition;
-		Statement thenBranch = statement.thenBranch;
-		Statement elseBranch = statement.elseBranch;
+	private IS_If() {}
+	
+	public static void run(EnvisionInterpreter interpreter, Stmt_If statement) {
+		ParsedExpression cond = statement.condition;
+		ParsedStatement thenBranch = statement.thenBranch;
+		ParsedStatement elseBranch = statement.elseBranch;
 		
 		//if the given condition is null -- throw error
 		if (cond == null) throw new ExpressionError("The given if condition is null!");
 		
 		//check if true
-		if (isTrue(evaluate(cond))) {
+		if (isTrue(interpreter.evaluate(cond))) {
 			if (thenBranch != null) {
-				execute(thenBranch);
+				interpreter.execute(thenBranch);
 			}
 		}
 		//otherwise if false
 		else if (elseBranch != null) {
-			execute(elseBranch);
+			interpreter.execute(elseBranch);
 		}
 	}
 	
