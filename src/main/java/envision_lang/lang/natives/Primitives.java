@@ -10,7 +10,7 @@ import envision_lang.packages.EnvisionPackage;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.EDataType;
+import eutil.datatypes.util.JavaDatatype;
 
 /**
  * An enum outlining all primitive datatypes to be associated with the
@@ -303,7 +303,7 @@ public enum Primitives implements IDatatype {
 		};
 	}
 	
-	public static Primitives getDataType(EDataType typeIn) {
+	public static Primitives getDataType(JavaDatatype typeIn) {
 		return (typeIn == null) ? null : switch (typeIn) {
 		case VOID -> VOID;
 		case OBJECT -> VAR;
@@ -338,15 +338,15 @@ public enum Primitives implements IDatatype {
 	public static Primitives getDataType(Object in) {
 		//if (in instanceof IKeyword k && k.isOperator()) return OPERATOR;
 		if (in instanceof EnvisionObject env_obj) return getDataType(env_obj);
-		return getDataType(EDataType.getDataType(in));
+		return getDataType(JavaDatatype.getDataType(in));
 	}
 	
 	public static Primitives getNumberType(String in) {
-		return getDataType(EDataType.getNumberType(in));
+		return getDataType(JavaDatatype.getNumberType(in));
 	}
 	
 	public static Primitives getNumberType(Number in) {
-		return getDataType(EDataType.getNumberType(in));
+		return getDataType(JavaDatatype.getNumberType(in));
 	}
 	
 	public static String getTypeString(Object in) {

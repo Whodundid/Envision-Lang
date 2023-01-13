@@ -318,7 +318,7 @@ public class EnvisionList extends ClassInstance {
 	}
 	
 	public EnvisionList flip() {
-		return new EnvisionList(list_type, list.flip());
+		return new EnvisionList(list_type, list.reverse());
 	}
 	
 	public EnvisionList shuffle() {
