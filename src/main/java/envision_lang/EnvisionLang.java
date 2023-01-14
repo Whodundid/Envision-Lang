@@ -291,13 +291,13 @@ public class EnvisionLang {
 			if (!main.load(dir)) throw new InterpreterCreationError();
 			
 			//load any program bundled envision java objects into the main's interpreter scope
-			var interpreter = dir.getMain().scope();
+			var mainScope = dir.getMain().scope();
 			for (EnvisionJavaObject obj : program.getEnvisionJavaObjects()) {
 				var name = obj.getClass().getSimpleName();
 				var type = obj.getInternalClass().getDatatype();
 				var classObj = obj.getInternalClass();
 				
-				interpreter.defineIfNotPresent(name, type, classObj);
+				mainScope.defineIfNotPresent(name, type, classObj);
 			}
 			
 			//track program start time

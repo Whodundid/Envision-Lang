@@ -36,7 +36,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//Thread.sleep(20000);
 		EnvisionLang.setErrorCallback(this);
 		
-		TestPoint t = new TestPoint(0, 0);
+		//TestPoint t = new TestPoint(0, 0);
 		EnvisionProgram program = new EnvisionProgram("program");
 		//program.addJavaObjectToProgram(t);
 		

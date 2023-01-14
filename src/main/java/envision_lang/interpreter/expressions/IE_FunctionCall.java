@@ -18,9 +18,11 @@ import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
+import eutil.debug.Inefficient;
 
 public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	
+	@Inefficient(reason="Pass-by-value --> 'obj.copy' is very slow!")
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_FunctionCall expression) {
 		//System.out.println("IE_FUNC_CALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = interpreter.evaluate(expression.callee);
@@ -35,7 +37,11 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 			for (int i = 0; i < args.length; i++) {
 				ParsedExpression arg = expression.args.get(i);
 				EnvisionObject obj = interpreter.evaluate(arg);
-				if (obj.isPrimitive()) obj = obj.copy();
+				//-------------------------------------------------------
+				// NOTE: The following method is absurdly slow!
+				//-------------------------------------------------------
+				//if (obj.isPassByValue()) obj = obj.copy();
+				//-------------------------------------------------------
 				args[i] = obj;
 			}
 			

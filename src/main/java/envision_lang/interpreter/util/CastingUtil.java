@@ -174,7 +174,7 @@ public class CastingUtil {
 			return switch (to) {
 			//case CHAR -> EnvisionCharClass.newChar(doubleVal);
 			//case BOOLEAN -> EnvisionBooleanClass.newBoolean(doubleVal);
-			case INT -> EnvisionIntClass.newInt(doubleVal);
+			case INT -> EnvisionIntClass.newInt((long) doubleVal);
 			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(doubleVal);
 			case STRING -> EnvisionStringClass.newString(doubleVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");

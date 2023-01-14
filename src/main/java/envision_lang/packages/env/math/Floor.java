@@ -18,7 +18,7 @@ public class Floor extends EnvisionFunction {
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionNumber num = (EnvisionNumber) args[0];
 		double floor = Math.floor(num.doubleVal_i());
-		EnvisionInt r = EnvisionIntClass.newInt(floor);
+		EnvisionInt r = EnvisionIntClass.newInt((long) floor);
 		ret(r);
 	}
 	

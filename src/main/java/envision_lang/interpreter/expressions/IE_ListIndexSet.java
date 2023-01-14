@@ -57,8 +57,12 @@ public class IE_ListIndexSet extends AbstractInterpreterExecutor {
 		}
 		
 		//do normal assign
-		if (assign_value.isPrimitive()) env_list.set(i, assign_value.copy());
-		else env_list.set(i, assign_value);
+//		if (assign_value.isPrimitive()) {
+//			env_list.set(i, assign_value.copy());
+//		}
+//		else {
+			env_list.set(i, assign_value);
+//		}
 		
 		//return the new value
 		return assign_value;

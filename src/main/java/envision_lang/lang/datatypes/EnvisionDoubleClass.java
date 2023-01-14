@@ -65,7 +65,7 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	public static EnvisionDouble newDouble(boolean value) { return newDouble(value ? 1.0 : 0.0); }
 	public static EnvisionDouble newDouble(char value) { return newDouble((double) value); }
 	public static EnvisionDouble newDouble(EnvisionNumber num) { return newDouble(num.doubleVal_i()); }
-	public static EnvisionDouble newDouble(Number value) {
+	public static EnvisionDouble newDouble(double value) {
 		EnvisionDouble d = new EnvisionDouble(value);
 		DOUBLE_CLASS.defineScopeMembers(d);
 		return d;

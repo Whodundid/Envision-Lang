@@ -3,7 +3,6 @@ package envision_lang.interpreter;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -11,18 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
-import envision_lang.interpreter.util.scope.ScopeEntry;
-import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.datatypes.EnvisionBooleanClass;
-import envision_lang.lang.datatypes.EnvisionCharClass;
-import envision_lang.lang.datatypes.EnvisionDoubleClass;
-import envision_lang.lang.datatypes.EnvisionIntClass;
-import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.EnvisionLangParser;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
@@ -142,32 +131,6 @@ public abstract class InterpreterTest {
 	}
 	
 	protected ScopeManager scope() { return new ScopeManager(extractScope()); }
-	
-	protected static class ScopeManager implements IScope {
-		private IScope scope;
-		
-		public ScopeManager() { this(new Scope()); }
-		public ScopeManager(IScope scopeIn) { scope = scopeIn; }
-		@Override public String toString() { return scope.toString(); }
-
-		public ScopeManager def(String name, EnvisionObject o) { scope.define(name, o); return this; }
-		public ScopeManager defBool(String name, boolean val) { return def(name, EnvisionBooleanClass.newBoolean(val)); } 
-		public ScopeManager defChar(String name, char val) { return def(name, EnvisionCharClass.newChar(val)); }
-		public ScopeManager defInt(String name, long val) { return def(name, EnvisionIntClass.newInt(val)); }
-		public ScopeManager defDouble(String name, double val) { return def(name, EnvisionDoubleClass.newDouble(val)); }
-		public ScopeManager defString(String name, String val) { return def(name, EnvisionStringClass.newString(val)); }
-		
-		public ScopeManager defVar(String name, Object val) {
-			IDatatype type = IDatatype.dynamicallyDetermineType(val);
-			define(name, StaticTypes.VAR_TYPE, ObjectCreator.createObject(type, val));
-			return this;
-		}
-
-		@Override public Map<String, ScopeEntry> values() { return scope.values(); }
-		@Override public Map<String, ScopeEntry> imports() { return scope.imports(); }
-		@Override public IScope getParent() { return scope.getParent(); }
-		@Override public void setParent(IScope scopeIn) { scope.setParent(scopeIn); }
-	}
 	
 	protected static <E extends ParsedStatement> E stmt(String line) { return (E) EnvisionLangParser.parseStatement(line); }
 	protected static <E extends ParsedExpression> E expr(String line) { return (E) EnvisionLangParser.parseExpression(line); }

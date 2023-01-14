@@ -79,7 +79,7 @@ public class IPrototypeHandler {
 	public void defineOn(IScope scope) {
 		for (var p : prototypes) {
 			var name = p.getFunctionName();
-			scope.defineIfNotPresent(name, StaticTypes.FUNC_TYPE, p);
+			scope.define(name, StaticTypes.FUNC_TYPE, p);
 		}
 	}
 	

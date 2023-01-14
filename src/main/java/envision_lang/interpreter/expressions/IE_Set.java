@@ -23,7 +23,7 @@ public class IE_Set extends AbstractInterpreterExecutor {
 		}
 		
 		//copy if primitive value
-		if (value.isPrimitive()) value = value.copy();
+		if (value.isPassByValue()) value = value.copy();
 		
 		//check for acceptable target types
 		if (baseObject instanceof ClassInstance inst) return setValue_CI(inst, name, value);

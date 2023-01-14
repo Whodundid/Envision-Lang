@@ -273,7 +273,7 @@ public class EnvisionClass extends EnvisionObject {
 		interpreter.executeBlock(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
-		EList<EnvisionFunction> operators = instanceScope.function_objects().filter(f -> f.isOperator());
+		EList<EnvisionFunction> operators = instanceScope.functions().filter(f -> f.isOperator());
 		
 		//set the overloaded operators onto the class instance
 		for (EnvisionFunction op : operators) {

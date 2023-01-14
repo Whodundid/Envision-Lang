@@ -198,7 +198,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 			}
 			
 			EnvisionObject theObject = ObjectCreator.wrap(assignment_value);
-			if (theObject.isPrimitive()) theObject = theObject.copy();
+			if (theObject.isPassByValue()) theObject = theObject.copy();
 			
 			//assign new value to existing variable
 			s.set(var_name, theObject);

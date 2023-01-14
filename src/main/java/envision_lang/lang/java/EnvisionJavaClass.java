@@ -35,7 +35,7 @@ public class EnvisionJavaClass extends EnvisionClass {
 		
 		//extract operator overloads from scope
 		//set the overloaded operators onto the class instance
-		buildScope.operator_objects().forEach(op -> instance.addOperatorOverload(op.getOperator(), op));
+		buildScope.operators().forEach(op -> instance.addOperatorOverload(op.getOperator(), op));
 		
 		//execute constructor -- if there is one
 		if (constructor != null) {

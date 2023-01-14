@@ -17,7 +17,7 @@ public class IE_ListInitializer extends AbstractInterpreterExecutor {
 		for (var e : expression.values) {
 			EnvisionObject o = interpreter.evaluate(e);
 			//pass primitives by value -- not reference
-			if (o.isPrimitive()) l.add(o.copy());
+			if (o.isPassByValue()) l.add(o.copy());
 			//pass everything else by reference
 			else l.add(o);
 		}

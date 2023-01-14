@@ -75,7 +75,7 @@ public class ClassConstruct {
 		
 		//extract members from scope
 		fields = internalScope.named_fields();
-		functions = internalScope.function_objects();
+		functions = internalScope.functions();
 	}
 	
 	//------------------

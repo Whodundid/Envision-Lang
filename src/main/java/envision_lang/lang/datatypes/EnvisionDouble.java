@@ -74,7 +74,7 @@ public class EnvisionDouble extends EnvisionNumber {
 	
 	@Override public long intVal_i() { return (long) double_val; }
 	@Override public double doubleVal_i() { return double_val; }
-	@Override public EnvisionInt intVal() { return EnvisionIntClass.newInt(double_val); }
+	@Override public EnvisionInt intVal() { return EnvisionIntClass.newInt((long) double_val); }
 	@Override public EnvisionDouble doubleVal() { return this; }
 	
 	@Override public EnvisionDouble get() { return this; }

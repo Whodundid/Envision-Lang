@@ -20,6 +20,7 @@ import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.BoxList;
 import eutil.datatypes.util.EList;
+import eutil.debug.Inefficient;
 import eutil.math.ENumUtil;
 import eutil.strings.EStringBuilder;
 import eutil.strings.EStringUtil;
@@ -30,6 +31,14 @@ public interface IScope {
 	Map<String, ScopeEntry> values();
 	/** Returns the values that have been imported into this scope from another. */
 	Map<String, ScopeEntry> imports();
+	
+	/** Returns true if an entry exists under the given name. */
+	boolean doesValueExist(String name);
+	/** Returns true if an imported entry exists under the given name. */
+	boolean doesImportedValueExist(String name);
+	
+	EnvisionObject define_i(String name, ScopeEntry entry);
+	EnvisionObject defineImportVal_i(String name, ScopeEntry entry);
 	
 	//---------
 	// Parents
@@ -153,8 +162,7 @@ public interface IScope {
 	default EnvisionObject define(String name, ScopeEntry entry) {
 		if (name == null) throw new IllegalArgumentException("Scope object cannot have a 'NULL' name!");
 		if (entry == null) throw new IllegalArgumentException("Scope entries cannot be entirely 'NULL' !");
-		values().put(name, entry);
-		return entry.getObject();
+		return define_i(name, entry);
 	}
 	
 	/**
@@ -163,14 +171,15 @@ public interface IScope {
 	 * 
 	 * @param name The name to define this object under
 	 * @param type The Envision datatype of the object
-	 * @param obj The actual object to define
+	 * @param obj  The actual object to define
 	 * 
-	 * @return
+	 * @implNote NOTE: use of this method should be significantly limited as it
+	 *           is DRAMATICALLY slower than a standard 'define' operation!
 	 */
-	default EnvisionObject defineIfNotPresent(String name, IDatatype type, EnvisionObject obj) {
-		var existing = get(name);
-		if (existing != null) return existing;
-		return define(name, type, obj);
+	@Inefficient(reason="The action of simply looking up a name to check for existing presence is VERY slow!")
+	default void defineIfNotPresent(String name, IDatatype type, EnvisionObject obj) {
+		boolean existCheck = doesValueExist(name);
+		if (!existCheck) define(name, type, obj);
 	}
 	
 	/**
@@ -246,8 +255,7 @@ public interface IScope {
 	default EnvisionObject defineImportVal(String name, ScopeEntry entry) {
 		if (name == null) throw new IllegalArgumentException("Scope object cannot have a 'NULL' name!");
 		if (entry == null) throw new IllegalArgumentException("Scope entries cannot be entirely 'NULL' !");
-		imports().put(name, entry);
-		return entry.getObject();
+		return defineImportVal_i(name, entry);
 	}
 	
 	//----------------
@@ -260,10 +268,25 @@ public interface IScope {
 								  .map(b -> b.getObject());
 	}
 	
+	default Stream<ScopeEntry> objectEntriesAsStream() {
+		return values().entrySet().stream()
+								  .map(b -> b.getValue());
+	}
+	
+	/**
+	 * Returns a list of all values on this immediate scope. Does not
+	 * check parents.
+	 */
 	default EList<EnvisionObject> objects() {
 		return values().entrySet().stream()
 								  .map(b -> b.getValue())
 								  .map(b -> b.getObject())
+								  .collect(EList.toEList());
+	}
+	
+	default EList<ScopeEntry> object_entries() {
+		return values().entrySet().stream()
+								  .map(b -> b.getValue())
 								  .collect(EList.toEList());
 	}
 	
@@ -276,14 +299,10 @@ public interface IScope {
 								  .collect(EList.toEList());
 	}
 	
-	/**
-	 * Returns a list of all values on this immediate scope. Does not
-	 * check parents.
-	 */
-	default EList<EnvisionObject> locals() {
+	default EList<ScopeEntry> class_entries() {
 		return values().entrySet().stream()
+								  .filter(b -> b.getValue().isClassType())
 								  .map(b -> b.getValue())
-								  .map(b -> b.getObject())
 								  .collect(EList.toEList());
 	}
 	
@@ -291,7 +310,7 @@ public interface IScope {
 	 * Returns a list of all fields on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<EnvisionObject> field_objects() {
+	default EList<EnvisionObject> fields() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFieldType())
 								  .map(b -> b.getValue())
@@ -303,7 +322,7 @@ public interface IScope {
 	 * Returns a list of all fields on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<ScopeEntry> fields() {
+	default EList<ScopeEntry> field_entries() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFieldType())
 								  .map(b -> b.getValue())
@@ -326,7 +345,7 @@ public interface IScope {
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<EnvisionFunction> function_objects() {
+	default EList<EnvisionFunction> functions() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
 								  .map(b -> b.getValue())
@@ -339,7 +358,7 @@ public interface IScope {
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<ScopeEntry> functions() {
+	default EList<ScopeEntry> function_entries() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
 								  .map(b -> b.getValue())
@@ -350,7 +369,7 @@ public interface IScope {
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<EnvisionFunction> operator_objects() {
+	default EList<EnvisionFunction> operators() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
 								  .map(b -> b.getValue())
@@ -364,7 +383,7 @@ public interface IScope {
 	 * Returns a list of all functions on this immediate scope. Does not
 	 * check parents.
 	 */
-	default EList<ScopeEntry> operators() {
+	default EList<ScopeEntry> operator_entries() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
 								  .filter(b -> ((EnvisionFunction) b.getValue().getObject()).isOperator())

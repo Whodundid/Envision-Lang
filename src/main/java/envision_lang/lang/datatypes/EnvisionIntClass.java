@@ -65,7 +65,7 @@ public class EnvisionIntClass extends EnvisionClass {
 	public static EnvisionInt newInt(boolean value) { return newInt(value ? 1 : 0); }
 	public static EnvisionInt newInt(char value) { return newInt((int) value); }
 	public static EnvisionInt newInt(EnvisionNumber value) { return newInt(value.intVal_i()); }
-	public static EnvisionInt newInt(Number value) {
+	public static EnvisionInt newInt(long value) {
 		EnvisionInt i = new EnvisionInt(value);
 		INT_CLASS.defineScopeMembers(i);
 		return i;

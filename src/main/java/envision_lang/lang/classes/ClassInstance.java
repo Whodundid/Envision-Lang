@@ -211,7 +211,7 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The matching function
 	 */
 	public EnvisionFunction getFunction(String funcName) {
-		return instanceScope.function_objects().getFirst(f -> f.compare(funcName));
+		return instanceScope.functions().getFirst(f -> f.compare(funcName));
 	}
 	
 	/**
@@ -223,7 +223,7 @@ public class ClassInstance extends EnvisionObject {
 	 * @return The matching function
 	 */
 	public EnvisionFunction getFunction(String funcName, ParameterData params) {
-		return instanceScope.function_objects().getFirst(f -> f.compare(funcName, params));
+		return instanceScope.functions().getFirst(f -> f.compare(funcName, params));
 	}
 	
 	/**
