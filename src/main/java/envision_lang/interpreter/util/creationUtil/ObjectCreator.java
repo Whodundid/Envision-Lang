@@ -18,6 +18,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.math.ENumUtil;
 
 /** Utility class designed to help with general object creation. */
@@ -31,8 +32,8 @@ public class ObjectCreator {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** Wraps the given set of arguments in corresponding EnvisionObjects for internal language data communication. */
-	public static EArrayList<EnvisionObject> createArgs(Object... args) {
-		EArrayList<EnvisionObject> callArgs = new EArrayList();
+	public static EList<EnvisionObject> createArgs(Object... args) {
+		EList<EnvisionObject> callArgs = EList.newList();
 		
 		//return if incomming args is null
 		if (args == null) return callArgs;
@@ -115,8 +116,8 @@ public class ObjectCreator {
 				switch (p_type) {
 				case BOOLEAN: obj = EnvisionBooleanClass.newBoolean((boolean) valueIn); break;
 				case CHAR: obj = EnvisionCharClass.newChar(charify(valueIn)); break; //charify the input
-				case INT: obj = EnvisionIntClass.newInt(((Number) valueIn).longValue()); break;
-				case DOUBLE: obj = EnvisionDoubleClass.newDouble(((Number) valueIn).doubleValue()); break;
+				case INT: obj = EnvisionIntClass.newInt((long) valueIn); break;
+				case DOUBLE: obj = EnvisionDoubleClass.newDouble((double) valueIn); break;
 				case STRING: obj = EnvisionStringClass.newString(stringify(valueIn)); break;
 				case NUMBER:
 					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);

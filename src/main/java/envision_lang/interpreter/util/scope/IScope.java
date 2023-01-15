@@ -180,6 +180,10 @@ public interface IScope {
 	default void defineIfNotPresent(String name, IDatatype type, EnvisionObject obj) {
 		boolean existCheck = doesValueExist(name);
 		if (!existCheck) define(name, type, obj);
+//		
+//		var exists = get(name);
+//		if (exists != null) return exists;
+//		return define(name, type, obj);
 	}
 	
 	/**

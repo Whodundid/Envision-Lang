@@ -150,7 +150,7 @@ public class EnvisionDouble extends EnvisionNumber {
 		case ADD:				return EnvisionDoubleClass.newDouble(double_val + num.doubleVal_i());
 		case SUB:				return EnvisionDoubleClass.newDouble(double_val - num.doubleVal_i());
 		case MUL:				return EnvisionDoubleClass.newDouble(double_val * num.doubleVal_i());
-		case DIV:				div0(double_val, num.doubleVal_i()); //check for div by zero errors
+		case DIV:				div0_d(double_val, num.doubleVal_i()); //check for div by zero errors
 								return EnvisionDoubleClass.newDouble(double_val / num.doubleVal_i());
 		case MOD:				return EnvisionDoubleClass.newDouble(double_val % num.doubleVal_i());
 		//assignment operators

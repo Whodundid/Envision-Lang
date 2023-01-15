@@ -73,8 +73,14 @@ public abstract class EnvisionNumber extends EnvisionVariable {
 	//-----------------------
 	
 	/** Throws / by zero error. */
-	protected static void div0(Number a, Number b) {
-		if (b.doubleValue() == 0) {
+	protected static void div0_l(long a, long b) {
+		if (b == 0) {
+			throw new ArithmeticError("("+a+" / "+b+") error! Division by zero!");
+		}
+	}
+	
+	protected static void div0_d(double a, double b) {
+		if (b == 0) {
 			throw new ArithmeticError("("+a+" / "+b+") error! Division by zero!");
 		}
 	}

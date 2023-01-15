@@ -40,7 +40,7 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 				//-------------------------------------------------------
 				// NOTE: The following method is absurdly slow!
 				//-------------------------------------------------------
-				//if (obj.isPassByValue()) obj = obj.copy();
+				if (obj.isPassByValue()) obj = obj.copy();
 				//-------------------------------------------------------
 				args[i] = obj;
 			}

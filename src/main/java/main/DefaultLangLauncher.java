@@ -84,6 +84,30 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 }
 
 /*
++class Vector {
+	// Fields
+	-int x, y, z
+	
+	// Constructors
+	+init(x, y, z)
+	
+	// Functions
+	+func toString() -> "<{x}, {y}, {z}>"
+	+func add(Vector t) -> Vector(x + t.x, y + t.y, z + t.z)
+	
+	// Operator Overloads
+	+operator +(Vector t) -> add(t)
+}
+
+for (int i = 0; i < 100000; i++) {
+	a = Vector(randInt(0, 5), randInt(0, 5), randInt(0, 5))
+	b = Vector(randInt(0, 4), randInt(0, 4), randInt(0, 4))
+	
+	println(i, a, "|", b, "|", a + b)
+}
+ */
+
+/*
 public class Vector {
 	int x, y, z
 	public {

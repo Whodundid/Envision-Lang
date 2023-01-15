@@ -165,7 +165,7 @@ public class EnvisionInt extends EnvisionNumber {
 		case ADD:				return EnvisionIntClass.newInt(int_val + num.intVal_i());
 		case SUB:				return EnvisionIntClass.newInt(int_val - num.intVal_i());
 		case MUL:				return EnvisionIntClass.newInt(int_val * num.intVal_i());
-		case DIV:				div0(int_val, num.intVal_i()); //check for div by zero errors
+		case DIV:				div0_l(int_val, num.intVal_i()); //check for div by zero errors
 								return EnvisionIntClass.newInt(int_val / num.intVal_i());
 		case MOD:				return EnvisionIntClass.newInt(int_val % num.intVal_i());
 		//binary operators

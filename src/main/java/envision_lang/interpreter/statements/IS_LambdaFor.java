@@ -26,8 +26,6 @@ import eutil.datatypes.util.EList;
 
 public class IS_LambdaFor extends AbstractInterpreterExecutor {
 
-
-
 	public static void run(EnvisionInterpreter interpreter, Stmt_LambdaFor s) {
 		
 		//first check if the lambda is iterating over an iterable object
