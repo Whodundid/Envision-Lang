@@ -10,7 +10,7 @@ import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.StaticTypes;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 
 /**

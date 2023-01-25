@@ -18,12 +18,14 @@ public class PS_If extends ParserHead {
 	 */
 	public static ParsedStatement ifStatement() {
 		Token<?> ifToken = consume(IF, "Expected 'if' here!");
+		ignoreNL();
 		consume(PAREN_L, "Expected an expression start '(' after an if statement!");
 		ParsedExpression condition = ExpressionParser.parseExpression();
+		ignoreNL();
 		consume(PAREN_R, "Expected a ')' to end expression!");
 		
 		ParsedStatement thenBranch = declaration();
-		consumeEmptyLines();
+		ignoreNL();
 		ParsedStatement elseBranch = (match(ELSE)) ? declaration() : null;
 		
 		return new Stmt_If(ifToken, condition, thenBranch, elseBranch);

@@ -710,7 +710,6 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public EnvisionObject handleLiteral_E(Expr_Literal e) { return IE_Literal.run(this, e); }
 	@Override public EnvisionObject handleLogical_E(Expr_Logic e) { return IE_Logical.run(this, e); }
 	@Override public EnvisionObject handleMethodCall_E(Expr_FunctionCall e) { return IE_FunctionCall.run(this, e); }
-	//@Override public EnvisionObject handleModular_E(ModularExpression e) { return IE_Modular.run(this, e); }
 	@Override public EnvisionObject handlePrimitive_E(Expr_Primitive e) { return IE_Primitive.run(this, e); }
 	@Override public EnvisionObject handleRange_E(Expr_Range e) { return IE_Range.run(this, e); }
 	@Override public EnvisionObject handleSet_E(Expr_Set e) { return IE_Set.run(this, e); }

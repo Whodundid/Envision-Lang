@@ -18,8 +18,8 @@ import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
-import eutil.datatypes.Box3;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.boxes.Box3;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 
@@ -28,7 +28,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {
 		EList<Expr_Range> ranges = s.ranges;
-		EList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList<>();
+		EList<Box3<EnvisionVariable, Long, Long>> rangeValues = EList.newList();
 		ParsedStatement body = s.body;
 		interpreter.pushScope();
 		

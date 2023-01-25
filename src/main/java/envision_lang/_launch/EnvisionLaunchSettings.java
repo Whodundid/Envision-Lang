@@ -82,6 +82,8 @@ public class EnvisionLaunchSettings {
 		LIVE_MODE("liveMode"),
 		/** Prints out tokenized values, File by File. */
 		TOKENIZE("tokenize"),
+		/** Prints out tokenized values along with their token metadata. */
+		TOKENIZE_IN_DEPTH("tokenize_in_depth"),
 		/** Prints out parsed statements, File by File. */
 		PARSE_STATEMENTS("parse_statements"),
 		/** Does not allow Envision code execution to commence. */

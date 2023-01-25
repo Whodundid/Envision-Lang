@@ -16,6 +16,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /**
@@ -29,7 +30,7 @@ public class EnvisionTuple extends ClassInstance {
 	/**
 	 * Internal Array list.
 	 */
-	private final EArrayList<EnvisionObject> list = new EArrayList<>();
+	private final EList<EnvisionObject> list = EList.newList();
 	
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
@@ -46,7 +47,7 @@ public class EnvisionTuple extends ClassInstance {
 		tuple_type = typeIn;
 	}
 	
-	protected EnvisionTuple(IDatatype typeIn, EArrayList listIn) {
+	protected EnvisionTuple(IDatatype typeIn, EList listIn) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
 		tuple_type = typeIn;
 		list.addAll(listIn);
@@ -58,7 +59,7 @@ public class EnvisionTuple extends ClassInstance {
 		list.addAll(in.list);
 	}
 	
-	protected EnvisionTuple(EnvisionTuple in, EArrayList listIn) {
+	protected EnvisionTuple(EnvisionTuple in, EList listIn) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
 		tuple_type = in.tuple_type;
 		list.addAll(listIn);
@@ -178,7 +179,7 @@ public class EnvisionTuple extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EArrayList<EnvisionObject> getInternalList() { return list; }
+	public EList<EnvisionObject> getInternalList() { return list; }
 	
 	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
 	public long size_i() { return list.size(); }
@@ -212,7 +213,7 @@ public class EnvisionTuple extends ClassInstance {
 	}
 	
 	public EnvisionTuple shuffle() {
-		EArrayList<EnvisionObject> l = new EArrayList<>(list);
+		EList<EnvisionObject> l = EList.newList(list);
 		Collections.shuffle(l);
 		return new EnvisionTuple(this, l);
 	}

@@ -53,4 +53,11 @@ public interface IKeyword {
 		return Primitives.getPrimitiveType(this);
 	}
 	
+	/**
+	 * Returns true if this keyword is a statement terminator.
+	 */
+	default boolean isTerminator() {
+		return hasType(KeywordType.TERMINATOR);
+	}
+	
 }

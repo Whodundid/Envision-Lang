@@ -27,12 +27,12 @@ import envision_lang.lang.util.DataModifier;
 import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.EnvisionVis;
 import envision_lang.lang.util.ParameterData;
-import eutil.datatypes.BoxList;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.JavaDatatype;
 import eutil.reflection.EModifier;
 import eutil.reflection.ObjectVisibility;
-import eutil.reflection.ReflectionHelper;
+import eutil.reflection.EReflectionUtil;
 
 abstract class EnvisionBridge {
 	
@@ -127,7 +127,7 @@ abstract class EnvisionBridge {
 		EnvisionVis visibility = EnvisionVis.of(ObjectVisibility.of(theField));
 		boolean isFinal = mods.isFinal();
 		boolean isStatic = mods.isStatic();
-		Object value = ReflectionHelper.forceGet(theField, this);
+		Object value = EReflectionUtil.forceGet(theField, this);
 		
 		IDatatype envisionType = Primitives.getPrimitiveType(type).toDatatype();
 		boolean strong = false;
@@ -220,7 +220,7 @@ abstract class EnvisionBridge {
 	
 	final void set_class_i(String name, Object value) {
 		try {
-			ReflectionHelper.setField(this, name, value);
+			EReflectionUtil.setField(this, name, value);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

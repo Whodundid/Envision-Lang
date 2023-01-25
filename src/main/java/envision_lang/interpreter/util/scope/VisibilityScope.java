@@ -5,7 +5,7 @@ import java.util.HashMap;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.EnvisionVis;
-import eutil.datatypes.Box2;
+import eutil.datatypes.boxes.Box2;
 
 public class VisibilityScope extends Scope {
 	

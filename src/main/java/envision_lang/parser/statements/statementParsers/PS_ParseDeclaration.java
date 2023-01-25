@@ -14,6 +14,7 @@ import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
+import eutil.debug.PotentiallyBroken;
 
 public class PS_ParseDeclaration extends ParserHead {
 	
@@ -29,6 +30,7 @@ public class PS_ParseDeclaration extends ParserHead {
 	 */
 	public static ParserDeclaration parseDeclaration() {
 		ParserDeclaration dec = new ParserDeclaration();
+		ignoreNL();
 		
 		//collect each piece of the declaration
 		parseVisibility(dec);
@@ -37,17 +39,19 @@ public class PS_ParseDeclaration extends ParserHead {
 		parseDataModifiers(dec);
 		
 		//if (check(GET, SET)) 	return dec.setDeclarationType(GETSET).setStartToken(current());
-		if (match(ENUM)) 		return dec.setDeclarationType(ENUM_DEF).setStartToken(previous());
-		if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF).setStartToken(current());
+		ignoreNL();
+		if (match(ENUM)) 			return dec.setDeclarationType(ENUM_DEF).setStartToken(previous());
+		else if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF).setStartToken(current());
 		
 		//parse generics
 		parseGenerics(dec);
 		
 		//check for appropriate continuing statement
-		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF).setStartToken(current());
-		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF).setStartToken(previous());
-		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF).setStartToken(previous());
-		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF).setStartToken(previous());
+		ignoreNL();
+		if (check(INIT)) 					return dec.setDeclarationType(INIT_DEF).setStartToken(current());
+		else if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF).setStartToken(previous());
+		else if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF).setStartToken(previous());
+		else if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF).setStartToken(previous());
 		
 		//parse datatype
 		parseDataType(dec);
@@ -61,6 +65,7 @@ public class PS_ParseDeclaration extends ParserHead {
 	 * 
 	 * @return A valid scope variable declaration
 	 */
+	@PotentiallyBroken("I am not sure if the 'advance' statement here should actually be here at all!")
 	public static ParserDeclaration parseScopeVar() {
 		ParserDeclaration declaration = new ParserDeclaration();
 		
@@ -72,7 +77,7 @@ public class PS_ParseDeclaration extends ParserHead {
 			throw new EnvisionLangError("Invalid variable declaration!");
 		
 		//grab any additional variable values
-		advance();
+		//advance();
 		parseGenerics(declaration);
 		
 		return declaration;
@@ -103,7 +108,7 @@ public class PS_ParseDeclaration extends ParserHead {
 		
 		if (type == VAR_DEF) {
 			//check for method calls or class member references
-			if (checkNext(PAREN_L, PERIOD)) type = OTHER;
+			if (checkNextNL(PAREN_L, PERIOD)) type = OTHER;
 			//check for type-less var assignment
 			else if (dec.hasDataMods()) type = VAR_DEF;
 			//check for expression calls

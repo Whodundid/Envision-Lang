@@ -165,6 +165,12 @@ public class EnvisionLang {
 	private static boolean tokenize = false;
 	
 	/**
+	 * If enabled, bundled program code files will be tokenized and displayed in the
+	 * order they are read along with each token's full metadata as well.
+	 */
+	private static boolean tokenize_in_depth = false;
+	
+	/**
 	 * If enabled, bundled program code files will be tokenized and then attempt to
 	 * be parsed into logical Envision statements and displayed.
 	 */
@@ -226,6 +232,7 @@ public class EnvisionLang {
 			case DEBUG_MODE: debugMode = true; break;
 			case LIVE_MODE: liveMode = true; break;
 			case TOKENIZE: tokenize = true; break;
+			case TOKENIZE_IN_DEPTH: tokenize_in_depth = true; break;
 			case PARSE_STATEMENTS: parse_statements = true; break;
 			case DONT_EXECUTE: execute_code = false; break;
 			default: break;
@@ -267,6 +274,10 @@ public class EnvisionLang {
 		//check if file tokens will be displayed
 		if (tokenize) {
 			dir.debugTokenize();
+		}
+		//check if file tokens and their metadata should be displayed
+		if (tokenize_in_depth) {
+			dir.debugTokenizeInDepth();
 		}
 		//check if parsed file statements will be displayed
 		if (parse_statements) {

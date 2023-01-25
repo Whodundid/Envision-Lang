@@ -70,7 +70,9 @@ public abstract class ParserHead {
 	public static ParsedStatement declaration() { return declaration(false); }
 	public static ParsedStatement declaration(boolean inMethod) {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
-		consumeEmptyLines();
+		ignoreTerminators();
+		
+		//System.out.println("HEAD: " + current() + " : " + getCurrentParsingIndex());
 		
 		//break out if the end of the tokens has been reached
 		if (atEnd()) return null;
@@ -167,13 +169,12 @@ public abstract class ParserHead {
 	public static EList<ParsedStatement> getBlock() { return getBlock(false); }
 	public static EList<ParsedStatement> getBlock(boolean inMethod) {
 		EList<ParsedStatement> statements = EList.newList();
-		consumeEmptyLines();
 		
+		ignoreNL();
 		while (!check(CURLY_R) && !atEnd()) {
 			ParsedStatement s = declaration(inMethod);
-			//remove any new lines
-			consumeEmptyLines();
-			statements.addIf(s != null, s);
+			if (s != null) statements.add(s);
+			ignoreTerminators();
 		}
 		
 		consume(CURLY_R, "Expected '}' after block!");
@@ -228,63 +229,171 @@ public abstract class ParserHead {
 	// Parser Convenience Methods
 	//-----------------------------------------------------------------------------------------------------
 	
+	//===========
+	// Consumers
+	//===========
+	
 	public static Token<?> consume(IKeyword keyword, String errorMessage) {
 		return parser.consume(errorMessage, keyword);
 	}
 	
-	public static Token<?> consume(String errorMessage, IKeyword... keywords) {
-		return parser.consume(errorMessage, keywords);
-	}
+	public static Token<?> consume(String errorMessage, IKeyword keyword) { return parser.consume(errorMessage, keyword); }
+	public static Token<?> consume(String errorMessage, IKeyword keywordA, IKeyword keywordB) { return parser.consume(errorMessage, keywordA, keywordB); }
+	public static Token<?> consume(String errorMessage, IKeyword... keywords) { return parser.consume(errorMessage, keywords); }
 	
 	public static Token<?> consumeType(KeywordType type, String errorMessage) {
 		return parser.consumeType(errorMessage, type);
 	}
 	
-	public static Token<?> consumeType(String errorMessage, KeywordType... types) {
-		return parser.consumeType(errorMessage, types);
+	public static Token<?> consumeType(String errorMessage, KeywordType type) { return parser.consumeType(errorMessage, type); }
+	public static Token<?> consumeType(String errorMessage, KeywordType typeA, KeywordType typeB) { return parser.consumeType(errorMessage, typeA, typeB); }
+	public static Token<?> consumeType(String errorMessage, KeywordType... types) { return parser.consumeType(errorMessage, types); }
+	
+	//==========
+	// Matchers
+	//==========
+	
+	public static boolean match(IKeyword keyword) { return parser.match(keyword); }
+	public static boolean match(IKeyword keywordA, IKeyword keywordB) { return parser.match(keywordA, keywordB); }
+	public static boolean match(IKeyword... keywords) { return parser.match(keywords); }
+//	public static boolean matchNonTerminator(IKeyword keyword) { return parser.matchNonTerminator(keyword); }
+//	public static boolean matchNonTerminator(IKeyword keywordA, IKeyword keywordB) { return parser.matchNonTerminator(keywordA, keywordB); }
+//	public static boolean matchNonTerminator(IKeyword... keywords) { return parser.matchNonTerminator(keywords); }
+	public static boolean matchType(KeywordType type) { return parser.matchType(type); }
+	public static boolean matchType(KeywordType typeA, KeywordType typeB) { return parser.matchType(typeA, typeB); }
+	public static boolean matchType(KeywordType... types) { return parser.matchType(types); }
+//	public static boolean matchTypeNonTerminator(KeywordType type) { return parser.matchTypeNonTerminator(type); }
+//	public static boolean matchTypeNonTerminator(KeywordType typeA, KeywordType typeB) { return parser.matchTypeNonTerminator(typeA, typeB); }
+//	public static boolean matchTypeNonTerminator(KeywordType... types) { return parser.matchTypeNonTerminator(types); }
+	
+	//==========
+	// Checkers
+	//==========
+	
+	public static boolean check(IKeyword keyword) { return parser.check(keyword); }
+	public static boolean check(IKeyword keywordA, IKeyword keywordB) { return parser.check(keywordA, keywordB); }
+	public static boolean check(IKeyword... keywords) { return parser.check(keywords); }
+	public static boolean checkNext(IKeyword keyword) { return parser.checkNext(keyword); }
+	public static boolean checkNext(IKeyword keywordA, IKeyword keywordB) { return parser.checkNext(keywordA, keywordB); }
+	public static boolean checkNext(IKeyword... keywords) { return parser.checkNext(keywords); }
+	public static boolean checkPrevious(IKeyword keyword) { return parser.checkPrevious(keyword); }
+	public static boolean checkPrevious(IKeyword keywordA, IKeyword keywordB) { return parser.checkPrevious(keywordA, keywordB); }
+	public static boolean checkPrevious(IKeyword... keywords) { return parser.checkPrevious(keywords); }
+	public static boolean checkType(KeywordType type) { return parser.checkType(type); }
+	public static boolean checkType(KeywordType typeA, KeywordType typeB) { return parser.checkType(typeA, typeB); }
+	public static boolean checkType(KeywordType... types) { return parser.checkType(types); }
+	public static boolean checkNextType(KeywordType type) { return parser.checkNextType(type); }
+	public static boolean checkNextType(KeywordType typeA, KeywordType typeB) { return parser.checkNextType(typeA, typeB); }
+	public static boolean checkNextType(KeywordType... types) { return parser.checkNextType(types); }
+	public static boolean checkPreviousType(KeywordType type) { return parser.checkPreviousType(type); }
+	public static boolean checkPreviousType(KeywordType typeA, KeywordType typeB) { return parser.checkPreviousType(typeA, typeB); }
+	public static boolean checkPreviousType(KeywordType... types) { return parser.checkPreviousType(types); }
+	
+	/** Returns true if the next non-terminator token has any of the given keyword types. */
+	public static boolean checkNextNonTerminator(IKeyword keyword) { return parser.checkNextNonTerminator(keyword); }
+	public static boolean checkNextNonTerminator(IKeyword keywordA, IKeyword keywordB) { return parser.checkNextNonTerminator(keywordA, keywordB); }
+	public static boolean checkNextNonTerminator(IKeyword... keywords) { return parser.checkNextNonTerminator(keywords); }
+	
+	/** Returns true if the previous non-terminator token has any of the given keyword types. */
+	public static boolean checkPreviousNonTerminator(IKeyword keyword) { return parser.checkPreviousNonTerminator(keyword); }
+	public static boolean checkPreviousTerminator(IKeyword keywordA, IKeyword keywordB) { return parser.checkPreviousNonTerminator(keywordA, keywordB); }
+	public static boolean checkPreviousNonTerminator(IKeyword... keywords) { return parser.checkPreviousNonTerminator(keywords); }
+	
+	public static boolean checkAtIndex(int index, IKeyword keyword) { return parser.checkAtIndex(index, keyword); }
+	public static boolean checkAtIndex(int index, IKeyword keywordA, IKeyword keywordB) { return parser.checkAtIndex(index, keywordA, keywordB); }
+	public static boolean checkAtIndex(int index, IKeyword... keywords) { return parser.checkAtIndex(index, keywords); }
+	
+	/**
+	 * @return The index of the next token that is not a 'NEWLINE'.
+	 */
+	private static int findNextNonNL() {
+		int start = getCurrentParsingIndex();
+		
+		incrementParsingIndex();
+		int i = getCurrentParsingIndex();
+		
+		Token<?> curToken = current();
+		while (!atEnd() && curToken.getKeyword() == NEWLINE) {
+			incrementParsingIndex();
+			curToken = current();
+			i = getCurrentParsingIndex();
+		}
+		
+		setCurrentParsingIndex(start);
+		return i;
 	}
 	
-	public static boolean match(IKeyword... keywords) {
-		return parser.match(keywords);
+	/**
+	 * @return The index of the previous token that is not a 'NEWLINE'.
+	 */
+	private static int findPreviousNonNL() {
+		int start = getCurrentParsingIndex();
+		
+		decrementParsingIndex();
+		int i = getCurrentParsingIndex();
+		
+		Token<?> curToken = current();
+		while (i > 0 && curToken.getKeyword() == NEWLINE) {
+			decrementParsingIndex();
+			curToken = current();
+			i = getCurrentParsingIndex();
+		}
+		
+		setCurrentParsingIndex(start);
+		return i;
 	}
 	
-	public static boolean matchType(KeywordType... types) {
-		return parser.matchType(types);
-	}
-	
-	public static boolean check(IKeyword... val) { return parser.check(val); }
-	public static boolean checkNext(IKeyword... val) { return parser.checkNext(val); }
-	public static boolean checkPrevious(IKeyword... val) { return parser.checkPrevious(val); }
-	public static boolean checkType(KeywordType... type) { return parser.checkType(type); }
-	public static boolean checkNextType(KeywordType... type) { return parser.checkNextType(type); }
-	public static boolean checkPreviousType(KeywordType... type) { return parser.checkPreviousType(type); }
+	public static boolean checkNextNL(IKeyword keyword) { return checkAtIndex(findNextNonNL(), keyword); }
+	public static boolean checkNextNL(IKeyword keywordA, IKeyword keywordB) { return checkAtIndex(findNextNonNL(), keywordA, keywordB); }
+	public static boolean checkNextNL(IKeyword... keywords) { return checkAtIndex(findNextNonNL(), keywords); }
 	
 	public static boolean atEnd() { return current().isEOF(); }
 	public static void advance() { parser.advance(); }
 	public static Token<?> getAdvance() { return parser.getAdvance(); }
 	
-	public static void consumeEmptyLines() { parser.consumeEmptyLines(); }
+	public static void ignoreTerminators() { while (matchType(TERMINATOR)); }
+	/** Consumes all new lines. */
+	public static void ignoreNL() { while (match(NEWLINE)); }
 	
 	public static Token<?> current() { return parser.current(); }
+	public static IKeyword currentKeyword() { return parser.currentKeyword(); }
 	public static Token<?> previous() { return parser.previous(); }
+	public static IKeyword previousKeyword() { return parser.previousKeyword(); }
+	public static Token<?> previousNonTerminator() { return parser.previousNonTerminator(); }
 	public static Token<?> next() { return parser.next(); }
+	public static IKeyword nextKeyword() { return parser.nextKeyword(); }
+	public static Token<?> nextNonTerminator() { return parser.nextNonTerminator(); }
 	
-	public static int getCurrentNum() { return parser.getCurrentIndex(); }
-	public static void setCurrentNum(int in) { parser.setCurrentIndex(in); }
-	public static void setPrevious() { parser.setPrevious(); }
-	public static void setPrevious(int n) { for (int i = 0; i < n; i++) parser.setPrevious(); }
-
+	public static int getCurrentParsingIndex() { return parser.getCurrentParsingIndex(); }
+	public static void setCurrentParsingIndex(int in) { parser.setCurrentParsingIndex(in); }
+	public static void decrementParsingIndex() { parser.decrementParsingIndex(); }
+	public static void decrementParsingIndex(int n) { for (int i = 0; i < n; i++) parser.decrementParsingIndex(); }
+	public static void incrementParsingIndex() { parser.incrementParsingIndex(); }
+	public static void incrementParsingIndex(int n) { for (int i = 0; i < n; i++) parser.incrementParsingIndex(); }
+	
+	/**
+	 * Sets the current parsing index to the previous index whose token is a
+	 * non 'NEWLILNE' token.
+	 */
+	public static void setPreviousNonNL() { setCurrentParsingIndex(findPreviousNonNL()); }
+	
+	/**
+	 * Sets the current parsing index to the next index whose token is a non
+	 * 'NEWLILNE' token.
+	 */
+	public static void setNextNonNL() { setCurrentParsingIndex(findNextNonNL()); }
+	
 	public static void error(String message) {
 		throw parser.error(message);
 	}
 	
 	public static void errorPrevious(String message) {
-		setPrevious();
+		decrementParsingIndex();
 		throw parser.error(message);
 	}
 	
 	public static void errorPrevious(int prevAmount, String message) {
-		setPrevious(prevAmount);
+		decrementParsingIndex(prevAmount);
 		throw parser.error(message);
 	}
 	
@@ -294,16 +403,23 @@ public abstract class ParserHead {
 	
 	public static void errorPreviousIf(boolean condition, String message) {
 		if (condition) {
-			setPrevious();
+			decrementParsingIndex();
 			throw parser.error(message);
 		}
 	}
 	
 	public static void errorPreviousIf(boolean condition, int prevAmount, String message) {
 		if (condition) {
-			setPrevious(prevAmount);
+			decrementParsingIndex(prevAmount);
 			throw parser.error(message);
 		}
+	}
+	
+	/**
+	 * Returns a shallow copy of the actual tokens in the parser.
+	 */
+	public static EList<Token<?>> getTokens() {
+		return EList.newList(parser.getTokens());
 	}
 	
 	public static void requireTerminator() {

@@ -13,27 +13,27 @@ import envision_lang.tokenizer.Token;
 public class PS_While extends ParserHead {
 	
 	public static ParsedStatement whileStatement() {
+		ignoreNL();
 		if (match(DO)) {
 			Token<?> start = previous();
 			ParsedStatement body = declaration();
-			consumeEmptyLines();
+			ignoreNL();
 			consume(WHILE, "Expected continuing 'while' statement after preceding 'do'!");
-			consumeEmptyLines();
+			ignoreNL();
 			consume(PAREN_L, "Expected '(' after while declaration!");
-			consumeEmptyLines();
+			ignoreNL();
 			ParsedExpression condition = ExpressionParser.parseExpression();
-			consumeEmptyLines();
+			ignoreNL();
 			consume(PAREN_R, "Expected ')' after while condition!");
-			consumeEmptyLines();
 			return new Stmt_While(start, true, condition, body);
 		}
 		else if (match(WHILE)) {
 			Token<?> start = previous();
+			ignoreNL();
 			consume(PAREN_L, "Expected '(' after while declaration!");
-			consumeEmptyLines();
 			ParsedExpression condition = ExpressionParser.parseExpression();
+			ignoreNL();
 			consume(PAREN_R, "Expected ')' after while condition!");
-			consumeEmptyLines();
 			ParsedStatement body = declaration();
 			return new Stmt_While(start, false, condition, body);
 		}

@@ -22,23 +22,37 @@ public class PS_VarDef extends ParserHead {
 		return variableDeclaration(PS_ParseDeclaration.parseScopeVar());
 	}
 	
+	public static ParsedStatement variableDeclaration(boolean ignoreEndingTerminator) {
+		return variableDeclaration(PS_ParseDeclaration.parseScopeVar(), ignoreEndingTerminator);
+	}
+	
+	public static ParsedStatement variableDeclaration(ParserDeclaration declaration) {
+		return variableDeclaration(declaration, false);
+	}
+	
 	/**
 	 * Attempts to parse a variable(s) from tokens.
 	 * @return Statement
 	 */
-	public static ParsedStatement variableDeclaration(ParserDeclaration declaration) {
+	public static ParsedStatement variableDeclaration(ParserDeclaration declaration, boolean ignoreEndingTerminator) {
 		errorIf(declaration.hasGenerics(), "Variables can not declare generic types in their declaration!");
 		
 		Token<?> type = null;
 		Token<?> name = null;
 		
 		//try to consume a datatype
-		if (checkType(DATATYPE)) type = consumeType(DATATYPE, "Expected a valid datatype!");
-		else type = getAdvance();
+		ignoreNL();
+		if (checkType(DATATYPE)) {
+			type = consumeType(DATATYPE, "Expected a valid datatype!");
+		}
+		else {
+			type = getAdvance();
+		}
 		
 		//check for list-set-expression
+		ignoreNL();
 		if (check(BRACKET_L)) {
-			setPrevious();
+			decrementParsingIndex();
 			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
 			return new Stmt_Expression(listIndexSet);
 		}
@@ -58,11 +72,13 @@ public class PS_VarDef extends ParserHead {
 		
 		//collect any get/set modifiers
 		Stmt_GetSet getset = null;
+		ignoreNL();
 		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
 		
 		//check for type-less variable creation
+		ignoreNL();
 		if (check(ASSIGN)) {
-			setPrevious();
+			setPreviousNonNL();
 			ParsedExpression typeless_varDec = ExpressionParser.parseExpression();
 			return new Stmt_Expression(typeless_varDec);
 		}
@@ -72,19 +88,28 @@ public class PS_VarDef extends ParserHead {
 		
 		//parse for declared variables
 		do {
+			ignoreNL();
 			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
 			//parse for initializer (if there is one)
 			ParsedExpression initializer = null;
+			ignoreNL();
 			if (match(ASSIGN)) initializer = ExpressionParser.parseExpression();
 			
 			//add variable to statement
 			varDecStatement.addVar(name, initializer);
 			name = null;
+			ignoreNL();
 		}
 		while (match(COMMA));
 		
-		errorIf(!match(SEMICOLON, NEWLINE, EOF), "Incomplete variable declaration!");
+		// only parse for the ending terminator if specifically requested
+		if (!ignoreEndingTerminator) {
+			boolean prev = checkPreviousType(TERMINATOR);
+			boolean match = match(SEMICOLON, NEWLINE, EOF);
+			errorIf(!(prev || match), "Incomplete variable declaration!");
+		}
+		
 		return varDecStatement;
 	}
 	

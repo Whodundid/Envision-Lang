@@ -2,7 +2,7 @@ package envision_lang.lang.internal;
 
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 
 /**
  * Applied to any function that is intended to be initially created as a

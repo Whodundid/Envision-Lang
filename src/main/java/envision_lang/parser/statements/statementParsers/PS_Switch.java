@@ -19,20 +19,20 @@ public class PS_Switch extends ParserHead {
 	
 	public static ParsedStatement switchStatement() {
 		Token<?> switchToken = consume(SWITCH, "Expected 'switch' here!");
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		consume(PAREN_L, "Expected '(' after while declaration!");
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		ParsedExpression switchExpression = ExpressionParser.parseExpression();
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		consume(PAREN_R, "Expected ')' after while condition!");
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
 		EList<Stmt_SwitchCase> cases = EList.newList();
 		Stmt_SwitchCase defaultCase = null;
 		boolean hasDefault = false;
 		
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		
 		if (!check(CURLY_R)) {
 			while (check(CASE, DEFAULT) && !atEnd()) {
@@ -50,12 +50,12 @@ public class PS_Switch extends ParserHead {
 					caseName = consumeType(LITERAL, "Expected a case name!");
 					//prevent duplicate cases
 					if (hasCase(cases, caseName)) {
-						setPrevious();
+						decrementParsingIndex();
 						error("Duplicate case: '" + caseName + "' in the current switch statement!");
 					}
 				}
 				
-				consumeEmptyLines();
+//				consumeEmptyLines();
 				EList<ParsedStatement> body = EList.newList();
 				
 				if (check(COLON)) {

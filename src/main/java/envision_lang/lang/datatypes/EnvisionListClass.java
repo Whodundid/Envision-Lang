@@ -45,6 +45,7 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("notContains", BOOLEAN, VAR).assignDynamicClass(IFunc_notContains.class);
 		LIST_PROTOTYPES.define("push", LIST, VAR).assignDynamicClass(IFunc_push.class);
 		LIST_PROTOTYPES.define("pop", VAR).assignDynamicClass(IFunc_pop.class);
+		LIST_PROTOTYPES.define("random", VAR).assignDynamicClass(IFunc_random.class);
 		LIST_PROTOTYPES.define("remove", VAR, INT).assignDynamicClass(IFunc_remove.class);
 		LIST_PROTOTYPES.define("removeFirst", VAR).assignDynamicClass(IFunc_removeFirst.class);
 		LIST_PROTOTYPES.define("removeLast", VAR).assignDynamicClass(IFunc_removeLast.class);
@@ -359,6 +360,18 @@ public class EnvisionListClass extends EnvisionClass {
 		public IFunc_pop() { super(VAR, "pop"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.pop());
+		}
+	}
+	
+	/**
+	 * Returns a random element from this list.
+	 * 
+	 * @return Random element in this list
+	 */
+	public static class IFunc_random<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_random() { super(VAR, "random"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(inst.random());
 		}
 	}
 	

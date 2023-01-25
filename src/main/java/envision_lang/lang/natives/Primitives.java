@@ -315,7 +315,7 @@ public enum Primitives implements IDatatype {
 	 * @return
 	 */
 	public static boolean isArrayType(Primitives t) {
-		return t.is_array_type;
+		return (t != null) ? t.is_array_type : false;
 	}
 	
 	public static boolean isNumber(Primitives t) {

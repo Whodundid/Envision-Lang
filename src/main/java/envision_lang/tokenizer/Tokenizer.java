@@ -3,16 +3,14 @@ package envision_lang.tokenizer;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
+import eutil.file.LineReader;
 import eutil.strings.EStringBuilder;
 
 public class Tokenizer {
@@ -393,18 +391,22 @@ public class Tokenizer {
 	private boolean tokenizeFile_I() throws IOException {
 		if (!theFile.isValid()) return false;
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(theFile.getSystemFile())))) {
-			String l = reader.readLine();
-			while (l != null) {
+		try (var reader = new LineReader(theFile.getSystemFile())) {
+			while (reader.hasNextLine()) {
+				String l = reader.nextLine();
 				l = l.replace("\t", "");
 				boolean empty = l.isBlank();
+				boolean hasNextLine = reader.hasNextLine();
 				
 				lines.add(l);
 				
 				if (!empty) {
 					var list = tokenizeLine(l, lineNum);
-					var nl = Token.newLine(lineNum);
-					list.add(nl);
+					
+					if (hasNextLine) {
+						var nl = Token.newLine(lineNum, list.getLast().getLineIndex() + 1, list.getLast().getLineTokenIndex() + 1);
+						list.add(nl);
+					}
 					
 					lineTokenIndex = 0;
 					lineTokens.add(lineNum, list);
@@ -412,10 +414,13 @@ public class Tokenizer {
 				}
 				
 				//check for end of file
-				l = reader.readLine();
-				if (l == null) {
-					var EOF = Token.EOF(lineNum);
-					lineTokens.getLast().getB().add(EOF);
+				if (!hasNextLine) {
+					var lastToken = lineTokens.getLastB().getLast();
+					var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
+					var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+					
+					var EOF = Token.EOF(lineNum, lastIndex, lastLineT);
+					lineTokens.getLastB().add(EOF);
 					tokens.add(EOF);
 					lines.add("EOF");
 				}

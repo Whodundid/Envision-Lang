@@ -28,6 +28,7 @@ public class PS_Class extends ParserHead {
 	public static ParsedStatement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
 	public static ParsedStatement classDeclaration(ParserDeclaration declaration) {
 		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
+		ignoreNL();
 		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		//ParserStage.curClassName = name;
 		
@@ -45,18 +46,22 @@ public class PS_Class extends ParserHead {
 		
 		//removing parent class parsing for now
 		
+		ignoreNL();
 		if (match(COLON)) {
 			do {
+				ignoreNL();
 				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
 				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
 				else error("Expected a valid super class type!");
 				cs.addSuper(new Expr_Var(previous()));
+				ignoreNL();
 			}
 			while (match(COMMA));
 		}
 		
 		
 		//read in class body
+		ignoreNL();
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors

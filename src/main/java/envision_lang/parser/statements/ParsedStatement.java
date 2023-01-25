@@ -12,6 +12,12 @@ public abstract class ParsedStatement extends ParsedObject {
 	
 	protected ParserDeclaration declaration;
 	
+	/**
+	 * A blocking statement halts interpreter execution until the interpreter
+	 * is explicitly told to continue.
+	 */
+	protected boolean isBlockingStatement = false;
+	
 	//==============
 	// Constructors
 	//==============
@@ -47,6 +53,10 @@ public abstract class ParsedStatement extends ParsedObject {
 	
 	public ParserDeclaration getDeclaration() {
 		return declaration;
+	}
+	
+	public boolean isBlockingStatement() {
+		return isBlockingStatement;
 	}
 	
 }

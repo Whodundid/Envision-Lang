@@ -6,15 +6,16 @@ import java.util.Objects;
 import envision_lang.exceptions.errors.file.NoSuchFileError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.internal.JavaObjectWrapper;
 import eutil.EUtil;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 public class EnvisionFile extends ClassInstance {
 	
+	/** The internal Java::File object for which this EnvisionFile wraps. */
 	public File iFile;
-	public EArrayList<String> toBeWritten = new EArrayList();
+	/** Any lines that will be written to a file. */
+	public EList<String> toBeWritten = EList.newList();
 	
 	//--------------
 	// Constructors
@@ -65,34 +66,76 @@ public class EnvisionFile extends ClassInstance {
 	// Methods
 	//---------
 	
+	/**
+	 * Returns the internal file for which this EnvisionFile wraps.
+	 * <p>
+	 * NOTE: while the the returned file should never be Java::NULL, it may not
+	 * actually exist within this filesystem's scope.
+	 * 
+	 * @throws IllegalStateException if the internal file is somehow Java::NULL.
+	 */
 	public File getF() {
+		if (iFile == null) throw new IllegalStateException("Error! Internal Java::File is null!");
 		return iFile;
 	}
 	
+	/**
+	 * Returns the internal file but only if it exists.
+	 * <p>
+	 * If the internal file does not actually exist within this filesystem's
+	 * scope a 'NoSuchFileError' is thrown instead.
+	 * 
+	 * @throws IllegalStateException if the internal file is somehow Java::NULL.
+	 * @throws NoSuchFileError if the internal file doesn't actually exist.
+	 * 
+	 * @return The file.
+	 */
 	public File gfe() {
+		if (iFile == null) throw new IllegalStateException("Error! Internal Java::File is null!");
 		if (iFile.exists()) return iFile;
 		throw new NoSuchFileError(iFile);
 	}
 	
 	//-----------------------------------------
 	
+	/**
+	 * Returns true if the given object is an instance of an
+	 * EnvisionFile (not Java::File).
+	 * 
+	 * @param in The object to check
+	 * 
+	 * @return True if the given object is an EnvisionFile
+	 */
 	public static boolean isFile(Object in) {
-		if (in instanceof ClassInstance ci) return isFile(ci);
-		return false;
+		return (in instanceof ClassInstance ci) ? isFile(ci) : false;
 	}
 	
+	/**
+	 * Returns true if the given class instance if an instance of an
+	 * EnvisionFile.
+	 * 
+	 * @param inst The class instance to check
+	 * 
+	 * @return True if the given Envision class instance is an EnvisionFile
+	 */
 	public static boolean isFile(ClassInstance inst) {
-		if (EnvisionFileClass.FILE_CLASS.isInstanceof(inst)) {
-			JavaObjectWrapper file_wrapper = (JavaObjectWrapper) inst.get("_iFile_");
-			return file_wrapper != null && file_wrapper.getJavaObject() instanceof File;
-		}
-		return false;
+		return EnvisionFileClass.FILE_CLASS.isInstanceof(inst);
 	}
 	
-	public static String getFilePath(ClassInstance inst) {
-		if (!isFile(inst)) return null;
-		JavaObjectWrapper file_wrapper = (JavaObjectWrapper) inst.get("_iFile_");
-		return ((File) file_wrapper.getJavaObject()).getAbsolutePath();
+	/**
+	 * Extracts the 'Java::File::getAbsolutePath' value from the given
+	 * EnvisionFile.
+	 * <p>
+	 * NOTE: if the given EnvisionFile is Java::NULL, then Java::NULL will be
+	 * returned instead.
+	 * 
+	 * @param inst The class instance to extract a file path from
+	 * 
+	 * @return The EnvisionFile's internal file's extracted file path
+	 */
+	public static String getFilePath(EnvisionFile inst) {
+		if (inst == null) return null;
+		return inst.iFile.getAbsolutePath();
 	}
 	
 }

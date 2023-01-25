@@ -34,7 +34,7 @@ public class StatementParameter {
 	
 	@Override
 	public String toString() {
-		String t = (type != null) ? type.getLexeme() : "";
+		String t = (type != null) ? "type=" + type.getLexeme() : "";
 		String var = (varags) ? "..." : "";
 		String n = (name != null) ? name.getLexeme() : "";
 		String v = (type == null || name == null) ? "" : " ";

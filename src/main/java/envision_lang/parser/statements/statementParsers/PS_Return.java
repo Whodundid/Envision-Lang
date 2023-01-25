@@ -49,7 +49,7 @@ public class PS_Return extends ParserHead {
 		if (check(LAMBDA, RETURN)) returnToken = getAdvance();
 		else returnToken = previous();
 		
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		
 		//handle condition stuff
 		ParsedExpression cond = null;
@@ -64,7 +64,7 @@ public class PS_Return extends ParserHead {
 		if (!check(SEMICOLON, NEWLINE)) {
 			do {
 				retVals.add(ExpressionParser.parseExpression());
-				consumeEmptyLines();
+//				consumeEmptyLines();
 			}
 			while (match(COMMA));
 		}

@@ -121,6 +121,14 @@ public class WorkingDirectory {
 	}
 	
 	/**
+	 * This will print out the tokenized version of each code file without actually
+	 * executing any code. This will also show the metadata of each token.
+	 */
+	public void debugTokenizeInDepth() throws IOException {
+		for (EnvisionCodeFile f : codeFiles) f.displayTokensInDepth();
+	}
+	
+	/**
 	 * This will print out the parsed statements of each code file without actually
 	 * executing any code.
 	 */

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Scanner;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.InvalidArgumentError;
@@ -29,6 +28,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.util.ParameterData;
 import eutil.EUtil;
+import eutil.file.EFileUtil;
 
 public class EnvisionFileClass extends EnvisionClass {
 
@@ -59,17 +59,18 @@ public class EnvisionFileClass extends EnvisionClass {
 		prototypes.define("isDirectory", BOOLEAN).assignDynamicClass(IFunc_isDirectory.class);
 		prototypes.define("isFile", BOOLEAN).assignDynamicClass(IFunc_isFile.class);
 		prototypes.define("delete", BOOLEAN).assignDynamicClass(IFunc_delete.class);
-		prototypes.define("lsn", LIST).assignDynamicClass(IFunc_lsn.class);
-		prototypes.define("ls", LIST).assignDynamicClass(IFunc_ls.class);
+		prototypes.define("lsn", TUPLE).assignDynamicClass(IFunc_lsn.class);
+		prototypes.define("ls", TUPLE).assignDynamicClass(IFunc_ls.class);
 		prototypes.define("mkdir", BOOLEAN).assignDynamicClass(IFunc_mkdir.class);
 		prototypes.define("mkdirs", BOOLEAN).assignDynamicClass(IFunc_mkdirs.class);
 		prototypes.define("rename", BOOLEAN).assignDynamicClass(IFunc_rename.class);
 		prototypes.define("clear", BOOLEAN).assignDynamicClass(IFunc_clear.class);
-		prototypes.define("lines", LIST).assignDynamicClass(IFunc_lines.class);
+		prototypes.define("lines", TUPLE).assignDynamicClass(IFunc_lines.class);
 		prototypes.define("write", BOOLEAN, VAR).assignDynamicClass(IFunc_write.class);
 		prototypes.define("writeln", BOOLEAN, VAR).assignDynamicClass(IFunc_writeln.class);
-		prototypes.define("writeLines", BOOLEAN, LIST).assignDynamicClass(IFunc_writeLines.class);
+		prototypes.define("writeLines", BOOLEAN, TUPLE).assignDynamicClass(IFunc_writeLines.class);
 		prototypes.define("flush", BOOLEAN).assignDynamicClass(IFunc_flush.class);
+		prototypes.define("randomLine", STRING).assignDynamicClass(IFunc_randomLine.class);
 	}
 	
 	//--------------
@@ -411,18 +412,12 @@ public class EnvisionFileClass extends EnvisionClass {
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList lines = EnvisionListClass.newList(STRING);
 			
-			File f = inst.gfe();
-			
-			//prevent reads if this is not a file
-			if (!f.isFile()) ret(EnvisionNull.NULL);
-			
-			try (Scanner reader = new Scanner(f)) {
-				while (reader.hasNextLine()) {
-					lines.add(EnvisionStringClass.newString(reader.nextLine()));
-				}
+			try {
+				File f = inst.gfe();
+				Files.lines(f.toPath()).forEach(EnvisionStringClass::newString);
 			}
-			catch (FileNotFoundException e) {
-				throw new EnvisionLangError(e);
+			catch (IOException e) {
+				e.printStackTrace();
 			}
 			
 			ret(lines);
@@ -502,7 +497,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	}
 	
 	private static class IFunc_flush<E extends EnvisionFile> extends InstanceFunction<E> {
-		public IFunc_flush() { super(BOOLEAN, "flush", new ParameterData(STRING)); }
+		public IFunc_flush() { super(BOOLEAN, "flush", STRING); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
 			
@@ -524,6 +519,24 @@ public class EnvisionFileClass extends EnvisionClass {
 			}
 			
 			ret(EnvisionBoolean.FALSE);
+		}
+	}
+	
+	/**
+	 * Returns a random line from the current file.
+	 * <p>
+	 * If the file is null, an error is thrown.
+	 * <p>
+	 * If the file is empty, Envision:NULL is returned.
+	 * <p>
+	 * If the file only has one line, that one line is always returned.
+	 */
+	private static class IFunc_randomLine<E extends EnvisionFile> extends InstanceFunction<E> {
+		public IFunc_randomLine() { super(STRING, "randomLine"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			String randLine = EFileUtil.randomLine(inst.gfe());
+			if (randLine != null) ret(EnvisionStringClass.newString(randLine));
+			ret(EnvisionNull.NULL);
 		}
 	}
 	

@@ -20,7 +20,7 @@ public class PS_Try extends ParserHead {
 		
 		EList<Stmt_Catch> catches = EList.newList();
 		
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		
 		do {
 			Token<?> catchToken = consume(CATCH, "Expected 'catch' statement block after try block!");
@@ -35,11 +35,11 @@ public class PS_Try extends ParserHead {
 		}
 		while (check(CATCH));
 		
-		consumeEmptyLines();
+//		consumeEmptyLines();
 		
 		Stmt_Block finallyBlock = null;
 		if (match(FINALLY)) {
-			consumeEmptyLines();
+//			consumeEmptyLines();
 			Token<?> blockStart2 = consume(CURLY_L, "Expected block start after finally declaration!");
 			finallyBlock = new Stmt_Block(blockStart2, getBlock());
 		}

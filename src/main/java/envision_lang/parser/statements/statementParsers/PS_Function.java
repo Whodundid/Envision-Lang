@@ -183,17 +183,21 @@ public class PS_Function extends ParserHead {
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
+		ignoreNL();
 		consume(PAREN_L, "Expected '(' after function name!");
 		
 		//if the next token is a ')', then there are no parameters
+		ignoreNL();
 		if (!check(PAREN_R)) {
-			Token<?> lastType = null;
+ 			Token<?> lastType = null;
 			
 			//If this is an operator function, only read in one parameter
 			if (operator) {
 				//read in a parameter type
+				ignoreNL();
 				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
-					lastType = getAdvance();
+					lastType = current();
+					ignoreNL();
 				}
 				
 				//ensure that parameters are valid for an operator overload function
@@ -201,11 +205,13 @@ public class PS_Function extends ParserHead {
 				errorIf(match(VARARGS), "An operator function cannot take '...' varaiable arguments!");
 				
 				//get the parameter's name (always required)
+				ignoreNL();
 				Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 				
 				//used for direct value assignment if passed value is null
 				//ex: var thing(int x = 5) ..
 				Expr_Assign assign = null;
+				ignoreNL();
 				if (matchType(ASSIGNMENT)) {
 					assign = new Expr_Assign(paramName, previous().asOperator(), ExpressionParser.parseExpression());
 				}
@@ -220,15 +226,18 @@ public class PS_Function extends ParserHead {
 					errorIf(parameters.size() >= 255, "Can't have more than 255 parameters!");
 					
 					//if there is no type associated with the current parameter, use the last one (if there is one)
+					ignoreNL();
 					if ((checkType(DATATYPE) || check(IDENTIFIER, OPERATOR_)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
 						lastType = current();
-						advance();
+						//advance();
+						ignoreNL();
 					}
 					
 					if (match(VARARGS)) varargs = true;
 					Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 					
 					ParsedExpression assign = null;
+					ignoreNL();
 					if (matchType(ASSIGNMENT)) {
 						assign = ExpressionParser.parseExpression();
 					}
@@ -238,15 +247,18 @@ public class PS_Function extends ParserHead {
 					
 					//break if varargs
 					if (varargs) break;
+					ignoreNL();
 				}
 				while (match(COMMA));
 			}
 		}
 		
+		ignoreNL();
 		if (varargs && match(COMMA)) {
 			error("Variable arguments '...' must be the last argument in a " + funcType + "!");
 		}
 		
+		ignoreNL();
 		consume(PAREN_R, "Expected ')' after parameters!");
 		return parameters;
 	}
@@ -266,6 +278,7 @@ public class PS_Function extends ParserHead {
 		
 		//constructors do not necessarily need to specify a body
 		if (!constructor) {
+			ignoreNL();
 			if (match(LAMBDA)) {
 				body = new EArrayList<>();
 				body.add(PS_Return.returnStatement());
@@ -277,14 +290,12 @@ public class PS_Function extends ParserHead {
 				(body = new EArrayList<>()).addIfNotNull(declaration());
 			}
 		}
-		else {
-			if (match(LAMBDA)) {
-				body = new EArrayList<>();
-				body.add(PS_Return.returnStatement());
-			}
-			else if (match(CURLY_L)) body = getBlock(true);
-			else errorIf(!match(SEMICOLON, NEWLINE), "Constructor declaration must be concluded with either a ';' or a new line!");
+		else if (match(LAMBDA)) {
+			body = new EArrayList<>();
+			body.add(PS_Return.returnStatement());
 		}
+		else if (match(CURLY_L)) body = getBlock(true);
+		else errorIf(!match(SEMICOLON, NEWLINE), "Constructor declaration must be concluded with either a ';' or a new line!");
 		
 		return body;
 	}

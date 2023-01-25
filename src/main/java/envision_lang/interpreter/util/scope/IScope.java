@@ -18,7 +18,7 @@ import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Inefficient;
 import eutil.math.ENumUtil;

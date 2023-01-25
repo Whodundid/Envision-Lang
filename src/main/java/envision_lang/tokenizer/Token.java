@@ -117,6 +117,10 @@ public class Token<TYPE> {
 		return new Token<>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn);
 	}
 	
+	public static Token<Void> EOF(int lineIn, int lineIndex, int lineTokenIndex) {
+		return new Token<>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn, lineIndex, lineTokenIndex);
+	}
+	
 	public static Token<Void> newLine(int lineIn) {
 		return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn);
 	}

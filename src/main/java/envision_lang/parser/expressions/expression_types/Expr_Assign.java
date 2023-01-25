@@ -5,7 +5,7 @@ import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 
 public class Expr_Assign extends ParsedExpression {
 

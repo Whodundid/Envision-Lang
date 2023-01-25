@@ -9,26 +9,46 @@ import eutil.datatypes.util.EList;
 
 public class ParserDeclaration {
 	
-	public static int num = 0;
+	//========
+	// Fields
+	//========
 	
-	public int id;
 	public DeclarationStage stage = DeclarationStage.VISIBILITY;
-	private DeclarationType declarationType = null;
-	private EnvisionVis vis = EnvisionVis.SCOPE;
-	private EList<Token<?>> parameters = new EArrayList();
-	private EList<DataModifier> modifiers = new EArrayList();
-	private EList<Expr_Generic> generics = new EArrayList();
-	private Token<?> returnType = null;
-	private Token<?> startToken = null;
+	private DeclarationType declarationType;
+	private EnvisionVis vis;
+	private EList<Token<?>> parameters;
+	private EList<DataModifier> modifiers;
+	private EList<Expr_Generic> generics;
+	private Token<?> returnType;
+	private Token<?> startToken;
 	
-	public ParserDeclaration() { this(EnvisionVis.SCOPE, new EArrayList<>(), new EArrayList<>(), new EArrayList<>()); }
-	public ParserDeclaration(EnvisionVis visIn) { this(visIn, new EArrayList<>(), new EArrayList<>(), new EArrayList<>()); }
-	public ParserDeclaration(EnvisionVis visIn, EList<Token<?>> paramsIn, EList<DataModifier> modsIn, EList<Expr_Generic> genericsIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public ParserDeclaration() {
+		vis = EnvisionVis.SCOPE;
+		parameters = new EArrayList<>(0);
+		modifiers = new EArrayList<>(0);
+		generics = new EArrayList<>(0);
+	}
+	
+	public ParserDeclaration(EnvisionVis visIn) {
+		vis = visIn;
+		parameters = new EArrayList<>(0);
+		modifiers = new EArrayList<>(0);
+		generics = new EArrayList<>(0);
+	}
+	
+	public ParserDeclaration(EnvisionVis visIn,
+							 EList<Token<?>> paramsIn,
+							 EList<DataModifier> modsIn,
+							 EList<Expr_Generic> genericsIn)
+	{
 		vis = visIn;
 		parameters = paramsIn;
 		modifiers = modsIn;
 		generics = genericsIn;
-		id = num++;
 	}
 	
 	public ParserDeclaration(ParserDeclaration in) {
@@ -38,7 +58,6 @@ public class ParserDeclaration {
 		modifiers = new EArrayList<>(in.getMods());
 		generics = new EArrayList<>(in.getGenerics());
 		returnType = in.returnType;
-		id = num++;
 	}
 	
 	@Override
