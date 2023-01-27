@@ -120,8 +120,8 @@ public class EnvisionStringClass extends EnvisionClass {
 	}
 	
 	public static EnvisionString concatenate(EnvisionInterpreter interpreter, EnvisionObject a, EnvisionObject b) {
-		var a_str = EnvisionStringFormatter.formatPrint(interpreter, a);
-		var b_str = EnvisionStringFormatter.formatPrint(interpreter, b);
+		var a_str = EnvisionStringFormatter.formatPrint(interpreter, a, true);
+		var b_str = EnvisionStringFormatter.formatPrint(interpreter, b, true);
 		return newString(a_str + b_str);
 	}
 	

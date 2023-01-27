@@ -18,7 +18,6 @@ import envision_lang.exceptions.errors.workingDirectory.InterpreterCreationError
 import envision_lang.exceptions.errors.workingDirectory.NoMainError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.java.EnvisionJavaObject;
-import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.packages.EnvisionLangPackage;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -71,12 +70,6 @@ public class EnvisionLang {
 	public static EnvisionLang getInstance() {
 		if (langInstance != null) return langInstance;
 		return (langInstance = new EnvisionLang());
-	}
-	
-	public static void init() {
-		getInstance();
-		
-		NativeTypeManager.initNativeClasses();
 	}
 	
 	//--------------

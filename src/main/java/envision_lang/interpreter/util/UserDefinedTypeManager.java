@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.EnvisionWarning;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
@@ -17,12 +16,19 @@ import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
+import eutil.debug.Inefficient;
 
 /**
  * Interpreter Utility to help keep track of user-defined types.
  * 
  * @author Hunter Bragg
  */
+@Inefficient(reason = "This should probably move to exist in a per-scope"
+	                + "basis to account for clases under the same name but"
+	                + "defined in different scopes."
+	                + ""
+	                + "NOTE: This class is still necessary to discern user-defined"
+	                + "types for typed-variable-declarations: 'V v = V()'.")
 public class UserDefinedTypeManager {
 	
 	/**
@@ -31,18 +37,7 @@ public class UserDefinedTypeManager {
 	 */
 	private HashMap<String, EnvisionClass> types = new HashMap();
 	
-	public UserDefinedTypeManager() {
-		//load primitive types
-		
-//		types.put(Primitives.BOOLEAN.string_value, EnvisionBooleanClass.BOOLEAN_CLASS);
-//		types.put(Primitives.INT.string_value, EnvisionIntClass.INT_CLASS);
-//		types.put(Primitives.DOUBLE.string_value, EnvisionDoubleClass.DOUBLE_CLASS);
-//		types.put(Primitives.CHAR.string_value, EnvisionCharClass.CHAR_CLASS);
-//		types.put(Primitives.STRING.string_value, EnvisionStringClass.STRING_CLASS);
-//		types.put(Primitives.LIST.string_value, EnvisionListClass.LIST_CLASS);
-//		types.put(Primitives.NUMBER.string_value, EnvisionNumberClass.NUMBER_CLASS);
-		
-	}
+	public UserDefinedTypeManager() {}
 	
 	/**
 	 * Defines a new user-defined datatype within this TypeManager.
@@ -56,7 +51,8 @@ public class UserDefinedTypeManager {
 		if (objectType == null) throw new EnvisionLangError("TypeManager: Null user defined type!");
 		
 		if (types.containsKey(typeIn.getStringValue())) {
-			throw new EnvisionWarning("TypeManager: Potentially unwanted type reassignment. '" + typeIn + "'");
+			return;
+			//throw new EnvisionWarning("TypeManager: Potentially unwanted type reassignment. '" + typeIn + "'");
 		}
 			
 		types.put(typeIn.getStringValue(), objectType);

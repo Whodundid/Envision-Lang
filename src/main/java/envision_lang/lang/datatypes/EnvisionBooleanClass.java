@@ -108,6 +108,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 			//check for invalid argument constructor datatypes
 			if (arg_val instanceof EnvisionInt i)		bool = new EnvisionBoolean(i.int_val != 0);
 			if (arg_val instanceof EnvisionBoolean b)	bool = new EnvisionBoolean(b.bool_val);
+			if (arg_val instanceof EnvisionChar c)      bool = new EnvisionBoolean(c.char_val == 'T');
 			if (arg_val instanceof EnvisionString s)	bool = new EnvisionBoolean(s.string_val.toString().equals("true"));
 			
 			//if null, creation failed!

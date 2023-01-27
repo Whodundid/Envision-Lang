@@ -132,7 +132,7 @@ public class FunctionCreator {
 		String n = (name != null) ? name.getLexeme() : "OP(" + operator.getLexeme() + ")";
 		
 		//placeholder variable check
-		EnvisionObject o = scopeIn.get(n);
+		EnvisionObject o = scopeIn.getLocal(n);
 		
 		//check if a function with that name is already defined
 		if (o instanceof EnvisionFunction) return (EnvisionFunction) o;

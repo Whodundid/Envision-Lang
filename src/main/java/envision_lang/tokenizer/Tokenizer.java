@@ -10,6 +10,7 @@ import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.exceptions.EnvisionLangError;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
+import eutil.debug.Broken;
 import eutil.file.LineReader;
 import eutil.strings.EStringBuilder;
 
@@ -269,6 +270,7 @@ public class Tokenizer {
 	/**
 	 * Parses a single char from tokens.
 	 */
+	@Broken("This method is effectively not complete because it does not enforce the 'u' in '\\u0000'.")
 	private void parse_char() {
 		//consume 1st '
 		advance();
@@ -283,7 +285,16 @@ public class Tokenizer {
 		if (peek() != '\'' || atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
 		else advance();
 		
-		addToken(ReservedWord.CHAR_LITERAL, currentLineSource.substring(start + 1, cur - 1));
+		// convert the string version of the parsed char to a char
+		String charStr = currentLineSource.substring(start + 1, cur - 1);
+		// convert unicode values to chars
+		charStr = charStr.toLowerCase();
+		charStr = charStr.replace("\\", "");
+		charStr = charStr.replace("u", "");
+		int hex = Integer.parseInt(charStr, 16);
+		String charVal = String.valueOf((char) hex);
+		
+		addToken(ReservedWord.CHAR_LITERAL, charVal);
 	}
 	
 	/**

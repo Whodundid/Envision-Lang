@@ -32,12 +32,10 @@ public final class NativeTypeManager {
 	/** This map is used to manage each singleton native datatype in one place. */
 	private static final HashMap<String, EnvisionDatatype> native_types = new HashMap<>();
 	/** True if Envision's natives have been registered. */
-	private static boolean nativesRegistered = false;
+	public static final boolean nativesRegistered;
 	
 	//register each native Envision class
-	public static final void initNativeClasses() {
-		if (nativesRegistered) return;
-		
+	static {
 		for (Primitives p : Primitives.values()) {
 			p.toDatatype();
 		}

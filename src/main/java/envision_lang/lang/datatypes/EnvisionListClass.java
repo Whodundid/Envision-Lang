@@ -58,6 +58,7 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
 		LIST_PROTOTYPES.define("size", INT).assignDynamicClass(IFunc_size.class);
 		LIST_PROTOTYPES.define("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
+		LIST_PROTOTYPES.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
 	}
 	
 	//--------------
@@ -128,6 +129,14 @@ public class EnvisionListClass extends EnvisionClass {
 	//---------------------------
 	// Instance Member Functions
 	//---------------------------
+	
+	public static class IFunc_toString<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_toString() { super(STRING, "toString"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			var toString = inst.convertToString(interpreter);
+			ret(EnvisionStringClass.newString(toString));
+		}
+	}
 	
 	/**
 	 * Adds an object to the current list instance.

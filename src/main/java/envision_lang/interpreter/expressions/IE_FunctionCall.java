@@ -8,21 +8,26 @@ import envision_lang.exceptions.errors.objects.AbstractInstantiationError;
 import envision_lang.exceptions.errors.objects.UnsupportedInstantiationError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
+import eutil.debug.InDevelopment;
 import eutil.debug.Inefficient;
 
+/**
+ * Performs function calls on valid function expression targets.
+ * 
+ * @author Hunter Bragg
+ */
 public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	
 	@Inefficient(reason="Pass-by-value --> 'obj.copy' is very slow!")
+	@InDevelopment("Copying should only occur on already existing objects -- Not ones that were potentially just created!")
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_FunctionCall expression) {
 		//System.out.println("IE_FUNC_CALL RUN: " + expression + " : " + expression.callee);
 		EnvisionObject o = interpreter.evaluate(expression.callee);
@@ -38,7 +43,15 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 				ParsedExpression arg = expression.args.get(i);
 				EnvisionObject obj = interpreter.evaluate(arg);
 				//-------------------------------------------------------
-				// NOTE: The following method is absurdly slow!
+				// NOTE: The following method should only be called if
+				//       an evaluated object already existing before
+				//       the evaluation step in line 39. This will
+				//       prevent variables that were just created from
+				//       the ObjectCreator needing to be immediately
+				//       created (via copying) again.
+				//
+				//       Not 100% sure how to implement such logic at
+				//       this time though.
 				//-------------------------------------------------------
 				if (obj.isPassByValue()) obj = obj.copy();
 				//-------------------------------------------------------
@@ -130,25 +143,15 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 			if (c.isAbstract()) throw new AbstractInstantiationError(c);
 			if (!c.isInstantiable()) throw new UnsupportedInstantiationError(c);
 			
-			//first check if it is actually 
-			if (c.isPrimitive()) {
-				//I don't like this code having to be evaluated here similar to a normal
-				//assignment path. It feels like it should be calling one of the more
-				//hard defined pathways instead.
-				
-				var value = (args.length == 1) ? args[0] : null;
-				if (value instanceof EnvisionVariable env_var) value = env_var.get();
-				return ObjectCreator.createObject(c.getDatatype(), value, false);
+			ClassConstruct con = c.getClassConstruct();
+			
+			//utilize construct optimization if available
+			if (con != null) {
+				con.call(interpreter, args);
 			}
+			//otherwise default to basic creation
 			else {
-				//System.out.println("\tthe instantiable object: " + c.getClass());
-				//utilize construct optimization
-				ClassConstruct con = c.getClassConstruct();
-				if (con != null) con.call(interpreter, args);
-				//otherwise default to basic creation
-				else {
-					return c.newInstance(interpreter, args);
-				}
+				return c.newInstance(interpreter, args);
 			}
 		}
 		catch (ReturnValue r) {

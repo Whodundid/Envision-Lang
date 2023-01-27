@@ -23,10 +23,8 @@ import eutil.datatypes.util.EList;
 public class PS_For extends ParserHead {
 	
 	public static ParsedStatement forStatement() {
+		ignoreNL();
 		Token<?> forToken = consume(FOR, "Expected 'for' here!");
-		var prev = previous();
-		var cur = current();
-		var next = next();
 		ignoreNL();
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
@@ -101,13 +99,16 @@ public class PS_For extends ParserHead {
 							value = ExpressionParser.parseExpression();
 						}
 						vars.addVar(name, value);
+						ignoreNL();
 					}
 					while (match(COMMA));
 					
+					ignoreNL();
 					consume(SEMICOLON, "Expected a ';' to conclude lambda loop initializer statement!");
 				}
 			}
 			else {
+				ignoreNL();
 				match(SEMICOLON);
 			}
 		}
@@ -137,10 +138,6 @@ public class PS_For extends ParserHead {
 			}
 		}
 		
-		prev = previous();
-		cur = current();
-		next = next();
-		
 		//check for post actions
 		ignoreNL();
 		if (!check(PAREN_R)) {
@@ -161,6 +158,7 @@ public class PS_For extends ParserHead {
 		ignoreNL();
 		consume(PAREN_R, "Expected ')' to close for loop declaration!");
 		
+		ignoreNL();
 		body = declaration();
 		
 		ParsedStatement forStatement = null;

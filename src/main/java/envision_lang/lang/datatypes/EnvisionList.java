@@ -12,6 +12,7 @@ import envision_lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision_lang.exceptions.errors.listErrors.LockedListError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.EnvisionNull;
@@ -21,6 +22,7 @@ import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
+import eutil.strings.EStringBuilder;
 import eutil.strings.EStringUtil;
 
 /**
@@ -103,6 +105,20 @@ public class EnvisionList extends ClassInstance {
 	@Override
 	public String toString() {
 		return "[" + EStringUtil.combineAll(list, ", ") + "]";
+	}
+	
+	public String convertToString(EnvisionInterpreter interpreter) {
+		var sb = new EStringBuilder("[");
+		int i = 0;
+		for (EnvisionObject o : list) {
+			if (o instanceof ClassInstance ci) {
+				System.out.println(ci.getScope());
+			}
+			sb.a(EnvisionStringFormatter.formatPrint(interpreter, o), true);
+			if (i < list.size()) sb.a(", ");
+			i++;
+		}
+		return sb.toString();
 	}
 	
 	@Override

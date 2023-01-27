@@ -6,6 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
+import envision_lang.lang.datatypes.EnvisionTuple;
 import envision_lang.tokenizer.EscapeCode;
 import eutil.strings.EStringUtil;
 
@@ -36,16 +37,29 @@ public class EnvisionStringFormatter {
 	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args, boolean format) {
 		StringBuilder out = new StringBuilder();
 		
-		if (args.length == 1 && args[0] instanceof EnvisionList list) {
-			out.append(list);
-			return out.toString();
-		}
-		
 		for (int i = 0; i < args.length; i++) {
 			EnvisionObject o = args[i];
 			
+			//check for lists/tuples separately because they can have several 
+			//layers 'toString' argument formatting and variable inserts.
+			if (o instanceof EnvisionList list) {
+				int cur = 0;
+				var l = list.getInternalList();
+				for (var listObj : l) {
+					out.append(formatPrint(interpreter, listObj, format));
+					if (++cur < l.size()) out.append(", ");
+				}
+			}
+			else if (o instanceof EnvisionTuple tuple) {
+				int cur = 0;
+				var l = tuple.getInternalList();
+				for (var listObj : l) {
+					out.append(formatPrint(interpreter, listObj, format));
+					if (++cur < l.size()) out.append(", ");
+				}
+			}
 			//test for toString overload
-			if (o instanceof ClassInstance inst) {
+			else if (o instanceof ClassInstance inst) {
 				//grab the toString of the instance as well as the instance itself
 				String str = inst.executeToString_i(interpreter);
 				

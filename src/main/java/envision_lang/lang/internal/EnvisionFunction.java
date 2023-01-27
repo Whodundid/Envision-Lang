@@ -554,9 +554,15 @@ public class EnvisionFunction extends ClassInstance {
 				IDatatype scope_var_type = scopeValue.getDatatype();
 				IDatatype incoming_type = arg_obj.getDatatype();
 				
-				if (scope_var_type.compare(incoming_type)) {
+				// always allow vars
+				if (StaticTypes.VAR_TYPE.compare(scope_var_type)) {
 					ps.set(arg_name, arg_obj);
 				}
+				// allow if the types are direct matches
+				else if (scope_var_type.compare(incoming_type)) {
+					ps.set(arg_name, arg_obj);
+				}
+				// check if incoming type is a number 
 				else if (IDatatype.isNumber(scopeValue.getDatatype())) {
 					EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getDatatype());
 					ps.set(arg_name, obj);

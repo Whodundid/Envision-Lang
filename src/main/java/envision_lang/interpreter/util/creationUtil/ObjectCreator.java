@@ -17,8 +17,8 @@ import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
+import eutil.debug.PotentiallyBroken;
 import eutil.math.ENumUtil;
 
 /** Utility class designed to help with general object creation. */
@@ -74,6 +74,7 @@ public class ObjectCreator {
 		return createObject(typeIn, valueIn, strongIn, false);
 	}
 	
+	@PotentiallyBroken("I have no idea what the 'passByValue' check is doing..")
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
 		if (typeIn == null || StaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
 			return EnvisionNull.NULL;
@@ -95,7 +96,7 @@ public class ObjectCreator {
 			}
 		}
 		
-		//check if creating a variable type
+		// !??!   What is this doing   !??!
 		if (p_type.isPassByValue()) {
 			if (defaultIn) {
 				switch (p_type) {

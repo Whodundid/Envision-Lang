@@ -8,6 +8,7 @@ import envision_lang.exceptions.errors.NoOverloadError;
 import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.FunctionPrototype;
@@ -141,7 +142,8 @@ public class EnvisionString extends EnvisionVariable {
 			
 			//convert incoming object to a string representation
 			if (obj instanceof EnvisionVariable env_var) 	obj_toString = env_var.toString();
-			else if (obj instanceof ClassInstance inst) 	obj_toString = inst.executeToString_i(interpreter);
+			else if (obj instanceof EnvisionList list)		obj_toString = EnvisionStringFormatter.formatPrint(interpreter, list, true);
+			else if (obj instanceof ClassInstance inst) 	obj_toString = EnvisionStringFormatter.formatPrint(interpreter, inst, true);
 			else 											obj_toString = obj.toString();
 			
 			//add operator

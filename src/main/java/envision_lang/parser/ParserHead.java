@@ -92,8 +92,8 @@ public abstract class ParserHead {
 		//would simply not make sense being declared inside of a method
 		if (inMethod) {
 			errorIf(checkType(VISIBILITY_MODIFIER), "Statements with visibility modifiers cannot be defined inside of a method!");
-			errorIf(check(CLASS), "Classes cannot be declared inside of methods!");
-			errorIf(check(ENUM), "Enums cannot be declared inside of methods!");
+			//errorIf(check(CLASS), "Classes cannot be declared inside of methods!");
+			//errorIf(check(ENUM), "Enums cannot be declared inside of methods!");
 			//errorIf(check(PACKAGE), "Packages cannot be declared inside of methods!");
 			
 			if (checkType(DATA_MODIFIER)) {

@@ -1,7 +1,6 @@
 package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
-import eutil.debug.Broken;
 
 /**
  * An over-arching wrapper to effectively group the types of Primitives and
@@ -9,7 +8,6 @@ import eutil.debug.Broken;
  * 
  * @author Hunter Bragg
  */
-@Broken
 public interface IDatatype {
 	
 	//-----------------------

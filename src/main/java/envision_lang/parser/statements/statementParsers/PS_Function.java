@@ -98,17 +98,23 @@ public class PS_Function extends ParserHead {
 		Token<?> returnType = null;
 		boolean constructor = init;
 		
+		ignoreNL();
+		
 		//first check if this function should be handled as an operator overload function
 		if (operator) op = getOperator();
 		//if constructor, must declare 'init'
 		else if (constructor) consume(INIT, "Expected 'init' here!");
 		else if (checkType(DATATYPE)) {
+			ignoreNL();
 			returnType = consumeType(DATATYPE, "Expected a valid function return type!");
+			ignoreNL();
 			name = consume(IDENTIFIER, "Expected a valid name!");
 			declaration.applyReturnType(returnType);
 		}
 		else {
+			ignoreNL();
 			name = consume(IDENTIFIER, "Expected a valid name!");
+			ignoreNL();
 			if (check(IDENTIFIER)) {
 				returnType = name;
 				consume(IDENTIFIER, "Expected a valid function return name!");
@@ -158,7 +164,9 @@ public class PS_Function extends ParserHead {
 	 * @return The operator Token
 	 */
 	private static Token<?> getOperator() {
+		ignoreNL();
 		if (match(BRACKET_L)) {
+			ignoreNL();
 			errorIf(!match(BRACKET_R), "Expected an operator!");
 			return Token.create(ARRAY_OP, "[]", current().getLineNum());
 		}
@@ -195,7 +203,7 @@ public class PS_Function extends ParserHead {
 			if (operator) {
 				//read in a parameter type
 				ignoreNL();
-				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
+				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNextNL(VARARGS) || !checkNextNL(COMMA, PAREN_R, ASSIGN))) {
 					lastType = current();
 					ignoreNL();
 				}
@@ -272,9 +280,8 @@ public class PS_Function extends ParserHead {
 	public static EList<ParsedStatement> getFunctionBody() { return getFunctionBody(false); }
 	public static EList<ParsedStatement> getFunctionBody(boolean constructor) {
 		EList<ParsedStatement> body = null;
-		
-		//consume newlines
-		//while (match(NEWLINE));
+
+		ignoreNL();
 		
 		//constructors do not necessarily need to specify a body
 		if (!constructor) {
@@ -284,6 +291,7 @@ public class PS_Function extends ParserHead {
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) {
+				ignoreNL();
 				body = getBlock(true);
 			}
 			else {
@@ -295,7 +303,11 @@ public class PS_Function extends ParserHead {
 			body.add(PS_Return.returnStatement());
 		}
 		else if (match(CURLY_L)) body = getBlock(true);
-		else errorIf(!match(SEMICOLON, NEWLINE), "Constructor declaration must be concluded with either a ';' or a new line!");
+		else {
+			boolean prev = checkPreviousType(TERMINATOR);
+			boolean match = match(SEMICOLON, NEWLINE);
+			errorIf(!(prev || match), "Constructor declaration must be concluded with either a ';' or a new line!");
+		}
 		
 		return body;
 	}

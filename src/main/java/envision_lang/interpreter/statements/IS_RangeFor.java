@@ -18,12 +18,9 @@ import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.Box3;
 import eutil.datatypes.util.EList;
-import eutil.debug.Broken;
 
-@Broken(value="Appears to not increment up to correct 2nd value", since="9/28/2022")
 public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {
