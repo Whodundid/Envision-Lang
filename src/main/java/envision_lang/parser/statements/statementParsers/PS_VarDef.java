@@ -41,7 +41,7 @@ public class PS_VarDef extends ParserHead {
 		Token<?> name = null;
 		
 		//try to consume a datatype
-		ignoreNL();
+		//ignoreNL();
 		if (checkType(DATATYPE)) {
 			type = consumeType(DATATYPE, "Expected a valid datatype!");
 		}
@@ -50,7 +50,7 @@ public class PS_VarDef extends ParserHead {
 		}
 		
 		//check for list-set-expression
-		ignoreNL();
+		//ignoreNL();
 		if (check(BRACKET_L)) {
 			decrementParsingIndex();
 			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
@@ -72,11 +72,11 @@ public class PS_VarDef extends ParserHead {
 		
 		//collect any get/set modifiers
 		Stmt_GetSet getset = null;
-		ignoreNL();
+		//ignoreNL();
 		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
 		
 		//check for type-less variable creation
-		ignoreNL();
+		//ignoreNL();
 		if (check(ASSIGN)) {
 			setPreviousNonNL();
 			ParsedExpression typeless_varDec = ExpressionParser.parseExpression();
@@ -88,27 +88,29 @@ public class PS_VarDef extends ParserHead {
 		
 		//parse for declared variables
 		do {
-			ignoreNL();
+			//ignoreNL();
 			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
 			//parse for initializer (if there is one)
 			ParsedExpression initializer = null;
-			ignoreNL();
-			if (match(ASSIGN)) initializer = ExpressionParser.parseExpression();
+			//ignoreNL();
+			if (match(ASSIGN)) {
+				initializer = ExpressionParser.parseExpression();
+			}
 			
 			//add variable to statement
 			varDecStatement.addVar(name, initializer);
 			name = null;
-			ignoreNL();
+			//ignoreNL();
 		}
 		while (match(COMMA));
 		
 		// only parse for the ending terminator if specifically requested
-		if (!ignoreEndingTerminator) {
-			boolean prev = checkPreviousType(TERMINATOR);
-			boolean match = match(SEMICOLON, NEWLINE, EOF);
-			errorIf(!(prev || match), "Incomplete variable declaration!");
-		}
+//		if (!ignoreEndingTerminator) {
+//			boolean prev = checkPreviousType(TERMINATOR);
+//			boolean match = match(SEMICOLON, NEWLINE, EOF);
+//			errorIf(!(prev || match), "Incomplete variable declaration!");
+//		}
 		
 		return varDecStatement;
 	}

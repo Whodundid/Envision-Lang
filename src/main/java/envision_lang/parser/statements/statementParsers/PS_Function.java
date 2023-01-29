@@ -98,23 +98,23 @@ public class PS_Function extends ParserHead {
 		Token<?> returnType = null;
 		boolean constructor = init;
 		
-		ignoreNL();
+		//ignoreNL();
 		
 		//first check if this function should be handled as an operator overload function
 		if (operator) op = getOperator();
 		//if constructor, must declare 'init'
 		else if (constructor) consume(INIT, "Expected 'init' here!");
 		else if (checkType(DATATYPE)) {
-			ignoreNL();
+			//ignoreNL();
 			returnType = consumeType(DATATYPE, "Expected a valid function return type!");
-			ignoreNL();
+			//ignoreNL();
 			name = consume(IDENTIFIER, "Expected a valid name!");
 			declaration.applyReturnType(returnType);
 		}
 		else {
-			ignoreNL();
+			//ignoreNL();
 			name = consume(IDENTIFIER, "Expected a valid name!");
-			ignoreNL();
+			//ignoreNL();
 			if (check(IDENTIFIER)) {
 				returnType = name;
 				consume(IDENTIFIER, "Expected a valid function return name!");
@@ -164,9 +164,9 @@ public class PS_Function extends ParserHead {
 	 * @return The operator Token
 	 */
 	private static Token<?> getOperator() {
-		ignoreNL();
+		//ignoreNL();
 		if (match(BRACKET_L)) {
-			ignoreNL();
+			//ignoreNL();
 			errorIf(!match(BRACKET_R), "Expected an operator!");
 			return Token.create(ARRAY_OP, "[]", current().getLineNum());
 		}
@@ -191,21 +191,21 @@ public class PS_Function extends ParserHead {
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_L, "Expected '(' after function name!");
 		
 		//if the next token is a ')', then there are no parameters
-		ignoreNL();
+		//ignoreNL();
 		if (!check(PAREN_R)) {
  			Token<?> lastType = null;
 			
 			//If this is an operator function, only read in one parameter
 			if (operator) {
 				//read in a parameter type
-				ignoreNL();
+				//ignoreNL();
 				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNextNL(VARARGS) || !checkNextNL(COMMA, PAREN_R, ASSIGN))) {
 					lastType = current();
-					ignoreNL();
+					//ignoreNL();
 				}
 				
 				//ensure that parameters are valid for an operator overload function
@@ -213,13 +213,13 @@ public class PS_Function extends ParserHead {
 				errorIf(match(VARARGS), "An operator function cannot take '...' varaiable arguments!");
 				
 				//get the parameter's name (always required)
-				ignoreNL();
+				//ignoreNL();
 				Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 				
 				//used for direct value assignment if passed value is null
 				//ex: var thing(int x = 5) ..
 				Expr_Assign assign = null;
-				ignoreNL();
+				//ignoreNL();
 				if (matchType(ASSIGNMENT)) {
 					assign = new Expr_Assign(paramName, previous().asOperator(), ExpressionParser.parseExpression());
 				}
@@ -234,18 +234,18 @@ public class PS_Function extends ParserHead {
 					errorIf(parameters.size() >= 255, "Can't have more than 255 parameters!");
 					
 					//if there is no type associated with the current parameter, use the last one (if there is one)
-					ignoreNL();
+					//ignoreNL();
 					if ((checkType(DATATYPE) || check(IDENTIFIER, OPERATOR_)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
 						lastType = current();
 						//advance();
-						ignoreNL();
+						//ignoreNL();
 					}
 					
 					if (match(VARARGS)) varargs = true;
 					Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 					
 					ParsedExpression assign = null;
-					ignoreNL();
+					//ignoreNL();
 					if (matchType(ASSIGNMENT)) {
 						assign = ExpressionParser.parseExpression();
 					}
@@ -255,24 +255,26 @@ public class PS_Function extends ParserHead {
 					
 					//break if varargs
 					if (varargs) break;
-					ignoreNL();
+					//ignoreNL();
 				}
 				while (match(COMMA));
 			}
 		}
 		
-		ignoreNL();
+		//ignoreNL();
 		if (varargs && match(COMMA)) {
 			error("Variable arguments '...' must be the last argument in a " + funcType + "!");
 		}
 		
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_R, "Expected ')' after parameters!");
 		return parameters;
 	}
 	
 	/**
 	 * Gathers all method body statements.
+	 * <p>
+	 * constructors do not necessarily need to specify a body EX: 'init(x, y)'
 	 * 
 	 * @param constructor : don't necessarily have a body
 	 * @return EArrayList<Statement> : list of all parsed method body statements
@@ -280,88 +282,34 @@ public class PS_Function extends ParserHead {
 	public static EList<ParsedStatement> getFunctionBody() { return getFunctionBody(false); }
 	public static EList<ParsedStatement> getFunctionBody(boolean constructor) {
 		EList<ParsedStatement> body = null;
-
-		ignoreNL();
 		
-		//constructors do not necessarily need to specify a body
+		//ignoreNL();
+		
+		//if this is a normal function definition and not a constructor, require a body
 		if (!constructor) {
-			ignoreNL();
-			if (match(LAMBDA)) {
+			if (check(LAMBDA)) {
 				body = new EArrayList<>();
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) {
-				ignoreNL();
+				////ignoreNL();
 				body = getBlock(true);
 			}
 			else {
 				(body = new EArrayList<>()).addIfNotNull(declaration());
 			}
 		}
+		// EX: 'init() -> 5'
 		else if (match(LAMBDA)) {
 			body = new EArrayList<>();
 			body.add(PS_Return.returnStatement());
 		}
-		else if (match(CURLY_L)) body = getBlock(true);
-		else {
-			boolean prev = checkPreviousType(TERMINATOR);
-			boolean match = match(SEMICOLON, NEWLINE);
-			errorIf(!(prev || match), "Constructor declaration must be concluded with either a ';' or a new line!");
+		// EX: 'func test() { return 5 }'
+		else if (match(CURLY_L)) {
+			body = getBlock(true);
 		}
 		
 		return body;
 	}
 	
 }
-
-
-
-
-
-/*
- * From 'public static Statement methodDeclaration(boolean operator, ParserDeclaration declaration) {'
- * 
-System.out.println(declaration);
-
-//variables used to build the method statement
-Token name = null, op = null;
-boolean constructor = false;
-
-//first check if this method should be handled as an operator overload method
-if (operator) {
-	op = getOperator();
-}
-else {
-	if (check(MODULAR_VALUE)) name = consume(MODULAR_VALUE, "Expected a '@' to denote modular naming!");
-	else name = consume(IDENTIFIER, "Expected a valid name!");
-	//check if constructor
-	constructor = checkConstructor(name, declaration);
-}
-
-//if it's not a constructor and it's not an operator then check to see if it could be a variable instead
-if (!operator && !constructor) {
-	if (check(LESS_THAN, COMMA, SEMICOLON, NEWLINE, EOF) || checkType(ASSIGNMENT) || checkType(OPERATOR)) {
-		return varDeclaration(name, declaration);
-	}
-}
-
-//internal value used for error outputs
-String methodType = (constructor) ? "constructor" : "method";
-//determine if this is a modular function declaration
-@Experimental_Envision
-boolean modular = checkModular();
-//start parsing for method parameters
-EArrayList<StatementParameter> parameters = getMethodParameters(operator, methodType);
-//attempt to parse method body
-EArrayList<Statement> body = getMethodBody(constructor);
-
-//build the method statement
-if (modular) {
-	Statement r = new ModularMethodStatement(name, ParserStage.modularValues, parameters, body, declaration);
-	ParserStage.modularValues = null; //clear the values from the parser
-	return r;
-}
-return new MethodDeclarationStatement(name, op, parameters, body, declaration, constructor, operator);
-*/
-
-

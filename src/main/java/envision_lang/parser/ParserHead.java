@@ -57,7 +57,10 @@ public abstract class ParserHead {
 	 */
 	public static ParsedStatement parse(EnvisionLangParser parserIn) {
 		parser = parserIn;
-		return declaration();
+		
+		var declaration = declaration();
+		
+		return declaration;
 	}
 	
 	//-----------------------------------------------------------------------------------------------------
@@ -105,25 +108,30 @@ public abstract class ParserHead {
 		
 		//begin by attempting to parse a ParserDeclaration
 		ParserDeclaration dec = PS_ParseDeclaration.parseDeclaration();
+		ParsedStatement parsedStatement = null;
 		
 		//determine next path
 		switch (dec.getDeclarationType()) {
 		
-		case EXPR:				return expressionStatement();
-		case CLASS_DEF: 		return PS_Class.classDeclaration(dec);
-		case ENUM_DEF: 			return PS_Enum.enumDeclaration(dec);
-		case FUNC_DEF: 			return PS_Function.functionDeclaration(false, false, dec);
-		case INIT_DEF:			return PS_Function.functionDeclaration(true, false, dec);
-		case OPERATOR_DEF:  	return PS_Function.functionDeclaration(false, true, dec);
-		case GETSET: 			return PS_GetSet.getSet(dec);
-		case INTERFACE_DEF: 	return PS_Interface.interfaceDeclaration(dec);
-		case VAR_DEF: 			return PS_VarDef.variableDeclaration(dec);
+		case EXPR:				parsedStatement = expressionStatement(); 								break;
+		case CLASS_DEF: 		parsedStatement = PS_Class.classDeclaration(dec); 						break;
+		case ENUM_DEF: 			parsedStatement = PS_Enum.enumDeclaration(dec); 						break;
+		case FUNC_DEF: 			parsedStatement = PS_Function.functionDeclaration(false, false, dec); 	break;
+		case INIT_DEF:			parsedStatement = PS_Function.functionDeclaration(true, false, dec); 	break;
+		case OPERATOR_DEF:  	parsedStatement = PS_Function.functionDeclaration(false, true, dec); 	break;
+		case GETSET: 			parsedStatement = PS_GetSet.getSet(dec); 								break;
+		case INTERFACE_DEF: 	parsedStatement = PS_Interface.interfaceDeclaration(dec); 				break;
+		case VAR_DEF: 			parsedStatement = PS_VarDef.variableDeclaration(dec); 					break;
 		
 		//if the code has reached this point, it means a statement declaration has not been found
 		//and so the parser will now attempt to find a standard statement beginning.
 		case OTHER:
-		default: 				return parseStatement();
+		default: 				parsedStatement = parseStatement();
 		}
+		
+		consumeType(KeywordType.TERMINATOR, "Expected either a ';' or a new line to complete statement!");
+		
+		return parsedStatement;
 	}
 	
 	/**
@@ -170,11 +178,11 @@ public abstract class ParserHead {
 	public static EList<ParsedStatement> getBlock(boolean inMethod) {
 		EList<ParsedStatement> statements = EList.newList();
 		
-		ignoreNL();
+		//ignoreNL();
 		while (!check(CURLY_R) && !atEnd()) {
 			ParsedStatement s = declaration(inMethod);
 			if (s != null) statements.add(s);
-			ignoreTerminators();
+			//ignoreTerminators();
 		}
 		
 		consume(CURLY_R, "Expected '}' after block!");

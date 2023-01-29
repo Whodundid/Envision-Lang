@@ -19,13 +19,15 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
+import eutil.debug.Inefficient;
 
+@Inefficient(reason="I swear there has to be a better way of going about this..")
 public class PS_For extends ParserHead {
 	
 	public static ParsedStatement forStatement() {
-		ignoreNL();
+		//ignoreNL();
 		Token<?> forToken = consume(FOR, "Expected 'for' here!");
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
 		//0 = normal, 1 = range (to), 2 = lambda
@@ -83,7 +85,7 @@ public class PS_For extends ParserHead {
 		//don't care if there is only one statement block
 		if (numSemi > 0) {
 			//check for initializers
-			ignoreNL();
+			//ignoreNL();
 			if (!check(SEMICOLON)) {
 				if (type != 2) {
 					initializer = PS_VarDef.variableDeclaration(true);
@@ -99,22 +101,22 @@ public class PS_For extends ParserHead {
 							value = ExpressionParser.parseExpression();
 						}
 						vars.addVar(name, value);
-						ignoreNL();
+						//ignoreNL();
 					}
 					while (match(COMMA));
 					
-					ignoreNL();
+					//ignoreNL();
 					consume(SEMICOLON, "Expected a ';' to conclude lambda loop initializer statement!");
 				}
 			}
 			else {
-				ignoreNL();
+				//ignoreNL();
 				match(SEMICOLON);
 			}
 		}
 		
 		//check for middle condition/lambda
-		ignoreNL();
+		//ignoreNL();
 		if (!check(SEMICOLON)) {
 			//handle range
 			if (type == 1) {
@@ -123,13 +125,13 @@ public class PS_For extends ParserHead {
 				errorIf(!(middle instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
 				ranges = EList.of((Expr_Range) middle);
 				
-				ignoreNL();
+				//ignoreNL();
 				while (match(COMMA)) {
 					ParsedExpression e = ExpressionParser.parseExpression();
 					errorIf(!(e instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
 					Expr_Range range = (Expr_Range) e;
 					ranges.add(range);
-					ignoreNL();
+					//ignoreNL();
 				}
 			}
 			//normal and lambda
@@ -139,26 +141,26 @@ public class PS_For extends ParserHead {
 		}
 		
 		//check for post actions
-		ignoreNL();
+		//ignoreNL();
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				ignoreNL();
+				//ignoreNL();
 				if (check(PAREN_R)) {}
 				else {
 					//gather all expressions separated by commas
 					do {
 						post.add(ExpressionParser.parseExpression());
-						ignoreNL();
+						//ignoreNL();
 					}
 					while (match(COMMA));
 				}
 			}
 		}
 		
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_R, "Expected ')' to close for loop declaration!");
 		
-		ignoreNL();
+		//ignoreNL();
 		body = declaration();
 		
 		ParsedStatement forStatement = null;

@@ -46,29 +46,29 @@ public class PS_Return extends ParserHead {
 	 */
 	public static ParsedStatement returnStatement(boolean parseForCondition) {
 		Token<?> returnToken;
-		ignoreNL();
+		//ignoreNL();
 		if (check(LAMBDA, RETURN)) returnToken = getAdvance();
 		else returnToken = previousNonTerminator();
 		
-//		consumeEmptyLines();
+		//ignoreNL();
 		
 		//handle condition stuff
 		ParsedExpression cond = null;
 		if (parseForCondition) {
-			ignoreNL();
+			//ignoreNL();
 			consume(PAREN_L, "Expected a '(' to begin if expression!");
 			cond = ExpressionParser.parseExpression();
-			ignoreNL();
+			//ignoreNL();
 			consume(PAREN_R, "Expected a ')' to close if expression!");
 		}
 		
 		//get return values
-		ignoreNL();
+		//ignoreNL();
 		EList<ParsedExpression> retVals = EList.newList();
 		if (!check(SEMICOLON, NEWLINE)) {
 			do {
 				retVals.add(ExpressionParser.parseExpression());
-				ignoreNL();
+				//ignoreNL();
 			}
 			while (match(COMMA));
 		}

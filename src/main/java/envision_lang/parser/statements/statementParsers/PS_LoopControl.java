@@ -26,16 +26,15 @@ public class PS_LoopControl extends ParserHead {
 	 * @return The parsed break statement.
 	 */
 	public static ParsedStatement handleBreak() {
-		ignoreNL();
+		//ignoreNL();
 		if (match(BREAK)) return new Stmt_LoopControl(previousNonTerminator(), true);
-		
-		ignoreNL();
+		//ignoreNL();
 		Token<?> start = consume(BREAKIF, "Expected a 'breakif' statement!");
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_L, "Expected the start of an expression! '('");
-		ignoreNL();
+		//ignoreNL();
 		ParsedExpression condition = ExpressionParser.parseExpression();
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
 		return new Stmt_LoopControl(start, true, condition);
@@ -49,16 +48,15 @@ public class PS_LoopControl extends ParserHead {
 	 * @return The parsed continue statement.
 	 */
 	public static ParsedStatement handleContinue() {
-		ignoreNL();
+		//ignoreNL();
 		if (match(CONTINUE)) return new Stmt_LoopControl(previous(), false);
-		
-		ignoreNL();
+		//ignoreNL();
 		Token<?> start = consume(CONTIF, "Expected a 'contif' statement!");
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_L, "Expected the start of an expression! '('");
-		ignoreNL();
+		//ignoreNL();
 		ParsedExpression condition = ExpressionParser.parseExpression();
-		ignoreNL();
+		//ignoreNL();
 		consume(PAREN_R, "Expected the end of the given expression! ')'");
 		
 		return new Stmt_LoopControl(start, false, condition);

@@ -14,12 +14,11 @@ public class PS_Package extends ParserHead {
 	
 	public static ParsedStatement packageDeclaration() { return packageDeclaration(new ParserDeclaration()); }
 	public static ParsedStatement packageDeclaration(ParserDeclaration declaration) {
-		ignoreNL();
+		//ignoreNL();
 		Token<?> packageName = consume(IDENTIFIER, "Expected a package name!");
-		ignoreNL();
+		//ignoreNL();
 		consume(CURLY_L, "Expected a '{' after package declaration!");
 		
-		ignoreNL();
 		EList<ParsedStatement> body = getBlock();
 		
 		return new Stmt_Package(declaration.getStartToken(), declaration, packageName, body);

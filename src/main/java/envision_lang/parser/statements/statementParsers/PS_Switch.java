@@ -18,21 +18,22 @@ import eutil.datatypes.util.EList;
 public class PS_Switch extends ParserHead {
 	
 	public static ParsedStatement switchStatement() {
+		//ignoreNL();
 		Token<?> switchToken = consume(SWITCH, "Expected 'switch' here!");
-//		consumeEmptyLines();
+		//ignoreNL();
 		consume(PAREN_L, "Expected '(' after while declaration!");
-//		consumeEmptyLines();
+		//ignoreNL();
 		ParsedExpression switchExpression = ExpressionParser.parseExpression();
-//		consumeEmptyLines();
+		//ignoreNL();
 		consume(PAREN_R, "Expected ')' after while condition!");
-//		consumeEmptyLines();
+		//ignoreNL();
 		consume(CURLY_L, "Expected '{' after switch declaration!");
 
 		EList<Stmt_SwitchCase> cases = EList.newList();
 		Stmt_SwitchCase defaultCase = null;
 		boolean hasDefault = false;
 		
-//		consumeEmptyLines();
+		//ignoreNL();
 		
 		if (!check(CURLY_R)) {
 			while (check(CASE, DEFAULT) && !atEnd()) {
@@ -45,8 +46,9 @@ public class PS_Switch extends ParserHead {
 				if (hasDefault && isDefault) error("Switch already has a default case!");
 				
 				if (!isDefault) {
+					//ignoreNL();
 					caseToken = consume(CASE, "Expected a case statement!");
-					while (match(NEWLINE));
+					//ignoreNL();
 					caseName = consumeType(LITERAL, "Expected a case name!");
 					//prevent duplicate cases
 					if (hasCase(cases, caseName)) {
@@ -55,12 +57,13 @@ public class PS_Switch extends ParserHead {
 					}
 				}
 				
-//				consumeEmptyLines();
 				EList<ParsedStatement> body = EList.newList();
 				
+				//ignoreNL();
 				if (check(COLON)) {
 					consume(COLON, "Expected a ':' after case name!");
 					while (!check(CASE, DEFAULT, CURLY_R) && !atEnd()) {
+						//ignoreNL();
 						match(CASE, DEFAULT, CURLY_R);
 						ParsedStatement s = declaration();
 						body.addIfNotNull(s);
@@ -85,7 +88,7 @@ public class PS_Switch extends ParserHead {
 			}
 		}
 		
-		while (match(NEWLINE));
+		//ignoreNL();
 		consume(CURLY_R, "Expected a '}' to close switch statement!");
 		
 		return new Stmt_SwitchDef(switchToken, switchExpression, cases, defaultCase);

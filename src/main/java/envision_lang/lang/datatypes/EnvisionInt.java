@@ -130,7 +130,7 @@ public class EnvisionInt extends EnvisionNumber {
 	{
 		//unary operators
 		if (op.isUnary()) {
-			if (obj != null) throw new EnvisionLangError("The given operator object should be null! Unary Operator!");
+			//if (obj != null) throw new EnvisionLangError("The given operator object should be null! Unary Operator!");
 			
 			switch (op) {
 			//inc/dec

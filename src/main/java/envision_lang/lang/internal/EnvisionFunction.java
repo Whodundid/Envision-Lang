@@ -575,13 +575,11 @@ public class EnvisionFunction extends ClassInstance {
 			interpreter.executeBlock(m.statements, scope);
 		}
 		catch (ReturnValue r) {
-			if (isConstructor) ret(scope.get("this"));
-			//if (isConstructor) throw new ReturnValue(scope.get("this"));
+			//if (isConstructor) ret(scope.get("this"));
 			throw r;
 		}
 		
 		if (isConstructor) ret(scope.get("this"));
-		//if (isConstructor) throw new ReturnValue(scope.get("this"));
 	}
 	
 	public EnvisionFunction addStatement(ParsedStatement statementIn) {

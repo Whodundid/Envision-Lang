@@ -28,7 +28,7 @@ public class PS_Class extends ParserHead {
 	public static ParsedStatement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
 	public static ParsedStatement classDeclaration(ParserDeclaration declaration) {
 		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
-		ignoreNL();
+		//ignoreNL();
 		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		//ParserStage.curClassName = name;
 		
@@ -46,28 +46,27 @@ public class PS_Class extends ParserHead {
 		
 		//removing parent class parsing for now
 		
-		ignoreNL();
+		//ignoreNL();
 		if (match(COLON)) {
 			do {
-				ignoreNL();
+				//ignoreNL();
 				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
 				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
 				else error("Expected a valid super class type!");
-				cs.addSuper(new Expr_Var(previous()));
-				ignoreNL();
+				cs.addSuper(new Expr_Var(previousNonTerminator()));
+				//ignoreNL();
 			}
 			while (match(COMMA));
 		}
 		
 		
 		//read in class body
-		ignoreNL();
+		//ignoreNL();
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors
 		EList<ParsedStatement> body = getBlock();
 		EList<ParsedStatement> staticMembers = EList.newList();
-		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
 		EList<Stmt_FuncDef> constructors = EList.newList();
 		
 		//unpack top level block statements from body
@@ -84,7 +83,7 @@ public class PS_Class extends ParserHead {
 					bodySize++;
 					i++;
 				}
-				i--; //decrement to realign the loop
+				i--; //decrement to realign the loop index
 			}
 		}
 		
@@ -107,7 +106,6 @@ public class PS_Class extends ParserHead {
 			
 			if (s instanceof Stmt_Block b) {
 				constructors.addAll(isolateConstructors(b));
-				//System.out.println("add: " + constructors);
 			}
 			
 			//check if constructor -- remove from body
@@ -118,28 +116,18 @@ public class PS_Class extends ParserHead {
 					bodySize--;
 					i--;
 				}
-				//else methods.add((MethodDeclarationStatement) body.remove(i));
-				//bodySize--;
-				//i--;
 			}
 		}
 		
 		//apply body, static members, and constructors
 		cs.setBody(body);
 		cs.setStaticMembers(staticMembers);
-		//cs.setMethods(methods);
 		cs.setInitializers(constructors);
-		
-		//System.out.println("Body: " + body);
-		//System.out.println("Static: " + staticMembers);
-		//System.out.println("Constr: " + constructors);
-		
-		//return curClassName to null
-		//ParserStage.curClassName = null;
 		
 		return cs;
 	}
 	
+	/** Recursively pulls out constructors out of blocks. */
 	private static EList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
 		EList<Stmt_FuncDef> constructors = new EArrayList<>();
 		Iterator<ParsedStatement> it = in.statements.iterator();
@@ -150,9 +138,9 @@ public class PS_Class extends ParserHead {
 			if (s instanceof Stmt_Block bs) {
 				constructors.addAll(isolateConstructors(bs));
 			}
-			else if (s instanceof Stmt_FuncDef mds && mds.isConstructor) {
-				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.getLineNum());
-				constructors.add(mds);
+			else if (s instanceof Stmt_FuncDef funcDef && funcDef.isConstructor) {
+				funcDef.name = Token.create(ReservedWord.STRING_LITERAL, "init", funcDef.name.getLineNum());
+				constructors.add(funcDef);
 				it.remove();
 			}
 		}

@@ -30,7 +30,7 @@ public class PS_ParseDeclaration extends ParserHead {
 	 */
 	public static ParserDeclaration parseDeclaration() {
 		ParserDeclaration dec = new ParserDeclaration();
-		ignoreNL();
+		//ignoreNL();
 		
 		//collect each piece of the declaration
 		parseVisibility(dec);
@@ -39,7 +39,7 @@ public class PS_ParseDeclaration extends ParserHead {
 		parseDataModifiers(dec);
 		
 		//if (check(GET, SET)) 	return dec.setDeclarationType(GETSET).setStartToken(current());
-		ignoreNL();
+		//ignoreNL();
 		if (match(ENUM)) 			return dec.setDeclarationType(ENUM_DEF).setStartToken(previous());
 		else if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF).setStartToken(current());
 		
@@ -47,7 +47,7 @@ public class PS_ParseDeclaration extends ParserHead {
 		parseGenerics(dec);
 		
 		//check for appropriate continuing statement
-		ignoreNL();
+		//ignoreNL();
 		if (check(INIT)) 					return dec.setDeclarationType(INIT_DEF).setStartToken(current());
 		else if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF).setStartToken(previous());
 		else if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF).setStartToken(previous());
