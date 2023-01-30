@@ -9,7 +9,6 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.util.EnvisionParameter;
 import envision_lang.lang.util.ParameterData;
 import envision_lang.tokenizer.Operator;
 
@@ -73,12 +72,7 @@ public class OperatorOverloadHandler {
 		EnvisionFunction op_func = c.getOperator(op);
 		if (op_func == null) return null;
 		
-		ParameterData params = new ParameterData();
-		if (b != null) {
-			// create parameters around the given 'b' target arg
-			params.add(new EnvisionParameter(b));
-		}
-		
+		ParameterData params = ParameterData.from(b);
 		EnvisionFunction theOverload = null;
 		
 		// check if the overload supports the given target parameter

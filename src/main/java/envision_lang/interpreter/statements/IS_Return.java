@@ -4,8 +4,8 @@ import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.datatypes.EnvisionList;
-import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.datatypes.EnvisionTupleClass;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
 import eutil.datatypes.util.EList;
@@ -29,14 +29,12 @@ public class IS_Return extends AbstractInterpreterExecutor {
 		}
 		//otherwise, wrap each value to return into a generic list
 		else {
-			EnvisionList retList = EnvisionListClass.newList();
+			EnvisionTuple retList = EnvisionTupleClass.newTuple();
 			
 			for (var o : r) {
 				EnvisionObject env_obj = interpreter.evaluate(o);
 				retList.add(env_obj);
 			}
-			
-			retList.lockSize();
 			
 			throw ReturnValue.wrap(retList);
 		}

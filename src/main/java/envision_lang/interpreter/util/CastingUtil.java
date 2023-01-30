@@ -132,11 +132,11 @@ public class CastingUtil {
 			var charVal = (char) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> EnvisionCharClass.newChar(charVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(charVal);
-			case INT -> EnvisionIntClass.newInt(charVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(charVal);
-			case STRING -> EnvisionStringClass.newString(charVal);
+			case CHAR -> EnvisionCharClass.valueOf(charVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(charVal);
+			case INT -> EnvisionIntClass.valueOf(charVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(charVal);
+			case STRING -> EnvisionStringClass.valueOf(charVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -146,11 +146,11 @@ public class CastingUtil {
 			var boolVal = (boolean) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> EnvisionCharClass.newChar(boolVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(boolVal);
-			case INT -> EnvisionIntClass.newInt(boolVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(boolVal);
-			case STRING -> EnvisionStringClass.newString(boolVal);
+			case CHAR -> EnvisionCharClass.valueOf(boolVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(boolVal);
+			case INT -> EnvisionIntClass.valueOf(boolVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(boolVal);
+			case STRING -> EnvisionStringClass.valueOf(boolVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -160,10 +160,10 @@ public class CastingUtil {
 			
 			return switch (to) {
 			//case CHAR -> EnvisionCharClass.newChar(longVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(longVal != 0);
-			case INT -> EnvisionIntClass.newInt(longVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(longVal);
-			case STRING -> EnvisionStringClass.newString(longVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(longVal != 0);
+			case INT -> EnvisionIntClass.valueOf(longVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(longVal);
+			case STRING -> EnvisionStringClass.valueOf(longVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -174,9 +174,9 @@ public class CastingUtil {
 			return switch (to) {
 			//case CHAR -> EnvisionCharClass.newChar(doubleVal);
 			//case BOOLEAN -> EnvisionBooleanClass.newBoolean(doubleVal);
-			case INT -> EnvisionIntClass.newInt((long) doubleVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(doubleVal);
-			case STRING -> EnvisionStringClass.newString(doubleVal);
+			case INT -> EnvisionIntClass.valueOf((long) doubleVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(doubleVal);
+			case STRING -> EnvisionStringClass.valueOf(doubleVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}

@@ -15,7 +15,7 @@ import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 
-public class EnvisionCharClass extends EnvisionClass {
+public final class EnvisionCharClass extends EnvisionClass {
 
 	/**
 	 * The singular, static Char class for which all Envision:Char
@@ -30,10 +30,31 @@ public class EnvisionCharClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		CHAR_PROTOS.define("get", CHAR).assignDynamicClass(IFunc_get.class);
-		CHAR_PROTOS.define("set", CHAR, CHAR).assignDynamicClass(IFunc_set.class);
 		CHAR_PROTOS.define("toUpperCase", CHAR).assignDynamicClass(IFunc_toUpperCase.class);
 		CHAR_PROTOS.define("toLowerCase", CHAR).assignDynamicClass(IFunc_toLowerCase.class);
+	}
+	
+	/**
+	 * Internally caches standard ascii char values in order to reduce overall char
+	 * instantiation.
+	 * <p>
+	 * Java Integer.IntegerCache heavily referenced.
+	 * 
+	 * @author Hunter Bragg
+	 */
+	private static final class EnvisionCharCache {
+		static final EnvisionChar[] cache;
+		
+		static {
+			EnvisionChar[] c = new EnvisionChar[127];
+			int j = 0;
+			for (int i = 0; i < c.length; i++) {
+				c[i] = newChar((char) j++);
+			}
+			cache = c;
+		}
+		
+		private EnvisionCharCache() {}
 	}
 	
 	//--------------
@@ -71,6 +92,27 @@ public class EnvisionCharClass extends EnvisionClass {
 		CHAR_CLASS.defineScopeMembers(c);
 		return c;
 	}
+
+	public static EnvisionChar defaultValue() {
+		return EnvisionChar.NULL_CHAR;
+	}
+	
+	/** Return direct instances. */
+	public static EnvisionChar valueOf(EnvisionChar value) { return value; }
+	public static EnvisionChar valueOf(boolean value) { return valueOf((value) ? 'T' : 'F'); }
+	public static EnvisionChar valueOf(int value) { return valueOf((char) value); }
+	public static EnvisionChar valueOf(long value) { return valueOf((char) value); }
+	public static EnvisionChar valueOf(EnvisionInt value) { return valueOf((char) value.int_val); }
+	
+	public static EnvisionChar valueOf(char value) {
+		int i = (int) value;
+		
+		if (i >= 0 && i <= EnvisionCharCache.cache.length) {
+			return EnvisionCharCache.cache[i];
+		}
+		
+		return newChar(value);
+	}
 	
 	//-----------
 	// Overrides
@@ -87,7 +129,7 @@ public class EnvisionCharClass extends EnvisionClass {
 		EnvisionChar char_val = null;
 		
 		//if no args, return default char instance
-		if (args.length == 0) char_val = new EnvisionChar();
+		if (args.length == 0) char_val = EnvisionChar.NULL_CHAR;
 		//ensure there is at most 1 argument being passed
 		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
 		//otherwise, attempt to create from passed args
@@ -98,9 +140,9 @@ public class EnvisionCharClass extends EnvisionClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
-			if (arg_val instanceof EnvisionChar c)		char_val = new EnvisionChar(c.char_val);
-			if (arg_val instanceof EnvisionInt i) 		char_val = new EnvisionChar((char) i.int_val);
-			if (arg_val instanceof EnvisionBoolean b)	char_val = new EnvisionChar((b.bool_val) ? 'T' : 'F');
+			else if (arg_val instanceof EnvisionChar c)			char_val = new EnvisionChar(c.char_val);
+			else if (arg_val instanceof EnvisionInt i) 			char_val = new EnvisionChar((char) i.int_val);
+			else if (arg_val instanceof EnvisionBoolean b)		char_val = new EnvisionChar((b.bool_val) ? 'T' : 'F');
 			
 			if (char_val == null)
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
@@ -124,32 +166,17 @@ public class EnvisionCharClass extends EnvisionClass {
 	// Instance Member Functions
 	//---------------------------
 	
-	private static class IFunc_get<E extends EnvisionChar> extends InstanceFunction<E> {
-		public IFunc_get() { super(CHAR, "get"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionCharClass.newChar(inst.char_val));
-		}
-	}
-	
-	private static class IFunc_set<E extends EnvisionChar> extends InstanceFunction<E> {
-		public IFunc_set() { super(CHAR, "set", CHAR); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			inst.char_val = ((EnvisionChar) args[0]).char_val;
-			ret(inst);
-		}
-	}
-	
 	private static class IFunc_toUpperCase<E extends EnvisionChar> extends InstanceFunction<E> {
 		public IFunc_toUpperCase() { super(CHAR, "toUpperCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionCharClass.newChar(Character.toUpperCase(inst.char_val)));
+			ret(EnvisionCharClass.valueOf(Character.toUpperCase(inst.char_val)));
 		}
 	}
 	
 	private static class IFunc_toLowerCase<E extends EnvisionChar> extends InstanceFunction<E> {
 		public IFunc_toLowerCase() { super(CHAR, "toLowerCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionCharClass.newChar(Character.toLowerCase(inst.char_val)));
+			ret(EnvisionCharClass.valueOf(Character.toLowerCase(inst.char_val)));
 		}
 	}
 	
@@ -166,8 +193,8 @@ public class EnvisionCharClass extends EnvisionClass {
 			setStatic();
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionChar env_char) ret(EnvisionCharClass.newChar(env_char));
-			else if (args[0] instanceof EnvisionInt env_int) ret(EnvisionIntClass.newInt(env_int));
+			if (args[0] instanceof EnvisionChar env_char) ret(EnvisionCharClass.valueOf(env_char));
+			else if (args[0] instanceof EnvisionInt env_int) ret(EnvisionCharClass.valueOf(env_int));
 			else throw new EnvisionLangError("Invalid type -- should not have reached here!");
 		}
 	}

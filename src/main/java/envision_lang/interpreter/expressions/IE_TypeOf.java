@@ -24,7 +24,7 @@ public class IE_TypeOf extends AbstractInterpreterExecutor {
 		boolean same = typeA.compare(typeB);
 		boolean val = (is) ? same : !same;
 		
-		return EnvisionBooleanClass.newBoolean(val);
+		return EnvisionBooleanClass.valueOf(val);
 	}
 	
 }

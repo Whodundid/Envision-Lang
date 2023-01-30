@@ -1,6 +1,5 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
@@ -56,7 +55,9 @@ import envision_lang.lang.classes.EnvisionClass;
  * 
  * @author Hunter Bragg
  */
-public abstract class EnvisionVariable extends ClassInstance {
+public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
+	permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
+{
 	
 	//--------------
 	// Constructors
@@ -91,14 +92,6 @@ public abstract class EnvisionVariable extends ClassInstance {
 	 * 
 	 * @return The backing Java Object
 	 */
-	public abstract Object get_i();
-	
-	//---------
-	// Setters
-	//---------
-	
-	public abstract EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError;
-	
-	public abstract EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError;
+	public abstract TYPE get_i();
 	
 }

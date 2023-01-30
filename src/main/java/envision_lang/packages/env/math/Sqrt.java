@@ -17,7 +17,7 @@ public class Sqrt extends EnvisionFunction {
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionNumber num = (EnvisionNumber) args[0];
-		EnvisionDouble sqrt = EnvisionDoubleClass.newDouble(Math.sqrt(num.doubleVal_i()));
+		EnvisionDouble sqrt = EnvisionDoubleClass.valueOf(Math.sqrt(num.doubleVal_i()));
 		ret(sqrt);
 	}
 	

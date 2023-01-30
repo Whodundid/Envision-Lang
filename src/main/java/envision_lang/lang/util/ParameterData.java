@@ -1,53 +1,112 @@
 package envision_lang.lang.util;
 
-import java.util.Iterator;
-
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.InvalidParameterError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import eutil.datatypes.EArrayList;
-import eutil.datatypes.util.EList;
+import envision_lang.lang.natives.StaticTypes;
+import eutil.strings.EStringUtil;
 
-public class ParameterData implements Iterable<EnvisionParameter> {
+/**
+ * A object which comprises function parameters within the Envision::Java
+ * scripting language.
+ * 
+ * @author Hunter Bragg
+ */
+public class ParameterData {
 	
-	EArrayList<EnvisionParameter> params = new EArrayList();
+	public static final ParameterData EMPTY_PARAMS = new ParameterData();
+	
+	private EnvisionParameter[] params;
+	private String[] parameterNames;
+	private IDatatype[] parameterTypes;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public ParameterData() {}
-	
-	public ParameterData(ParameterData dataIn) {
-		params = new EArrayList(dataIn.params);
+	/**
+	 * Builds an empty set of parameters.
+	 */
+	private ParameterData() {
+		params = new EnvisionParameter[0];
+		parameterNames = new String[0];
+		parameterTypes = new IDatatype[0];
 	}
 	
-	public ParameterData(EnvisionParameter... paramsIn) {
-		add(paramsIn);
-	}
-	
-	public ParameterData(IDatatype... typesIn) {
-		for (var t : typesIn) add(t.toDatatype(), "");
-	}
-	
-	public ParameterData(EnvisionObject... objsIn) {
-		for (var o : objsIn) {
-			if (o != null && !(o instanceof EnvisionNull)) {
-				add(o.getDatatype(), "");
-			}
-			else throw new InvalidParameterError(o + " is not a valid parameter type!");
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param dataIn
+	 */
+	private ParameterData(ParameterData dataIn) {
+		int size = dataIn.length();
+		params = new EnvisionParameter[size];
+		parameterNames = new String[size];
+		parameterTypes = new IDatatype[size];
+		
+		for (int i = 0; i < size; i++) {
+			EnvisionParameter p = dataIn.get(i);
+			IDatatype type = p.datatype;
+			String name = p.name;
+			
+			params[i] = new EnvisionParameter(type, name);
+			parameterNames[i] = name;
+			parameterTypes[i] = type;
 		}
 	}
 	
-	public ParameterData(EList<EnvisionObject> objectsIn) {
-		for (EnvisionObject o : objectsIn) {
-			if (o != null && !(o instanceof EnvisionNull)) {
-				add(o.getDatatype(), "");
-			}
-			else throw new InvalidParameterError(o + " is not a valid parameter type!");
+	private ParameterData(EnvisionParameter[] paramsIn) {
+		params = (paramsIn != null) ? paramsIn : new EnvisionParameter[0];
+		parameterNames = new String[params.length];
+		parameterTypes = new IDatatype[params.length];
+	}
+	
+	private ParameterData(IDatatype... typesIn) {
+		int size = typesIn.length;
+		params = new EnvisionParameter[size];
+		parameterNames = new String[size];
+		parameterTypes = new IDatatype[size];
+		
+		for (int i = 0; i < size; i++) {
+			IDatatype type = typesIn[i];
+			
+			// check for valid parameter datatype
+			if (type == null) throw new InvalidParameterError("Java::NULL is not a valid parameter type!");
+			if (StaticTypes.NULL_TYPE.compare(type)) throw new InvalidParameterError("Envision::NULL is not a valid parameter type!");
+			
+			String name = "";
+			EnvisionParameter param = new EnvisionParameter(type, name);
+			
+			params[i] = param;
+			parameterNames[i] = name;
+			parameterTypes[i] = type;
+		}
+	}
+	
+	private ParameterData(EnvisionObject... objsIn) {
+		int size = objsIn.length;
+		params = new EnvisionParameter[size];
+		parameterNames = new String[size];
+		parameterTypes = new IDatatype[size];
+		
+		for (int i = 0; i < size; i++) {
+			EnvisionObject obj = objsIn[i];
+			
+			// check for valid parameter datatype
+			if (obj == null) throw new InvalidParameterError("Java::NULL is not a valid parameter type!");
+			if (obj instanceof EnvisionNull) throw new InvalidParameterError("Envision::NULL is not a valid parameter type!");
+			
+			IDatatype type = obj.getDatatype();
+			String name = "";
+			
+			EnvisionParameter param = new EnvisionParameter(type, name);
+			
+			params[i] = param;
+			parameterNames[i] = name;
+			parameterTypes[i] = type;
 		}
 	}
 	
@@ -56,65 +115,50 @@ public class ParameterData implements Iterable<EnvisionParameter> {
 	//-----------
 	
 	@Override
-	public Iterator<EnvisionParameter> iterator() {
-		return params.iterator();
-	}
-	
-	@Override
 	public String toString() {
-		return getDataTypes() + "";
+		return EStringUtil.toString(parameterTypes);
 	}
 	
 	//---------
 	// Methods
 	//---------
 	
-	public void add(IDatatype type, String name) {
-		params.add(new EnvisionParameter(type.toDatatype(), name));
-	}
-	
-	public void add(EnvisionParameter... in) {
-		for (EnvisionParameter p : in) {
-			params.add(p);
-		}
-	}
-	
-	public int size() {
-		return params.size();
-	}
-	
-	public void clear() {
-		params.clear();
+	public int length() {
+		return params.length;
 	}
 	
 	public boolean compare(ParameterData dataIn) {
-		if (dataIn.size() == size()) {
-			for (int i = 0; i < size(); i++) {
+		if (dataIn.length() == length()) {
+			for (int i = 0; i < length(); i++) {
 				EnvisionParameter a = get(i);
 				EnvisionParameter b = dataIn.get(i);
-				//System.out.println("the param compare: " + a.datatype + " : " + b.datatype + " : " + a.isNumber() + " : " + b.isNumber());
+				
 				if (a.datatype.getPrimitive() == Primitives.NUMBER && b.isNumber()) return true;
 				if (a.datatype.isVar()) continue;
 				if (!a.compare(b)) return false;
 			}
 			return true;
 		}
-		//handle array types
-		else if (params.isNotEmpty() && get(0).datatype.isArrayType()) {
-			IDatatype type = get(0).datatype;
+		// handle array types
+		else if (params.length > 0 && parameterTypes[0].isArrayType()) {
+			EnvisionParameter param = params[0];
+			IDatatype type = parameterTypes[0];
 			Primitives base = type.getPrimitive().getNonArrayType();
 			
-			if (base == null) throw new EnvisionLangError("Parameter type parsing failed! '" + get(0) + "'");
+			if (base == null) throw new EnvisionLangError("Parameter type parsing failed! '" + param + "'");
 			if (base == Primitives.VAR) return true;
 			
-			for (int i = 0; i < size(); i++) {
-				EnvisionParameter b = dataIn.get(i);
-				if (base == Primitives.NUMBER && b.isNumber()) return true;
-				if (!type.compare(b.datatype)) return false;
+			int size = length();
+			for (int i = 0; i < size; i++) {
+				EnvisionParameter pIn = dataIn.get(i);
+				
+				if (base == Primitives.NUMBER && pIn.isNumber()) return true;
+				if (!type.compare(pIn.datatype)) return false;
 			}
 			
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -122,33 +166,33 @@ public class ParameterData implements Iterable<EnvisionParameter> {
 	// Getters
 	//---------
 	
-	public EnvisionParameter get(int i) { return params.get(i); }
-	
-	public EList<IDatatype> getDataTypes() { return params.map(p -> p.datatype); }
-	public EList<String> getNames() { return params.map(p -> p.name); }
-	
-	//---------
-	// Setters
-	//---------
-	
-	public ParameterData set(ParameterData dataIn) {
-		params.clear();
-		dataIn.forEach(p -> add(p));
-		return this;
-	}
+	public EnvisionParameter get(int i) { return params[i]; }
+	public String[] getNames() { return parameterNames; }
+	public IDatatype[] getDataTypes() { return parameterTypes; }
 	
 	//----------------
 	// Static Methods
 	//----------------
 	
-	public static ParameterData empty() { return new ParameterData(); }
+	public static ParameterData from(EnvisionParameter... params) {
+		if (params.length == 0) return EMPTY_PARAMS;
+		return new ParameterData(params);
+	}
 	
-	public static ParameterData fromTypes(IDatatype... types) {
-		ParameterData d = new ParameterData();
-		for (IDatatype t : types) {
-			d.add(t.toDatatype(), "");
-		}
-		return d;
+	public static ParameterData from(IDatatype... types) {
+		if (types.length == 0) return EMPTY_PARAMS;
+		return new ParameterData(types);
+	}
+	
+	public static ParameterData from(EnvisionObject... objects) {
+		if (objects.length == 0) return EMPTY_PARAMS;
+		return new ParameterData(objects);
+	}
+	
+	public static ParameterData from(ParameterData dataIn) {
+		if (dataIn == EMPTY_PARAMS) return EMPTY_PARAMS;
+		if (dataIn.length() == 0) return EMPTY_PARAMS;
+		return new ParameterData(dataIn);
 	}
 	
 }

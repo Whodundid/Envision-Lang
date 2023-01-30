@@ -129,7 +129,7 @@ public abstract class ParserHead {
 		default: 				parsedStatement = parseStatement();
 		}
 		
-		consumeType(KeywordType.TERMINATOR, "Expected either a ';' or a new line to complete statement!");
+		//consume("Expected either a ';' or a new line to complete statement!", EOF, NEWLINE, SEMICOLON);
 		
 		return parsedStatement;
 	}
@@ -139,6 +139,9 @@ public abstract class ParserHead {
 	 * @return Statement
 	 */
 	public static ParsedStatement parseStatement() {
+		//consume any new line characters or semicolons first -- these by themselves are to be ignored
+		ignoreTerminators();
+		
 		if (match(CURLY_L))				return new Stmt_Block(previous(), getBlock());
 		if (check(IMPORT))				return PS_Import.handleImport();
 		if (check(TRY))					return PS_Try.tryStatement();
@@ -163,7 +166,7 @@ public abstract class ParserHead {
 		ParsedExpression e = ExpressionParser.parseExpression();
 		
 		errorIf(e instanceof Expr_Literal, "Invalid declaration start!");
-		//errorIf(!match(SEMICOLON, NEWLINE, EOF), "An expression must be followed by either a ';' or a new line!");
+		consumeTerminator("An expression statement must be followed by either a ';' or a new line!");
 		
 		return new Stmt_Expression(e);
 	}
@@ -178,11 +181,9 @@ public abstract class ParserHead {
 	public static EList<ParsedStatement> getBlock(boolean inMethod) {
 		EList<ParsedStatement> statements = EList.newList();
 		
-		//ignoreNL();
 		while (!check(CURLY_R) && !atEnd()) {
 			ParsedStatement s = declaration(inMethod);
 			if (s != null) statements.add(s);
-			//ignoreTerminators();
 		}
 		
 		consume(CURLY_R, "Expected '}' after block!");
@@ -257,6 +258,16 @@ public abstract class ParserHead {
 	public static Token<?> consumeType(String errorMessage, KeywordType typeA, KeywordType typeB) { return parser.consumeType(errorMessage, typeA, typeB); }
 	public static Token<?> consumeType(String errorMessage, KeywordType... types) { return parser.consumeType(errorMessage, types); }
 	
+	public static Token<?> consumeTerminator() { return consumeTerminator("Expected either a ';' or a new line to complete statement!"); }
+	public static Token<?> consumeTerminator(String errorMessage) {
+		return parser.consume(errorMessage, SEMICOLON, NEWLINE, EOF);
+	}
+	
+	public static Token<?> consumeTerminatorEOF() { return consumeTerminatorEOF("Expected either a ';' or a new line to complete statement!"); }
+	public static Token<?> consumeTerminatorEOF(String errorMessage) {
+		return parser.consume(errorMessage, SEMICOLON, NEWLINE, EOF);
+	}
+	
 	//==========
 	// Matchers
 	//==========
@@ -264,15 +275,9 @@ public abstract class ParserHead {
 	public static boolean match(IKeyword keyword) { return parser.match(keyword); }
 	public static boolean match(IKeyword keywordA, IKeyword keywordB) { return parser.match(keywordA, keywordB); }
 	public static boolean match(IKeyword... keywords) { return parser.match(keywords); }
-//	public static boolean matchNonTerminator(IKeyword keyword) { return parser.matchNonTerminator(keyword); }
-//	public static boolean matchNonTerminator(IKeyword keywordA, IKeyword keywordB) { return parser.matchNonTerminator(keywordA, keywordB); }
-//	public static boolean matchNonTerminator(IKeyword... keywords) { return parser.matchNonTerminator(keywords); }
 	public static boolean matchType(KeywordType type) { return parser.matchType(type); }
 	public static boolean matchType(KeywordType typeA, KeywordType typeB) { return parser.matchType(typeA, typeB); }
 	public static boolean matchType(KeywordType... types) { return parser.matchType(types); }
-//	public static boolean matchTypeNonTerminator(KeywordType type) { return parser.matchTypeNonTerminator(type); }
-//	public static boolean matchTypeNonTerminator(KeywordType typeA, KeywordType typeB) { return parser.matchTypeNonTerminator(typeA, typeB); }
-//	public static boolean matchTypeNonTerminator(KeywordType... types) { return parser.matchTypeNonTerminator(types); }
 	
 	//==========
 	// Checkers
@@ -359,9 +364,9 @@ public abstract class ParserHead {
 	public static void advance() { parser.advance(); }
 	public static Token<?> getAdvance() { return parser.getAdvance(); }
 	
-	public static void ignoreTerminators() { while (matchType(TERMINATOR)); }
+	public static void ignoreTerminators() { while (!atEnd() && matchType(TERMINATOR)); }
 	/** Consumes all new lines. */
-	public static void ignoreNL() { while (match(NEWLINE)); }
+	public static void ignoreNL() { while (!atEnd() && match(NEWLINE)); }
 	
 	public static Token<?> current() { return parser.current(); }
 	public static IKeyword currentKeyword() { return parser.currentKeyword(); }

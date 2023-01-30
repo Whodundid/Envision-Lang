@@ -99,7 +99,7 @@ public class EnvisionImageClass extends EnvisionClass {
 			
 			//attempt creation from args
 			if (arg1 instanceof EnvisionInt n1 && arg2 instanceof EnvisionInt n2) {
-				img = new EnvisionImage(n1.int_val, n2.int_val);
+				img = new EnvisionImage(n1.get_i(), n2.get_i());
 			}
 		}
 		

@@ -16,20 +16,20 @@ public class IE_Set extends AbstractInterpreterExecutor {
 		EnvisionObject baseObject = interpreter.evaluate(expression.object);
 		EnvisionObject value = interpreter.evaluate(expression.value);
 		
-		//don't allow java null to continue!
-		//java null indicates something fundamentally went wrong inside of the interpreter
+		// don't allow java null to continue!
+		// java null indicates something fundamentally went wrong inside of the interpreter
 		if (value == null) {
 			throw new NullVariableError("The result of '" + expression.value + "' produced Java:null!");
 		}
 		
-		//copy if primitive value
+		// copy if primitive value
 		if (value.isPassByValue()) value = value.copy();
 		
-		//check for acceptable target types
+		// check for acceptable target types
 		if (baseObject instanceof ClassInstance inst) return setValue_CI(inst, name, value);
 		if (baseObject instanceof EnvisionCodeFile cf) return setValue_CF(cf, name, value);
 		
-		//error on non-accepted types
+		// error on non-accepted types
 		throw new InvalidTargetError(baseObject + " cannot have values on it modified!");
 	}
 	

@@ -14,7 +14,7 @@ public class Millis extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		ret(EnvisionIntClass.newInt(System.currentTimeMillis()));
+		ret(EnvisionIntClass.valueOf(System.currentTimeMillis()));
 	}
 	
 }

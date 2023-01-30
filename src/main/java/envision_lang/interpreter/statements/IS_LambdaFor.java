@@ -7,7 +7,6 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.NumberHelper;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
-import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
@@ -23,7 +22,9 @@ import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.VariableDeclaration;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
+import eutil.debug.Broken;
 
+@Broken(reason="Now that primitives are fully immutable, NumberHelper is completely broken here")
 public class IS_LambdaFor extends AbstractInterpreterExecutor {
 
 	public static void run(EnvisionInterpreter interpreter, Stmt_LambdaFor s) {
@@ -75,7 +76,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 		EnvisionInt index = null;
 		
 		if (s.init == null) {
-			index = EnvisionIntClass.newInt();
+			index = EnvisionInt.ZERO;
 			return index;
 		}
 		
@@ -99,7 +100,9 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 					if (obj != null) {
 						if (obj instanceof EnvisionInt env_int) {
 							index = env_int;
-							if (value != null) index.set(value);
+//							if (value != null) {
+//								index.set(value);
+//							}
 						}
 						else throw new InvalidDatatypeError("The object '"+obj+"' is invalid for the expected type (int)!");
 					}
@@ -112,7 +115,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 						//define the variable anyways but also automatically define the index
 						else {
 							//define index
-							EnvisionInt new_int = EnvisionIntClass.newInt();
+							EnvisionInt new_int = EnvisionInt.ZERO;
 							index = new_int;
 							interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
 							//define variable
@@ -123,27 +126,26 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 					//if there's no object already declared for the index and there's no assignment value
 					//simply create a new int to hold the loop's reference index
 					else {
-						EnvisionInt new_int = EnvisionIntClass.newInt();
+						EnvisionInt new_int = EnvisionInt.ZERO;
 						index = new_int;
 						interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
 					}
 				}
 				//this is not the first object, attempt to create new loop-level variable
 				else if (obj != null) {
-					if (obj instanceof EnvisionVariable env_var) env_var.set_i(value);
-					else interpreter.scope().set(name, value);
+					interpreter.scope().set(name, value);
 				}
 				else if (value != null) {
 					//because EnvisionVariables natively support copying, attempt to cast as such
-					if (value instanceof EnvisionVariable env_var) {
-						interpreter.scope().define(name, env_var.getDatatype(), env_var.copy());
+					if (value.isPassByValue()) {
+						interpreter.scope().define(name, value.getDatatype(), value.copy());
 					}
 					else {
 						interpreter.scope().define(name, value.getDatatype(), value);
 					}
 				}
 				else {
-					interpreter.scope().define(name, EnvisionNull.NULL);
+					interpreter.scope().define(name, StaticTypes.NULL_TYPE, EnvisionNull.NULL);
 				}
 			}
 		}
@@ -153,7 +155,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 		
 		//if there are no initializers, set index to zero by default;
 		if (index == null) {
-			index = EnvisionIntClass.newInt();
+			index = EnvisionInt.ZERO;
 		}
 		
 		return index;

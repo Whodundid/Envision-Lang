@@ -10,11 +10,10 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 
-public class EnvisionBooleanClass extends EnvisionClass {
+public final class EnvisionBooleanClass extends EnvisionClass {
 	
 	/**
 	 * The singular, static Boolean class for which all Envision:Boolean
@@ -29,8 +28,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	
 	//statically define function prototypes
 	static {
-		prototypes.define("get", BOOLEAN).assignDynamicClass(IFunc_get.class);
-		prototypes.define("set", BOOLEAN, BOOLEAN).assignDynamicClass(IFunc_set.class);
+		// None
 	}
 	
 	//--------------
@@ -59,10 +57,6 @@ public class EnvisionBooleanClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionBoolean defaultValue() {
-		return EnvisionBoolean.FALSE;
-	}
-	
 	public static EnvisionBoolean newBoolean() { return newBoolean(false); }
 	public static EnvisionBoolean newBoolean(EnvisionBoolean val) { return newBoolean(val.bool_val); }
 	public static EnvisionBoolean newBoolean(char val) { return newBoolean(val == 'T'); }
@@ -71,7 +65,12 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		BOOLEAN_CLASS.defineScopeMembers(bool);
 		return bool;
 	}
+
+	public static EnvisionBoolean defaultValue() {
+		return EnvisionBoolean.FALSE;
+	}
 	
+	public static EnvisionBoolean valueOf(char val) { return valueOf(val == 'T'); }
 	public static EnvisionBoolean valueOf(boolean val) {
 		return (val) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
 	}
@@ -95,7 +94,7 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		EnvisionBoolean bool = null;
 		
 		//if no args, return default boolean instance
-		if (args.length == 0) bool = new EnvisionBoolean();
+		if (args.length == 0) bool = EnvisionBoolean.FALSE;
 		//ensure there is at most 1 argument being passed
 		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
 		//otherwise, attempt to create from passed args
@@ -106,10 +105,10 @@ public class EnvisionBooleanClass extends EnvisionClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
-			if (arg_val instanceof EnvisionInt i)		bool = new EnvisionBoolean(i.int_val != 0);
-			if (arg_val instanceof EnvisionBoolean b)	bool = new EnvisionBoolean(b.bool_val);
-			if (arg_val instanceof EnvisionChar c)      bool = new EnvisionBoolean(c.char_val == 'T');
-			if (arg_val instanceof EnvisionString s)	bool = new EnvisionBoolean(s.string_val.toString().equals("true"));
+			else if (arg_val instanceof EnvisionInt i)		bool = valueOf(i.int_val != 0);
+			else if (arg_val instanceof EnvisionBoolean b)	bool = valueOf(b.bool_val);
+			else if (arg_val instanceof EnvisionChar c)     bool = valueOf(c.char_val == 'T');
+			else if (arg_val instanceof EnvisionString s)	bool = valueOf(s.string_val.toString().equals("true"));
 			
 			//if null, creation failed!
 			if (bool == null)
@@ -130,25 +129,6 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		prototypes.defineOn(inst);
 	}
 	
-	//---------------------------
-	// Instance Member Functions
-	//---------------------------
-	
-	private static class IFunc_get<E extends EnvisionBoolean> extends InstanceFunction<E> {
-		public IFunc_get() { super(BOOLEAN, "get"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionBooleanClass.newBoolean(inst.bool_val));
-		}
-	}
-	
-	private static class IFunc_set<E extends EnvisionBoolean> extends InstanceFunction<E> {
-		public IFunc_set() { super(BOOLEAN, "set", BOOLEAN); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			inst.bool_val = ((EnvisionBoolean) args[0]).bool_val;
-			ret(inst);
-		}
-	}
-	
 	//-------------------------
 	// Static Member Functions
 	//-------------------------
@@ -163,12 +143,12 @@ public class EnvisionBooleanClass extends EnvisionClass {
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (args[0] instanceof EnvisionString env_str) {
-				ret(EnvisionBooleanClass.newBoolean(env_str.string_val.toString().equals("true")));
+				ret(EnvisionBooleanClass.valueOf(env_str.toString().equals("true")));
 			}
 			else if (args[0] instanceof EnvisionInt env_int) {
-				ret(EnvisionBooleanClass.newBoolean(env_int.int_val == 1));
+				ret(EnvisionBooleanClass.valueOf(env_int.int_val == 1));
 			}
-			ret(EnvisionBooleanClass.newBoolean((EnvisionBoolean) args[0]));
+			ret(EnvisionBooleanClass.valueOf((EnvisionBoolean) args[0]));
 		}
 	}
 	

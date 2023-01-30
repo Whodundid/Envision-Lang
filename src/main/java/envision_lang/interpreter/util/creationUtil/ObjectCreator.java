@@ -100,12 +100,12 @@ public class ObjectCreator {
 		if (p_type.isPassByValue()) {
 			if (defaultIn) {
 				switch (p_type) {
-				case BOOLEAN: return EnvisionBooleanClass.newBoolean();
-				case CHAR: return EnvisionCharClass.newChar();
-				case INT: return EnvisionIntClass.newInt();
+				case BOOLEAN: return EnvisionBooleanClass.defaultValue();
+				case CHAR: return EnvisionCharClass.defaultValue();
+				case INT: return EnvisionIntClass.defaultValue();
 				case NUMBER:
-				case DOUBLE: return EnvisionDoubleClass.newDouble();
-				case STRING: return EnvisionStringClass.newString();
+				case DOUBLE: return EnvisionDoubleClass.defaultValue();
+				case STRING: return EnvisionStringClass.defaultValue();
 //				case LIST:
 //					EnvisionList new_list = EnvisionListClass.newList(typeIn);
 //					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
@@ -115,14 +115,14 @@ public class ObjectCreator {
 			}
 			else {
 				switch (p_type) {
-				case BOOLEAN: obj = EnvisionBooleanClass.newBoolean((boolean) valueIn); break;
-				case CHAR: obj = EnvisionCharClass.newChar(charify(valueIn)); break; //charify the input
-				case INT: obj = EnvisionIntClass.newInt((long) valueIn); break;
-				case DOUBLE: obj = EnvisionDoubleClass.newDouble((double) valueIn); break;
-				case STRING: obj = EnvisionStringClass.newString(stringify(valueIn)); break;
+				case BOOLEAN: obj = EnvisionBooleanClass.valueOf((boolean) valueIn); break;
+				case CHAR: obj = EnvisionCharClass.valueOf(charify(valueIn)); break; //charify the input
+				case INT: obj = EnvisionIntClass.valueOf((long) valueIn); break;
+				case DOUBLE: obj = EnvisionDoubleClass.valueOf((double) valueIn); break;
+				case STRING: obj = EnvisionStringClass.valueOf(stringify(valueIn)); break;
 				case NUMBER:
-					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);
-					else obj = EnvisionDoubleClass.newDouble((double) valueIn);
+					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.valueOf((long) valueIn);
+					else obj = EnvisionDoubleClass.valueOf((double) valueIn);
 					break;
 //				case LIST:
 //					EnvisionList new_list = EnvisionListClass.newList(typeIn);

@@ -14,7 +14,7 @@ public class Nanos extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		ret(EnvisionIntClass.newInt(System.nanoTime()));
+		ret(EnvisionIntClass.valueOf(System.nanoTime()));
 	}
 	
 }

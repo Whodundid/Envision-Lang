@@ -10,11 +10,9 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
 
-public class EnvisionTupleClass extends EnvisionClass {
+public final class EnvisionTupleClass extends EnvisionClass {
 
 	/**
 	 * The singular, static Tuple class for which all Envision:Tuple
@@ -31,7 +29,6 @@ public class EnvisionTupleClass extends EnvisionClass {
 		TUPLE_PROTOTYPES.define("get", VAR, INT).assignDynamicClass(IFunc_get.class);
 		TUPLE_PROTOTYPES.define("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
 		TUPLE_PROTOTYPES.define("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
-		TUPLE_PROTOTYPES.define("getListType", STRING).assignDynamicClass(IFunc_getTupleType.class);
 		TUPLE_PROTOTYPES.define("hasOne", BOOLEAN).assignDynamicClass(IFunc_hasOne.class);
 		TUPLE_PROTOTYPES.define("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
 		TUPLE_PROTOTYPES.define("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
@@ -60,15 +57,16 @@ public class EnvisionTupleClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionTuple newTuple() { return newTuple(StaticTypes.VAR_TYPE); }
-	public static EnvisionTuple newTuple(IDatatype type) {
-		EnvisionTuple tuple = new EnvisionTuple(type);
+	public static EnvisionTuple newTuple() {
+		EnvisionTuple tuple = new EnvisionTuple();
 		TUPLE_CLASS.defineScopeMembers(tuple);
 		return tuple;
 	}
 	
-	public static EnvisionTuple newTuple(IDatatype type, List<? extends EnvisionObject> data) {
-		EnvisionTuple tuple = newTuple(type);
+	public static EnvisionTuple newTuple(List<? extends EnvisionObject> data) {
+		if (data.isEmpty()) return EnvisionTuple.EMPTY_TUPLE;
+		
+		EnvisionTuple tuple = newTuple();
 		var list = tuple.getInternalList();
 		list.ensureCapacity(data.size());
 		for (var o : data) list.add(o);
@@ -87,6 +85,8 @@ public class EnvisionTupleClass extends EnvisionClass {
 	
 	@Override
 	protected EnvisionTuple buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		if (args.length == 0) return EnvisionTuple.EMPTY_TUPLE;
+		
 		EnvisionTuple tuple = new EnvisionTuple();
 		var list = tuple.getInternalList();
 		
@@ -206,13 +206,6 @@ public class EnvisionTupleClass extends EnvisionClass {
 		public IFunc_getLast() { super(VAR, "getLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getLast());
-		}
-	}
-	
-	public static class IFunc_getTupleType<E extends EnvisionTuple> extends InstanceFunction<E> {
-		public IFunc_getTupleType() { super(STRING, "getTupleType"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst.getTupleTypeString());
 		}
 	}
 	

@@ -99,7 +99,7 @@ public class WorkingDirectory {
 	/**
 	 * Attempts to return a code file of the given name (if it exists).
 	 */
-	@Broken("Does not account for nested files!")
+	@Broken(reason="Does not account for nested files!")
 	public EnvisionCodeFile getFile(String name) {
 		for (EnvisionCodeFile f : codeFiles) {
 			if (f.getFileName().equals(name)) return f;

@@ -41,7 +41,6 @@ public class PS_VarDef extends ParserHead {
 		Token<?> name = null;
 		
 		//try to consume a datatype
-		//ignoreNL();
 		if (checkType(DATATYPE)) {
 			type = consumeType(DATATYPE, "Expected a valid datatype!");
 		}
@@ -50,7 +49,6 @@ public class PS_VarDef extends ParserHead {
 		}
 		
 		//check for list-set-expression
-		//ignoreNL();
 		if (check(BRACKET_L)) {
 			decrementParsingIndex();
 			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
@@ -58,8 +56,6 @@ public class PS_VarDef extends ParserHead {
 		}
 		
 		Primitives checkType = (type != null) ? type.getPrimitiveDataType() : Primitives.VAR;
-		
-//		if (checkType == null) checkType = Primitives.VAR;
 		
 		//check for valid variable datatypes
 		errorPreviousIf(checkType == Primitives.VOID, 2, "Variable types cannot be void!");
@@ -72,14 +68,13 @@ public class PS_VarDef extends ParserHead {
 		
 		//collect any get/set modifiers
 		Stmt_GetSet getset = null;
-		//ignoreNL();
-		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
+//		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
 		
 		//check for type-less variable creation
-		//ignoreNL();
 		if (check(ASSIGN)) {
 			setPreviousNonNL();
 			ParsedExpression typeless_varDec = ExpressionParser.parseExpression();
+			consumeTerminator();
 			return new Stmt_Expression(typeless_varDec);
 		}
 		
@@ -88,12 +83,10 @@ public class PS_VarDef extends ParserHead {
 		
 		//parse for declared variables
 		do {
-			//ignoreNL();
 			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
 			//parse for initializer (if there is one)
 			ParsedExpression initializer = null;
-			//ignoreNL();
 			if (match(ASSIGN)) {
 				initializer = ExpressionParser.parseExpression();
 			}
@@ -101,16 +94,10 @@ public class PS_VarDef extends ParserHead {
 			//add variable to statement
 			varDecStatement.addVar(name, initializer);
 			name = null;
-			//ignoreNL();
 		}
 		while (match(COMMA));
 		
-		// only parse for the ending terminator if specifically requested
-//		if (!ignoreEndingTerminator) {
-//			boolean prev = checkPreviousType(TERMINATOR);
-//			boolean match = match(SEMICOLON, NEWLINE, EOF);
-//			errorIf(!(prev || match), "Incomplete variable declaration!");
-//		}
+		consumeTerminator();
 		
 		return varDecStatement;
 	}

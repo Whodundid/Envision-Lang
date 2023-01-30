@@ -22,7 +22,7 @@ public class IE_Var extends AbstractInterpreterExecutor {
 		if (name == null)
 			throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
 		
-		//get name from interpreter
+		// get name from interpreter
 		EnvisionObject obj = interpreter.lookUpVariable(e.name.getLexeme());
 		
 		return obj;

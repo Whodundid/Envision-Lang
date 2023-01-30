@@ -18,7 +18,7 @@ import envision_lang.lang.natives.Primitives;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionNumberClass extends EnvisionClass {
+public final class EnvisionNumberClass extends EnvisionClass {
 	
 	/**
 	 * The singular, static Number class for which all Envision:Number
@@ -46,12 +46,14 @@ public class EnvisionNumberClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionNumber newNumber() { return newNumber(0.0d); }
-	public static EnvisionNumber newNumber(long val) { return new EnvisionInt(val); }
-	public static EnvisionNumber newNumber(double val) { return new EnvisionDouble(val); }
+	public static EnvisionNumber newNumber() { return EnvisionInt.ZERO; }
+	public static EnvisionNumber newNumber(long val) { return EnvisionIntClass.valueOf(val); }
+	public static EnvisionNumber newNumber(double val) { return EnvisionDoubleClass.valueOf(val); }
 	public static EnvisionNumber newNumber(Number val) {
-		if (val instanceof Integer || val instanceof Long) return new EnvisionInt(val);
-		return new EnvisionDouble(val);
+		if (val instanceof Float || val instanceof Double) {
+			return EnvisionDoubleClass.valueOf(val.doubleValue());
+		}
+		return EnvisionIntClass.valueOf(val.longValue());
 	}
 	
 	//-----------
@@ -78,9 +80,10 @@ public class EnvisionNumberClass extends EnvisionClass {
 			//make static
 			setStatic();
 		}
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionInt env_int) ret(new EnvisionInt(env_int));
-			else if (args[0] instanceof EnvisionDouble env_double) ret(new EnvisionDouble(env_double));
+		@Override
+		public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			if (args[0] instanceof EnvisionInt env_int) ret(env_int);
+			else if (args[0] instanceof EnvisionDouble env_double) ret(env_double);
 		}
 	}
 	

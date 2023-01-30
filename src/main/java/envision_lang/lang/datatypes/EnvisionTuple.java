@@ -12,8 +12,6 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.internal.FunctionPrototype;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -25,50 +23,41 @@ import eutil.strings.EStringUtil;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionTuple extends ClassInstance {
+public final class EnvisionTuple extends ClassInstance {
+	
+	public static final EnvisionTuple EMPTY_TUPLE = EnvisionTupleClass.newTuple();
+	
+	//========
+	// Fields
+	//========
 	
 	/**
 	 * Internal Array list.
 	 */
-	private final EList<EnvisionObject> list = EList.newList();
-	
-	/**
-	 * If parameterized to hold a specific datatype, this is that type.
-	 */
-	private final IDatatype tuple_type;
+	public final EList<EnvisionObject> internal_list;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	protected EnvisionTuple() { this(StaticTypes.VAR_TYPE); }
-	protected EnvisionTuple(IDatatype typeIn) {
+	EnvisionTuple() {
 		super(EnvisionTupleClass.TUPLE_CLASS);
-		tuple_type = typeIn;
+		internal_list = new EArrayList<>(0);
 	}
 	
-	protected EnvisionTuple(IDatatype typeIn, EList listIn) {
+	EnvisionTuple(EList listIn) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
-		tuple_type = typeIn;
-		list.addAll(listIn);
+		internal_list = new EArrayList<>(listIn);
 	}
 	
-	protected EnvisionTuple(EnvisionTuple in) {
+	EnvisionTuple(EnvisionTuple in) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
-		tuple_type = in.tuple_type;
-		list.addAll(in.list);
+		internal_list = new EArrayList<>(in.internal_list);
 	}
 	
-	protected EnvisionTuple(EnvisionTuple in, EList listIn) {
+	EnvisionTuple(EnvisionList listIn) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
-		tuple_type = in.tuple_type;
-		list.addAll(listIn);
-	}
-	
-	protected EnvisionTuple(EnvisionList listIn) {
-		super(EnvisionTupleClass.TUPLE_CLASS);
-		tuple_type = listIn.getListType();
-		list.addAll(listIn.getInternalList());
+		internal_list = new EArrayList<>(listIn.getInternalList());
 	}
 	
 	//-----------
@@ -77,23 +66,25 @@ public class EnvisionTuple extends ClassInstance {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof EnvisionTuple env_tuple && env_tuple.list == list);
+		return (obj instanceof EnvisionTuple env_tuple && env_tuple.internal_list == internal_list);
 	}
 	
 	@Override
 	public EnvisionTuple copy() {
+		if (this == EMPTY_TUPLE) return EMPTY_TUPLE;
+		
 		//shallow copy
-		var l = EnvisionTupleClass.newTuple(tuple_type);
-		for (var o : list) {
-			if (o.isPrimitive()) l.list.add(o.copy());
-			else l.list.add(o);
+		var l = EnvisionTupleClass.newTuple();
+		for (var o : internal_list) {
+			if (o.isPrimitive()) l.internal_list.add(o.copy());
+			else l.internal_list.add(o);
 		}
 		return l;
 	}
 	
 	@Override
 	public String toString() {
-		return "(" + EStringUtil.combineAll(list, ", ") + ")";
+		return "(" + EStringUtil.combineAll(internal_list, ", ") + ")";
 	}
 	
 	@Override
@@ -121,7 +112,7 @@ public class EnvisionTuple extends ClassInstance {
 			if (obj instanceof EnvisionVariable var) toAdd = var.copy();
 			
 			EnvisionTuple newTuple = new EnvisionTuple(this);
-			newTuple.list.add(toAdd);
+			newTuple.internal_list.add(toAdd);
 			
 			return newTuple;
 		}
@@ -134,15 +125,15 @@ public class EnvisionTuple extends ClassInstance {
 				throw new InvalidArgumentError("Expected an integer greater than or equal to '1' here!");
 			}
 			
-			EArrayList<EnvisionObject> toCopy = new EArrayList<>(list.size());
-			for (var o : list) toCopy.add(o);
+			EArrayList<EnvisionObject> toCopy = new EArrayList<>(internal_list.size());
+			for (var o : internal_list) toCopy.add(o);
 			
 			EnvisionTuple newTuple = new EnvisionTuple(this);
 			
 			for (int i = 0; i < (byAmount - 1); i++) {
 				for (var o : toCopy) {
-					if (o.isPrimitive()) newTuple.list.add(o.copy());
-					else newTuple.list.add(o);
+					if (o.isPrimitive()) newTuple.internal_list.add(o.copy());
+					else newTuple.internal_list.add(o);
 				}
 			}
 			
@@ -163,7 +154,6 @@ public class EnvisionTuple extends ClassInstance {
 		case "get" -> get((EnvisionInt) args[0]);
 		case "getFirst" -> getFirst();
 		case "getLast" -> getLast();
-		case "getListType" -> getTupleTypeString();
 		case "hasOne" -> hasOne();
 		case "isEmpty" -> isEmpty();
 		case "isNotEmpty" -> isNotEmpty();
@@ -179,19 +169,21 @@ public class EnvisionTuple extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EList<EnvisionObject> getInternalList() { return list; }
+	public EList<EnvisionObject> getInternalList() { return internal_list; }
 	
-	public EnvisionInt size() { return EnvisionIntClass.newInt(list.size()); }
-	public long size_i() { return list.size(); }
-	public boolean isEmpty_i() { return list.isEmpty(); }
-	public EnvisionBoolean isEmpty() { return (list.isEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean hasOne() { return (list.hasOne()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean isNotEmpty() { return (list.isNotEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public void add(EnvisionObject o) { internal_list.add(o); }
 	
-	public IDatatype getTupleType() { return tuple_type; }
-	public EnvisionString getTupleTypeString() { return EnvisionStringClass.newString(tuple_type); }
-	public EnvisionBoolean contains(EnvisionObject o) { return (list.contains(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean notContains(EnvisionObject o) { return list.notContains(o) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public EnvisionInt size() { return EnvisionIntClass.valueOf(internal_list.size()); }
+	public long size_i() { return internal_list.size(); }
+	
+	public EnvisionBoolean isEmpty() { return EnvisionBooleanClass.valueOf(internal_list.isEmpty()); }
+	public boolean isEmpty_i() { return internal_list.isEmpty(); }
+	
+	public EnvisionBoolean hasOne() { return EnvisionBooleanClass.valueOf(internal_list.hasOne()); }
+	public EnvisionBoolean isNotEmpty() { return EnvisionBooleanClass.valueOf(internal_list.isNotEmpty()); }
+	
+	public EnvisionBoolean contains(EnvisionObject o) { return EnvisionBooleanClass.valueOf(internal_list.contains(o)); }
+	public EnvisionBoolean notContains(EnvisionObject o) { return EnvisionBooleanClass.valueOf(internal_list.notContains(o)); }
 	
 	//-------------------
 	// Tuple Get Methods
@@ -199,28 +191,30 @@ public class EnvisionTuple extends ClassInstance {
 	
 	public EnvisionObject get(EnvisionInt index) { return get((int) index.int_val); }
 	public EnvisionObject get(long index) { return get((int) index); }
-	public EnvisionObject get(int index) { return list.get(checkEmpty(checkIndex(index))); }
+	public EnvisionObject get(int index) { return internal_list.get(checkEmpty(checkIndex(index))); }
 	
-	public EnvisionObject getFirst() { checkEmpty(); return list.getFirst(); }
-	public EnvisionObject getLast() { checkEmpty(); return list.getLast(); }
+	public EnvisionObject getFirst() { checkEmpty(); return internal_list.getFirst(); }
+	public EnvisionObject getLast() { checkEmpty(); return internal_list.getLast(); }
 	
 	//---------------
 	// Tuple Methods
 	//---------------
 	
 	public EnvisionTuple flip() {
-		return new EnvisionTuple(tuple_type, list.reverse());
+		if (this == EMPTY_TUPLE) return EMPTY_TUPLE;
+		return new EnvisionTuple(internal_list.reverse());
 	}
 	
 	public EnvisionTuple shuffle() {
-		EList<EnvisionObject> l = EList.newList(list);
+		if (this == EMPTY_TUPLE) return EMPTY_TUPLE;
+		EList<EnvisionObject> l = EList.newList(internal_list);
 		Collections.shuffle(l);
-		return new EnvisionTuple(this, l);
+		return new EnvisionTuple(l);
 	}
 	
 	public EnvisionObject random() {
 		if (isEmpty_i()) return EnvisionNull.NULL;
-		return list.getRandom();
+		return internal_list.getRandom();
 	}
 	
 	//------------------
@@ -229,12 +223,12 @@ public class EnvisionTuple extends ClassInstance {
 	
 	private void checkEmpty() { checkEmpty(0); }
 	private int checkEmpty(int index) {
-		if (list.isEmpty()) throw new EmptyTupleError(this);
+		if (internal_list.isEmpty()) throw new EmptyTupleError(this);
 		return index;
 	}
 	
 	private int checkIndex(int index) {
-		if (index < 0 || index >= list.size()) throw new IndexOutOfBoundsError(index, this);
+		if (index < 0 || index >= internal_list.size()) throw new IndexOutOfBoundsError(index, this);
 		return index;
 	}
 	
@@ -242,22 +236,37 @@ public class EnvisionTuple extends ClassInstance {
 	
 	/**
 	 * Creates an empty tuple.
-	 * 
-	 * @return The new tuple
 	 */
 	public static EnvisionTuple empty() {
-		return new EnvisionTuple();
+		return EMPTY_TUPLE;
 	}
 	
-	public static EnvisionTuple of(EnvisionObject[] vals) {
-		EnvisionTuple tuple = new EnvisionTuple();
-		tuple.list.addA(vals);
+	public static EnvisionTuple of(EnvisionObject obj) {
+		EnvisionTuple tuple = EnvisionTupleClass.newTuple();
+		tuple.internal_list.add(obj);
 		return tuple;
 	}
 	
-	public static <E extends EnvisionObject> EnvisionTuple of(IDatatype typeIn, E... vals) {
-		EnvisionTuple tuple = new EnvisionTuple(typeIn);
-		tuple.list.addA(vals);
+	public static EnvisionTuple of(EnvisionObject a, EnvisionObject b) {
+		EnvisionTuple tuple = EnvisionTupleClass.newTuple();
+		var list = tuple.internal_list;
+		list.add(a);
+		list.add(b);
+		return tuple;
+	}
+	
+	public static EnvisionTuple of(EnvisionObject a, EnvisionObject b, EnvisionObject c) {
+		EnvisionTuple tuple = EnvisionTupleClass.newTuple();
+		var list = tuple.internal_list;
+		list.add(a);
+		list.add(b);
+		list.add(c);
+		return tuple;
+	}
+	
+	public static EnvisionTuple of(EnvisionObject... vals) {
+		EnvisionTuple tuple = new EnvisionTuple();
+		tuple.internal_list.addA(vals);
 		return tuple;
 	}
 	

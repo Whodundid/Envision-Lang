@@ -45,7 +45,6 @@ public class ExpressionParser extends ParserHead {
 	 * @return A built expression
 	 */
 	public static ParsedExpression parseExpression() {
-		//ignoreNL();
 		return assignment();
 	}
 	
@@ -54,20 +53,17 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression assignment() {
 		ParsedExpression e = or();
 		
-		//ignoreNL();
 		if (matchType(ASSIGNMENT)) {
 			Operator operator = previousNonTerminator().asOperator();
 			ParsedExpression value = assignment();
 			ParsedExpression check = null;
 			
 			if (e instanceof Expr_Var v) check = new Expr_Assign(v.name, operator, value);
-			//if (e instanceof ModularExpression m) return new AssignExpression(null, operator, value, m.modulars);
 			if (e instanceof Expr_Get g) check = new Expr_Set(g.object, g.name, value);
 			if (e instanceof Expr_ListIndex lie) check = new Expr_SetListIndex(lie, operator, value);
 			if (e instanceof Expr_Assign ae) check = new Expr_Assign(ae, operator, value);
 			
 			if (check != null) {
-				//requireTerminator(); //THIS NEEDS TO KNOW WHETHER OR NOT IT IS IN A FUNCTION CALL AS AN ARGUMENT!
 				return check;
 			}
 			
@@ -83,7 +79,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression or() {
 		ParsedExpression e = And();
 		
-		//ignoreNL();
 		while (match(OR)) {
 			Operator operator = previousNonTerminator().asOperator();
 			ParsedExpression right = And();
@@ -98,7 +93,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression And() {
 		ParsedExpression e = equality();
 		
-		//ignoreNL();
 		while (match(AND)) {
 			Operator operator = previousNonTerminator().asOperator();
 			ParsedExpression right = equality();
@@ -113,7 +107,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression equality() {
 		ParsedExpression e = lambda();
 		
-		//ignoreNL();
 		if (match(NOT_EQUALS, EQUALS, GT, GTE, LT, LTE)) {
 			var prev = previousNonTerminator();
 			Operator operator = prev.asOperator();
@@ -121,22 +114,9 @@ public class ExpressionParser extends ParserHead {
 			e = new Expr_Binary(e, operator, right);
 		}
 		
-		//operator expression
-		/*
-		if (match(OPERATOR_EXPR)) {
-			Token operator = null;
-			if (check(IDENTIFIER)) operator = consume(IDENTIFIER, "Expected a valid name for the given operator!");
-			if (ParserStage.modularValues != null && check(MODULAR_VALUE)) operator = consume(MODULAR_VALUE, "Expected a modular '@' reference for the given operator!");
-			Expression right = PE_4_Lambda.run();
-			e = new BinaryExpression(e, operator, right, true);
-		}
-		*/
-		
 		//typeof expressions
-		//ignoreNL();
 		if (check(NEGATE) && checkNext(TYPEOF)) {
 			consume(NEGATE, "Expected a '!' here!"); //consume the '!'
-			//ignoreNL();
 			consume(TYPEOF, "Expected a 'typeof' here!"); //consume the 'typeof'
 			ParsedExpression right = lambda();
 			e = new Expr_TypeOf(e, false, right);
@@ -154,7 +134,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression lambda() {
 		ParsedExpression e = arithmetic();
 		
-		//ignoreNL();
 		while (match(LAMBDA)) {
 			e = new Expr_Lambda(previousNonTerminator(), e, parseExpression());
 		}
@@ -167,7 +146,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression arithmetic() {
 		ParsedExpression e = factor();
 		
-		//ignoreNL();
 		while (match(ADD, SUB)) {
 			Operator operator = previousNonTerminator().asOperator();
 			ParsedExpression right = factor();
@@ -180,12 +158,10 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression factor() {
 		ParsedExpression e = unary();
 		
-		//ignoreNL();
 		while (match(MUL, DIV, MOD)) {
 			Operator operator = previousNonTerminator().asOperator();
 			ParsedExpression right = unary();
 			e = new Expr_Binary(e, operator, right);
-			//ignoreNL();
 		}
 		
 		return e;
@@ -194,12 +170,10 @@ public class ExpressionParser extends ParserHead {
 	//-----------------------------------------------------------------------------------------------------
 	
 	public static ParsedExpression unary() {
-		//ignoreNL();
 		if (check(NEGATE, SUB, DEC, INC) && checkNextNonTerminator(IDENTIFIER, TYPEOF, TRUE, FALSE)) {
 			Operator operator = current().asOperator();
 			match(NEGATE, SUB, DEC, INC);
 			
-			//ignoreNL();
 			if (operator == SUB || operator == DEC || operator == INC) {
 				String opName;
 				if (operator == SUB) opName = "negation";
@@ -216,7 +190,6 @@ public class ExpressionParser extends ParserHead {
 		
 		ParsedExpression e = range();
 		
-		//ignoreNL();
 		if (match(DEC, INC)) {
 			errorIf(!(e instanceof Expr_Var), "Cannot perform a unary operation on anything other than a variable!");
 			
@@ -232,11 +205,9 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression range() {
 		ParsedExpression e = functionCall();
 		
-		//ignoreNL();
 		if (!(e instanceof Expr_Range) && match(TO)) {
 			ParsedExpression right = range();
 			ParsedExpression by = null;
-			//ignoreNL();
 			if (match(BY)) {
 				by = range();
 			}
@@ -252,19 +223,15 @@ public class ExpressionParser extends ParserHead {
 		ParsedExpression e = primary();
 		
 		while (true) {
-			//ignoreNL();
 			//check if standard function call
 			if (check(PAREN_L)) {
 				e = new Expr_FunctionCall(e, collectFuncArgs());
-				//requireTerminator();
 			}
 			//check if accessing array element
 			else if (match(BRACKET_L)) {
 				ParsedExpression index = parseExpression();
-				//ignoreNL();
 				consume(BRACKET_R, "Expected ']' after list index!");
 				e = new Expr_ListIndex(e, index);
-				//requireTerminator();
 			}
 			//check if accessing member object
 			else if (match(PERIOD)) {
@@ -272,7 +239,6 @@ public class ExpressionParser extends ParserHead {
 				Token<?> name = consume("Expected property name after '.'!", IDENTIFIER);
 				
 				//check if member function call
-				//ignoreNL();
 				if (check(PAREN_L)) e = new Expr_FunctionCall(e, name, collectFuncArgs());
 				//otherwise, create a member 'get' call
 				else e = new Expr_Get(e, name);
@@ -287,16 +253,12 @@ public class ExpressionParser extends ParserHead {
 		EList<ParsedExpression> args = new EArrayList<>();
 		
 		//arguments
-		//ignoreNL();
 		consume(PAREN_L, "Expected '(' to begin arguments!");
-		//ignoreNL();
 		if (!check(PAREN_R)) {
 			do {
-				//ignoreNL();
 				if (args.size() >= 255) error("Can't have more than 255 args!");
 				ParsedExpression exp = parseExpression();
 				args.add(exp);
-				//ignoreNL();
 			}
 			while (match(COMMA));
 		}
@@ -311,7 +273,6 @@ public class ExpressionParser extends ParserHead {
 	public static ParsedExpression primary() {
 		ParsedExpression e = null;
 		
-		//ignoreNL();
 		if (match(INIT)) return new Expr_Var(previousNonTerminator());
 		if (matchType(OPERATOR)) return new Expr_Literal(previousNonTerminator(), previousNonTerminator().getKeyword());
 		
@@ -346,7 +307,6 @@ public class ExpressionParser extends ParserHead {
 			ParsedExpression right = range();
 			ParsedExpression by = null;
 			
-			//ignoreNL();
 			if (match(BY)) {
 				by = range();
 			}
@@ -354,20 +314,16 @@ public class ExpressionParser extends ParserHead {
 			return new Expr_Range(new Expr_Literal(start, 0), right, by);
 		}
 		
-		//ignoreNL();
 		if (match(BRACKET_L)) {
 			Expr_ListInitializer e = new Expr_ListInitializer(previousNonTerminator());
 			
-			//ignoreNL();
 			if (!check(BRACKET_R)) {
 				do {
 					e.addValue(assignment());
-					//ignoreNL();
 				}
 				while (match(COMMA));
 			}
 			
-			//ignoreNL();
 			consume(BRACKET_R, "Expected ']' after list initializer!");
 			
 			return e;
@@ -379,26 +335,21 @@ public class ExpressionParser extends ParserHead {
 	//-----------------------------------------------------------------------------------------------------
 	
 	private static ParsedExpression checkLambda() {
-		//ignoreNL();
 		if (!match(PAREN_L)) return null;
 		
 		ParsedExpression e = null;
 		Token<?> start = previousNonTerminator();
 		EList<ParsedExpression> expressions = null;
 		
-		//ignoreNL();
 		if (!check(PAREN_R)) {
 			e = parseExpression();
 			
-			//ignoreNL();
 			if (match(COMMA)) {
 				expressions = EList.newList();
 				expressions.add(e);
 				
-				//ignoreNL();
 				do {
 					expressions.add(parseExpression());
-					//ignoreNL();
 				}
 				while (match(COMMA));
 				
@@ -406,7 +357,6 @@ public class ExpressionParser extends ParserHead {
 			}
 		}
 		
-		//ignoreNL();
 		consume(PAREN_R, "Expected ')' after expression!");
 		
 		//check for cast expressions
@@ -420,11 +370,8 @@ public class ExpressionParser extends ParserHead {
 			}
 		}
 		
-		//ignoreNL();
 		if (match(TERNARY)) {
-			//ignoreNL();
 			ParsedExpression t = parseExpression();
-			//ignoreNL();
 			consume(COLON, "Expected a ':' in between ternary expressions!");
 			ParsedExpression f = parseExpression();
 			return new Expr_Ternary(e, t, f);
@@ -433,14 +380,11 @@ public class ExpressionParser extends ParserHead {
 			error("An empty ParsedExpression can only be followed with a lambda expression!");
 		}
 		else {
-			//parser.pd("CUR PRI: " + current());
-			
 			// This is duct tape at best
 			if (e instanceof Expr_Compound) return e;
 			
 			//if there was no lambda production, return empty
 			if (e == null) return new Expr_Compound(current());
-			//else return new CompoundExpression(e);
 			
 			return e;
 		}
@@ -451,58 +395,43 @@ public class ExpressionParser extends ParserHead {
 	//-----------------------------------------------------------------------------------------------------
 	
 	private static ParsedExpression checkObject() {
-		//ignoreNL();
 		if (match(THIS)) {
 			Token<?> start = previous();
-			//ignoreNL();
 			if (match(PAREN_L)) {
 				EList<ParsedExpression> args = EList.newList();
-				//ignoreNL();
 				if (!check(PAREN_R)) {
 					do {
 						if (args.size() >= 255) {
 							error("Can't have more than 255 args!");
 						}
 						args.add(parseExpression());
-						//ignoreNL();
 					}
 					while (match(COMMA));
 				}
-				//ignoreNL();
 				consume(PAREN_R, "Expected a ')' after arguments!");
-				
-				//return new ThisConExpression(args);
 			}
 			
-			//ignoreNL();
 			if (match(PERIOD)) {
-				//ignoreNL();
 				return new Expr_This(consume(IDENTIFIER, "Expected a valid identifier!"));
 			}
 			
 			return new Expr_This(start);
 		}
 		
-		//ignoreNL();
 		if (match(SUPER)) {
 			Token<?> start = previous();
-			//ignoreNL();
 			consume(PERIOD, "Expected '.' after super call!");
-			//ignoreNL();
 			Token<?> m = consume(IDENTIFIER, "Expected superclass method name!");
 			
-			//ignoreNL();
 			if (match(PAREN_L)) {
 				EList<ParsedExpression> args = EList.newList();
 				if (!check(PAREN_R)) {
 					do {
 						args.add(parseExpression());
-						//ignoreNL();
 					}
 					while (match(COMMA));
 				}
 				
-				//ignoreNL();
 				consume(PAREN_R, "Expected a ')' to close method arguments!");
 				
 				return new Expr_Super(start, m, args);
@@ -517,14 +446,11 @@ public class ExpressionParser extends ParserHead {
 	//-----------------------------------------------------------------------------------------------------
 	
 	private static ParsedExpression checkTernary() {
-		//ignoreNL();
 		if (match(IDENTIFIER, THIS)) {
 			Expr_Var e = new Expr_Var(previousNonTerminator());
 			
-			//ignoreNL();
 			if (match(TERNARY)) {
 				ParsedExpression t = parseExpression();
-				//ignoreNL();
 				consume(COLON, "Expected a ':' in between ternary expressions!");
 				ParsedExpression f = parseExpression();
 				return new Expr_Ternary(e, t, f);
@@ -539,7 +465,6 @@ public class ExpressionParser extends ParserHead {
 	//-----------------------------------------------------------------------------------------------------
 	
 	private static ParsedExpression checkVariable() {
-		//ignoreNL();
 		if (match(IDENTIFIER) || matchType(DATATYPE)) {
 			Token<?> type = previousNonTerminator();
 			EList<Token<?>> params = null;
@@ -548,13 +473,10 @@ public class ExpressionParser extends ParserHead {
 			if (type.isDatatype()) return new Expr_Primitive(type);
 			
 			//check for parameters
-			//ignoreNL();
 			if (match(LT)) {
 				params = new EArrayList<>();
-				//ignoreNL();
 				while (!atEnd() && !match(GT)) {
 					//check if valid parameter
-					//ignoreNL();
 					if (check(IDENTIFIER, TERNARY) || checkType(DATATYPE)) {
 						params.add(getAdvance());
 					}

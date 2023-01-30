@@ -3,6 +3,7 @@ package envision_lang.lang.java;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
@@ -12,6 +13,7 @@ import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 final class NativeFunctionWrapper extends EnvisionFunction {
 	
@@ -22,7 +24,7 @@ final class NativeFunctionWrapper extends EnvisionFunction {
 	private Object objectInstance;
 	private Constructor<?> javaConstructorTarget;
 	private Method javaMethodTarget;
-	private HashMap<IDatatype, Class<?>> argMapper = new HashMap<>();
+	private Map<IDatatype, Class<?>> argMapper = new HashMap<>();
 	
 	//==============
 	// Constructors
@@ -30,9 +32,9 @@ final class NativeFunctionWrapper extends EnvisionFunction {
 	
 	/** Wrapper for java constructor methods. */
 	public NativeFunctionWrapper(ParameterData paramsIn,
-								     Object instance,
-								     Constructor<?> javaConstructorTargetIn,
-								     HashMap<IDatatype, Class<?>> argMapperIn)
+								 Object instance,
+								 Constructor<?> javaConstructorTargetIn,
+								 Map<IDatatype, Class<?>> argMapperIn)
 	{
 		super(paramsIn);
 		objectInstance = instance;
@@ -42,11 +44,11 @@ final class NativeFunctionWrapper extends EnvisionFunction {
 	
 	/** Wrapper for all standard java methods. */
 	public NativeFunctionWrapper(IDatatype rt,
-								     String nameIn,
-								     ParameterData paramsIn,
-								     Object instance,
-								     Method javaMethodTargetIn,
-								     HashMap<IDatatype, Class<?>> argMapperIn)
+								 String nameIn,
+								 ParameterData paramsIn,
+								 Object instance,
+								 Method javaMethodTargetIn,
+								 Map<IDatatype, Class<?>> argMapperIn)
 	{
 		super(rt, nameIn, paramsIn);
 		objectInstance = instance;
@@ -85,7 +87,7 @@ final class NativeFunctionWrapper extends EnvisionFunction {
 	protected void executeJavaConstructor(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		try {
 			//System.out.println("argMapper: " + " : " + argMapper + " : " + EStringUtil.toString(args));
-			EArrayList<Object> javaObjects = new EArrayList<>();
+			EList<Object> javaObjects = new EArrayList<>();
 			for (int i = 0; i < args.length; i++) {
 				IDatatype fromType = args[i].getDatatype();
 				EnvisionObject toConvert = args[i];
@@ -111,7 +113,7 @@ final class NativeFunctionWrapper extends EnvisionFunction {
 		EnvisionObject toReturn = null;
 		try {
 			//System.out.println("argMapper: " + " : " + argMapper + " : " + EStringUtil.toString(args));
-			EArrayList<Object> javaObjects = new EArrayList<>();
+			EList<Object> javaObjects = new EArrayList<>();
 			for (int i = 0; i < args.length; i++) {
 				IDatatype fromType = args[i].getDatatype();
 				EnvisionObject toConvert = args[i];

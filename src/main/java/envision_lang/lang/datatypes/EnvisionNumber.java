@@ -9,7 +9,9 @@ import envision_lang.lang.classes.EnvisionClass;
  * 
  * @author Hunter Bragg
  */
-public abstract class EnvisionNumber extends EnvisionVariable {
+public abstract sealed class EnvisionNumber<TYPE extends Number> extends EnvisionVariable<TYPE>
+	permits EnvisionInt, EnvisionDouble
+{
 	
 	//--------------
 	// Constructors

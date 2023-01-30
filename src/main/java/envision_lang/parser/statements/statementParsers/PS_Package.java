@@ -14,9 +14,7 @@ public class PS_Package extends ParserHead {
 	
 	public static ParsedStatement packageDeclaration() { return packageDeclaration(new ParserDeclaration()); }
 	public static ParsedStatement packageDeclaration(ParserDeclaration declaration) {
-		//ignoreNL();
 		Token<?> packageName = consume(IDENTIFIER, "Expected a package name!");
-		//ignoreNL();
 		consume(CURLY_L, "Expected a '{' after package declaration!");
 		
 		EList<ParsedStatement> body = getBlock();

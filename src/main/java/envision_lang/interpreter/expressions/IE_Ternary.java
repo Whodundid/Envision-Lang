@@ -17,7 +17,7 @@ public class IE_Ternary extends AbstractInterpreterExecutor {
 		
 		EnvisionObject value = interpreter.evaluate(condition);
 		
-		//check that the value is actually a boolean
+		// check that the value is actually a boolean
 		if (!(value instanceof EnvisionBoolean)) {
 			throw new InvalidDatatypeError("Expected a boolean here but got '" + value + "' instead!");
 		}

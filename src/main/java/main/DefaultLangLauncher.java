@@ -2,7 +2,6 @@ package main;
 
 import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLaunchSettings;
 import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang.exceptions.EnvisionLangError;
@@ -18,16 +17,14 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		TracingPrintStream.enableTracingEmptyLines(true);
 		TracingPrintStream.disableTrace();
 		
-		/*
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			var a = new Java_Performance_Reference(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
-			var b = new Java_Performance_Reference(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
-			
-			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
-		}
-		System.out.println(System.currentTimeMillis() - start);
-		*/
+//		long start = System.currentTimeMillis();
+//		for (int i = 0; i < 10000000; i++) {
+//			var a = new Java_Performance_Reference(ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5));
+//			var b = new Java_Performance_Reference(ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4));
+//			
+//			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
+//		}
+//		System.out.println(System.currentTimeMillis() - start);
 		
 		new DefaultLangLauncher();
 	}
@@ -46,7 +43,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
 		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
-		//EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH);
+		EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH);
 		//EnvisionLang.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");

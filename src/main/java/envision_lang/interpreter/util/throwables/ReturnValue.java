@@ -85,6 +85,16 @@ public class ReturnValue extends RuntimeException {
 		return instance;
 	}
 	
+	/**
+	 * Wraps the given EnvisionObject into this ReturnValue's instance
+	 * and immediately throws it to initiate the return.
+	 * 
+	 * @param object The EnvisonObject to return
+	 */
+	public static void ret(EnvisionObject object) {
+		throw wrap(object);
+	}
+	
 	//---------
 	// Methods
 	//---------

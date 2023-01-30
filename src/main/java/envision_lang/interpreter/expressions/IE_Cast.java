@@ -17,20 +17,20 @@ public class IE_Cast extends AbstractInterpreterExecutor {
 		String toType = e.toType.getLexeme();
 		ParsedExpression target_expr = e.target;
 		
-		//grab typeClass
+		// grab type class
 		UserDefinedTypeManager typeMan = interpreter.getTypeManager();
 		EnvisionClass typeClass = typeMan.getTypeClass(toType);
 		
 		System.out.println("CAST: " + typeClass);
 		System.out.println("TARGET: " + target_expr);
 		
-		//ensure the type to cast to actually exists
+		// ensure the type to cast to actually exists
 		if (typeClass == null) throw UndefinedTypeError.badType(toType);
 		
 		IDatatype cast_type = typeClass.getDatatype();
 		EnvisionObject target_obj = interpreter.evaluate(target_expr);
 		
-		//attempt to handle cast
+		// attempt to handle cast
 		if (target_obj instanceof ClassInstance inst) {
 			return inst.handleObjectCasts(cast_type);
 		}

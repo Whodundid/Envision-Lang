@@ -63,6 +63,7 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.interpreter.util.throwables.LangShutdownCall;
+import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBoolean;
@@ -277,11 +278,11 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	/**
 	 * Executes a series of given statements under the specific scope. The
 	 * original scope is momentarily swapped out for the incoming scope.
-	 * Regardless of execution sucess, the original interpreter scope will
-	 * be restored once this method returns.
+	 * Regardless of execution sucess, the original interpreter scope will be
+	 * restored once this method returns.
 	 * 
 	 * @param statements The list of statements to be executed
-	 * @param scopeIn      The scope for which to execute the statements on
+	 * @param scopeIn    The scope for which to execute the statements on
 	 */
 	public void executeBlock(EList<ParsedStatement> statements, IScope scopeIn) {
 		IScope prev = working_scope;
@@ -297,6 +298,23 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	}
 	
 	/**
+	 * This method simply serves as a wrapper around a block execution but
+	 * specifically indicates that there may potentially be a return value
+	 * thrown from the resulting execution.
+	 * 
+	 * @param statements The list of statements to be executed
+	 * @param scopeIn The scope for which to execute the statements on
+	 */
+	public void executeBlockForReturns(EList<ParsedStatement> statements, IScope scopeIn) {
+		try {
+			executeBlock(statements, scopeIn);
+		}
+		catch (ReturnValue r) {
+			throw r;
+		}
+	}
+	
+	/**
 	 * Returns true if the given object is an EnvisionBoolean and the
 	 * boolean value is true.
 	 * 
@@ -304,8 +322,8 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @return
 	 */
 	public boolean isTrue(EnvisionObject obj) {
-		if (obj instanceof EnvisionBoolean bool) return bool.bool_val;
-		if (obj instanceof EnvisionInt env_int) return env_int.int_val != 0;
+		if (obj instanceof EnvisionBoolean bool) return bool.get_i();
+		if (obj instanceof EnvisionInt env_int) return env_int.get_i() != 0L;
 		return false;
 	}
 	
@@ -337,7 +355,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	}
 	
 	public EnvisionBoolean isEqual(EnvisionObject a, EnvisionObject b) {
-		return EnvisionBooleanClass.newBoolean(isEqual_i(a, b));
+		return EnvisionBooleanClass.valueOf(isEqual_i(a, b));
 	}
 	
 	/**

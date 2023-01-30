@@ -1,7 +1,5 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.exceptions.errors.NoOverloadError;
 import envision_lang.exceptions.errors.NullVariableError;
@@ -21,7 +19,7 @@ import envision_lang.tokenizer.Operator;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionBoolean extends EnvisionVariable {
+public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
 	
 	/**
 	 * Static wrapper for the constant boolean value of 'true'.
@@ -33,23 +31,23 @@ public class EnvisionBoolean extends EnvisionVariable {
 	 */
 	public static final EnvisionBoolean FALSE = EnvisionBooleanClass.newBoolean(false);
 	
-	//--------
+	//========
 	// Fields
-	//--------
+	//========
 	
-	public boolean bool_val;
+	public final boolean bool_val;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	protected EnvisionBoolean() { this(false); }
-	protected EnvisionBoolean(boolean val) {
+	EnvisionBoolean() { this(false); }
+	EnvisionBoolean(boolean val) {
 		super(EnvisionBooleanClass.BOOLEAN_CLASS);
 		bool_val = val;
 	}
 	
-	protected EnvisionBoolean(EnvisionBoolean objIn) {
+	EnvisionBoolean(EnvisionBoolean objIn) {
 		super(EnvisionBooleanClass.BOOLEAN_CLASS);
 		bool_val = objIn.bool_val;
 	}
@@ -83,32 +81,12 @@ public class EnvisionBoolean extends EnvisionVariable {
 		return bool_val;
 	}
 	
-	@Override
-	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof EnvisionBoolean env_bool) {
-			bool_val = env_bool.bool_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-boolean value to a boolean!");
-	}
-	
-	@Override
-	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof Boolean bool) {
-			bool_val = bool;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-boolean value to a boolean!");
-	}
-	
 	/**
-	 * Creates a new EnvisionBoolean with the same value as this one.
+	 * Returns this exact same boolean.
 	 */
 	@Override
 	public EnvisionBoolean copy() {
-		return EnvisionBooleanClass.newBoolean(this);
+		return this;
 	}
 	
 	/**
@@ -138,6 +116,7 @@ public class EnvisionBoolean extends EnvisionVariable {
 		case BW_AND, BW_OR, BW_XOR -> true;
 		//bit-wise assignment
 		case BW_AND_ASSIGN, BW_OR_ASSIGN, BW_XOR_ASSIGN -> true;
+		//don't accept any other operator types
 		default -> false;
 		};
 	}
@@ -160,18 +139,18 @@ public class EnvisionBoolean extends EnvisionVariable {
 		
 		switch (op) {
 		//unary operators
-		case NEGATE:		return EnvisionBooleanClass.newBoolean(!bool_val);
+		case NEGATE:			return EnvisionBooleanClass.valueOf(!bool_val);
 		//logical operators
-		case AND:			return EnvisionBooleanClass.newBoolean(bool_val && in.bool_val);
-		case OR:			return EnvisionBooleanClass.newBoolean(bool_val || in.bool_val);
+		case AND:				return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+		case OR:				return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
 		//bit-wise operators
-		case BW_AND:		return EnvisionBooleanClass.newBoolean(bool_val & in.bool_val);
-		case BW_OR:			return EnvisionBooleanClass.newBoolean(bool_val | in.bool_val);
-		case BW_XOR:		return EnvisionBooleanClass.newBoolean(bool_val ^ in.bool_val);
+		case BW_AND:			return EnvisionBooleanClass.valueOf(bool_val & in.bool_val);
+		case BW_OR:				return EnvisionBooleanClass.valueOf(bool_val | in.bool_val);
+		case BW_XOR:			return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
 		//bit-wise assignment operators
-		case BW_AND_ASSIGN:		bool_val &= in.bool_val; return this;
-		case BW_OR_ASSIGN:		bool_val |= in.bool_val; return this;
-		case BW_XOR_ASSIGN:		bool_val ^= in.bool_val; return this;
+		case BW_AND_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val & in.bool_val);
+		case BW_OR_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val | in.bool_val);
+		case BW_XOR_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
 			
 		//throw error if this point is reached
 		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
@@ -183,9 +162,9 @@ public class EnvisionBoolean extends EnvisionVariable {
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
 		if (StaticTypes.BOOL_TYPE.compare(castType)) return this;
-		if (StaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.newInt(bool_val);
-		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.newDouble(bool_val);
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(bool_val);
+		if (StaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.valueOf(bool_val);
+		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.valueOf(bool_val);
+		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(bool_val);
 		
 		throw new ClassCastError(this, castType);
 	}
@@ -197,7 +176,6 @@ public class EnvisionBoolean extends EnvisionVariable {
 		
 		return switch (funcName) {
 		case "get" -> get();
-		case "set" -> set(args[0]);
 		default -> super.handlePrimitive(proto, args);
 		};
 	}
@@ -206,9 +184,6 @@ public class EnvisionBoolean extends EnvisionVariable {
 	// Methods
 	//---------
 	
-	public EnvisionBoolean negate() {
-		bool_val = !bool_val;
-		return this;
-	}
+	public EnvisionBoolean negate() { return EnvisionBooleanClass.valueOf(!bool_val); }
 	
 }

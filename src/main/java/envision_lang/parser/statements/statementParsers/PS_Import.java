@@ -22,31 +22,24 @@ public class PS_Import extends ParserHead {
 	 * @return ImportStatement
 	 */
 	public static ParsedStatement handleImport() {
-		//ignoreNL();
 		Token<?> importToken = consume(IMPORT, "Expected 'import' here!");
 		String m = "Expected a valid identifier for an import path name!";
 		boolean all = false;
 		
-		//ignoreNL();
 		Token<?> pathStart = consume(IDENTIFIER, m);
 		
 		EStringBuilder path = new EStringBuilder(pathStart.getLexeme());
-		//ignoreNL();
 		while (match(PERIOD)) {
 			path.append(".");
 			
-			//ignoreNL();
 			if (match(MUL)) {
 				path.append("*");
 				all = true;
 				break;
 			}
 			else {
-				//ignoreNL();
 				path.append(consume(IDENTIFIER, m).getLexeme());
 			}
-			
-			//ignoreNL();
 		}
 		
 		String object = null;
@@ -60,9 +53,7 @@ public class PS_Import extends ParserHead {
 		Token<?> objectToken = Token.create(object, pathStart.getLineNum());
 		
 		Token<?> asName = null;
-		//ignoreNL();
 		if (match(AS)) {
-			//ignoreNL();
 			asName = consume(IDENTIFIER, "Expected a valid identifier for which to map an import into!");
 		}
 		

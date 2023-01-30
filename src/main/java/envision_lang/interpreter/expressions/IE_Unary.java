@@ -23,19 +23,19 @@ public class IE_Unary extends AbstractInterpreterExecutor {
 		ParsedExpression left = expression.left;
 		ParsedExpression right = expression.right;
 		
-		//handle left hand operator (!x)
+		// handle left hand operator (!x)
 		if (left == null) {
-			//check for class level operator overloading
+			// check for class level operator overloading
 			if (interpreter.evaluate(right) instanceof ClassInstance inst) {
 				return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, inst);
 			}
 		}
-		//check for post increment/decrement (x++)
+		// check for post increment/decrement (x++)
 		else if (left instanceof Expr_Var var) {
 			String scopeName = var.getName();
 			EnvisionObject l = interpreter.evaluate(var);
 			
-			//check for class level operator overloading
+			// check for class level operator overloading
 			if (l instanceof ClassInstance class_inst) {
 				EnvisionObject obj = OperatorOverloadHandler.handleOverload(interpreter,
 															  				scopeName,

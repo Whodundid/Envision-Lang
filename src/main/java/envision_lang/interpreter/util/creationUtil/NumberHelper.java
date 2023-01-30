@@ -76,10 +76,10 @@ public final class NumberHelper {
 		
 		if (!post) toReturn += amount;
 		// modify the var's value in scope
-		theInt.int_val = toReturn;
+		//theInt.int_val = toReturn;
 		//scope.set(varName, theDouble);
 		
-		return EnvisionIntClass.newInt(toReturn);
+		return EnvisionIntClass.valueOf(toReturn);
 	}
 	
 	static EnvisionDouble increment_d(IScope scope, String varName, EnvisionDouble theDouble, double amount, boolean post) {
@@ -94,10 +94,10 @@ public final class NumberHelper {
 		
 		if (!post) toReturn += amount;
 		// modify the var's value in scope
-		theDouble.double_val = toReturn;
+		//theDouble.double_val = toReturn;
 		//scope.set(varName, theDouble);
 		
-		return EnvisionDoubleClass.newDouble(toReturn);
+		return EnvisionDoubleClass.valueOf(toReturn);
 	}
 	
 	//=================
@@ -133,7 +133,7 @@ public final class NumberHelper {
 									  "an int or a double! " + type);
 		}
 		
-		num.set_i(toSet);
+		//num.set_i(toSet);
 		Number toReturn = (post) ? val : toSet;
 		return EnvisionNumberClass.newNumber(toReturn);
 	}

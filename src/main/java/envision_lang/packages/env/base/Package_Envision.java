@@ -30,7 +30,7 @@ public class Package_Envision extends ClassInstance {
 		EnvisionList list = EnvisionListClass.newList(StaticTypes.STRING_TYPE);
 		if (programArgs != null) {
 			for (String arg : programArgs) {
-				list.add(EnvisionStringClass.newString(arg));
+				list.add(EnvisionStringClass.valueOf(arg));
 			}
 		}
 		userArgs = list;

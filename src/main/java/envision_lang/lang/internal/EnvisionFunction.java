@@ -40,7 +40,7 @@ public class EnvisionFunction extends ClassInstance {
 	/**
 	 * The parameter datatypes that this function accepts.
 	 */
-	protected ParameterData params = new ParameterData();
+	protected ParameterData params = ParameterData.EMPTY_PARAMS;
 	
 	/**
 	 * The entire list of statements encapsulated within this function.
@@ -117,7 +117,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param nameIn The function name
 	 */
 	protected EnvisionFunction(String nameIn) {
-		this(StaticTypes.VAR_TYPE, nameIn, new ParameterData());
+		this(StaticTypes.VAR_TYPE, nameIn, ParameterData.EMPTY_PARAMS);
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param funcNameIn
 	 */
 	public EnvisionFunction(IDatatype rt, String nameIn) {
-		this(rt.toDatatype(), nameIn, new ParameterData());
+		this(rt.toDatatype(), nameIn, ParameterData.EMPTY_PARAMS);
 	}
 	
 	/**
@@ -140,7 +140,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param paramsIn The function's parameters
 	 */
 	public EnvisionFunction(IDatatype rt, String nameIn, IDatatype... paramsIn) {
-		this(rt, nameIn, new ParameterData(paramsIn));
+		this(rt, nameIn, ParameterData.from(paramsIn));
 	}
 	
 	/**
@@ -257,7 +257,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return The new overload function
 	 */
 	public EnvisionFunction addOverload(IDatatype rt, IDatatype... paramsIn) {
-		ParameterData params = new ParameterData(paramsIn);
+		ParameterData params = ParameterData.from(paramsIn);
 		if (hasOverload(params)) throw new DuplicateOverloadError(functionName, params);
 		overloads.add(makeOverload(rt, params, statements));
 		return this;
@@ -361,8 +361,8 @@ public class EnvisionFunction extends ClassInstance {
 	 * Attempts to return an overload with parameters matching the given
 	 * arguments.
 	 */
-	public EnvisionFunction getOverloadFromArgs(EList<EnvisionObject> args) {
-		ParameterData callParams = (args != null) ? new ParameterData(args) : new ParameterData();
+	public EnvisionFunction getOverloadFromArgs(EnvisionObject[] args) {
+		ParameterData callParams = (args != null) ? ParameterData.from(args) : ParameterData.EMPTY_PARAMS;
 		
 		//check if the base method parameters match the given arguments
 		if (params.compare(callParams)) return this;
@@ -383,7 +383,7 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction getOverload(ParameterData dataIn) {
 		for (EnvisionFunction overload : overloads) {
-			if (overload.params.size() != dataIn.size()) continue;
+			if (overload.params.length() != dataIn.length()) continue;
 			if (!overload.params.compare(dataIn)) continue;
 			return overload;
 		}
@@ -422,7 +422,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * max.
 	 */
 	public int argLength() {
-		return params.size();
+		return params.length();
 	}
 	
 	/**
@@ -434,60 +434,77 @@ public class EnvisionFunction extends ClassInstance {
 	}
 	
 	/**
-	 * Called when the language actually runs the related callable object.
-	 * Helper version to wrap a singleton argument into an array of length 1.
+	 * Executes and returns the result of this function call. If the function
+	 * does not actually return anything, return VOID instead.
+	 * 
+	 * @param <E>         An expected function return type
+	 * @param interpreter The interpreter to execute the function with
+	 * @param arg         The single argument to pass to the function
+	 * 
+	 * @return The result of the function's execution or VOID by default
+	 */
+	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject arg) {
+		return invoke_r(interpreter, new EnvisionObject[]{arg});
+	}
+	
+	/**
+	 * Executes and returns the result of this function call. If the function
+	 * does not actually return anything, return VOID instead.
+	 * 
+	 * @param <E>         An expected function return type
+	 * @param interpreter The interpreter to execute the function with
+	 * @param args        The arguments to pass to the function
+	 * 
+	 * @return The result of the function's execution or VOID by default
+	 */
+	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		// actually begin executing the function
+		try {
+			invoke(interpreter, args);
+		}
+		catch (ReturnValue r) {
+			// return any value produced by the function's execution
+			return (E) r.result;
+		}
+		
+		// if no value was produced, return void by default
+		return (E) EnvisionVoid.VOID;
+	}
+	
+	/**
+	 * Executes this function call with zero passed arguments.
+	 * 
+	 * @param interpreter The interpreter to execute the function with
 	 */
 	public void invoke(EnvisionInterpreter interpreter) {
 		invoke(interpreter, new EnvisionObject[0]);
 	}
 	
 	/**
-	 * Called when the language actually runs the related callable object.
-	 * Helper version to wrap a singleton argument into an array of length 1.
+	 * Executes this function call with one passed argument.
+	 * 
+	 * @param interpreter The interpreter to execute the function with
+	 * @param arg         The single arguments to be passed to the function
 	 */
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject arg) {
 		invoke(interpreter, new EnvisionObject[]{arg});
 	}
 	
 	/**
-	 * Should be called initially to check for valid arguments.
-	 * If arguments are valid, then the actual invoke method is called.
-	 */
-	public void invoke_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		checkArgs(args);
-		invoke(interpreter, args);
-	}
-	
-	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject arg) {
-		return invoke_r(interpreter, new EnvisionObject[]{arg});
-	}
-	
-	/**
-	 * Executes and returns the result of this function call. If the
-	 * function does not actually return anything, return VOID instead.
+	 * Executes this function call with an array of passed arguments.
 	 * 
-	 * @param <E> An expected function return type
-	 * @param interpreter
-	 * @param args
-	 * @return
+	 * @param interpreter The interpreter to execute the function with
+	 * @param args        The arguments to be passed to the function
 	 */
-	public <E extends EnvisionObject> E invoke_r(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		//execute function
-		try {
-			invoke_i(interpreter, args);
-		}
-		catch (ReturnValue r) {
-			return (E) r.result;
-		}
-		
-		//return void by default
-		return (E) EnvisionVoid.VOID;
+	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		checkArgs(args);
+		invoke_i(interpreter, args);
 	}
 	
 	/**
-	 * Checks for argument size and datatype errors.
+	 * Checks for argument size and invalid argument vs. parameter type errors.
 	 */
-	public void checkArgs(EnvisionObject[] incoming_args) {
+	protected void checkArgs(EnvisionObject[] incoming_args) {
 		int arg_length = argLength();
 		ParameterData types = argTypes();
 		
@@ -497,58 +514,57 @@ public class EnvisionFunction extends ClassInstance {
 		// if the incoming args are null -- ensure that the argSize is 0 -- otherwise error
 		if (incoming_args == null && arg_length > 0) throw new ArgLengthError(this, arg_length, 0);
 		
-		// ensure that the expected number of arguments is not larger than the maximum allowed even if 
+		// ensure that the expected number of arguments is not larger than the maximum allowed
 		if (arg_length > 255) throw new ArgLengthError(this, arg_length, 255);
 		if (incoming_args.length > 255) throw new ArgLengthError(this, incoming_args.length, 255);
 		
 		// don't care about types if the expected ones are null
-		if (types != null) {
-			ParameterData args = new ParameterData(incoming_args);
+		if (types == null) return;
+		
+		// perform type checking and verification across each incoming argument vs. each expected parameter type
+		ParameterData args = ParameterData.from(incoming_args);
+		
+		// compare each parameter to ensure that they are compatible matches
+		for (int i = 0, j = 0; i < incoming_args.length; i++) {
+			EnvisionParameter type = types.get(j);
+			EnvisionParameter obj = args.get(i);
 			
-			//compare each parameter to ensure that they are compatible matches
-			for (int i = 0, j = 0; i < incoming_args.length; i++) {
-				EnvisionParameter type = types.get(j);
-				EnvisionParameter obj = args.get(i);
-				
-				if (!type.compare(obj)) throw new InvalidDatatypeError(type, obj);
-			}
-			
-			//ensure that there is a valid function overload to support the given arguments
-			EnvisionFunction overload = getOverload(args);
-			//if there are no overloads with matching parameters -- throw an error
-			if (overload == null) throw new NoOverloadError(this, args);
+			// if they're not compatible, throw error
+			if (!type.compare(obj)) throw new InvalidDatatypeError(type, obj);
 		}
+		
+		// ensure that there is a valid function overload to support the given arguments
+		EnvisionFunction overload = getOverload(args);
+		// if there are no overloads with matching parameters -- throw an error
+		if (overload == null) throw new NoOverloadError(this, args);
 	}
 	
 	/**
 	 * Attempts to run the function with the given arguments.
 	 */
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		//create a new scope derived from this function's scope
-		Scope scope = new Scope(instanceScope);
+	protected void invoke_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		// create a new scope derived from this function's scope
+		IScope scope = new Scope(instanceScope);
 		
-		var callArgs = new EArrayList<EnvisionObject>().addA(args);
-		EnvisionFunction m = getOverloadFromArgs(callArgs);
+		EnvisionFunction m = getOverloadFromArgs(args);
 		
-		//define parameter values within the current scope
-		EList<String> names = m.params.getNames();
-		for (int i = 0; i < m.params.size(); i++) {
-			String n = names.get(i);
-			scope.define(n, callArgs.get(i));
+		// define parameter values within the current scope
+		String[] parameterNames = m.params.getNames();
+		for (int i = 0; i < m.params.length(); i++) {
+			String n = parameterNames[i];
+			scope.define(n, args[i]);
 		}
 		
-		//if this is a constructor, check if any of the arguments are assignment args
-		//as in if any argument name matches an existing body level variable -- assign it directly
+		// if this is a constructor, check if any of the arguments are assignment args
+		// Essentially, if any argument name matches an existing class level variable -- assign it directly
 		if (isConstructor) {
 			IScope ps = scope.getParent();
 			
-			for (int i = 0; i < callArgs.size(); i++) {
-				String arg_name = m.params.getNames().get(i);
-				EnvisionObject arg_obj = callArgs.get(i);
+			for (int i = 0; i < args.length; i++) {
+				String arg_name = parameterNames[i];
+				EnvisionObject arg_obj = args[i];
 				
 				ScopeEntry scopeValue = ps.getTyped(arg_name);
-				//System.out.println("FUNC SCOPE: " + ps + "\n" + ps.getParent() + "\n" + ps.getParent().getParent());
-				//System.out.println(arg_name + " : " + scopeValue);
 				if (scopeValue == null) continue;
 				
 				IDatatype scope_var_type = scopeValue.getDatatype();
@@ -562,7 +578,7 @@ public class EnvisionFunction extends ClassInstance {
 				else if (scope_var_type.compare(incoming_type)) {
 					ps.set(arg_name, arg_obj);
 				}
-				// check if incoming type is a number 
+				// allow if expected type is a number and the incoming type is a type of number
 				else if (IDatatype.isNumber(scopeValue.getDatatype())) {
 					EnvisionObject obj = CastingUtil.castToNumber(arg_obj, scopeValue.getDatatype());
 					ps.set(arg_name, obj);
@@ -571,19 +587,11 @@ public class EnvisionFunction extends ClassInstance {
 			}
 		}
 		
-		try {
-			interpreter.executeBlock(m.statements, scope);
-		}
-		catch (ReturnValue r) {
-			//if (isConstructor) ret(scope.get("this"));
-			throw r;
-		}
+		// handle block execution and any return values thrown from the executed block
+		interpreter.executeBlockForReturns(m.statements, scope);
 		
+		// if this point is reached and the function is a constructor, return 'this' by default
 		if (isConstructor) ret(scope.get("this"));
-	}
-	
-	public EnvisionFunction addStatement(ParsedStatement statementIn) {
-		return statements.addR(statementIn, this);
 	}
 	
 	//---------
@@ -598,15 +606,15 @@ public class EnvisionFunction extends ClassInstance {
 	public EList<ParsedStatement> getStatements() { return statements; }
 	public EList<EnvisionFunction> getOverloads() { return overloads; }
 	public EList<ParsedStatement> getBody() { return statements; }
-	public EList<IDatatype> getParamTypes() { return params.getDataTypes(); }
-	public EList<String> getParamNames() { return params.getNames(); }
+	public IDatatype[] getParamTypes() { return params.getDataTypes(); }
+	public String[] getParamNames() { return params.getNames(); }
 	public EnvisionFunction getSuper() { return superFunction; }
 	
-	public IDatatype getReturnType() { return returnType; }
 	public boolean isVoid() { return returnType.isVoid(); }
-	
 	public boolean isConstructor() { return isConstructor; }
 	public boolean isOperator() { return isOperatorOverload; }
+	
+	public IDatatype getReturnType() { return returnType; }
 	public Operator getOperator() { return operatorOverload; }
 	
 	//---------
@@ -620,8 +628,7 @@ public class EnvisionFunction extends ClassInstance {
 	}
 	
 	public EnvisionFunction setParams(ParameterData dataIn) {
-		params.clear();
-		params.set(dataIn);
+		params = ParameterData.from(dataIn);
 		return this;
 	}
 	
@@ -632,6 +639,10 @@ public class EnvisionFunction extends ClassInstance {
 	
 	public void setSuper(EnvisionFunction func) {
 		superFunction = func;
+	}
+	
+	public EnvisionFunction addStatement(ParsedStatement statementIn) {
+		return statements.addR(statementIn, this);
 	}
 	
 	//----------------

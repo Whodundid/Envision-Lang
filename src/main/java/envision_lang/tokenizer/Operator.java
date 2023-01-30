@@ -125,9 +125,14 @@ public enum Operator implements IKeyword {
 	SHL_ASSIGN("<<=", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
 	SHR_ASSIGN(">>=", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
 	SHR_AR_ASSIGN(">>>=", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+	
+	/** PRE_FIX increment operator: '++i' */
 	INC("++", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+	/** PRE_FIX decrement operator: '--i' */
 	DEC("--", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+	/** POST_FIX increment operator: 'i++' */
 	POST_INC("\\_++", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+	/** POST_FIX decrement operator: 'i--' */
 	POST_DEC("\\_--", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
 	
 	;

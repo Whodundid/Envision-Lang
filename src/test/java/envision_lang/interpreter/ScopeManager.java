@@ -24,11 +24,11 @@ public class ScopeManager implements IScope {
 	@Override public String toString() { return scope.toString(); }
 
 	public ScopeManager def(String name, EnvisionObject o) { scope.define(name, o); return this; }
-	public ScopeManager defBool(String name, boolean val) { return def(name, EnvisionBooleanClass.newBoolean(val)); } 
-	public ScopeManager defChar(String name, char val) { return def(name, EnvisionCharClass.newChar(val)); }
-	public ScopeManager defInt(String name, long val) { return def(name, EnvisionIntClass.newInt(val)); }
-	public ScopeManager defDouble(String name, double val) { return def(name, EnvisionDoubleClass.newDouble(val)); }
-	public ScopeManager defString(String name, String val) { return def(name, EnvisionStringClass.newString(val)); }
+	public ScopeManager defBool(String name, boolean val) { return def(name, EnvisionBooleanClass.valueOf(val)); } 
+	public ScopeManager defChar(String name, char val) { return def(name, EnvisionCharClass.valueOf(val)); }
+	public ScopeManager defInt(String name, long val) { return def(name, EnvisionIntClass.valueOf(val)); }
+	public ScopeManager defDouble(String name, double val) { return def(name, EnvisionDoubleClass.valueOf(val)); }
+	public ScopeManager defString(String name, String val) { return def(name, EnvisionStringClass.valueOf(val)); }
 	
 	public ScopeManager defVar(String name, Object val) {
 		IDatatype type = IDatatype.dynamicallyDetermineType(val);

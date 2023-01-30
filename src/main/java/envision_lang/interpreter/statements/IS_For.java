@@ -2,6 +2,8 @@ package envision_lang.interpreter.statements;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.throwables.Break;
+import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_For;
@@ -17,7 +19,7 @@ public class IS_For extends AbstractInterpreterExecutor {
 		
 		interpreter.pushScope();
 		
-		//inits
+		//handle inits
 		if (init != null) {
 			interpreter.execute(init);
 		}
@@ -29,10 +31,16 @@ public class IS_For extends AbstractInterpreterExecutor {
 		}
 		
 		//body
+		TOP:
 		while (conditionValue) {
 			interpreter.pushScope();
 			if (body != null) {
-				interpreter.execute(body);
+				try {
+					interpreter.execute(body);
+				}
+				catch (Continue c) {}
+				catch (Break b) { break TOP; }
+				catch (Exception e) { throw e; }
 			}
 			//post
 			if (post != null) {

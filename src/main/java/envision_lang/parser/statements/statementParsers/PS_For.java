@@ -25,9 +25,7 @@ import eutil.debug.Inefficient;
 public class PS_For extends ParserHead {
 	
 	public static ParsedStatement forStatement() {
-		//ignoreNL();
 		Token<?> forToken = consume(FOR, "Expected 'for' here!");
-		//ignoreNL();
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
 		//0 = normal, 1 = range (to), 2 = lambda
@@ -85,7 +83,6 @@ public class PS_For extends ParserHead {
 		//don't care if there is only one statement block
 		if (numSemi > 0) {
 			//check for initializers
-			//ignoreNL();
 			if (!check(SEMICOLON)) {
 				if (type != 2) {
 					initializer = PS_VarDef.variableDeclaration(true);
@@ -101,22 +98,18 @@ public class PS_For extends ParserHead {
 							value = ExpressionParser.parseExpression();
 						}
 						vars.addVar(name, value);
-						//ignoreNL();
 					}
 					while (match(COMMA));
 					
-					//ignoreNL();
 					consume(SEMICOLON, "Expected a ';' to conclude lambda loop initializer statement!");
 				}
 			}
 			else {
-				//ignoreNL();
 				match(SEMICOLON);
 			}
 		}
 		
 		//check for middle condition/lambda
-		//ignoreNL();
 		if (!check(SEMICOLON)) {
 			//handle range
 			if (type == 1) {
@@ -125,13 +118,11 @@ public class PS_For extends ParserHead {
 				errorIf(!(middle instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
 				ranges = EList.of((Expr_Range) middle);
 				
-				//ignoreNL();
 				while (match(COMMA)) {
 					ParsedExpression e = ExpressionParser.parseExpression();
 					errorIf(!(e instanceof Expr_Range), "Range (to) for loops can only accept range expressions as arguments!");
 					Expr_Range range = (Expr_Range) e;
 					ranges.add(range);
-					//ignoreNL();
 				}
 			}
 			//normal and lambda
@@ -141,26 +132,21 @@ public class PS_For extends ParserHead {
 		}
 		
 		//check for post actions
-		//ignoreNL();
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				//ignoreNL();
 				if (check(PAREN_R)) {}
 				else {
 					//gather all expressions separated by commas
 					do {
 						post.add(ExpressionParser.parseExpression());
-						//ignoreNL();
 					}
 					while (match(COMMA));
 				}
 			}
 		}
 		
-		//ignoreNL();
 		consume(PAREN_R, "Expected ')' to close for loop declaration!");
 		
-		//ignoreNL();
 		body = declaration();
 		
 		ParsedStatement forStatement = null;

@@ -16,7 +16,6 @@ public class IE_Get extends AbstractInterpreterExecutor {
 	
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Get expression) {
 		EnvisionObject o = interpreter.evaluate(expression.object);
-		//System.out.println("GET '" + expression + "' => " + o);
 		
 		if (o instanceof EnvisionClass clz) return getClassVal(interpreter, expression, clz);
 		if (o instanceof ClassInstance inst) return getInstanceVal(interpreter, expression, inst);
@@ -31,17 +30,17 @@ public class IE_Get extends AbstractInterpreterExecutor {
 	private static EnvisionObject getClassVal(EnvisionInterpreter interpreter, Expr_Get expression, EnvisionClass in) {
 		EnvisionObject object = in.get(expression.name.getLexeme());
 		
-		//first check if the object even exists
+		// first check if the object even exists
 		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
-		//check if restricted
+		// check if restricted
 		if (object.isRestricted()) {
 			throw new RestrictedAccessError(object);
 		}
 		
-		//check if the object is actually visible
+		// check if the object is actually visible
 		if (object.isPrivate()) {
-			//if the current scope is not the same as the instance's scope, throw an error
+			// if the current scope is not the same as the instance's scope, throw an error
 			if (interpreter.scope() != in.getClassScope()) throw new NotVisibleError(object);
 		}
 		
@@ -51,17 +50,17 @@ public class IE_Get extends AbstractInterpreterExecutor {
 	private static EnvisionObject getInstanceVal(EnvisionInterpreter interpreter, Expr_Get expression, ClassInstance in) {
 		EnvisionObject object = in.get(expression.name.getLexeme());
 		
-		//first check if the object even exists
+		// first check if the object even exists
 		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
-		//check if restricted
+		// check if restricted
 		if (object.isRestricted()) {
 			throw new RestrictedAccessError(object);
 		}
 		
-		//check if the object is actually visible
+		// check if the object is actually visible
 		if (object.isPrivate()) {
-			//if the current scope is not the same as the instance's scope, throw an error
+			// if the current scope is not the same as the instance's scope, throw an error
 			if (interpreter.scope() != in.getScope()) throw new NotVisibleError(object);
 		}
 		
@@ -71,36 +70,21 @@ public class IE_Get extends AbstractInterpreterExecutor {
 	private static EnvisionObject getImportVal(EnvisionInterpreter interpreter, Expr_Get expression, EnvisionCodeFile in) {
 		EnvisionObject object = in.getValue(expression.name.getLexeme());
 		
-		//first check if the object even exists
+		// first check if the object even exists
 		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
 		
-		//check if restricted
+		// check if restricted
 		if (object.isRestricted()) {
 			throw new RestrictedAccessError(object);
 		}
 		
-		//check if the object is actually visible
+		// check if the object is actually visible
 		//if (!object.isPublic()) {
-			//if the current scope is not the same as the instance's scope, throw an error
+			// if the current scope is not the same as the instance's scope, throw an error
 			//throw new NotVisibleError(expression.name.getLexeme());
 		//}
 		
 		return object;
 	}
-	
-	/*
-	private Object getEnumValue(EnvisionEnum in) {
-		EnvisionObject object = in.getValue(expression.name.getLexeme());
-		
-		//first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
-		
-		//if (object instanceof EnumValue) {
-		//	return object;
-		//}
-		
-		return null;
-	}
-	*/
 	
 }

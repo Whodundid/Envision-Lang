@@ -4,6 +4,7 @@ import envision_lang.exceptions.errors.classErrors.InvalidClassStatement;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.FunctionCreator;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.EnvisionClass;
@@ -29,37 +30,37 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		ParserDeclaration dec = statement.getDeclaration();
 		
 		IDatatype name = NativeTypeManager.datatypeOf(statement.name.getLexeme());
-		//@InDevelopment
+		
 		//EArrayList<Expr_Var> supers = statement.parentclasses;
 		EList<ParsedStatement> body = statement.body;
 		EList<ParsedStatement> staticMembers = statement.staticMembers;
 		EList<Stmt_FuncDef> constructors = statement.initializers;
 		
-		//create the class framework
+		// create the class framework
 		EnvisionClass theClass = new EnvisionClass(name.getStringValue());
-		Scope classScope = new Scope(interpreter.scope());
+		IScope classScope = new Scope(interpreter.scope());
 		
-		//set body and scope
+		// set body and scope
 		theClass.setScope(classScope);
-		theClass.setStatics(staticMembers);
+		//theClass.setStatics(staticMembers);
 		theClass.setBody(body);
-		theClass.setConstructors(constructors);
+		//theClass.setConstructors(constructors);
 		
-		//check that each stated super class is valid
+		// check that each stated super class is valid
 		//for (VarExpression s : supers) {
 			//EnvisionClass superClass = getSuper(new EnvisionDatatype(s.getName()));
 			//theClass.addParent(superClass);
 		//}
 		
-		//set modifiers
+		// set modifiers
 		theClass.setVisibility(dec.getVisibility());
 		for (DataModifier d : dec.getMods()) theClass.setModifier(d, true);
 		
-		//go through statements and process valid ones (Variable declarations, Method declarations, Objects)
+		// go through statements and process valid ones (Variable declarations, Method declarations, Objects)
 		for (ParsedStatement s : body) checkValid(s);
 		//for (Statement s : staticMembers) checkValid(s);
 		
-		//gather visible parent members
+		// gather visible parent members
 		/*
 		for (InheritableObject sc : theClass.getParents()) {
 			//get visible staticmembers
@@ -79,23 +80,18 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		}
 		*/
 		
-		//execute the static members against the class's scope
+		// execute the static members against the class's scope
 		interpreter.executeBlock(staticMembers, classScope);
 		
-		//build constructor functions -- inherently static
+		// build constructor functions -- inherently static
 		for (Stmt_FuncDef constructor : constructors) {
 			EnvisionFunction con = FunctionCreator.buildFunction(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
-			//define the constructor as a static member on the class scope
+			// define the constructor as a static member on the class scope
 			classScope.define("init", Primitives.FUNCTION, con);
 		}
 		
-		//System.out.println("the body: " + body);
-		//System.out.println("static members: " + staticMembers);
-		//System.out.println("constructors: " + constructors);
-		//System.out.println();
-		
-		//define it
+		// define it
 		interpreter.scope().define(name.getStringValue(), name, theClass);
 		interpreter.getTypeManager().defineType(name, theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));

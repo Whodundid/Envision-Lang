@@ -28,43 +28,43 @@ public class IE_ListIndexSet extends AbstractInterpreterExecutor {
 		EnvisionObject listObject = interpreter.evaluate(listExpression);
 		EnvisionObject listIndex = interpreter.evaluate(listExpressionIndex);
 		
-		//only allow lists
+		// only allow lists
 		if (!(listObject instanceof EnvisionList)) throw new NotAListError(listObject);
 		
-		//assign the 'value' at the given 'listIndex'
+		// assign the 'value' at the given 'listIndex'
 		EnvisionList env_list = (EnvisionList) listObject;
 		
-		//default index
+		// default index
 		long i = -1;
 		
-		//only allow integers for array indexes
+		// only allow integers for array indexes
 		if (!(listIndex instanceof EnvisionInt)) {
 			throw new InvalidDatatypeError(StaticTypes.INT_TYPE, listIndex.getDatatype());
 		}
 		
-		//get index as long
+		// get index as long
 		i = ((EnvisionInt) listIndex).int_val;
 		
-		//assign the result to the index position
+		// assign the result to the index position
 		EnvisionObject assign_value = interpreter.evaluate(value);
 		EnvisionObject existingObject = env_list.get(i);
 		
-		//check if class instance and that it supports the given operator overload
+		// check if class instance and that it supports the given operator overload
 		if (existingObject instanceof ClassInstance env_class) {
 			if (env_class.supportsOperator(operator)) {
 				return OperatorOverloadHandler.handleOverload(interpreter, null, operator, env_class, assign_value);
 			}
 		}
 		
-		//do normal assign
-//		if (assign_value.isPrimitive()) {
-//			env_list.set(i, assign_value.copy());
-//		}
-//		else {
+		// do normal assign
+		if (assign_value.isPassByValue()) {
+			env_list.set(i, assign_value).copy();
+		}
+		else {
 			env_list.set(i, assign_value);
-//		}
+		}
 		
-		//return the new value
+		// return the new value
 		return assign_value;
 	}
 	

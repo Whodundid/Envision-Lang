@@ -11,11 +11,10 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 
-public class EnvisionDoubleClass extends EnvisionClass {
+public final class EnvisionDoubleClass extends EnvisionClass {
 
 	/**
 	 * The singular, static Double class for which all Envision:Double
@@ -29,10 +28,7 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	private static final IPrototypeHandler DOUBLE_PROTOS = new IPrototypeHandler();
 	
 	static {
-		DOUBLE_PROTOS.define("get", DOUBLE).assignDynamicClass(IFunc_get.class);
-		DOUBLE_PROTOS.define("set", DOUBLE).assignDynamicClass(IFunc_set.class);
-		DOUBLE_PROTOS.define("min", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
-		DOUBLE_PROTOS.define("max", DOUBLE, DOUBLE).assignDynamicClass(IFunc_min.class);
+		// no double prototypes
 	}
 	
 	//--------------
@@ -61,14 +57,46 @@ public class EnvisionDoubleClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionDouble newDouble() { return newDouble(0.0); }
-	public static EnvisionDouble newDouble(boolean value) { return newDouble(value ? 1.0 : 0.0); }
+	public static EnvisionDouble newDouble() { return newDouble(0.0D); }
+	public static EnvisionDouble newDouble(boolean value) { return newDouble(value ? 1.0D : 0.0D); }
 	public static EnvisionDouble newDouble(char value) { return newDouble((double) value); }
 	public static EnvisionDouble newDouble(EnvisionNumber num) { return newDouble(num.doubleVal_i()); }
 	public static EnvisionDouble newDouble(double value) {
 		EnvisionDouble d = new EnvisionDouble(value);
 		DOUBLE_CLASS.defineScopeMembers(d);
 		return d;
+	}
+	
+	public static EnvisionDouble defaultValue() {
+		return EnvisionDouble.ZERO;
+	}
+	
+	/** Return back direct instances. */
+	public static EnvisionDouble valueOf(EnvisionDouble num) { return num; }
+	public static EnvisionDouble valueOf(boolean value) { return valueOf((value) ? 1.0D : 0.0D); }
+	public static EnvisionDouble valueOf(char value) { return valueOf((double) value); }
+
+	public static EnvisionDouble valueOf(EnvisionNumber num) {
+		// return direct instances
+		if (num instanceof EnvisionDouble d) return d;
+		
+		double double_val = num.doubleVal_i();
+		return valueOf(double_val);
+	}
+	
+	public static EnvisionDouble valueOf(double num) {
+		// check for edge cases first
+		if (num == Double.MAX_VALUE) return EnvisionDouble.MAX_VALUE;
+		if (num == Double.MIN_VALUE) return EnvisionDouble.MIN_VALUE;
+		if (num == Double.MIN_NORMAL) return EnvisionDouble.MIN_NORMAL;
+		if (num == Double.NaN) return EnvisionDouble.NaN;
+		if (num == Double.POSITIVE_INFINITY) return EnvisionDouble.POSITIVE_INFINITY;
+		if (num == Double.NEGATIVE_INFINITY) return EnvisionDouble.NEGATIVE_INFINITY;
+		
+		if (num == 0.0D) return EnvisionDouble.ZERO;
+		if (num == 1.0D) return EnvisionDouble.ONE;
+		
+		return newDouble(num);
 	}
 	
 	//-----------
@@ -97,8 +125,8 @@ public class EnvisionDoubleClass extends EnvisionClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
-			if (arg_val instanceof EnvisionNumber n) double_val = n.doubleVal();
-			if (arg_val instanceof EnvisionBoolean b) double_val = new EnvisionDouble((b.bool_val) ? 1.0 : 0.0);
+			else if (arg_val instanceof EnvisionNumber n) double_val = n.doubleVal();
+			else if (arg_val instanceof EnvisionBoolean b) double_val = new EnvisionDouble((b.bool_val) ? 1.0 : 0.0);
 			
 			if (double_val == null)
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
@@ -118,43 +146,6 @@ public class EnvisionDoubleClass extends EnvisionClass {
 		DOUBLE_PROTOS.defineOn(inst);
 	}
 	
-	//---------------------------
-	// Instance Member Functions
-	//---------------------------
-	
-	private static class IFunc_get<E extends EnvisionDouble> extends InstanceFunction<E> {
-		public IFunc_get() { super(DOUBLE, "get"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionDoubleClass.newDouble(inst.double_val));
-		}
-	}
-	
-	private static class IFunc_set<E extends EnvisionDouble> extends InstanceFunction<E> {
-		public IFunc_set() { super(DOUBLE, "set", DOUBLE); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			inst.double_val = ((EnvisionDouble) args[0]).double_val;
-			ret(inst);
-		}
-	}
-	
-	private static class IFunc_min<E extends EnvisionDouble> extends InstanceFunction<E> {
-		public IFunc_min() { super(DOUBLE, "min", DOUBLE); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionDouble in = (EnvisionDouble) args[0];
-			double min = (inst.double_val <= in.double_val) ? inst.double_val : in.double_val;
-			ret(EnvisionDoubleClass.newDouble(min));
-		}
-	}
-	
-	private static class IFunc_max<E extends EnvisionDouble> extends InstanceFunction<E> {
-		public IFunc_max() { super(DOUBLE, "max", DOUBLE); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionDouble in = (EnvisionDouble) args[0];
-			double max = (inst.double_val >= in.double_val) ? inst.double_val : in.double_val;
-			ret(EnvisionDoubleClass.newDouble(max));
-		}
-	}
-	
 	//-------------------------
 	// Static Member Functions
 	//-------------------------
@@ -166,7 +157,7 @@ public class EnvisionDoubleClass extends EnvisionClass {
 			setStatic();
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionNumber env_num) ret(EnvisionDoubleClass.newDouble(env_num));
+			if (args[0] instanceof EnvisionNumber env_num) ret(EnvisionDoubleClass.valueOf(env_num));
 			else throw new EnvisionLangError("Invalid type -- should not have reached here!");
 		}
 	}

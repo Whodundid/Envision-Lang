@@ -26,7 +26,6 @@ import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.util.ParameterData;
 import eutil.EUtil;
 import eutil.file.EFileUtil;
 
@@ -168,7 +167,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	private static class IFunc_toString<E extends EnvisionFile> extends InstanceFunction<E> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.newString(String.valueOf(inst.iFile).replace("\\", "\\\\")));
+			ret(EnvisionStringClass.valueOf(String.valueOf(inst.iFile).replace("\\", "\\\\")));
 		}
 	}
 	
@@ -198,7 +197,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	private static class IFunc_getName<E extends EnvisionFile> extends InstanceFunction<E> {
 		public IFunc_getName() { super(STRING, "getName"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.newString(inst.iFile.getName()));
+			ret(EnvisionStringClass.valueOf(inst.iFile.getName()));
 		}
 	}
 	
@@ -208,7 +207,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	private static class IFunc_getParent<E extends EnvisionFile> extends InstanceFunction<E> {
 		public IFunc_getParent() { super(STRING, "getParent"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.newString(inst.iFile.getParentFile()));
+			ret(EnvisionStringClass.valueOf(inst.iFile.getParentFile()));
 		}
 	}
 	
@@ -228,7 +227,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	private static class IFunc_getPath<E extends EnvisionFile> extends InstanceFunction<E> {
 		public IFunc_getPath() { super(STRING, "getPath"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.newString(inst.iFile.getPath().replace("\\", "\\\\")));
+			ret(EnvisionStringClass.valueOf(inst.iFile.getPath().replace("\\", "\\\\")));
 		}
 	}
 	
@@ -302,7 +301,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		public IFunc_lsn() { super(LIST, "lsn"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList names = EnvisionListClass.newList(STRING);
-			for (String n : inst.gfe().list()) names.add(EnvisionStringClass.newString(n));
+			for (String n : inst.gfe().list()) names.add(EnvisionStringClass.valueOf(n));
 			ret(names);
 		}
 	}
@@ -345,7 +344,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Renames this file to a new name. Operates based on file paths.
 	 */
 	private static class IFunc_rename<E extends EnvisionFile> extends InstanceFunction<E> {
-		public IFunc_rename() { super(BOOLEAN, "rename", new ParameterData(STRING)); }
+		public IFunc_rename() { super(BOOLEAN, "rename", STRING); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (args.length == 0) ret(EnvisionBoolean.FALSE);
 			String name = ((EnvisionString) args[0]).toString();
@@ -414,7 +413,7 @@ public class EnvisionFileClass extends EnvisionClass {
 			
 			try {
 				File f = inst.gfe();
-				Files.lines(f.toPath()).forEach(EnvisionStringClass::newString);
+				Files.lines(f.toPath()).forEach(EnvisionStringClass::valueOf);
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -535,7 +534,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		public IFunc_randomLine() { super(STRING, "randomLine"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			String randLine = EFileUtil.randomLine(inst.gfe());
-			if (randLine != null) ret(EnvisionStringClass.newString(randLine));
+			if (randLine != null) ret(EnvisionStringClass.valueOf(randLine));
 			ret(EnvisionNull.NULL);
 		}
 	}

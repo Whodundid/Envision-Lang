@@ -13,11 +13,11 @@ public abstract class InstanceFunction<E extends EnvisionObject> extends Envisio
 	//--------------
 	
 	public InstanceFunction(IDatatype rt, String nameIn) {
-		super(rt, nameIn, new ParameterData());
+		super(rt, nameIn, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public InstanceFunction(IDatatype rt, String name, IDatatype... params) {
-		super(rt, name, new ParameterData(params));
+		super(rt, name, ParameterData.from(params));
 	}
 	
 	public InstanceFunction(IDatatype rt, String nameIn, ParameterData paramsIn) {

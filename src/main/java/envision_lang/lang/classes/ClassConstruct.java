@@ -41,16 +41,16 @@ public class ClassConstruct {
 	private final String constructName;
 	
 	/** The class for which instances of this construct are based on. */
-	private EnvisionClass theClass;
+	private final EnvisionClass theClass;
 	/** The scope for which base instance members are interpreted into. */
-	private IScope internalScope;
+	private final IScope internalScope;
 	
-	private EnvisionFunction constructor;
+	private final EnvisionFunction constructor;
 	private BoxList<String, ScopeEntry> fields;
 	private EList<EnvisionFunction> functions;
 	
 	/** Pulling scope map out for fast reference. */
-	private Map<String, ScopeEntry> internal_scope_values;
+	private final Map<String, ScopeEntry> internal_scope_values;
 	
 	//--------------
 	// Constructors

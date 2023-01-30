@@ -21,7 +21,6 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.ParsedStatement;
-import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
@@ -97,13 +96,13 @@ public class EnvisionClass extends EnvisionObject {
 	/**
 	 * A list of all static members on this class.
 	 */
-	protected EList<EnvisionObject> staticMembers = new EArrayList<>();
+	//protected EList<EnvisionObject> staticMembers = new EArrayList<>();
 	
 	/**
 	 * The entire list of static statements that have been declared within
 	 * this class declaration.
 	 */
-	protected EList<ParsedStatement> staticStatements = new EArrayList<>();
+	//protected EList<ParsedStatement> staticStatements = new EArrayList<>();
 	
 	/**
 	 * The entire list of non-static statements that have been declared within
@@ -116,7 +115,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * The entire list of constructor (initializer) statements that have been
 	 * declared within this class declaration.
 	 */
-	protected EList<Stmt_FuncDef> constructorStatements = new EArrayList<>();
+	//protected EList<Stmt_FuncDef> constructorStatements = new EArrayList<>();
 	
 	private static final IPrototypeHandler OBJ_PROTOS = new IPrototypeHandler();
 	
@@ -283,7 +282,7 @@ public class EnvisionClass extends EnvisionObject {
 		//execute constructor -- if there is one
 		if (constructor != null) {
 			constructor.setScope(instanceScope);
-			constructor.invoke_i(interpreter, args);
+			constructor.invoke(interpreter, args);
 		}
 		
 		//define scope members
@@ -410,7 +409,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * @param in The incoming static scope
 	 * @return This class
 	 */
-	public EnvisionClass setScope(Scope in) {
+	public EnvisionClass setScope(IScope in) {
 		staticScope = in;
 		return this;
 	}
@@ -443,16 +442,16 @@ public class EnvisionClass extends EnvisionObject {
 	//---------------------------------------------------------------------------
 	
 	//public EArrayList<InheritableObject> getParents() { return parents; }
-	public EList<EnvisionObject> getStaticMembers() { return staticMembers; }
-	public EList<ParsedStatement> getStaticStatements() { return staticStatements; }
+	//public EList<EnvisionObject> getStaticMembers() { return staticMembers; }
+	//public EList<ParsedStatement> getStaticStatements() { return staticStatements; }
 	public EList<ParsedStatement> getBody() { return bodyStatements; }
 
 	//---------------------------------------------------------------------------
 	
 	//public InheritableObject setParents(EArrayList<InheritableObject> in) { parents = in; return this; }
-	public EnvisionClass setStatics(EList<ParsedStatement> in) { staticStatements = in; return this; }
+	//public EnvisionClass setStatics(EList<ParsedStatement> in) { staticStatements = in; return this; }
 	public EnvisionClass setBody(EList<ParsedStatement> in) { bodyStatements = in; return this; }
-	public EnvisionClass setConstructors(EList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
+	//public EnvisionClass setConstructors(EList<Stmt_FuncDef> in) { constructorStatements = in; return this; }
 	
 	//---------------------------------------------------------------------------
 	
@@ -463,7 +462,7 @@ public class EnvisionClass extends EnvisionObject {
 	public static class IFunc_equals<E extends ClassInstance> extends InstanceFunction<E> {
 		public IFunc_equals() { super(BOOLEAN, "equals", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionBooleanClass.newBoolean(inst.equals(args[0])));
+			ret(EnvisionBooleanClass.valueOf(inst.equals(args[0])));
 		}
 	}
 	
@@ -471,7 +470,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_hash() { super(INT, "hash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hash = inst.getObjectHash();
-			ret(EnvisionIntClass.newInt(hash));
+			ret(EnvisionIntClass.valueOf(hash));
 		}
 	}
 	
@@ -479,7 +478,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_hexHash() { super(STRING, "hexHash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hexHash = inst.getHexHash();
-			ret(EnvisionStringClass.newString(hexHash));
+			ret(EnvisionStringClass.valueOf(hexHash));
 		}
 	}
 	
@@ -487,7 +486,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_isStatic() { super(BOOLEAN, "isStatic"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isStatic = inst.isStatic();
-			ret(EnvisionBooleanClass.newBoolean(isStatic));
+			ret(EnvisionBooleanClass.valueOf(isStatic));
 		}
 	}
 	
@@ -495,7 +494,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_isFinal() { super(BOOLEAN, "isFinal"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isFinal = inst.isFinal();
-			ret(EnvisionBooleanClass.newBoolean(isFinal));
+			ret(EnvisionBooleanClass.valueOf(isFinal));
 		}
 	}
 	
@@ -503,7 +502,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var toString = inst.toString();
-			ret(EnvisionStringClass.newString(toString));
+			ret(EnvisionStringClass.valueOf(toString));
 		}
 	}
 	
@@ -511,7 +510,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_type() { super(STRING, "type"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var type = inst.getDatatype().getStringValue();
-			ret(EnvisionStringClass.newString(type));
+			ret(EnvisionStringClass.valueOf(type));
 		}
 	}
 	
@@ -519,7 +518,7 @@ public class EnvisionClass extends EnvisionObject {
 		public IFunc_typeString() { super(STRING, "typeString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var typeString = inst.getDatatype().getStringValue() + "_" + inst.getHexHash();
-			ret(EnvisionStringClass.newString(typeString));
+			ret(EnvisionStringClass.valueOf(typeString));
 		}
 	}
 	

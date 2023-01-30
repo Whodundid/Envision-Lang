@@ -29,9 +29,8 @@ public final class EnvisionLangParser {
 	private BoxList<Integer, EList<Token<?>>> tokenLines;
 	/** A complete list of all tokens within the file currently being parsed. */
 	private EList<Token<?>> tokens;
-	/** A non tokenized version of the file being parsed.
-	 *  This is simply each line of the file in a list.
-	 *  Used to help generate error messages. */
+	/** A non tokenized version of the file being parsed. This is simply each
+	 *  line of the file in a list. Used to help generate error messages. */
 	private EList<String> lines;
 	/** A counter to keep track of the current token index as parsing continues. */
 	private int currentTokenIndex = 0;
@@ -56,26 +55,26 @@ public final class EnvisionLangParser {
 	 * @throws Exception
 	 */
 	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) throws Exception {
-		//error on invalid code files
+		// error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
-		//create a new isolated parser instance
+		// create a new isolated parser instance
 		EnvisionLangParser p = new EnvisionLangParser();
 		
-		//unpack the code file's tokenized values
+		// unpack the code file's tokenized values
 		EList<ParsedStatement> statements = new EArrayList<>();
 		p.tokenLines = codeFile.getLineTokens();
 		p.tokens = codeFile.getTokens();
 		p.lines = codeFile.getLines();
 		
-		//Any error that is thrown during parsing
+		// Any error that is thrown during parsing
 		//ParsingError error = null;
 		
-		//ignore empty files and return an empty statement list
+		// ignore empty files and return an empty statement list
 		if (p.tokens.isEmpty()) return statements;
 		
 		try {
-			//continue until the end of the file
+			// continue until the end of the file
 			while (!p.atEnd()) {
 				ParsedStatement s = ParserHead.parse(p);
 				//only add non-null statements
@@ -83,14 +82,14 @@ public final class EnvisionLangParser {
 			}
 		}
 		catch (Exception e) {
-			//wrap the thrown exception into a parsing error
+			// wrap the thrown exception into a parsing error
 			//error = new ParsingError(e);
 			throw e;
 		}
 		
-		//throw the wrapped error (if there is one)
+		// throw the wrapped error (if there is one)
 		//if (error != null) throw error;
-		//otherwise return parsed statements
+		// otherwise return parsed statements
 		return statements;
 	}
 	
@@ -150,16 +149,7 @@ public final class EnvisionLangParser {
 	 * @return The consumed token if matching.
 	 */
 	Token<?> consume(String errorMessage, IKeyword keyword) {
-		// check to see if a TERMINATOR is being consumed
-		// in which case, empty lines should NOT be ignored
-		if (keyword.isTerminator()) {
-			if (check(keyword)) return getAdvance();
-		}
-		else {
-			// otherwise, ignore all empty lines until actual tokens are found again
-//			consumeEmptyLines();
-			if (check(keyword)) return getAdvance();
-		}
+		if (check(keyword)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -180,16 +170,7 @@ public final class EnvisionLangParser {
 	 * @return The consumed token if matching.
 	 */
 	Token<?> consume(String errorMessage, IKeyword keywordA, IKeyword keywordB) {
-		// check to see if a TERMINATOR is being consumed
-		// in which case, empty lines should NOT be ignored
-		if (keywordA.isTerminator() || keywordB.isTerminator()) {
-			if (check(keywordA, keywordB)) return getAdvance();
-		}
-		else {
-			// otherwise, ignore all empty lines until actual tokens are found again
-//			consumeEmptyLines();
-			if (check(keywordA, keywordB)) return getAdvance();
-		}
+		if (check(keywordA, keywordB)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -210,18 +191,7 @@ public final class EnvisionLangParser {
 	 * @return The consumed if matching.
 	 */
 	Token<?> consume(String errorMessage, IKeyword... toCheck) {
-		for (IKeyword t : toCheck) {
-			// check to see if a TERMINATOR is being consumed
-			// in which case, empty lines should NOT be ignored
-			if (t.isTerminator()) {
-				if (check(t)) return getAdvance();
-			}
-			else {
-				// otherwise, ignore all empty lines until actual tokens are found again
-//				consumeEmptyLines();
-				if (check(t)) return getAdvance();
-			}
-		}
+		if (check(toCheck)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -240,16 +210,7 @@ public final class EnvisionLangParser {
 	 * @return The consumed token if matching.
 	 */
 	Token<?> consumeType(String errorMessage, KeywordType type) {
-		// check to see if a TERMINATOR is being consumed
-		// in which case, empty lines should NOT be ignored
-		if (type == KeywordType.TERMINATOR) {
-			if (checkType(type)) return getAdvance();
-		}
-		else {
-			// otherwise, ignore all empty lines until actual tokens are found again
-//			consumeEmptyLines();
-			if (checkType(type)) return getAdvance();
-		}
+		if (checkType(type)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -270,16 +231,7 @@ public final class EnvisionLangParser {
 	 * @return The consumed token if matching.
 	 */
 	Token<?> consumeType(String errorMessage, KeywordType typeA, KeywordType typeB) {
-		// check to see if a TERMINATOR is being consumed
-		// in which case, empty lines should NOT be ignored
-		if (typeA == KeywordType.TERMINATOR || typeB == KeywordType.TERMINATOR) {
-			if (checkType(typeA, typeB)) return getAdvance();
-		}
-		else {
-			// otherwise, ignore all empty lines until actual tokens are found again
-//			consumeEmptyLines();
-			if (checkType(typeA, typeB)) return getAdvance();
-		}
+		if (checkType(typeA, typeB)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -314,7 +266,6 @@ public final class EnvisionLangParser {
 			}
 			else {
 				// otherwise, ignore all empty lines until actual tokens are found again
-//				consumeEmptyLines();
 				if (checkType(t)) return getAdvance();
 			}
 		}
@@ -385,21 +336,6 @@ public final class EnvisionLangParser {
 		return false;
 	}
 	
-//	public boolean matchNonTerminator(IKeyword keyword) {
-//		consumeEmptyLines();
-//		return match(keyword);
-//	}
-//	
-//	public boolean matchNonTerminator(IKeyword keywordA, IKeyword keywordB) {
-//		consumeEmptyLines();
-//		return match(keywordA, keywordB);
-//	}
-//	
-//	public boolean matchNonTerminator(IKeyword... keywords) {
-//		consumeEmptyLines();
-//		return match(keywords);
-//	}
-	
 	/**
 	 * If the current token type matches the given KeywordType, then the
 	 * current parsing position is incremented by 1 and true is returned. If
@@ -460,21 +396,6 @@ public final class EnvisionLangParser {
 		return false;
 	}
 	
-//	public boolean matchTypeNonTerminator(KeywordType type) {
-//		consumeEmptyLines();
-//		return matchType(type);
-//	}
-//	
-//	public boolean matchTypeNonTerminator(KeywordType typeA, KeywordType typeB) {
-//		consumeEmptyLines();
-//		return matchType(typeA, typeB);
-//	}
-//	
-//	public boolean matchTypeNonTerminator(KeywordType... types) {
-//		consumeEmptyLines();
-//		return matchType(types);
-//	}
-	
 	//===============
 	// Check Methods
 	//===============
@@ -505,10 +426,6 @@ public final class EnvisionLangParser {
 	boolean checkPreviousNonTerminator(IKeyword keyword) { return check(previousNonTerminator(), keyword); }
 	boolean checkPreviousTerminator(IKeyword keywordA, IKeyword keywordB) { return check(previousNonTerminator(), keywordA, keywordB); }
 	boolean checkPreviousNonTerminator(IKeyword... keywords) { return check(previousNonTerminator(), keywords); }
-	
-//	public boolean ignoreEmptyAndCheck(IKeyword keyword) { consumeEmptyLines(); return check(keyword); }
-//	public boolean ignoreEmptyAndCheck(IKeyword keywordA, IKeyword keywordB) { consumeEmptyLines(); return check(keywordA, keywordB); }
-//	public boolean ignoreEmptyAndCheck(IKeyword... keywords) { consumeEmptyLines(); return check(keywords); }
 	
 	/**
 	 * Returns true if the given token's keyword matches the given keyword.
@@ -566,45 +483,6 @@ public final class EnvisionLangParser {
 	boolean checkPreviousType(KeywordType type) { return checkType(previous(), type); }
 	boolean checkPreviousType(KeywordType typeA, KeywordType typeB) { return checkType(previous(), typeA, typeB); }
 	boolean checkPreviousType(KeywordType... types) { return checkType(previous(), types); }
-	
-	/**
-	 * Returns true if the next non-terminator token has any of the given keyword types.
-	 * 
-	 * @param types The keyword types to check for
-	 * @return True if the next non-terminator token has the given types
-	 */
-//	boolean checkNextTypeNonTerminator(KeywordType type) { return checkType(nextNonTerminator(), type); }
-//	boolean checkNextTypeNonTerminator(KeywordType typeA, KeywordType typeB) { return checkType(nextNonTerminator(), typeA, typeB); }
-//	boolean checkNextTypeNonTerminator(KeywordType... types) {
-//		return checkType(nextNonTerminator(), types);
-//	}
-	
-	/**
-	 * Returns true if the previous non-terminator token has any of the given keyword types.
-	 * 
-	 * @param types The keyword types to check for
-	 * @return True if the previous non-terminator token has the given types
-	 */
-//	boolean checkPreviousTypeNonTerminator(KeywordType type) { return checkType(previousNonTerminator(), type); }
-//	boolean checkPreviousTypeNonTerminator(KeywordType typeA, KeywordType typeB) { return checkType(previousNonTerminator(), typeA, typeB); }
-//	boolean checkPreviousTypeNonTerminator(KeywordType... types) {
-//		return checkType(previousNonTerminator(), types);
-//	}
-	
-//	public boolean ignoreEmptyAndCheckType(KeywordType type) {
-//		consumeEmptyLines();
-//		return checkType(type);
-//	}
-//	
-//	public boolean ignoreEmptyAndCheckType(KeywordType typeA, KeywordType typeB) {
-//		consumeEmptyLines();
-//		return checkType(typeA, typeB);
-//	}
-//	
-//	public boolean ignoreEmptyAndCheckType(KeywordType... types) {
-//		consumeEmptyLines();
-//		return checkType(types);
-//	}
 	
 	/**
 	 * Returns true if the given token has the given keyword type.
@@ -683,18 +561,6 @@ public final class EnvisionLangParser {
 		advance();
 		return cur;
 	}
-	
-	/**
-	 * Retrieves the current token and then advances to the next non-terminator
-	 * token.
-	 * 
-	 * @return The current token
-	 */
-//	Token<?> getAdvanceNonTerminator() {
-//		Token<?> cur = current();
-//		consumeEmptyLines();
-//		return cur;
-//	}
 	
 	
 	/**
@@ -847,7 +713,7 @@ public final class EnvisionLangParser {
 	}
 	
 	/**
-	 * Returns the list of all tokens being parsed through.
+	 * @return The list of all tokens being parsed through.
 	 */
 	EList<Token<?>> getTokens() {
 		return tokens;
@@ -858,9 +724,7 @@ public final class EnvisionLangParser {
 	//=====================================
 	
 	/**
-	 * Returns the current parsing position.
-	 * 
-	 * @return the current parsing position.
+	 * @return The current parsing position index.
 	 */
 	int getCurrentParsingIndex() {
 		return currentTokenIndex;
@@ -924,18 +788,18 @@ public final class EnvisionLangParser {
 	 * @return The generated error message
 	 */
 	private String getErrorMessage(String message) {
-		//In the event that the problematic token is at the end of the file,
-		//set the current token to the previous so that the problematic token
-		//is not a hidden token.
+		// In the event that the problematic token is at the end of the file,
+		// set the current token to the previous so that the problematic token
+		// is not a hidden token.
 		if (current().isEOF()) decrementParsingIndex();
 		
-		//grab the problematic token's line number
+		// grab the problematic token's line number
 		int theLine = current().getLineNum();
-		//if (theLine > tokenLines.size()) theLine -= 1;
+		// if (theLine > tokenLines.size()) theLine -= 1;
 		
 		String tab = "    ";
 		
-		//The individual parts of the error message to be generated
+		// The individual parts of the error message to be generated
 		String border = "";
 		String title = tab + "Parsing Error!";
 		String lineNumber = tab + "Line " + theLine + ":";
@@ -943,17 +807,17 @@ public final class EnvisionLangParser {
 		String arrow = "";
 		String error = tab + message + "   ->   '" + current() + "'";
 		
-		//determine border length
+		// determine border length
 		String longest = EStringUtil.getLongest(title, lineNumber, line, error);
 		border = EStringUtil.repeatString("-", longest.length() + 4);
 		
-		//get arrow position
+		// get arrow position
 		int arrow_pos = current().getLineIndex();
 		
-		//position arrow in string
+		// position arrow in string
 		arrow = "\t\t" + EStringUtil.repeatString(" ", arrow_pos) + "^";
 		
-		//assemble the generated error message parts
+		// assemble the generated error message parts
 		var generatedError = new StringBuilder();
 		generatedError.append(border).append("\n")
 					  .append(title).append("\n\n")

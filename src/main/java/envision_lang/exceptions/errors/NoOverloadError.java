@@ -4,6 +4,7 @@ import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.ParameterData;
+import eutil.strings.EStringUtil;
 
 public class NoOverloadError extends EnvisionLangError {
 	
@@ -18,7 +19,7 @@ public class NoOverloadError extends EnvisionLangError {
 	
 	public NoOverloadError(String func_name, EnvisionObject[] args) {
 		super("The function '" + func_name + "' does not have an overload with parameters: " +
-				new ParameterData(args));
+				EStringUtil.toString(args));
 	}
 	
 }

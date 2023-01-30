@@ -2,61 +2,69 @@ package envision_lang.lang.datatypes;
 
 import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.exceptions.errors.ArgLengthError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.exceptions.errors.NoOverloadError;
 import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.internal.FunctionPrototype;
-import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;
+import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
+import eutil.debug.Broken;
 
 /**
  * A script variable representing a list of characters.
  * 
  * @author Hunter Bragg
  */
-public class EnvisionString extends EnvisionVariable {
+public final class EnvisionString extends EnvisionVariable<String> {
+	
+	public static final EnvisionString EMPTY_STRING = EnvisionStringClass.newString();
 	
 	/**
 	 * The internal StringBuilder for which all strings are built from.
 	 * Instead of directly using a string, a StringBuilder is more memory
 	 * efficient when dealing with string concatenation and appending.
 	 */
-	protected StringBuilder string_val;
+	public final StringBuilder string_val;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	protected EnvisionString() { this(""); }
-	protected EnvisionString(String valueIn) {
+	EnvisionString() {
+		super(EnvisionStringClass.STRING_CLASS);
+		// leave 'string_val' null
+		string_val = null;
+	}
+	
+	EnvisionString(String valueIn) {
 		super(EnvisionStringClass.STRING_CLASS);
 		string_val = new StringBuilder(valueIn);
 	}
 	
-	protected EnvisionString(EnvisionString in) {
+	EnvisionString(EnvisionString in) {
 		super(EnvisionStringClass.STRING_CLASS);
 		string_val = in.string_val;
 	}
 	
-	protected EnvisionString(EnvisionObject in) {
+	EnvisionString(EnvisionObject in) {
 		super(EnvisionStringClass.STRING_CLASS);
 		string_val = new StringBuilder(String.valueOf(in));
 	}
 	
-	protected EnvisionString(StringBuilder in) {
+	EnvisionString(StringBuilder in) {
 		super(EnvisionStringClass.STRING_CLASS);
 		string_val = in;
 	}
 	
-	protected EnvisionString(Object in) {
+	EnvisionString(Object in) {
 		super(EnvisionStringClass.STRING_CLASS);
 		string_val = new StringBuilder(String.valueOf(in));
 	}
@@ -74,16 +82,21 @@ public class EnvisionString extends EnvisionVariable {
 	
 	@Override
 	public String toString() {
+		if (string_val == null) return "";
 		return string_val.toString();
 	}
 	
+	/**
+	 * Return this exact same String.
+	 */
 	@Override
 	public EnvisionString copy() {
-		return EnvisionStringClass.newString(this);
+		return this;
 	}
 	
 	@Override
 	public String convertToJavaObject() {
+		if (string_val == null) return "";
 		return string_val.toString();
 	}
 	
@@ -94,27 +107,8 @@ public class EnvisionString extends EnvisionVariable {
 	
 	@Override
 	public String get_i() {
+		if (string_val == null) return "";
 		return string_val.toString();
-	}
-	
-	@Override
-	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof EnvisionString env_str) {
-			string_val = env_str.string_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-string value to a string!");
-	}
-	
-	@Override
-	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof String str) {
-			string_val = new StringBuilder(str);
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-string value to a string!");
 	}
 	
 	@Override
@@ -127,6 +121,7 @@ public class EnvisionString extends EnvisionVariable {
 	}
 	
 	@Override
+	@Broken(reason="Strings should be immutable and lines 157 and 183 breaks this entirely!")
 	public EnvisionObject handleOperatorOverloads
 		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
 			throws UnsupportedOverloadError
@@ -135,6 +130,9 @@ public class EnvisionString extends EnvisionVariable {
 		if (obj == null) throw new NullVariableError();
 		
 		//only support '+', '+=', '*', '*='
+		
+		// extract this variable's direct scope entry so that assignment operations can effectively update the value
+		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
 		
 		//addition operators
 		if (op == Operator.ADD || op == Operator.ADD_ASSIGN) {
@@ -147,7 +145,10 @@ public class EnvisionString extends EnvisionVariable {
 			else 											obj_toString = obj.toString();
 			
 			//add operator
-			if (op == Operator.ADD) return EnvisionStringClass.newString(string_val.append(obj_toString));
+			if (op == Operator.ADD) {
+				if (string_val == null) return EnvisionStringClass.valueOf(obj_toString);
+				return EnvisionStringClass.valueOf(string_val.append(obj_toString));
+			}
 			//add assign operator
 			else {
 				string_val.append(obj_toString);
@@ -164,20 +165,23 @@ public class EnvisionString extends EnvisionVariable {
 			else throw new InvalidDatatypeError(StaticTypes.INT_TYPE, obj.getDatatype());
 			
 			//repeat current string 'x' number of times
-			StringBuilder new_val = new StringBuilder();
-			for (int i = 0; i < multiply_val; i++) new_val.append(string_val);
+			StringBuilder new_val = null;
+			
+			if (string_val == null) new_val = null;
+			else if (string_val.isEmpty()) new_val = null;
+			else new_val = new StringBuilder();
+			
+			for (int i = 0; i < multiply_val; i++) {
+				if (string_val.isEmpty()) break;
+				new_val.append(string_val);
+			}
 			
 			//mul operator
-			if (op == Operator.MUL) return EnvisionStringClass.newString(new_val.toString());
+			if (op == Operator.MUL) return EnvisionStringClass.valueOf(new_val);
 			//mul assign operator
-			else {
-				string_val = new_val;
-				return this;
-			}
+			else return scopeEntry.setR(EnvisionStringClass.valueOf(new_val));
 		}
-			
-		//throw error if this point is reached
-		//throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		
 		return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 	}
 	
@@ -187,15 +191,14 @@ public class EnvisionString extends EnvisionVariable {
 		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
 		
 		return switch (funcName) {
-		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
-		case "toString" -> EnvisionStringClass.newString(string_val);
+		case "equals" -> EnvisionBooleanClass.valueOf(equals(args[0]));
+		case "toString" -> EnvisionStringClass.valueOf(string_val);
 		case "toList" -> toList();
 		case "length" -> length();
 		case "isEmpty" -> isEmpty();
 		case "isNotEmpty" -> isNotEmpty();
 		case "isChar" -> isChar();
 		case "get" -> get();
-		case "set" -> set(args[0]);
 		case "reverse" -> reverse();
 		case "toUpperCase" -> toUpperCase();
 		case "toLowerCase" -> toLowerCase();
@@ -208,97 +211,127 @@ public class EnvisionString extends EnvisionVariable {
 	//---------
 	// Methods
 	//---------
-	
-	public char charAt_i(long pos) { return string_val.charAt((int) pos); }
-	public char charAt_i(int pos) { return string_val.charAt(pos); }
+
 	public EnvisionChar charAt(EnvisionInt pos) { return charAt((int) pos.int_val); }
 	public EnvisionChar charAt(long pos) { return charAt((int) pos); }
-	public EnvisionChar charAt(int pos) {
-		EnvisionChar c = EnvisionCharClass.newChar(string_val.charAt(pos));
-		return c;
+	public EnvisionChar charAt(int pos) { return EnvisionCharClass.valueOf(string_val.charAt(pos)); }
+	
+	public char charAt_i(long pos) {
+		if (string_val == null) return "".charAt((int) pos);
+		return string_val.charAt((int) pos);
 	}
 	
-	public EList<EnvisionObject> toList_i() { return toList().getInternalList(); }
+	public char charAt_i(int pos) {
+		if (string_val == null) return "".charAt(pos);
+		return string_val.charAt(pos);
+	}
+	
 	public EnvisionList toList() {
-		EnvisionList list = EnvisionListClass.newList(Primitives.CHAR);
+		if (string_val == null) return EnvisionListClass.newList();
+		
+		EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
 		for (int i = 0; i < string_val.length(); i++) {
-			EnvisionChar c = EnvisionCharClass.newChar(string_val.charAt(i));
+			EnvisionChar c = EnvisionCharClass.valueOf(string_val.charAt(i));
 			list.add(c);
 		}
 		return list;
 	}
 	
-	public boolean contains_i(String in) { return string_val.toString().contains(in); }
-	public EnvisionBoolean contains(String in) {
-		return EnvisionBooleanClass.newBoolean(contains_i(in));
+	public EList<EnvisionObject> toList_i() {
+		if (string_val == null) return new EArrayList<>();
+		return toList().getInternalList();
 	}
 	
-	public boolean matches_i(String in) { return string_val.toString().matches(in); }
-	public EnvisionBoolean matches(String in) {
-		return EnvisionBooleanClass.newBoolean(matches_i(in));
-	}
+	public EnvisionBoolean contains(String in) { return EnvisionBooleanClass.valueOf(contains_i(in)); }
+	public boolean contains_i(String in) {
+		if (string_val == null) return false;
+		return string_val.toString().contains(in);
+	}	
 	
-	public long length_i() { return string_val.length(); }
-	public EnvisionInt length() {
-		return EnvisionIntClass.newInt(length_i());
-	}
+	public EnvisionBoolean matches(String in) { return EnvisionBooleanClass.valueOf(matches_i(in)); }
+	public boolean matches_i(String in) {
+		if (string_val == null) return "".equals(in);
+		return string_val.toString().matches(in);
+	}	
 	
-	public boolean isEmpty_i() { return string_val.isEmpty(); }
-	public EnvisionBoolean isEmpty() {
-		return EnvisionBooleanClass.newBoolean(isEmpty_i());
-	}
+	public EnvisionInt length() { return EnvisionIntClass.valueOf(length_i()); }
+	public int length_i() {
+		if (string_val == null) return 0;
+		return string_val.length();
+	}	
 	
-	public boolean isNotEmpty_i() { return !string_val.isEmpty(); }
-	public EnvisionBoolean isNotEmpty() {
-		return EnvisionBooleanClass.newBoolean(isNotEmpty_i());
-	}
+	public EnvisionBoolean isEmpty() { return EnvisionBooleanClass.valueOf(isEmpty_i()); }
+	public boolean isEmpty_i() {
+		if (string_val == null) return true;
+		return string_val.isEmpty();
+	}	
 	
-	public boolean isChar_i() { return string_val.length() == 1; }
-	public EnvisionBoolean isChar() {
-		return EnvisionBooleanClass.newBoolean(isChar_i());
-	}
+	public EnvisionBoolean isNotEmpty() { return EnvisionBooleanClass.valueOf(isNotEmpty_i()); }
+	public boolean isNotEmpty_i() {
+		if (string_val == null) return false;
+		return !string_val.isEmpty();
+	}	
 	
+	public EnvisionBoolean isChar() { return EnvisionBooleanClass.valueOf(isChar_i()); }
+	public boolean isChar_i() {
+		if (string_val == null) return false;
+		return string_val.length() == 1;
+	}	
+	
+	public EnvisionInt ascii() throws EnvisionLangError { return EnvisionIntClass.valueOf(ascii_i()); }
 	public int ascii_i() throws EnvisionLangError {
 		if (!isChar_i()) throw new EnvisionLangError("Given string is not a char! Length must be 1!");
 		return string_val.charAt(0);
+	}	
+	
+	public EnvisionString toLowerCase() { return EnvisionStringClass.valueOf(toLowerCase_i()); }
+	public String toLowerCase_i() {
+		if (string_val == null) return "";
+		return string_val.toString().toLowerCase();
 	}
 	
-	public EnvisionInt ascii() throws EnvisionLangError {
-		if (!isChar_i()) throw new EnvisionLangError("Given string is not a char! Length must be 1!");
-		return EnvisionIntClass.newInt((int) string_val.charAt(0));
+	public EnvisionString toUpperCase() { return EnvisionStringClass.valueOf(toUpperCase_i()); }
+	public String toUpperCase_i() {
+		if (string_val == null) return "";
+		return string_val.toString().toUpperCase();
 	}
 	
-	public String toLowerCase_i() { return string_val.toString().toLowerCase(); }
-	public EnvisionString toLowerCase() {
-		return EnvisionStringClass.newString(toLowerCase_i());
+	public String substring_i(int start) { return substring_i(start, length_i()); }
+	public String substring_i(int start, int end) {
+		if (string_val == null) return "".substring(start, end);
+		return string_val.substring(start, end);
 	}
-	
-	public String toUpperCase_i() { return string_val.toString().toUpperCase(); }
-	public EnvisionString toUpperCase() {
-		return EnvisionStringClass.newString(toUpperCase_i());
-	}
-	
-	public String substring_i(int start) { return substring_i(start, string_val.length()); }
-	public String substring_i(int start, int end) { return string_val.substring(start, end); }
 	
 	public EnvisionString substring(EnvisionObject[] args) {
 		if (args.length == 1) return substring((EnvisionInt) args[0]);
 		else if (args.length == 2) return substring((EnvisionInt) args[0], (EnvisionInt) args[1]);
 		throw new ArgLengthError("substring", 2, args.length);
 	}
-	public EnvisionString substring(EnvisionInt start) { return substring((int) start.int_val); }
-	public EnvisionString substring(EnvisionInt start, EnvisionInt end) { return substring((int) start.int_val, (int) end.int_val); }
-	public EnvisionString substring(int start) { return EnvisionStringClass.newString(substring_i(start)); }
+	
+	public EnvisionString substring(EnvisionInt start) {
+		return substring((int) start.int_val);
+	}
+	
+	public EnvisionString substring(EnvisionInt start, EnvisionInt end) {
+		return substring((int) start.int_val, (int) end.int_val);
+	}
+	
+	public EnvisionString substring(int start) {
+		return EnvisionStringClass.valueOf(substring_i(start));
+	}
+	
 	public EnvisionString substring(int start, int end) {
-		return EnvisionStringClass.newString(substring_i(start, end));
+		return EnvisionStringClass.valueOf(substring_i(start, end));
 	}
 	
 	public EnvisionString reverse() {
-		return EnvisionStringClass.newString(new StringBuilder(string_val).reverse());
+		if (string_val == null) return EnvisionString.EMPTY_STRING;
+		return EnvisionStringClass.valueOf(new StringBuilder(string_val).reverse());
 	}
 	
 	public EnvisionInt compareTo(EnvisionString str) {
-		return EnvisionIntClass.newInt(string_val.compareTo(str.string_val));
+		if (string_val == null) return EnvisionIntClass.valueOf("".compareTo(str.toString()));
+		return EnvisionIntClass.valueOf(string_val.compareTo(str.string_val));
 	}
 	
 }

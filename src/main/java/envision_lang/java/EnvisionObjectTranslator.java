@@ -40,7 +40,7 @@ public class EnvisionObjectTranslator {
 		return null;
 	}
 	
-	protected boolean getBoolean(EnvisionBoolean bool) { return bool.bool_val; }
+	protected boolean getBoolean(EnvisionBoolean bool) { return bool.get_i(); }
 	protected byte getByte(EnvisionNumber num) { return num.convertToJavaObject().byteValue(); }
 	protected char getChar(EnvisionNumber num) { return (char) num.convertToJavaObject().intValue(); }
 	protected short getShort(EnvisionNumber num) { return num.convertToJavaObject().shortValue(); }

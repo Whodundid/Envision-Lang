@@ -16,7 +16,7 @@ public class RandName extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionString s = EnvisionStringClass.newString(ERandomUtil.randomName());
+		EnvisionString s = EnvisionStringClass.valueOf(ERandomUtil.randomName());
 		ret(s);
 	}
 	

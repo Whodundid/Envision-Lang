@@ -77,7 +77,7 @@ public class EnvisionLaunchSettings {
 		@Broken
 		PRELOAD_LANGUAGE("preloadLang"),
 		/** Displays various debug outputs from the language. 'Very poorly defined!' */
-		@Broken("I am not sure what this setting is supposed to even accomplish anymore")
+		@Broken(reason="I am not sure what this setting is supposed to even accomplish anymore")
 		DEBUG_MODE("debugMode"),
 		/** 'Talk' directly to the interpreter. VERY BUGGY! */
 		@Broken

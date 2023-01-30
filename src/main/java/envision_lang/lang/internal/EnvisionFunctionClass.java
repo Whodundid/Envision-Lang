@@ -140,7 +140,7 @@ public class EnvisionFunctionClass extends EnvisionClass {
 	private static class IFunc_getReturnType<E extends EnvisionFunction> extends InstanceFunction<E> {
 		public IFunc_getReturnType(E instIn) { super(STRING, "getReturnType"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionString rt = EnvisionStringClass.newString(inst.returnType);
+			EnvisionString rt = EnvisionStringClass.valueOf(inst.returnType);
 			ret(rt);
 		}
 	}
@@ -149,7 +149,7 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		public IFunc_getParamTypes(E instIn) { super(LIST, "getParamTypes"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList types = EnvisionListClass.newList();
-			for (var p : inst.getParamTypes()) types.add(EnvisionStringClass.newString(p.getStringValue()));
+			for (var p : inst.getParamTypes()) types.add(EnvisionStringClass.valueOf(p.getStringValue()));
 			ret(types);
 		}
 	}
@@ -158,7 +158,7 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		public IFunc_getParamNames(E instIn) { super(LIST, "getParamNames"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList names = EnvisionListClass.newList();
-			for (var p : inst.getParamNames()) names.add(EnvisionStringClass.newString(p));
+			for (var p : inst.getParamNames()) names.add(EnvisionStringClass.valueOf(p));
 			ret(names);
 		}
 	}

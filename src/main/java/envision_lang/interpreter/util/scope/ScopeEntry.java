@@ -150,4 +150,9 @@ public class ScopeEntry {
 		
 	}
 	
+	public EnvisionObject setR(EnvisionObject objectIn) {
+		set(objectIn);
+		return objectIn;
+	}
+	
 }

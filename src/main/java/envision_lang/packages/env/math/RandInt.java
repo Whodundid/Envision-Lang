@@ -28,7 +28,7 @@ public class RandInt extends EnvisionFunction {
 		}
 		
 		long rand = ERandomUtil.getRoll(low, high);
-		EnvisionInt randInt = EnvisionIntClass.newInt(rand);
+		EnvisionInt randInt = EnvisionIntClass.valueOf(rand);
 		
 		ret(randInt);
 	}

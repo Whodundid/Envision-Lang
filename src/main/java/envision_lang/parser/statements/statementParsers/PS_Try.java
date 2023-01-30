@@ -14,37 +14,26 @@ import eutil.datatypes.util.EList;
 public class PS_Try extends ParserHead {
 	
 	public static ParsedStatement tryStatement() {
-		//ignoreNL();
 		Token<?> tryToken = consume(TRY, "Expected 'try' here!");
-		//ignoreNL();
 		Token<?> blockStart = consume(CURLY_L, "Expected block start after try declaration!");
 		Stmt_Block tryBlock = new Stmt_Block(blockStart, getBlock());
 		
 		EList<Stmt_Catch> catches = EList.newList();
 		
 		do {
-			//ignoreNL();
 			Token<?> catchToken = consume(CATCH, "Expected 'catch' statement block after try block!");
 			
-			//ignoreNL();
 			consume(PAREN_L, "Expected catch expression start!");
-			//ignoreNL();
 			Token<?> exceptionType = consume(IDENTIFIER, "Expected an exception type!");
-			//ignoreNL();
 			Token<?> var = consume(IDENTIFIER, "Expected a variable to pair against exception type!");
-			//ignoreNL();
 			consume(PAREN_R, "Expected catch expression end!");
-			//ignoreNL();
 			consume(CURLY_L, "Expected block start after catch declaration!");
 			catches.add(new Stmt_Catch(catchToken, exceptionType, var, getBlock()));
-			//ignoreNL();
 		}
 		while (check(CATCH));
 		
 		Stmt_Block finallyBlock = null;
-		//ignoreNL();
 		if (match(FINALLY)) {
-			//ignoreNL();
 			Token<?> blockStart2 = consume(CURLY_L, "Expected block start after finally declaration!");
 			finallyBlock = new Stmt_Block(blockStart2, getBlock());
 		}

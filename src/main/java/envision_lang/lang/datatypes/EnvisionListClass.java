@@ -14,7 +14,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;
 
-public class EnvisionListClass extends EnvisionClass {
+public final class EnvisionListClass extends EnvisionClass {
 
 	/**
 	 * The singular, static List class for which all Envision:List
@@ -22,6 +22,9 @@ public class EnvisionListClass extends EnvisionClass {
 	 */
 	public static final EnvisionListClass LIST_CLASS = new EnvisionListClass();
 	
+	/**
+	 * The set of functions that a list is capable of performing.
+	 */
 	private static final IPrototypeHandler LIST_PROTOTYPES = new IPrototypeHandler();
 	
 	static {
@@ -134,7 +137,7 @@ public class EnvisionListClass extends EnvisionClass {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var toString = inst.convertToString(interpreter);
-			ret(EnvisionStringClass.newString(toString));
+			ret(EnvisionStringClass.valueOf(toString));
 		}
 	}
 	

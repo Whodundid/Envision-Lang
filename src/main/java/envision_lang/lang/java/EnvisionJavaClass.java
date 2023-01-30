@@ -40,7 +40,7 @@ public class EnvisionJavaClass extends EnvisionClass {
 		//execute constructor -- if there is one
 		if (constructor != null) {
 			constructor.setScope(buildScope);
-			constructor.invoke_i(interpreter, args);
+			constructor.invoke(interpreter, args);
 		}
 		
 		//define scope members

@@ -20,12 +20,12 @@ public class Log extends EnvisionFunction {
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		if (args.length == 1) {
 			double val = ((EnvisionNumber) args[0]).doubleVal_i();
-			ret(EnvisionDoubleClass.newDouble(Math.log10(val)));
+			ret(EnvisionDoubleClass.valueOf(Math.log10(val)));
 		}
 		else if (args.length == 2) {
 			double a = ((EnvisionNumber) args[0]).doubleVal_i();
 			double b = ((EnvisionNumber) args[1]).doubleVal_i();
-			ret(EnvisionDoubleClass.newDouble(Math.log10(a / b)));
+			ret(EnvisionDoubleClass.valueOf(Math.log10(a / b)));
 		}
 	}
 	

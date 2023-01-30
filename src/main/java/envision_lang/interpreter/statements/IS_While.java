@@ -10,55 +10,75 @@ import envision_lang.parser.statements.statement_types.Stmt_While;
 
 public class IS_While extends AbstractInterpreterExecutor {
 	
+	//===============================================================================================
+	
 	public static void run(EnvisionInterpreter interpreter, Stmt_While statement) {
-		if (statement.isDo) {
-			TOP:
-			do {
-				ParsedStatement b = statement.body;
-				if (b == null) continue;
-				
-				interpreter.pushScope();
-				
-				if (b instanceof Stmt_Block block) {
-					for (ParsedStatement s : block.statements) {
-						try { interpreter.execute(s); }
-						catch (Break e) { break TOP; }
-						catch (Continue e) { continue TOP; }
-					}
-				}
-				else {
-					try { interpreter.execute(statement.body); }
+		if (statement.isDo) handleDoWhile(interpreter, statement);
+		else handleWhile(interpreter, statement);
+	}
+	
+	//===============================================================================================
+	
+	/**
+	 * Performs the execution of a DO_WHILE loop.
+	 * 
+	 * @param interpreter
+	 * @param statement
+	 */
+	private static void handleDoWhile(EnvisionInterpreter interpreter, Stmt_While statement) {
+		TOP:
+		do {
+			ParsedStatement b = statement.body;
+			if (b == null) continue;
+			
+			interpreter.pushScope();
+			
+			if (b instanceof Stmt_Block block) {
+				for (ParsedStatement s : block.statements) {
+					try { interpreter.execute(s); }
 					catch (Break e) { break TOP; }
 					catch (Continue e) { continue TOP; }
 				}
-				
-				interpreter.popScope();
 			}
-			while (isTrue(interpreter.evaluate(statement.condition)));
+			else {
+				try { interpreter.execute(statement.body); }
+				catch (Break e) { break TOP; }
+				catch (Continue e) { continue TOP; }
+			}
+			
+			interpreter.popScope();
 		}
-		else {
-			TOP:
-			while (isTrue(interpreter.evaluate(statement.condition))) {
-				ParsedStatement b = statement.body;
-				if (b == null) continue;
-				
-				interpreter.pushScope();
-				
-				if (b instanceof Stmt_Block block) {
-					for (ParsedStatement s : block.statements) {
-						try { interpreter.execute(s); }
-						catch (Break e) { break TOP; }
-						catch (Continue e) { continue TOP; }
-					}
-				}
-				else {
-					try { interpreter.execute(statement.body); }
+		while (isTrue(interpreter.evaluate(statement.condition)));
+	}
+	
+	/**
+	 * Performs the execution of a WHILE loop.
+	 * 
+	 * @param interpreter
+	 * @param statement
+	 */
+	private static void handleWhile(EnvisionInterpreter interpreter, Stmt_While statement) {
+		TOP:
+		while (isTrue(interpreter.evaluate(statement.condition))) {
+			ParsedStatement b = statement.body;
+			if (b == null) continue;
+			
+			interpreter.pushScope();
+			
+			if (b instanceof Stmt_Block block) {
+				for (ParsedStatement s : block.statements) {
+					try { interpreter.execute(s); }
 					catch (Break e) { break TOP; }
 					catch (Continue e) { continue TOP; }
 				}
-				
-				interpreter.popScope();
 			}
+			else {
+				try { interpreter.execute(statement.body); }
+				catch (Break e) { break TOP; }
+				catch (Continue e) { continue TOP; }
+			}
+			
+			interpreter.popScope();
 		}
 	}
 	

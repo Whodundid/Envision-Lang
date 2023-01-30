@@ -106,9 +106,12 @@ public class FunctionCreator {
 	
 	/** Builds the method parameter data from the given method declaration statement. */
 	public static ParameterData buildParameters(EnvisionInterpreter in, EList<StatementParameter> params) {
-		ParameterData parameterData = new ParameterData();
+		int size = params.size();
+		var builtParams = new EnvisionParameter[size];
 		
-		for (StatementParameter p : params) {
+		for (int i = 0; i < size; i++) {
+			var p = params.get(i);
+			
 			Token<?> name = p.name;
 			Token<?> type = p.type;
 			
@@ -121,10 +124,10 @@ public class FunctionCreator {
 			if (assign != null) newParam = new EnvisionParameter(theType, theName, in.evaluate(assign));
 			else newParam = new EnvisionParameter(theType, theName);
 			
-			parameterData.add(newParam);
+			builtParams[i] = newParam;
 		}
 		
-		return parameterData;
+		return ParameterData.from(builtParams);
 	}
 	
 	/** Attempts to find a method of the same name within the given scope. */

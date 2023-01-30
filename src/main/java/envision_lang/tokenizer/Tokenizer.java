@@ -270,7 +270,7 @@ public class Tokenizer {
 	/**
 	 * Parses a single char from tokens.
 	 */
-	@Broken("This method is effectively not complete because it does not enforce the 'u' in '\\u0000'.")
+	@Broken(reason="This method is effectively not complete because it does not enforce the 'u' in '\\u0000'.")
 	private void parse_char() {
 		//consume 1st '
 		advance();
@@ -415,7 +415,11 @@ public class Tokenizer {
 					var list = tokenizeLine(l, lineNum);
 					
 					if (hasNextLine) {
-						var nl = Token.newLine(lineNum, list.getLast().getLineIndex() + 1, list.getLast().getLineTokenIndex() + 1);
+						var lastToken = list.getLast();
+						var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
+						var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+						
+						var nl = Token.newLine(lineNum, lastIndex, lastLineT);
 						list.add(nl);
 					}
 					
@@ -445,19 +449,43 @@ public class Tokenizer {
 		}
 	}
 	
-	/** Tokenizes a single line. */
+	/**
+	 * Tokenizes a single line instead of an entire file.
+	 * <p>
+	 * NOTE: One line could contain potentially many lines due to line breaks.
+	 */
 	public boolean tokenizeLine(String lineIn) {
 		lineIn = lineIn.replace("\t", "");
-		var list = tokenizeLine(lineIn, 0);
+		String[] subLines = lineIn.split("\n");
+		
+		for (int i = 0; i < subLines.length; i++, lineNum++) {
+			String curLine = subLines[i];
+			lines.add(curLine);
+			
+			//ignore empty lines
+			if (curLine.isBlank()) continue;
+			
+			var list = tokenizeLine(curLine, i + 1);
+			if (i + 1 < subLines.length) {
+				var lastToken = list.getLast();
+				var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
+				var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+				
+				var nl = Token.newLine(lineNum, lastIndex, lastLineT);
+				list.add(nl);
+			}
+			
+			lineTokens.add(lineNum, list);
+			tokens.addAll(list);
+		}
+		
 		if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
-		lineTokens.add(lineNum, list);
-		tokens.addAll(list);
-		tokens.add(Token.newLine(-1));
-		lines.add(stripComments(lineIn));
-		var EOF = Token.EOF(-1);
+
+		var EOF = Token.EOF(lineNum);
 		lineTokens.getLast().getB().add(EOF);
 		tokens.add(EOF);
 		lines.add("EOF");
+		
 		return true;
 	}
 	

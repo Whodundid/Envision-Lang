@@ -1,6 +1,6 @@
 package envision_lang.lang.java;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import envision_lang.exceptions.errors.NotAFunctionError;
 import envision_lang.exceptions.errors.UndefinedFunctionError;
@@ -111,7 +111,7 @@ public class NativeClassInstance extends ClassInstance {
 	 * corresponding overload method.
 	 */
 	@Override
-	public HashMap<Operator, EnvisionFunction> getOperators() {
+	public Map<Operator, EnvisionFunction> getOperators() {
 		return super.getOperators();
 	}
 	

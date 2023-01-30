@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.EnvisionLangParser;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
@@ -142,6 +143,8 @@ public abstract class InterpreterTest {
 	protected IScope extractScope() {
 		return interpreter.working_scope;
 	}
+	
+	public <E extends EnvisionObject> E get(String name) { return (E) scope().get(name); }
 	
 	//============
 	// Assertions

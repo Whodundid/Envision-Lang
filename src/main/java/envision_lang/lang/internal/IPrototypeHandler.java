@@ -45,15 +45,15 @@ public class IPrototypeHandler {
 	 * @param func_name The name of the prototype to create
 	 */
 	public FunctionPrototype define(String func_name) {
-		return define(func_name, StaticTypes.VAR_TYPE, new ParameterData());
+		return define(func_name, StaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype define(String func_name, IDatatype rType) {
-		return define(func_name, rType, new ParameterData());
+		return define(func_name, rType, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype define(String func_name, IDatatype rType, IDatatype... params) {
-		return define(func_name, rType, new ParameterData(params));
+		return define(func_name, rType, ParameterData.from(params));
 	}
 	
 	public FunctionPrototype define(String func_name, IDatatype rType, ParameterData params) {

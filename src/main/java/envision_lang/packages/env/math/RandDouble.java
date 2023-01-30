@@ -28,7 +28,7 @@ public class RandDouble extends EnvisionFunction {
 		}
 		
 		double rand = ERandomUtil.getRoll(low, high);
-		EnvisionDouble randDouble = EnvisionDoubleClass.newDouble(rand);
+		EnvisionDouble randDouble = EnvisionDoubleClass.valueOf(rand);
 		
 		ret(randDouble);
 	}

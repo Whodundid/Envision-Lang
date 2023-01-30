@@ -128,15 +128,15 @@ public class FunctionPrototype extends EnvisionObject {
 	//--------------
 	
 	public FunctionPrototype(String nameIn) {
-		this(nameIn, StaticTypes.VAR_TYPE, new ParameterData());
+		this(nameIn, StaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype(String nameIn, IDatatype rType) {
-		this(nameIn, rType, new ParameterData());
+		this(nameIn, rType, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype(String nameIn, IDatatype rType, IDatatype... paramsIn) {
-		this(nameIn, rType, new ParameterData(paramsIn));
+		this(nameIn, rType, ParameterData.from(paramsIn));
 	}
 	
 	public FunctionPrototype(String nameIn, IDatatype rType, ParameterData paramsIn) {
@@ -218,7 +218,7 @@ public class FunctionPrototype extends EnvisionObject {
 	//-----------
 	
 	public FunctionPrototype addOverload(IDatatype rType, IDatatype... params) {
-		return addOverload(rType, new ParameterData(params));
+		return addOverload(rType, ParameterData.from(params));
 	}
 	
 	public FunctionPrototype addOverload(IDatatype rType, ParameterData params) {
@@ -286,7 +286,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 */
 	public boolean hasOverload(EnvisionObject[] argsIn) {
 		//convert args to parameterData
-		ParameterData params = new ParameterData(argsIn);
+		ParameterData params = ParameterData.from(argsIn);
 		return hasOverload(params);
 	}
 	

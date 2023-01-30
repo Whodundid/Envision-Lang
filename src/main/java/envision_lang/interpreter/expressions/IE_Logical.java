@@ -16,7 +16,7 @@ public class IE_Logical extends AbstractInterpreterExecutor {
 		EnvisionObject b = interpreter.evaluate(expression.right);
 		Operator op = expression.operator;
 		
-		//if a is a class instance, attempt to evaluate operator overloads
+		// if a is a class instance, attempt to evaluate operator overloads
 		if (a instanceof ClassInstance a_inst && a_inst.supportsOperator(op))
 			return OperatorOverloadHandler.handleOverload(interpreter, null, op, a_inst, b);
 		

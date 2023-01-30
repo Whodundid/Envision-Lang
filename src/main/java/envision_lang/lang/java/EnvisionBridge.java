@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
+import java.util.Map;
 
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
@@ -31,8 +32,8 @@ import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.JavaDatatype;
 import eutil.reflection.EModifier;
-import eutil.reflection.ObjectVisibility;
 import eutil.reflection.EReflectionUtil;
+import eutil.reflection.ObjectVisibility;
 
 abstract class EnvisionBridge {
 	
@@ -162,14 +163,9 @@ abstract class EnvisionBridge {
 		EnvisionVis visibility = EnvisionVis.of(ObjectVisibility.of(theConstructor));
 		boolean isFinal = mods.isFinal();
 		
-		HashMap<IDatatype, Class<?>> argMapper = new HashMap<>();
-		ParameterData params = new ParameterData();
-		for (Parameter p : theConstructor.getParameters()) {
-			IDatatype pType = IDatatype.of(p.getType().getSimpleName());
-			argMapper.putIfAbsent(pType, p.getType());
-			EnvisionParameter param = new EnvisionParameter(pType, p.getName());
-			params.add(param);
-		}
+		// map java parameter types to envision parameter types
+		Map<IDatatype, Class<?>> argMapper = new HashMap<>();
+		ParameterData params = convertJavaParameters(theConstructor.getParameters(), argMapper);
 		
 		NativeFunctionWrapper func = new NativeFunctionWrapper(params, this, theConstructor, argMapper);
 		if (isFinal) func.setFinal();
@@ -189,15 +185,8 @@ abstract class EnvisionBridge {
 		String rtString = theFunction.getReturnType().getName();
 		IDatatype rt = Primitives.getPrimitiveType(rtString);
 		
-		HashMap<IDatatype, Class<?>> argMapper = new HashMap<>();
-		ParameterData params = new ParameterData();
-		for (Parameter p : theFunction.getParameters()) {
-			IDatatype pType = IDatatype.of(p.getType().getSimpleName());
-			Class<?> toType = p.getType();
-			argMapper.putIfAbsent(pType, toType);
-			EnvisionParameter param = new EnvisionParameter(pType, p.getName());
-			params.add(param);
-		}
+		Map<IDatatype, Class<?>> argMapper = new HashMap<>();
+		ParameterData params = convertJavaParameters(theFunction.getParameters(), argMapper);
 		
 		NativeFunctionWrapper func = new NativeFunctionWrapper(rt, name, params, this, theFunction, argMapper);
 		func.setVisibility(visibility);
@@ -212,6 +201,30 @@ abstract class EnvisionBridge {
 	
 	private void processOperatorOverload(EOperator descriptor, Method theOperator) {
 		
+	}
+	
+	/**
+	 * Internal function used to convert a set of Java parameter types to Envision parameter types.
+	 * 
+	 * @param params The Java parameters to convert
+	 * @param argMapper The argument mapper which maps Java types to EnvisionTypes
+	 * 
+	 * @return The converted set of Envision parameters
+	 */
+	private ParameterData convertJavaParameters(Parameter[] params, Map<IDatatype, Class<?>> argMapper) {
+		int size = params.length;
+		EnvisionParameter[] parsedParams = new EnvisionParameter[size];
+		
+		for (int i = 0; i < size; i++) {
+			Parameter p = params[i];
+			IDatatype pType = IDatatype.of(p.getType().getSimpleName());
+			argMapper.putIfAbsent(pType, p.getType());
+			EnvisionParameter param = new EnvisionParameter(pType, p.getName());
+			parsedParams[i] = param;
+		}
+		
+		// build parameter data from parsed java params
+		return ParameterData.from(parsedParams);
 	}
 	
 	//---------

@@ -20,7 +20,9 @@ import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import eutil.datatypes.boxes.Box3;
 import eutil.datatypes.util.EList;
+import eutil.debug.Broken;
 
+@Broken(reason="Now that primitives are fully immutable, NumberHelper is completely broken here")
 public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {
@@ -47,7 +49,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 			
 			EnvisionObject left = handleLeft(interpreter, left_expr);
 			EnvisionObject right = interpreter.evaluate(right_expr);
-			EnvisionObject by = (by_expr != null) ? interpreter.evaluate(by_expr) : EnvisionIntClass.newInt(1);
+			EnvisionObject by = (by_expr != null) ? interpreter.evaluate(by_expr) : EnvisionIntClass.valueOf(1);
 			
 			EnvisionVariable leftObject = null;
 			
@@ -147,7 +149,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 	}
 	
 	private static void zeroOut(Box3<EnvisionVariable, Long, Long> range) {
-		range.a.set_i(0l);
+		//range.a.set_i(0l);
 	}
 	
 	private static boolean checkLess(Box3<EnvisionVariable, Long, Long> range) {
@@ -160,7 +162,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	private static EnvisionObject handleLeft(EnvisionInterpreter interpreter, ParsedExpression left) {
 		if (left instanceof Expr_Var var) {
-			return interpreter.defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionIntClass.newInt());
+			return interpreter.defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionInt.ZERO);
 		}
 		return interpreter.evaluate(left);
 	}

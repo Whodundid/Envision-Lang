@@ -19,7 +19,7 @@ public class Pow extends EnvisionFunction {
 		double numA = ((EnvisionNumber) args[0]).doubleVal_i();
 		double numB = ((EnvisionNumber) args[1]).doubleVal_i();
 		double pow = Math.pow(numA, numB);
-		EnvisionDouble d = EnvisionDoubleClass.newDouble(pow);
+		EnvisionDouble d = EnvisionDoubleClass.valueOf(pow);
 		ret(d);
 	}
 	

@@ -71,7 +71,7 @@ public class AbstractInterpreterExecutor {
 	}
 	
 	public static EnvisionBoolean isEqual(EnvisionInterpreter interpreter, EnvisionObject a, EnvisionObject b) {
-		return EnvisionBooleanClass.newBoolean(isEqual_i(interpreter, a, b));
+		return EnvisionBooleanClass.valueOf(isEqual_i(interpreter, a, b));
 	}
 	
 	/**
