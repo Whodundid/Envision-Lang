@@ -206,7 +206,7 @@ public abstract class EnvisionObject {
 	 * @return The converted object value
 	 */
 	public static Object convert(Object in) {
-		return (in instanceof EnvisionVariable env_var) ? env_var.get_i() : in;
+		return (in instanceof EnvisionVariable<?> env_var) ? env_var.get_i() : in;
 	}
 	
 	/**
