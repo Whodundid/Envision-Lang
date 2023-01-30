@@ -3,7 +3,7 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;
@@ -30,19 +30,19 @@ public class PS_GetSet extends ParserHead {
 		return statement;
 	}
 	
-	public static Stmt_GetSet parseGetSetVis() { return parseGetSetVis((EnvisionVis) null); }
+	public static Stmt_GetSet parseGetSetVis() { return parseGetSetVis((EnvisionVisibilityModifier) null); }
 	public static Stmt_GetSet parseGetSetVis(ParserDeclaration dec) { return parseGetSetVis(dec.getVisibility()); }
-	public static Stmt_GetSet parseGetSetVis(EnvisionVis visIn) {
+	public static Stmt_GetSet parseGetSetVis(EnvisionVisibilityModifier visIn) {
 		//parse for getset modifiers
-		EnvisionVis curVis = visIn;
-		EnvisionVis getVis = null;
-		EnvisionVis setVis = null;
+		EnvisionVisibilityModifier curVis = visIn;
+		EnvisionVisibilityModifier getVis = null;
+		EnvisionVisibilityModifier setVis = null;
 		boolean get = false, set = false;
 		
 		//parse for first getset (if there is one)
 		if (checkType(VISIBILITY_MODIFIER)) {
 			errorIf(curVis != null, "Duplicate visibilty modifier!");
-			curVis = EnvisionVis.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
+			curVis = EnvisionVisibilityModifier.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
 		}
 		
 		Token<?> start = null;
@@ -61,7 +61,7 @@ public class PS_GetSet extends ParserHead {
 		
 		//parse for second getset (if there is one)
 		if (checkType(VISIBILITY_MODIFIER))
-			curVis = EnvisionVis.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
+			curVis = EnvisionVisibilityModifier.parse(consumeType(VISIBILITY_MODIFIER, "Invalid get/set visibility modifier!"));
 		
 		if (match(GET)) {
 			if (get) error("Duplicate 'get' declaration in current variable declaration!");

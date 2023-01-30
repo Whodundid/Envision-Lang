@@ -14,20 +14,20 @@ import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.datatypes.EnvisionNull;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.java.annotations.EConstructor;
 import envision_lang.lang.java.annotations.EField;
 import envision_lang.lang.java.annotations.EFunction;
 import envision_lang.lang.java.annotations.EOperator;
 import envision_lang.lang.natives.DataModifier;
-import envision_lang.lang.natives.EnvisionFunction;
-import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.IPrototypeHandler;
 import envision_lang.lang.natives.ParameterData;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.JavaDatatype;
@@ -125,7 +125,7 @@ abstract class EnvisionBridge {
 		EModifier mods = EModifier.of(theField);
 		String name = theField.getName();
 		JavaDatatype type = JavaDatatype.of(theField.getType());
-		EnvisionVis visibility = EnvisionVis.of(ObjectVisibility.of(theField));
+		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.of(ObjectVisibility.of(theField));
 		boolean isFinal = mods.isFinal();
 		boolean isStatic = mods.isStatic();
 		Object value = EReflectionUtil.forceGet(theField, this);
@@ -160,7 +160,7 @@ abstract class EnvisionBridge {
 	
 	private void processConstructor(EConstructor descriptor, Constructor<?> theConstructor) {
 		EModifier mods = EModifier.of(theConstructor);
-		EnvisionVis visibility = EnvisionVis.of(ObjectVisibility.of(theConstructor));
+		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.of(ObjectVisibility.of(theConstructor));
 		boolean isFinal = mods.isFinal();
 		
 		// map java parameter types to envision parameter types
@@ -178,7 +178,7 @@ abstract class EnvisionBridge {
 	private void processFunction(EFunction descriptor, Method theFunction) {
 		EModifier mods = EModifier.of(theFunction);
 		String name = theFunction.getName();
-		EnvisionVis visibility = EnvisionVis.of(ObjectVisibility.of(theFunction));
+		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.of(ObjectVisibility.of(theFunction));
 		boolean isFinal = mods.isFinal();
 		boolean isStatic = mods.isStatic();
 		

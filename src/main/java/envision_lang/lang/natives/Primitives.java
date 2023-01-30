@@ -10,6 +10,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.packages.EnvisionLangPackage;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;

@@ -9,7 +9,7 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.errors.NotAFunctionError;
 import envision_lang.lang.exceptions.errors.UndefinedFunctionError;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
 import envision_lang.tokenizer.Operator;

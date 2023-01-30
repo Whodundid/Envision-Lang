@@ -5,7 +5,7 @@ import static envision_lang.lang.natives.Primitives.*;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.ParameterData;
 
 public class Exception_Class extends EnvisionClass {

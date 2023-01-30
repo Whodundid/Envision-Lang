@@ -4,7 +4,7 @@ import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;

@@ -18,7 +18,7 @@ import envision_lang.lang.EnvisionObject;
  * onto the EnvisionFile's instance scope as a RESTRICTED variable to
  * ensure the validity this relationship.
  * 
- * @see EnvisionVis.RESTRICTED
+ * @see EnvisionVisibilityModifier.RESTRICTED
  * 
  * @author Hunter Bragg
  */

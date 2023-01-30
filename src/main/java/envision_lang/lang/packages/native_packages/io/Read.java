@@ -6,7 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.util.JavaDatatype;
 

@@ -9,9 +9,9 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.lang.natives.EnvisionFunction;
-import envision_lang.lang.natives.IPrototypeHandler;
-import envision_lang.lang.natives.InstanceFunction;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 

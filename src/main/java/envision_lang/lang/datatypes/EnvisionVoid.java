@@ -1,6 +1,7 @@
-package envision_lang.lang.natives;
+package envision_lang.lang.datatypes;
 
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 /**
  * A void object cannot be created by any normal means but is used to

@@ -1,8 +1,12 @@
-package envision_lang.lang.natives;
+package envision_lang.lang.functions;
 
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.ParameterData;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * Essentially a glorified list that is used to directly define a set of
@@ -15,7 +19,7 @@ import eutil.datatypes.EArrayList;
  */
 public class IPrototypeHandler {
 
-	private final EArrayList<FunctionPrototype> prototypes = new EArrayList<>();
+	private final EList<FunctionPrototype> prototypes = new EArrayList<>();
 	
 	//--------------
 	// Constructors

@@ -3,7 +3,7 @@ package envision_lang.interpreter.statements;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.FunctionCreator;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 
 public class IS_FuncDef extends AbstractInterpreterExecutor {

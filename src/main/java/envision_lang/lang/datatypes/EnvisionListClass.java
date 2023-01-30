@@ -8,9 +8,9 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.IPrototypeHandler;
-import envision_lang.lang.natives.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 

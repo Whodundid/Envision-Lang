@@ -3,7 +3,7 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.expressions.ParsedExpression;
@@ -22,7 +22,7 @@ public class PS_Enum extends ParserHead {
 		Token<?> name = consume(IDENTIFIER, "Expected an enum name!");
 		
 		if (declaration == null) declaration = new ParserDeclaration();
-		if (declaration.getVisibility() == null) declaration.applyVisibility(EnvisionVis.SCOPE);
+		if (declaration.getVisibility() == null) declaration.applyVisibility(EnvisionVisibilityModifier.SCOPE);
 		
 		Stmt_EnumDef s = new Stmt_EnumDef(name, declaration);
 		

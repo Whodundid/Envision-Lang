@@ -5,7 +5,7 @@ import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
 import eutil.reflection.ObjectVisibility;
 
-public enum EnvisionVis {
+public enum EnvisionVisibilityModifier {
 	
 	PUBLIC("+"),
 	PROTECTED("_"),
@@ -17,20 +17,20 @@ public enum EnvisionVis {
 	
 	public final String lexeme;
 	
-	private EnvisionVis(String lexemeIn) {
+	private EnvisionVisibilityModifier(String lexemeIn) {
 		lexeme = lexemeIn;
 	}
 	
-	public static EnvisionVis parse(Token t) {
+	public static EnvisionVisibilityModifier parse(Token t) {
 		return parse(t.getKeyword());
 	}
 	
-	public static EnvisionVis parse(IKeyword k) {
+	public static EnvisionVisibilityModifier parse(IKeyword k) {
 		if (k.isOperator()) return parse(k.asOperator());
 		return null;
 	}
 	
-	public static EnvisionVis parse(Operator k) {
+	public static EnvisionVisibilityModifier parse(Operator k) {
 		switch (k) {
 		case ADD: return PUBLIC;
 		case PROTECTED: return PROTECTED;
@@ -39,7 +39,7 @@ public enum EnvisionVis {
 		}
 	}
 	
-	public static EnvisionVis parse(String s) {
+	public static EnvisionVisibilityModifier parse(String s) {
 		switch (s.toLowerCase()) {
 		case "+": return PUBLIC;
 		case "_": return PROTECTED;
@@ -48,7 +48,7 @@ public enum EnvisionVis {
 		}
 	}
 	
-	public static EnvisionVis of(ObjectVisibility v) {
+	public static EnvisionVisibilityModifier of(ObjectVisibility v) {
 		return switch (v) {
 		case PUBLIC -> PUBLIC;
 		case PROTECTED -> PROTECTED;

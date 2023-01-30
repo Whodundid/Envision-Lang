@@ -6,8 +6,8 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.util.EList;
 

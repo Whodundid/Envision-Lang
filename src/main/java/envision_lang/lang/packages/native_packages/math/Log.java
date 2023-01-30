@@ -6,7 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 
 public class Log extends EnvisionFunction {
 	

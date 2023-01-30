@@ -7,7 +7,7 @@ import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.DataModifier;
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;
@@ -86,7 +86,7 @@ public class PS_ParseDeclaration extends ParserHead {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
 		Token<?> vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
-		EnvisionVis visibility = EnvisionVis.parse(vis_token);
+		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.parse(vis_token);
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
 		

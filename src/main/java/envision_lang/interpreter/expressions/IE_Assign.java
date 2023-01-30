@@ -18,7 +18,7 @@ import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArithmeticError;
 import envision_lang.lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
-import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.packages.EnvisionLangPackage;

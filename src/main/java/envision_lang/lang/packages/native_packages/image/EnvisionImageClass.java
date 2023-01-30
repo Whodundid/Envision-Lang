@@ -11,8 +11,8 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
+import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.IPrototypeHandler;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.packages.native_packages.file.EnvisionFile;
 

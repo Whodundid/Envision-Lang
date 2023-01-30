@@ -1,7 +1,7 @@
 package envision_lang.interpreter.util.throwables;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.datatypes.EnvisionNull;
 
 /**
  * A means of returning data across method/class scopes within the

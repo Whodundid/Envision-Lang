@@ -1,7 +1,7 @@
 package envision_lang.parser.util;
 
 import envision_lang.lang.natives.DataModifier;
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -15,7 +15,7 @@ public class ParserDeclaration {
 	
 	public DeclarationStage stage = DeclarationStage.VISIBILITY;
 	private DeclarationType declarationType;
-	private EnvisionVis vis;
+	private EnvisionVisibilityModifier vis;
 	private EList<Token<?>> parameters;
 	private EList<DataModifier> modifiers;
 	private EList<Expr_Generic> generics;
@@ -27,20 +27,20 @@ public class ParserDeclaration {
 	//==============
 	
 	public ParserDeclaration() {
-		vis = EnvisionVis.SCOPE;
+		vis = EnvisionVisibilityModifier.SCOPE;
 		parameters = new EArrayList<>(0);
 		modifiers = new EArrayList<>(0);
 		generics = new EArrayList<>(0);
 	}
 	
-	public ParserDeclaration(EnvisionVis visIn) {
+	public ParserDeclaration(EnvisionVisibilityModifier visIn) {
 		vis = visIn;
 		parameters = new EArrayList<>(0);
 		modifiers = new EArrayList<>(0);
 		generics = new EArrayList<>(0);
 	}
 	
-	public ParserDeclaration(EnvisionVis visIn,
+	public ParserDeclaration(EnvisionVisibilityModifier visIn,
 							 EList<Token<?>> paramsIn,
 							 EList<DataModifier> modsIn,
 							 EList<Expr_Generic> genericsIn)
@@ -80,7 +80,7 @@ public class ParserDeclaration {
 		return out;
 	}
 	
-	public ParserDeclaration applyVisibility(EnvisionVis visIn) { vis = visIn; return this; }
+	public ParserDeclaration applyVisibility(EnvisionVisibilityModifier visIn) { vis = visIn; return this; }
 	public ParserDeclaration applyParams(EList<Token<?>> paramsIn) { parameters.addAll(paramsIn); return this; }
 	public ParserDeclaration applyDataMods(EList<DataModifier> modsIn) { modifiers.addAll(modsIn); return this; }
 	public ParserDeclaration applyGenerics(EList<Expr_Generic> genericsIn) { generics.addAll(genericsIn); return this; }
@@ -116,13 +116,13 @@ public class ParserDeclaration {
 	public boolean isStatic() { return modifiers.contains(DataModifier.STATIC); }
 	public boolean isAbstract() { return modifiers.contains(DataModifier.ABSTRACT); }
 	public boolean isStrong() { return modifiers.contains(DataModifier.STRONG); }
-	public boolean isPublic() { return vis == EnvisionVis.PUBLIC; }
-	public boolean isPrivate() { return vis == EnvisionVis.PRIVATE; }
-	public boolean isProtected() { return vis == EnvisionVis.PROTECTED; }
+	public boolean isPublic() { return vis == EnvisionVisibilityModifier.PUBLIC; }
+	public boolean isPrivate() { return vis == EnvisionVisibilityModifier.PRIVATE; }
+	public boolean isProtected() { return vis == EnvisionVisibilityModifier.PROTECTED; }
 	
 	public DeclarationStage getStage() { return stage; }
 	public DeclarationType getDeclarationType() { return declarationType; }
-	public EnvisionVis getVisibility() { return vis; }
+	public EnvisionVisibilityModifier getVisibility() { return vis; }
 	public EList<Token<?>> getParams() { return parameters; }
 	public EList<DataModifier> getMods() { return modifiers; }
 	public EList<Expr_Generic> getGenerics() { return generics; }

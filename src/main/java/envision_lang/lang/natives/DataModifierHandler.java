@@ -56,12 +56,12 @@ public class DataModifierHandler {
 	/**
 	 * @return This object's visibility
 	 */
-	public EnvisionVis getVisibility() {
-		if (isRestricted()) return EnvisionVis.RESTRICTED;
-		if (isPublic()) return EnvisionVis.PUBLIC;
-		if (isProtected()) return EnvisionVis.PROTECTED;
-		if (isPrivate()) return EnvisionVis.PRIVATE;
-		return EnvisionVis.SCOPE;
+	public EnvisionVisibilityModifier getVisibility() {
+		if (isRestricted()) return EnvisionVisibilityModifier.RESTRICTED;
+		if (isPublic()) return EnvisionVisibilityModifier.PUBLIC;
+		if (isProtected()) return EnvisionVisibilityModifier.PROTECTED;
+		if (isPrivate()) return EnvisionVisibilityModifier.PRIVATE;
+		return EnvisionVisibilityModifier.SCOPE;
 	}
 	
 	public boolean isAbstract() { return hasModifier(DataModifier.ABSTRACT); }
@@ -106,7 +106,7 @@ public class DataModifierHandler {
 	 * @param visIn Visibility to assign
 	 * @return This EnvisionObject
 	 */
-	public DataModifierHandler setVisibility(EnvisionVis visIn) {
+	public DataModifierHandler setVisibility(EnvisionVisibilityModifier visIn) {
 		//clear out current visibility bitwise mods
 		resetVisibility();
 		//assign specific visibility bitwise mods from visibility type
@@ -126,10 +126,10 @@ public class DataModifierHandler {
 	public DataModifierHandler setFinal() { addModifier(DataModifier.FINAL); return this; }
 	public DataModifierHandler setStrong() { addModifier(DataModifier.STRONG); return this; }
 	
-	public DataModifierHandler setRestricted() { return setVisibility(EnvisionVis.RESTRICTED); }
-	public DataModifierHandler setPrivate() { return setVisibility(EnvisionVis.PRIVATE); }
-	public DataModifierHandler setProtected() { return setVisibility(EnvisionVis.PROTECTED); }
-	public DataModifierHandler setPublic() { return setVisibility(EnvisionVis.PUBLIC); }
-	public DataModifierHandler setScopeVisibility() { return setVisibility(EnvisionVis.SCOPE); }
+	public DataModifierHandler setRestricted() { return setVisibility(EnvisionVisibilityModifier.RESTRICTED); }
+	public DataModifierHandler setPrivate() { return setVisibility(EnvisionVisibilityModifier.PRIVATE); }
+	public DataModifierHandler setProtected() { return setVisibility(EnvisionVisibilityModifier.PROTECTED); }
+	public DataModifierHandler setPublic() { return setVisibility(EnvisionVisibilityModifier.PUBLIC); }
+	public DataModifierHandler setScopeVisibility() { return setVisibility(EnvisionVisibilityModifier.SCOPE); }
 	
 }

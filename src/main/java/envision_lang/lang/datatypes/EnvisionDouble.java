@@ -8,7 +8,7 @@ import envision_lang.lang.exceptions.errors.NoOverloadError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.natives.FunctionPrototype;
+import envision_lang.lang.functions.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;

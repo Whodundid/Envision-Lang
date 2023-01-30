@@ -6,7 +6,7 @@ import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.DataModifierHandler;
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.InternalJavaObjectWrapper;
 import envision_lang.lang.natives.Primitives;
@@ -150,7 +150,7 @@ public abstract class EnvisionObject {
 	/**
 	 * @return This object's visibility
 	 */
-	public EnvisionVis getVisibility() { return modifierHandler.getVisibility(); }
+	public EnvisionVisibilityModifier getVisibility() { return modifierHandler.getVisibility(); }
 	
 	public boolean isStatic() { return modifierHandler.isStatic(); }
 	public boolean isFinal() { return modifierHandler.isFinal(); }
@@ -178,7 +178,7 @@ public abstract class EnvisionObject {
 	 * @param visIn Visibility to assign
 	 * @return This EnvisionObject
 	 */
-	public EnvisionObject setVisibility(EnvisionVis visIn) {
+	public EnvisionObject setVisibility(EnvisionVisibilityModifier visIn) {
 		modifierHandler.setVisibility(visIn);
 		return this;
 	}

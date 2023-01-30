@@ -1,4 +1,4 @@
-package envision_lang.lang.natives;
+package envision_lang.lang.functions;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
@@ -9,6 +9,7 @@ import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.datatypes.EnvisionVoid;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.DuplicateOverloadError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
@@ -16,6 +17,10 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.exceptions.errors.NegativeArgumentLengthError;
 import envision_lang.lang.exceptions.errors.NoOverloadError;
+import envision_lang.lang.natives.EnvisionParameter;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;

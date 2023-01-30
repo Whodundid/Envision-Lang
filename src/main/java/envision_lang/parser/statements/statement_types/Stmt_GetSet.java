@@ -1,6 +1,6 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.lang.natives.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
@@ -13,7 +13,7 @@ public class Stmt_GetSet extends ParsedStatement {
 	// Fields
 	//========
 	
-	public final EnvisionVis getVis, setVis;
+	public final EnvisionVisibilityModifier getVis, setVis;
 	public final boolean get, set;
 	public EList<Token<?>> vars;
 	
@@ -21,11 +21,11 @@ public class Stmt_GetSet extends ParsedStatement {
 	// Constructors
 	//==============
 	
-	public Stmt_GetSet(Token<?> start, EnvisionVis getVisIn, EnvisionVis setVisIn) {
+	public Stmt_GetSet(Token<?> start, EnvisionVisibilityModifier getVisIn, EnvisionVisibilityModifier setVisIn) {
 		this(start, getVisIn, setVisIn, null);
 	}
 	
-	public Stmt_GetSet(Token<?> start, EnvisionVis getVisIn, EnvisionVis setVisIn, EList<Token<?>> varsIn) {
+	public Stmt_GetSet(Token<?> start, EnvisionVisibilityModifier getVisIn, EnvisionVisibilityModifier setVisIn, EList<Token<?>> varsIn) {
 		super(start);
 		getVis = getVisIn;
 		setVis = setVisIn;
