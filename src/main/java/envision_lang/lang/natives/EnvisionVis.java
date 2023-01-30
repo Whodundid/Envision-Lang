@@ -1,4 +1,4 @@
-package envision_lang.lang.util;
+package envision_lang.lang.natives;
 
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.Operator;

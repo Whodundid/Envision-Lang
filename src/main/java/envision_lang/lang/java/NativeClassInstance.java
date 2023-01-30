@@ -9,9 +9,9 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.errors.NotAFunctionError;
 import envision_lang.lang.exceptions.errors.UndefinedFunctionError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.tokenizer.Operator;
 
 public class NativeClassInstance extends ClassInstance {

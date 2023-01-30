@@ -3,7 +3,7 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.lang.util.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVis;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_GetSet;

@@ -8,8 +8,8 @@ import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 
@@ -118,7 +118,7 @@ public class ClassConstruct {
 			if (f.isOperator()) inst.addOperatorOverload(f.getOperator(), copy);
 			
 			//copy the method
-			buildScope.define(f.getFunctionName(), StaticTypes.FUNC_TYPE, copy);
+			buildScope.define(f.getFunctionName(), EnvisionStaticTypes.FUNC_TYPE, copy);
 		}
 		
 		//init constructor

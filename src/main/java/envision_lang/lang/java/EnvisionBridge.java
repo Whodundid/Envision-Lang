@@ -14,20 +14,20 @@ import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.java.annotations.EConstructor;
 import envision_lang.lang.java.annotations.EField;
 import envision_lang.lang.java.annotations.EFunction;
 import envision_lang.lang.java.annotations.EOperator;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.IPrototypeHandler;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.EnvisionParameter;
-import envision_lang.lang.util.EnvisionVis;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.EnvisionVis;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.JavaDatatype;
@@ -139,7 +139,7 @@ abstract class EnvisionBridge {
 		}
 		//parse var values separately
 		else if (value instanceof EnvisionVar v) {
-			envisionType = StaticTypes.VAR_TYPE;
+			envisionType = EnvisionStaticTypes.VAR_TYPE;
 			value = v.getEnvisionObject();
 			strong = v.isStrong();
 		}

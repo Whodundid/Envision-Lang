@@ -2,7 +2,7 @@ package envision_lang.lang.exceptions.errors;
 
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 
 /**
  * A type of EnvisionError thrown when a function is attempting to be

@@ -7,8 +7,8 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.util.EList;
 
 public class InternalEnvision extends ClassInstance {
@@ -27,7 +27,7 @@ public class InternalEnvision extends ClassInstance {
 		
 		InternalEnvisionClass.ENVISION_CLASS.defineFunctionScopeMembers(this);
 		
-		EnvisionList list = EnvisionListClass.newList(StaticTypes.STRING_TYPE);
+		EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.STRING_TYPE);
 		if (programArgs != null) {
 			for (String arg : programArgs) {
 				list.add(EnvisionStringClass.valueOf(arg));

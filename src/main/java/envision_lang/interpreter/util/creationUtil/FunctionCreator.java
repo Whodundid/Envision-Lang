@@ -3,13 +3,13 @@ package envision_lang.interpreter.util.creationUtil;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.EnvisionParameter;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.ParameterData;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
@@ -44,7 +44,7 @@ public class FunctionCreator {
 			//wrap the return type if not null
 			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
 			//otherwise, assign var as return type
-			else function_return_datatype = StaticTypes.VAR_TYPE;
+			else function_return_datatype = EnvisionStaticTypes.VAR_TYPE;
 		}
 		
 		
@@ -116,7 +116,7 @@ public class FunctionCreator {
 			Token<?> type = p.type;
 			
 			String theName = name.getLexeme();
-			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : StaticTypes.VAR_TYPE;
+			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : EnvisionStaticTypes.VAR_TYPE;
 			
 			ParsedExpression assign = p.assignment;
 			

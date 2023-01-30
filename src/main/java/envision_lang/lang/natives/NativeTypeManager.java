@@ -11,7 +11,6 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionNumberClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionTupleClass;
-import envision_lang.lang.internal.EnvisionFunctionClass;
 import envision_lang.tokenizer.Token;
 
 /**

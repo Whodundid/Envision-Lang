@@ -9,7 +9,7 @@ import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.listErrors.NotAListError;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
 import envision_lang.parser.expressions.expression_types.Expr_SetListIndex;
@@ -39,7 +39,7 @@ public class IE_ListIndexSet extends AbstractInterpreterExecutor {
 		
 		// only allow integers for array indexes
 		if (!(listIndex instanceof EnvisionInt)) {
-			throw new InvalidDatatypeError(StaticTypes.INT_TYPE, listIndex.getDatatype());
+			throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, listIndex.getDatatype());
 		}
 		
 		// get index as long

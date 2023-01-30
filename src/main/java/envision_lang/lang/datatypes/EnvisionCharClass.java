@@ -9,11 +9,11 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.IPrototypeHandler;
+import envision_lang.lang.natives.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionCharClass extends EnvisionClass {
 
@@ -74,7 +74,7 @@ public final class EnvisionCharClass extends EnvisionClass {
 	
 	@Override
 	protected void registerStaticNatives() {
-		staticScope.define("NULL_CHAR", StaticTypes.CHAR_TYPE, EnvisionChar.NULL_CHAR);
+		staticScope.define("NULL_CHAR", EnvisionStaticTypes.CHAR_TYPE, EnvisionChar.NULL_CHAR);
 	}
 	
 	//---------------------

@@ -6,8 +6,8 @@ import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.EnvisionVis;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.EnvisionVis;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;

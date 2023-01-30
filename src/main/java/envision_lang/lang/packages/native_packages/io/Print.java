@@ -3,13 +3,13 @@ package envision_lang.lang.packages.native_packages.io;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Print extends EnvisionFunction {
 	
 	public Print() {
-		super(StaticTypes.VOID_TYPE, "print");
+		super(EnvisionStaticTypes.VOID_TYPE, "print");
 	}
 	
 	@Override

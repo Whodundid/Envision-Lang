@@ -1,6 +1,6 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.lang.util.EnvisionVis;
+import envision_lang.lang.natives.EnvisionVis;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;

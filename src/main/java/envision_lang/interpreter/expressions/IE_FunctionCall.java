@@ -13,7 +13,7 @@ import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.lang.exceptions.errors.objects.AbstractInstantiationError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedInstantiationError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
 import eutil.debug.InDevelopment;

@@ -1,7 +1,7 @@
 package envision_lang.lang.exceptions.errors;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 
 /** Error thrown when attempting to return a value on a void function. */
 public class VoidFunctionError extends EnvisionLangError {

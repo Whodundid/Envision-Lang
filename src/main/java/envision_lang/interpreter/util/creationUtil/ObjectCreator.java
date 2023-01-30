@@ -13,10 +13,10 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.util.EList;
 import eutil.debug.PotentiallyBroken;
 import eutil.math.ENumUtil;
@@ -76,7 +76,7 @@ public class ObjectCreator {
 	
 	@PotentiallyBroken("I have no idea what the 'passByValue' check is doing..")
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
-		if (typeIn == null || StaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
+		if (typeIn == null || EnvisionStaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
 			return EnvisionNull.NULL;
 		}
 		

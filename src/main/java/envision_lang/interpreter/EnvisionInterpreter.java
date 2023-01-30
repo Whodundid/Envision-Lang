@@ -69,7 +69,7 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.StatementError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.packages.native_packages.EnvPackage;
 import envision_lang.lang.packages.native_packages.base.InternalEnvision;

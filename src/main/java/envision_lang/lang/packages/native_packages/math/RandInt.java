@@ -5,7 +5,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
 import eutil.random.ERandomUtil;
 

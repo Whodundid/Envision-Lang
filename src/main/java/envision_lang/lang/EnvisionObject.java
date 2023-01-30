@@ -4,12 +4,12 @@ import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
-import envision_lang.lang.internal.JavaObjectWrapper;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.DataModifierHandler;
+import envision_lang.lang.natives.EnvisionVis;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.InternalJavaObjectWrapper;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.DataModifierHandler;
-import envision_lang.lang.util.EnvisionVis;
 
 /**
  * The underlying parent object class for which all Envision:Java
@@ -108,7 +108,7 @@ public abstract class EnvisionObject {
 	}
 	
 	public Object convertToJavaObject() {
-		if (this instanceof JavaObjectWrapper jw) return jw.javaObject;
+		if (this instanceof InternalJavaObjectWrapper jw) return jw.javaObject;
 		return toString();
 	}
 	

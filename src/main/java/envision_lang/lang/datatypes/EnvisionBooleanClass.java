@@ -8,10 +8,10 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.IPrototypeHandler;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.IPrototypeHandler;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionBooleanClass extends EnvisionClass {
 	
@@ -49,8 +49,8 @@ public final class EnvisionBooleanClass extends EnvisionClass {
 	@Override
 	protected void registerStaticNatives() {
 		staticScope.defineFunction(new IFunc_static_valueOf());
-		staticScope.define("TRUE", StaticTypes.BOOL_TYPE, EnvisionBoolean.TRUE);
-		staticScope.define("FALSE", StaticTypes.BOOL_TYPE, EnvisionBoolean.FALSE);
+		staticScope.define("TRUE", EnvisionStaticTypes.BOOL_TYPE, EnvisionBoolean.TRUE);
+		staticScope.define("FALSE", EnvisionStaticTypes.BOOL_TYPE, EnvisionBoolean.FALSE);
 	}
 	
 	//---------------------

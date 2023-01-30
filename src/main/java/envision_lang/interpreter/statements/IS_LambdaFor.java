@@ -10,8 +10,8 @@ import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
@@ -110,14 +110,14 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 					else if (value != null) {
 						if (value instanceof EnvisionInt l_value) {
 							index = l_value;
-							interpreter.scope().define(name, StaticTypes.INT_TYPE, index);
+							interpreter.scope().define(name, EnvisionStaticTypes.INT_TYPE, index);
 						}
 						//define the variable anyways but also automatically define the index
 						else {
 							//define index
 							EnvisionInt new_int = EnvisionInt.ZERO;
 							index = new_int;
-							interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
+							interpreter.scope().define(name, EnvisionStaticTypes.INT_TYPE, new_int);
 							//define variable
 							interpreter.scope().define(name, value.getDatatype(), value);
 							//throw new InvalidDataTypeError("invilsuqird");
@@ -128,7 +128,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 					else {
 						EnvisionInt new_int = EnvisionInt.ZERO;
 						index = new_int;
-						interpreter.scope().define(name, StaticTypes.INT_TYPE, new_int);
+						interpreter.scope().define(name, EnvisionStaticTypes.INT_TYPE, new_int);
 					}
 				}
 				//this is not the first object, attempt to create new loop-level variable
@@ -145,7 +145,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 					}
 				}
 				else {
-					interpreter.scope().define(name, StaticTypes.NULL_TYPE, EnvisionNull.NULL);
+					interpreter.scope().define(name, EnvisionStaticTypes.NULL_TYPE, EnvisionNull.NULL);
 				}
 			}
 		}

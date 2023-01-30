@@ -7,9 +7,9 @@ import envision_lang.lang.exceptions.errors.NoOverloadError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -161,10 +161,10 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
 	@Override
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (StaticTypes.BOOL_TYPE.compare(castType)) return this;
-		if (StaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.valueOf(bool_val);
-		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.valueOf(bool_val);
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(bool_val);
+		if (EnvisionStaticTypes.BOOL_TYPE.compare(castType)) return this;
+		if (EnvisionStaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.valueOf(bool_val);
+		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.valueOf(bool_val);
+		if (EnvisionStaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(bool_val);
 		
 		throw new ClassCastError(this, castType);
 	}

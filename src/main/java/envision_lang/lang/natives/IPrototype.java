@@ -1,7 +1,5 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.ParameterData;
 import eutil.datatypes.boxes.BoxList;
 
 /**

@@ -5,13 +5,13 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Floor extends EnvisionFunction {
 	
 	public Floor() {
-		super(StaticTypes.INT_TYPE, "floor", StaticTypes.NUMBER_TYPE);
+		super(EnvisionStaticTypes.INT_TYPE, "floor", EnvisionStaticTypes.NUMBER_TYPE);
 	}
 	
 	@Override

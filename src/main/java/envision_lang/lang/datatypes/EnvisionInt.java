@@ -8,9 +8,9 @@ import envision_lang.lang.exceptions.errors.NoOverloadError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -120,7 +120,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
 			
 			//only allow numbers
 			if (!obj.getPrimitiveType().isNumber()) {
-				throw new InvalidDatatypeError(StaticTypes.NUMBER_TYPE, obj.getDatatype());
+				throw new InvalidDatatypeError(EnvisionStaticTypes.NUMBER_TYPE, obj.getDatatype());
 			}
 		}
 		
@@ -178,12 +178,12 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
 	@Override
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return doubleVal();
-		if (StaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(int_val != 0);
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(int_val);
+		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(castType)) return doubleVal();
+		if (EnvisionStaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(int_val != 0);
+		if (EnvisionStaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(int_val);
 		
-		if (StaticTypes.LIST_TYPE.compare(castType)) {
-			EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
+		if (EnvisionStaticTypes.LIST_TYPE.compare(castType)) {
+			EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.CHAR_TYPE);
 			String str = String.valueOf(int_val);
 			
 			for (int i = 0; i < str.length(); i++) {

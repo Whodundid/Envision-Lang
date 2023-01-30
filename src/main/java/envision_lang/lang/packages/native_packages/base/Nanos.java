@@ -3,13 +3,13 @@ package envision_lang.lang.packages.native_packages.base;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionIntClass;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Nanos extends EnvisionFunction {
 	
 	public Nanos() {
-		super(StaticTypes.INT_TYPE, "nanos");
+		super(EnvisionStaticTypes.INT_TYPE, "nanos");
 	}
 	
 	@Override

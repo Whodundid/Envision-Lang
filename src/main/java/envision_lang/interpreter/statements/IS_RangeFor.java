@@ -12,7 +12,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
@@ -162,7 +162,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	private static EnvisionObject handleLeft(EnvisionInterpreter interpreter, ParsedExpression left) {
 		if (left instanceof Expr_Var var) {
-			return interpreter.defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionInt.ZERO);
+			return interpreter.defineIfNot(var.getName(), EnvisionStaticTypes.INT_TYPE, EnvisionInt.ZERO);
 		}
 		return interpreter.evaluate(left);
 	}

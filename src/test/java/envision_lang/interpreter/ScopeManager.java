@@ -13,7 +13,7 @@ import envision_lang.lang.datatypes.EnvisionDoubleClass;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class ScopeManager implements IScope {
 	
@@ -32,7 +32,7 @@ public class ScopeManager implements IScope {
 	
 	public ScopeManager defVar(String name, Object val) {
 		IDatatype type = IDatatype.dynamicallyDetermineType(val);
-		define(name, StaticTypes.VAR_TYPE, ObjectCreator.createObject(type, val));
+		define(name, EnvisionStaticTypes.VAR_TYPE, ObjectCreator.createObject(type, val));
 		return this;
 	}
 

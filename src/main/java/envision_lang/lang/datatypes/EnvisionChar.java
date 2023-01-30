@@ -7,9 +7,9 @@ import envision_lang.lang.exceptions.errors.NoOverloadError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -118,8 +118,8 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
 			//only accept char or string objects
-			if (!StaticTypes.CHAR_TYPE.compare(obj_type) && !StaticTypes.STRING_TYPE.compare(obj_type))
-				throw new InvalidDatatypeError(StaticTypes.STRING_TYPE, obj_type);
+			if (!EnvisionStaticTypes.CHAR_TYPE.compare(obj_type) && !EnvisionStaticTypes.STRING_TYPE.compare(obj_type))
+				throw new InvalidDatatypeError(EnvisionStaticTypes.STRING_TYPE, obj_type);
 			
 			//char additions require the char to be upgraded to a string
 			String new_val = String.valueOf(char_val);
@@ -130,7 +130,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 			EnvisionString new_obj = EnvisionStringClass.valueOf(new_val);
 			
 			//assign new value to vars and immediately return created object
-			interpreter.scope().set(scopeName, StaticTypes.STRING_TYPE, new_obj);
+			interpreter.scope().set(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
 			return new_obj;
 		}
 		
@@ -141,8 +141,8 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
 			//only accept int objects
-			if (!StaticTypes.INT_TYPE.compare(obj_type))
-				throw new InvalidDatatypeError(StaticTypes.INT_TYPE, obj_type);
+			if (!EnvisionStaticTypes.INT_TYPE.compare(obj_type))
+				throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, obj_type);
 			
 			//char mul_additions require the char to be upgraded to a string
 			StringBuilder new_val = new StringBuilder();
@@ -166,10 +166,10 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 	@Override
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (StaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(char_val);
-		if (StaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.valueOf(char_val);
-		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.valueOf(char_val);
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(char_val);
+		if (EnvisionStaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(char_val);
+		if (EnvisionStaticTypes.INT_TYPE.compare(castType)) return EnvisionIntClass.valueOf(char_val);
+		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(castType)) return EnvisionDoubleClass.valueOf(char_val);
+		if (EnvisionStaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(char_val);
 		
 		return super.handleObjectCasts(castType);
 	}

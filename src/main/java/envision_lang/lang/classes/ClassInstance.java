@@ -20,11 +20,11 @@ import envision_lang.lang.exceptions.errors.NotAFunctionError;
 import envision_lang.lang.exceptions.errors.UndefinedFunctionError;
 import envision_lang.lang.exceptions.errors.objects.ClassCastError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.tokenizer.Operator;
 
 /**

@@ -10,10 +10,10 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.IPrototypeHandler;
+import envision_lang.lang.natives.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
 
 public class EnvisionStringClass extends EnvisionClass {

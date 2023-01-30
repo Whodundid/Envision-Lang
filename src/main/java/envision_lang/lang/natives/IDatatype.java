@@ -233,17 +233,17 @@ public interface IDatatype {
 	}
 	
 	public static IDatatype of(String typeName) {
-		if (typeName == null) return StaticTypes.NULL_TYPE;
+		if (typeName == null) return EnvisionStaticTypes.NULL_TYPE;
 		
 		String lower = typeName.toLowerCase();
 		IDatatype parsedType = null;
 		
 		parsedType = switch (lower) {
-		case "boolean" -> StaticTypes.BOOL_TYPE;
-		case "byte", "short", "int", "integer", "long" -> StaticTypes.INT_TYPE;
-		case "float", "double", "number" -> StaticTypes.DOUBLE_TYPE;
-		case "char", "character" -> StaticTypes.CHAR_TYPE;
-		case "string" -> StaticTypes.STRING_TYPE;
+		case "boolean" -> EnvisionStaticTypes.BOOL_TYPE;
+		case "byte", "short", "int", "integer", "long" -> EnvisionStaticTypes.INT_TYPE;
+		case "float", "double", "number" -> EnvisionStaticTypes.DOUBLE_TYPE;
+		case "char", "character" -> EnvisionStaticTypes.CHAR_TYPE;
+		case "string" -> EnvisionStaticTypes.STRING_TYPE;
 		default -> null;
 		};
 		

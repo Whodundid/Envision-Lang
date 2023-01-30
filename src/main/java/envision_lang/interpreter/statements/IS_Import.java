@@ -7,7 +7,7 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.SelfImportError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
 import envision_lang.tokenizer.Token;
@@ -47,7 +47,7 @@ public class IS_Import {
 			//import literally everything (including the code file itself)
 			if (all) {
 				//define the code file as an object within this scope
-				interpreter.scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
+				interpreter.scope().defineImportVal(def_name, EnvisionStaticTypes.CODE_FILE, imp);
 				//define import object's scope level members
 				for (var b : impScope.values().entrySet()) {
 					var n = b.getKey();
@@ -61,7 +61,7 @@ public class IS_Import {
 			//if there's no object to import, simply import the code file as an object inside of this interpreter
 			else if (obj == null) {
 				//System.out.println("DEFINING CODE FILE");
-				interpreter.scope().defineImportVal(def_name, StaticTypes.CODE_FILE, imp);
+				interpreter.scope().defineImportVal(def_name, EnvisionStaticTypes.CODE_FILE, imp);
 			}
 			//otherwise, import the specific object from the given file (if it exists)
 			else {

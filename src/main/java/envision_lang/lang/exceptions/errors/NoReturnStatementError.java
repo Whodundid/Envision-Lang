@@ -1,7 +1,7 @@
 package envision_lang.lang.exceptions.errors;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 
 public class NoReturnStatementError extends EnvisionLangError {
 

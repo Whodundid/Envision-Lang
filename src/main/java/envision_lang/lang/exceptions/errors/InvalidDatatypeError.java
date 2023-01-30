@@ -1,8 +1,8 @@
 package envision_lang.lang.exceptions.errors;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.EnvisionParameter;
 
 public class InvalidDatatypeError extends EnvisionLangError {
 	

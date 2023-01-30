@@ -8,11 +8,11 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.IPrototypeHandler;
+import envision_lang.lang.natives.InstanceFunction;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionListClass extends EnvisionClass {
 
@@ -83,7 +83,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionList newList() { return newList(StaticTypes.VAR_TYPE); }
+	public static EnvisionList newList() { return newList(EnvisionStaticTypes.VAR_TYPE); }
 	public static EnvisionList newList(IDatatype type) {
 		EnvisionList list = new EnvisionList(type);
 		LIST_CLASS.defineScopeMembers(list);

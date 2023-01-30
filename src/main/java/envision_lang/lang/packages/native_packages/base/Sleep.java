@@ -3,13 +3,13 @@ package envision_lang.lang.packages.native_packages.base;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Sleep extends EnvisionFunction {
 	
 	public Sleep() {
-		super(StaticTypes.VOID_TYPE, "sleep");
+		super(EnvisionStaticTypes.VOID_TYPE, "sleep");
 	}
 	
 	@Override

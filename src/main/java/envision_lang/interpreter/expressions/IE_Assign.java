@@ -18,9 +18,9 @@ import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArithmeticError;
 import envision_lang.lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.packages.EnvisionLangPackage;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
@@ -148,7 +148,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 			}
 			
 			// define as 'var' type variable
-			s.define(var_name, StaticTypes.VAR_TYPE, var_obj);
+			s.define(var_name, EnvisionStaticTypes.VAR_TYPE, var_obj);
 		}
 		// if the object does exist, attempt to assign the new value to it
 		else {

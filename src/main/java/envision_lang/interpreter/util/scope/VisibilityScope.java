@@ -3,8 +3,8 @@ package envision_lang.interpreter.util.scope;
 import java.util.HashMap;
 
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.natives.EnvisionVis;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.EnvisionVis;
 import eutil.datatypes.boxes.Box2;
 
 public class VisibilityScope extends Scope {

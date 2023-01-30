@@ -6,16 +6,16 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.packages.EnvisionLangPackage;
 import eutil.strings.EStringBuilder;
 
 public class DebugScopeFull extends EnvisionFunction {
 	
 	public DebugScopeFull() {
-		super(StaticTypes.VOID_TYPE, "scopeFull");
+		super(EnvisionStaticTypes.VOID_TYPE, "scopeFull");
 	}
 	
 	@Override

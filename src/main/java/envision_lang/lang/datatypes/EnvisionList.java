@@ -15,10 +15,10 @@ import envision_lang.lang.exceptions.errors.listErrors.EmptyListError;
 import envision_lang.lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision_lang.lang.exceptions.errors.listErrors.LockedListError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.EnvisionNull;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -56,7 +56,7 @@ public final class EnvisionList extends ClassInstance {
 	// Constructors
 	//--------------
 	
-	EnvisionList() { this(StaticTypes.VAR_TYPE); }
+	EnvisionList() { this(EnvisionStaticTypes.VAR_TYPE); }
 	EnvisionList(IDatatype typeIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
@@ -82,7 +82,7 @@ public final class EnvisionList extends ClassInstance {
 	
 	EnvisionList(EnvisionTuple tupleIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = StaticTypes.VAR_TYPE;
+		list_type = EnvisionStaticTypes.VAR_TYPE;
 		internal_list.addAll(tupleIn.getInternalList());
 	}
 	

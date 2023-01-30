@@ -1,12 +1,8 @@
-package envision_lang.lang.util;
+package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.InvalidParameterError;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
 import eutil.strings.EStringUtil;
 
 /**
@@ -75,7 +71,7 @@ public class ParameterData {
 			
 			// check for valid parameter datatype
 			if (type == null) throw new InvalidParameterError("Java::NULL is not a valid parameter type!");
-			if (StaticTypes.NULL_TYPE.compare(type)) throw new InvalidParameterError("Envision::NULL is not a valid parameter type!");
+			if (EnvisionStaticTypes.NULL_TYPE.compare(type)) throw new InvalidParameterError("Envision::NULL is not a valid parameter type!");
 			
 			String name = "";
 			EnvisionParameter param = new EnvisionParameter(type, name);

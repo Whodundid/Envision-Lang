@@ -1,4 +1,4 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
 import static envision_lang.lang.natives.Primitives.*;
 
@@ -12,7 +12,6 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.natives.Primitives;
 
 /**
  * The parent class for all Envision Functions. This is a special

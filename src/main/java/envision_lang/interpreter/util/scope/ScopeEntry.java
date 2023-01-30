@@ -3,9 +3,9 @@ package envision_lang.interpreter.util.scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.errors.StrongVarReassignmentError;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.strings.EStringBuilder;
 
 /**
@@ -137,7 +137,7 @@ public class ScopeEntry {
 	
 	public void set(EnvisionObject objectIn) {
 		IDatatype incoming = objectIn.getDatatype();
-		boolean compare = StaticTypes.NULL_TYPE.compare(incoming);
+		boolean compare = EnvisionStaticTypes.NULL_TYPE.compare(incoming);
 		
 		if (strong) {
 			if (!compare) throw new StrongVarReassignmentError(datatype, incoming);

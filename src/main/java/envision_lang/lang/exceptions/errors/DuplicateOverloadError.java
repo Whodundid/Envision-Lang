@@ -1,7 +1,7 @@
 package envision_lang.lang.exceptions.errors;
 
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.ParameterData;
 
 public class DuplicateOverloadError extends EnvisionLangError {
 	

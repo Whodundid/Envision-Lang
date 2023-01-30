@@ -1,10 +1,7 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.ParameterData;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -45,7 +42,7 @@ public class IPrototypeHandler {
 	 * @param func_name The name of the prototype to create
 	 */
 	public FunctionPrototype define(String func_name) {
-		return define(func_name, StaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
+		return define(func_name, EnvisionStaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype define(String func_name, IDatatype rType) {
@@ -79,7 +76,7 @@ public class IPrototypeHandler {
 	public void defineOn(IScope scope) {
 		for (var p : prototypes) {
 			var name = p.getFunctionName();
-			scope.define(name, StaticTypes.FUNC_TYPE, p);
+			scope.define(name, EnvisionStaticTypes.FUNC_TYPE, p);
 		}
 	}
 	

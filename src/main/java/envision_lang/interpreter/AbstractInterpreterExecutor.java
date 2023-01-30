@@ -6,9 +6,9 @@ import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.exceptions.errors.NullVariableError;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.natives.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 
@@ -94,7 +94,7 @@ public class AbstractInterpreterExecutor {
 	 * @return true if the given datatype is in fact null
 	 */
 	protected static boolean isNull(IDatatype typeIn) {
-		return (typeIn == null || typeIn == StaticTypes.NULL_TYPE);
+		return (typeIn == null || typeIn == EnvisionStaticTypes.NULL_TYPE);
 	}
 	
 	/**

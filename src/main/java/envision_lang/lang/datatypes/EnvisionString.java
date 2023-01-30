@@ -11,8 +11,8 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.NoOverloadError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
-import envision_lang.lang.internal.FunctionPrototype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.FunctionPrototype;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -162,7 +162,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 			
 			//convert incoming object to an integer representation
 			if (obj instanceof EnvisionInt env_int) multiply_val = env_int.int_val;
-			else throw new InvalidDatatypeError(StaticTypes.INT_TYPE, obj.getDatatype());
+			else throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, obj.getDatatype());
 			
 			//repeat current string 'x' number of times
 			StringBuilder new_val = null;
@@ -229,7 +229,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	public EnvisionList toList() {
 		if (string_val == null) return EnvisionListClass.newList();
 		
-		EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
+		EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.CHAR_TYPE);
 		for (int i = 0; i < string_val.length(); i++) {
 			EnvisionChar c = EnvisionCharClass.valueOf(string_val.charAt(i));
 			list.add(c);

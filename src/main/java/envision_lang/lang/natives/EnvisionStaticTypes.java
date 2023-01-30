@@ -1,8 +1,8 @@
 package envision_lang.lang.natives;
 
-public class StaticTypes {
+public class EnvisionStaticTypes {
 
-	private StaticTypes() {}
+	private EnvisionStaticTypes() {}
 	
 	//------------------------------------
 	// Statically Wrapped Primitive Types

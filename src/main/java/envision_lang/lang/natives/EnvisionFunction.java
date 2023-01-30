@@ -1,4 +1,4 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
@@ -16,10 +16,6 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.exceptions.errors.NegativeArgumentLengthError;
 import envision_lang.lang.exceptions.errors.NoOverloadError;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.EnvisionParameter;
-import envision_lang.lang.util.ParameterData;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
@@ -117,7 +113,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @param nameIn The function name
 	 */
 	protected EnvisionFunction(String nameIn) {
-		this(StaticTypes.VAR_TYPE, nameIn, ParameterData.EMPTY_PARAMS);
+		this(EnvisionStaticTypes.VAR_TYPE, nameIn, ParameterData.EMPTY_PARAMS);
 	}
 	
 	/**
@@ -571,7 +567,7 @@ public class EnvisionFunction extends ClassInstance {
 				IDatatype incoming_type = arg_obj.getDatatype();
 				
 				// always allow vars
-				if (StaticTypes.VAR_TYPE.compare(scope_var_type)) {
+				if (EnvisionStaticTypes.VAR_TYPE.compare(scope_var_type)) {
 					ps.set(arg_name, arg_obj);
 				}
 				// allow if the types are direct matches

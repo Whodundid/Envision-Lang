@@ -13,10 +13,10 @@ import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
@@ -149,12 +149,12 @@ public interface IScope {
 	//----------------------
 	
 	default EnvisionObject define(String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : StaticTypes.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.NULL_TYPE;
 		return define(name, type, object);
 	}
 	
 	default EnvisionObject define(String name, IDatatype typeIn, EnvisionObject obj) {
-		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
 		var entry = new ScopeEntry(type, obj);
 		return define(name, entry);
 	}
@@ -223,7 +223,7 @@ public interface IScope {
 	 * Defines an object at a specific depth.
 	 */
 	default EnvisionObject defineAt(int dist, String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : StaticTypes.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.NULL_TYPE;
 		return defineAt(dist, name, type, object);
 	}
 	
@@ -231,7 +231,7 @@ public interface IScope {
 	 * Defines an object at a specific depth.
 	 */
 	default EnvisionObject defineAt(int dist, String name, IDatatype typeIn, EnvisionObject object) {
-		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
 		parentAt(dist).define(name, type, object);
 		return object;
 	}
@@ -240,7 +240,7 @@ public interface IScope {
 	 * Defines an imported variable on this scope.
 	 */
 	default EnvisionObject defineImportVal(String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : StaticTypes.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.NULL_TYPE;
 		return defineImportVal(name, type, object);
 	}
 	
@@ -248,7 +248,7 @@ public interface IScope {
 	 * Defines an imported variable on this scope.
 	 */
 	default EnvisionObject defineImportVal(String name, IDatatype typeIn, EnvisionObject object) {
-		var type = (typeIn != null) ? typeIn : StaticTypes.NULL_TYPE;
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
 		var entry = new ScopeEntry(type, object);
 		return defineImportVal(name, entry);
 	}
@@ -691,7 +691,7 @@ public interface IScope {
 			if (obj instanceof EnvisionString) obj_output.a("\"", obj_output, "\"");
 			else if (obj instanceof EnvisionChar) obj_output.a("'", obj_output, "'");
 			else obj_output.a(obj);
-			String var_actual_type = (StaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
+			String var_actual_type = (EnvisionStaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
 			String objHash = (obj != null) ? ", " + obj.getHexHash() : "";
 			
 			out.a(tab, tab, i, ": ", o.getKey(), " = [", entry.getDatatype(), var_actual_type, objHash, ", ", obj_output, objS, "]\n");

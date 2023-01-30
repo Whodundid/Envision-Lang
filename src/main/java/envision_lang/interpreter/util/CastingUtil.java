@@ -15,7 +15,7 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.VariableCastError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 /**
  * Contains functions which pertain to object types and potential
@@ -90,19 +90,19 @@ public class CastingUtil {
 		//-----------------------------------------------------------------------------
 		
 		//accept any type if the base is 'var'
-		if (StaticTypes.VAR_TYPE.compare(expected)) return;
+		if (EnvisionStaticTypes.VAR_TYPE.compare(expected)) return;
 		
 		//accept all incoming null values
-		if (StaticTypes.NULL_TYPE.compare(toCheck)) return;
+		if (EnvisionStaticTypes.NULL_TYPE.compare(toCheck)) return;
 		
 		//check if a char is going into a string
-		if (StaticTypes.STRING_TYPE.compare(expected) && StaticTypes.CHAR_TYPE.compare(toCheck)) return;
+		if (EnvisionStaticTypes.STRING_TYPE.compare(expected) && EnvisionStaticTypes.CHAR_TYPE.compare(toCheck)) return;
 		
 		//check if an int or double is going into number
-		if (StaticTypes.NUMBER_TYPE.compare(expected) && toCheck.isNumber() || StaticTypes.BOOL_TYPE.compare(toCheck)) return;
+		if (EnvisionStaticTypes.NUMBER_TYPE.compare(expected) && toCheck.isNumber() || EnvisionStaticTypes.BOOL_TYPE.compare(toCheck)) return;
 		
 		//check if an int is going into a double
-		if (StaticTypes.DOUBLE_TYPE.compare(DOUBLE) && StaticTypes.INT_TYPE.compare(toCheck)) return;
+		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(DOUBLE) && EnvisionStaticTypes.INT_TYPE.compare(toCheck)) return;
 		
 		//if none of above, check for exact datatype match
 		if (!expected.compare(toCheck)) {

@@ -11,7 +11,7 @@ import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionTuple;
 import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.InvalidTargetError;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
 import envision_lang.tokenizer.Operator;
@@ -26,8 +26,8 @@ public class IE_ListIndex extends AbstractInterpreterExecutor {
 		EnvisionObject theIndex = interpreter.evaluate(index);
 		
 		// only allow integers to be used for the array index
-		if (!StaticTypes.INT_TYPE.compare(theIndex.getDatatype()))
-			throw new InvalidDatatypeError(StaticTypes.INT_TYPE, theIndex.getDatatype());
+		if (!EnvisionStaticTypes.INT_TYPE.compare(theIndex.getDatatype()))
+			throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, theIndex.getDatatype());
 		
 		EnvisionInt int_index = (EnvisionInt) theIndex;
 		

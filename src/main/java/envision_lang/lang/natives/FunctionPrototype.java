@@ -1,12 +1,9 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
 import java.util.HashMap;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.ParameterData;
 import eutil.datatypes.EArrayList;
 
 /**
@@ -128,7 +125,7 @@ public class FunctionPrototype extends EnvisionObject {
 	//--------------
 	
 	public FunctionPrototype(String nameIn) {
-		this(nameIn, StaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
+		this(nameIn, EnvisionStaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
 	}
 	
 	public FunctionPrototype(String nameIn, IDatatype rType) {
@@ -140,7 +137,7 @@ public class FunctionPrototype extends EnvisionObject {
 	}
 	
 	public FunctionPrototype(String nameIn, IDatatype rType, ParameterData paramsIn) {
-		super(StaticTypes.FUNC_TYPE);
+		super(EnvisionStaticTypes.FUNC_TYPE);
 		func_name = nameIn;
 		returnType = rType;
 		params = paramsIn;

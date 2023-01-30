@@ -1,8 +1,6 @@
-package envision_lang.lang.internal;
+package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.util.EnvisionVis;
 
 /**
  * An EnvisionObject intended to bridge the gap between Java and
@@ -24,7 +22,7 @@ import envision_lang.lang.util.EnvisionVis;
  * 
  * @author Hunter Bragg
  */
-public class JavaObjectWrapper extends EnvisionObject {
+public class InternalJavaObjectWrapper extends EnvisionObject {
 	
 	//--------
 	// Fields
@@ -43,8 +41,8 @@ public class JavaObjectWrapper extends EnvisionObject {
 	// Constructors
 	//--------------
 	
-	public JavaObjectWrapper(Object javaObjectIn) {
-		super(StaticTypes.VAR_TYPE);
+	public InternalJavaObjectWrapper(Object javaObjectIn) {
+		super(EnvisionStaticTypes.VAR_TYPE);
 		javaObject = javaObjectIn;
 	}
 	

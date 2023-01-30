@@ -9,10 +9,10 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.IPrototypeHandler;
+import envision_lang.lang.natives.EnvisionFunction;
+import envision_lang.lang.natives.IPrototypeHandler;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionDoubleClass extends EnvisionClass {
 
@@ -49,8 +49,8 @@ public final class EnvisionDoubleClass extends EnvisionClass {
 	@Override
 	protected void registerStaticNatives() {
 		staticScope.defineFunction(new IFunc_static_valueOf());
-		staticScope.define("MIN_VALUE", StaticTypes.DOUBLE_TYPE, EnvisionDouble.MIN_VALUE);
-		staticScope.define("MAX_VALUE", StaticTypes.DOUBLE_TYPE, EnvisionDouble.MAX_VALUE);
+		staticScope.define("MIN_VALUE", EnvisionStaticTypes.DOUBLE_TYPE, EnvisionDouble.MIN_VALUE);
+		staticScope.define("MAX_VALUE", EnvisionStaticTypes.DOUBLE_TYPE, EnvisionDouble.MAX_VALUE);
 	}
 	
 	//---------------------

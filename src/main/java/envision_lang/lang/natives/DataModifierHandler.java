@@ -1,4 +1,4 @@
-package envision_lang.lang.util;
+package envision_lang.lang.natives;
 
 public class DataModifierHandler {
 	
