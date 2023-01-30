@@ -3,7 +3,6 @@ package envision_lang._launch;
 import java.io.File;
 import java.io.IOException;
 
-import envision_lang.EnvisionLang;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.EnvisionLangError;
@@ -143,7 +142,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		if (!isParsed) throw new InvalidCodeFileError(fileName, "Has not been successfully parsed!");
 		if (statements == null) throw new InvalidCodeFileError(fileName, "Has somehow been parsed but does not have a valid statement list!");
 		
-		if (EnvisionLang.debugMode) debugOutput();
+		//if (EnvisionLang.debugMode) debugOutput();
 		
 		//prep interpreter
 		try {
@@ -306,22 +305,22 @@ public class EnvisionCodeFile extends EnvisionObject {
 		//if not parsed, attempt to parse
 		if (!isParsed) parseFile();
 		
-		var out = new EStringBuilder();
+		var out = new EStringBuilder("\n");
 		out.println("'" + getFileName() + "' Parsed Statements:");
 		var lines = new EStringBuilder();
 		int cur = 1;
 		for (ParsedStatement s : statements) {
 			lines.a('\t');
-			lines.append(cur++);
-			lines.append(". ");
-			lines.append("\t");
+			lines.a(cur++);
+			lines.a(". ");
+			lines.a("\t");
 			if (s instanceof Stmt_Expression expStmt)
-				lines.append(expStmt.expression.getClass().getSimpleName());
+				lines.a(expStmt.expression.getClass().getSimpleName());
 			else
-				lines.append(s.getClass().getSimpleName());
-			lines.append(" : ");
-			lines.append(s.toString());
-			lines.append("\n");
+				lines.a(s.getClass().getSimpleName());
+			lines.a(" : ");
+			lines.a(s.toString());
+			lines.a("\n");
 		}
 		out.print(lines.toString());
 		out.println();

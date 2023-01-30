@@ -66,6 +66,8 @@ public class PS_Return extends ParserHead {
 			while (match(COMMA));
 		}
 		
+		consumeTerminator();
+		
 		return new Stmt_Return(returnToken, cond, retVals);
 	}
 	

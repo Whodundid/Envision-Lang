@@ -43,7 +43,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
 		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
-		EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH);
+		EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH, LaunchSetting.DEBUG_MODE);
 		//EnvisionLang.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");

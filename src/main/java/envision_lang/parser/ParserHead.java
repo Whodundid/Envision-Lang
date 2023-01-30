@@ -4,6 +4,7 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
+import envision_lang.EnvisionLang;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.expressions.ParsedExpression;
@@ -75,7 +76,9 @@ public abstract class ParserHead {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
 		ignoreTerminators();
 		
-		//System.out.println("HEAD: " + current() + " : " + getCurrentParsingIndex());
+		if (EnvisionLang.debugMode) {
+			System.out.println("HEAD: " + current() + " : " + current().getLineNum() + " : " + getCurrentParsingIndex());			
+		}
 		
 		//break out if the end of the tokens has been reached
 		if (atEnd()) return null;
