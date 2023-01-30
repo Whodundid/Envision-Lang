@@ -1,8 +1,8 @@
 package envision_lang.lang.util;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.InvalidParameterError;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.InvalidParameterError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;

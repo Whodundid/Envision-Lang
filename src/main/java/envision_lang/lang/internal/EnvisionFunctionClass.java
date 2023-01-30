@@ -2,7 +2,6 @@ package envision_lang.lang.internal;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
@@ -12,6 +11,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.Primitives;
 
 /**

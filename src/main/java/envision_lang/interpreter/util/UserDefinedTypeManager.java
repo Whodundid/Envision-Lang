@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
@@ -13,6 +12,7 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionNumberClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;

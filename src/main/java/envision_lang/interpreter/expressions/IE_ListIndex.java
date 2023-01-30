@@ -1,7 +1,5 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.InvalidTargetError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.OperatorOverloadHandler;
@@ -11,6 +9,8 @@ import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_ListIndex;

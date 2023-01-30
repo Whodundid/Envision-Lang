@@ -5,7 +5,7 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.util.DataModifier;
 import envision_lang.lang.util.EnvisionVis;
 import envision_lang.parser.ParserHead;

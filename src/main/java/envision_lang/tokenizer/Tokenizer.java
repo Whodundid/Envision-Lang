@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;

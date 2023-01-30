@@ -2,9 +2,6 @@ package envision_lang.interpreter.util;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.VariableCastError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
@@ -13,6 +10,9 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.lang.exceptions.errors.VariableCastError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.StaticTypes;

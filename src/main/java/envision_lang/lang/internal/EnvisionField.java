@@ -1,8 +1,8 @@
 package envision_lang.lang.internal;
 
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.util.DataModifierHandler;

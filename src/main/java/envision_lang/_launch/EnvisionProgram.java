@@ -2,10 +2,10 @@ package envision_lang._launch;
 
 import java.io.File;
 
-import envision_lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.interpreter.util.throwables.EnvisionException;
+import envision_lang.lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.lang.java.EnvisionJavaObject;
-import envision_lang.packages.EnvisionLangPackage;
+import envision_lang.lang.packages.EnvisionLangPackage;
 import eutil.datatypes.util.EList;
 import eutil.file.EFileUtil;
 

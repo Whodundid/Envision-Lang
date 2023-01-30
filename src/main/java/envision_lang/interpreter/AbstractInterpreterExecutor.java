@@ -1,11 +1,11 @@
 package envision_lang.interpreter;
 
-import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
+import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;

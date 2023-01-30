@@ -1,9 +1,9 @@
 package envision_lang.lang;
 
-import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.internal.JavaObjectWrapper;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;

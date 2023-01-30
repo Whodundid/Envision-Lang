@@ -1,10 +1,6 @@
 package envision_lang.interpreter.expressions;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.ArithmeticError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
-import envision_lang.exceptions.errors.InvalidTargetError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
@@ -18,10 +14,14 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.ArithmeticError;
+import envision_lang.lang.exceptions.errors.FinalVarReassignmentError;
+import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
-import envision_lang.packages.EnvisionPackage;
+import envision_lang.lang.packages.EnvisionPackage;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
 import envision_lang.parser.expressions.expression_types.Expr_Var;

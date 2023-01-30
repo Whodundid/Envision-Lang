@@ -1,15 +1,15 @@
 package envision_lang.interpreter.expressions;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.NotVisibleError;
-import envision_lang.exceptions.errors.RestrictedAccessError;
-import envision_lang.exceptions.errors.UndefinedValueError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.NotVisibleError;
+import envision_lang.lang.exceptions.errors.RestrictedAccessError;
+import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.parser.expressions.expression_types.Expr_Get;
 
 public class IE_Get extends AbstractInterpreterExecutor {

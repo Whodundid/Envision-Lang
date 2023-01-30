@@ -2,14 +2,14 @@ package envision_lang.lang.datatypes;
 
 import java.util.Collections;
 
-import envision_lang.exceptions.errors.InvalidArgumentError;
-import envision_lang.exceptions.errors.NoOverloadError;
-import envision_lang.exceptions.errors.listErrors.EmptyTupleError;
-import envision_lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
-import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.exceptions.errors.InvalidArgumentError;
+import envision_lang.lang.exceptions.errors.NoOverloadError;
+import envision_lang.lang.exceptions.errors.listErrors.EmptyTupleError;
+import envision_lang.lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
+import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.tokenizer.Operator;

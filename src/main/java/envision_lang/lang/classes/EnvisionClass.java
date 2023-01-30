@@ -2,8 +2,6 @@ package envision_lang.lang.classes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.errors.classErrors.NotAConstructorError;
-import envision_lang.exceptions.errors.classErrors.UndefinedConstructorError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
@@ -13,6 +11,8 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.exceptions.errors.classErrors.NotAConstructorError;
+import envision_lang.lang.exceptions.errors.classErrors.UndefinedConstructorError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.internal.IPrototypeHandler;

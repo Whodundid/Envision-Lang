@@ -1,7 +1,7 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.errors.ArithmeticError;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.errors.ArithmeticError;
 
 /**
  * An abstract script variable representing a number with or without a

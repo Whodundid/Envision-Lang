@@ -2,7 +2,6 @@ package envision_lang.interpreter.util.creationUtil;
 
 import java.util.List;
 
-import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
@@ -13,6 +12,7 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;

@@ -1,16 +1,16 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.ArgLengthError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.NoOverloadError;
-import envision_lang.exceptions.errors.NullVariableError;
-import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.ArgLengthError;
+import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.lang.exceptions.errors.NoOverloadError;
+import envision_lang.lang.exceptions.errors.NullVariableError;
+import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.tokenizer.Operator;

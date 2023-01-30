@@ -5,14 +5,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.NullVariableError;
-import envision_lang.exceptions.errors.UndefinedValueError;
-import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionChar;
 import envision_lang.lang.datatypes.EnvisionString;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.NullVariableError;
+import envision_lang.lang.exceptions.errors.UndefinedValueError;
+import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.FunctionPrototype;
 import envision_lang.lang.natives.IDatatype;

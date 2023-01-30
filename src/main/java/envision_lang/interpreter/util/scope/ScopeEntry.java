@@ -1,8 +1,8 @@
 package envision_lang.interpreter.util.scope;
 
-import envision_lang.exceptions.errors.StrongVarReassignmentError;
-import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.errors.StrongVarReassignmentError;
+import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;

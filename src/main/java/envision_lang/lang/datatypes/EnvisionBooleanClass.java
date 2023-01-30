@@ -2,12 +2,12 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.errors.ArgLengthError;
-import envision_lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.errors.ArgLengthError;
+import envision_lang.lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.internal.IPrototypeHandler;
 import envision_lang.lang.natives.Primitives;

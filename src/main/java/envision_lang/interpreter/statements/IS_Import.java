@@ -2,11 +2,11 @@ package envision_lang.interpreter.statements;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.WorkingDirectory;
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.SelfImportError;
-import envision_lang.exceptions.errors.UndefinedValueError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.SelfImportError;
+import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.lang.natives.StaticTypes;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.statements.statement_types.Stmt_Import;

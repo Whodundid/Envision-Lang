@@ -1,10 +1,5 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.AlreadyDefinedError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.UndefinedTypeError;
-import envision_lang.exceptions.errors.VoidAssignmentError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
@@ -14,6 +9,11 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.AlreadyDefinedError;
+import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.lang.exceptions.errors.UndefinedTypeError;
+import envision_lang.lang.exceptions.errors.VoidAssignmentError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.internal.EnvisionVoid;
 import envision_lang.lang.natives.IDatatype;

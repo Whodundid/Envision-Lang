@@ -11,7 +11,7 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.packages.EnvisionPackage;
+import envision_lang.lang.packages.EnvisionPackage;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;

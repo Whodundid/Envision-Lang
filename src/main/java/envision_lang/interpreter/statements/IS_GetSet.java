@@ -1,10 +1,10 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.errors.AlreadyDefinedError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.errors.AlreadyDefinedError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.util.DataModifier;
 import envision_lang.parser.expressions.expression_types.Expr_Var;

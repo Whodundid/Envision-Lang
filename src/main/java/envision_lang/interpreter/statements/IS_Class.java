@@ -1,6 +1,5 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.errors.classErrors.InvalidClassStatement;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.FunctionCreator;
@@ -8,6 +7,7 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.errors.classErrors.InvalidClassStatement;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;

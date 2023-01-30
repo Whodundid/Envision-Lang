@@ -1,8 +1,8 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.errors.ExpressionError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.lang.exceptions.errors.ExpressionError;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_If;

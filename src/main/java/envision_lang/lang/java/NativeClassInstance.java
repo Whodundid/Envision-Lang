@@ -2,13 +2,13 @@ package envision_lang.lang.java;
 
 import java.util.Map;
 
-import envision_lang.exceptions.errors.NotAFunctionError;
-import envision_lang.exceptions.errors.UndefinedFunctionError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.errors.NotAFunctionError;
+import envision_lang.lang.exceptions.errors.UndefinedFunctionError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.util.ParameterData;

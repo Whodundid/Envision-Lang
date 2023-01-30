@@ -1,12 +1,12 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.errors.UndefinedTypeError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.UserDefinedTypeManager;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.exceptions.errors.UndefinedTypeError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Cast;

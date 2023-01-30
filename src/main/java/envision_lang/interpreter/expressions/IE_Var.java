@@ -1,9 +1,9 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.errors.ExpressionError;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.errors.ExpressionError;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.tokenizer.Token;
 

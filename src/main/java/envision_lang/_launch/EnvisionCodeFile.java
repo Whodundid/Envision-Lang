@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import envision_lang.EnvisionLang;
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.EnvisionLangParser;
 import envision_lang.parser.statements.ParsedStatement;

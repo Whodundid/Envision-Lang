@@ -1,7 +1,5 @@
 package envision_lang.interpreter.util.creationUtil;
 
-import envision_lang.exceptions.errors.ArithmeticError;
-import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionDouble;
@@ -10,6 +8,8 @@ import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.datatypes.EnvisionNumberClass;
+import envision_lang.lang.exceptions.errors.ArithmeticError;
+import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.natives.Primitives;
 
 public final class NumberHelper {
