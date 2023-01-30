@@ -71,8 +71,8 @@ import envision_lang.lang.exceptions.errors.StatementError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.lang.internal.EnvisionNull;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.packages.env.EnvPackage;
-import envision_lang.lang.packages.env.base.Package_Envision;
+import envision_lang.lang.packages.native_packages.EnvPackage;
+import envision_lang.lang.packages.native_packages.base.InternalEnvision;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
@@ -216,7 +216,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		EnvPackage.ENV_PACKAGE.defineOn(this);
 		EList<ParsedStatement> statements = startingFile.getStatements();
 		
-		Package_Envision.init(EnvisionLang.getInstance(), internalScope, userArgs);
+		InternalEnvision.init(EnvisionLang.getInstance(), internalScope, userArgs);
 		
 		int cur = 0;
 		try {

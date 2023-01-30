@@ -11,7 +11,7 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.packages.EnvisionPackage;
+import envision_lang.lang.packages.EnvisionLangPackage;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
@@ -362,7 +362,7 @@ public enum Primitives implements IDatatype {
 		//if (obj instanceof EnvisionEnum env_enum) return ENUM;
 		//if (obj instanceof EnumValue env_enum_val) return ENUM_TYPE;
 		if (obj instanceof EnvisionCodeFile) return CODE_FILE;
-		if (obj instanceof EnvisionPackage) return PACKAGE;
+		if (obj instanceof EnvisionLangPackage) return PACKAGE;
 		return (obj != null) ? obj.getDatatype().getPrimitive() : null;
 	}
 	

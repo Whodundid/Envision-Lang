@@ -21,7 +21,7 @@ import envision_lang.lang.exceptions.errors.InvalidTargetError;
 import envision_lang.lang.internal.EnvisionFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.StaticTypes;
-import envision_lang.lang.packages.EnvisionPackage;
+import envision_lang.lang.packages.EnvisionLangPackage;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
@@ -178,7 +178,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 		//if (in instanceof EnvisionEnum env_enum) return env_enum;
 		//if (in instanceof EnumValue env_enum_value) return env_enum_value;
 		if (in instanceof EnvisionCodeFile env_code) return env_code;
-		if (in instanceof EnvisionPackage env_pkg) return env_pkg;
+		if (in instanceof EnvisionLangPackage env_pkg) return env_pkg;
 		return null;
 	}
 	

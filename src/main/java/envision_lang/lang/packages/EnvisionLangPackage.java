@@ -2,39 +2,61 @@ package envision_lang.lang.packages;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
+import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.natives.Primitives;
 
 /**
- * A special type of package that is natively imported at program
- * start.
+ * A package is a structure within Envision which bundles a scope of
+ * variables, classes, members, and other objects together inside of a
+ * portable object. Packages are also the primary means of importing
+ * data from one scope into another.
+ * 
+ * @author Hunter Bragg
  */
-public abstract class EnvisionLangPackage extends EnvisionPackage implements Buildable {
+public class EnvisionLangPackage extends EnvisionObject {
 	
-	public EnvisionLangPackage(String nameIn) {
-		super(nameIn);
+	//--------
+	// Fields
+	//--------
+	
+	protected final String packageName;
+	protected Scope packageScope;
+	
+	//--------------
+	// Constructors
+	//--------------
+	
+	public EnvisionLangPackage(String packageNameIn) {
+		super(Primitives.PACKAGE);
+		packageName = packageNameIn;
+		packageScope = new Scope();
+	}
+	
+	//---------
+	// Methods
+	//---------
+	
+	/**
+	 * Adds another package onto this package's scope.
+	 * 
+	 * @param pkg The package to add
+	 */
+	public void addPackage(EnvisionLangPackage pkg) {
+		if (pkg == null) throw new NullPointerException();
 		
-		build();
-	}
-	
-	protected void build() {
-		packageScope.clear();
+		//define the package as a referencable object
+		packageScope.define(pkg.packageName, pkg.internalType, pkg);
 		
-		buildFunctions();
-		buildFields();
-		buildClasses();
-		buildPackages();
-	}
-	
-	protected void define(EnvisionObject object) {
-		if (object instanceof EnvisionFunction func) packageScope.defineFunction(func);
-		else if (object instanceof EnvisionClass clz) packageScope.defineClass(clz);
-	}
-	
-	protected void define(String name, EnvisionObject object) {
-		packageScope.define(name, object);
+		//add each object within the incoming package's scope
+		Scope incomming_scope = pkg.packageScope;
+		for (var obj : incomming_scope.values.entrySet()) {
+			String import_val_name = obj.getKey();
+			ScopeEntry import_entry = obj.getValue();
+			
+			packageScope.define(import_val_name, import_entry);
+		}
 	}
 	
 	public void defineOn(EnvisionInterpreter interpreter) {
@@ -50,6 +72,27 @@ public abstract class EnvisionLangPackage extends EnvisionPackage implements Bui
 			scope.defineImportVal(import_val_name, import_entry);
 		}
 		scope.defineImportVal(packageName, this);
+	}
+	
+	//---------
+	// Getters
+	//---------
+	
+	public String getPackageName() {
+		return packageName;
+	}
+	
+	public Scope getScope() {
+		return packageScope;
+	}
+	
+	//---------
+	// Setters
+	//---------
+	
+	public EnvisionLangPackage setScope(Scope in) {
+		packageScope = in;
+		return this;
 	}
 	
 }
