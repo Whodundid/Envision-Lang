@@ -43,7 +43,7 @@ public class EnvisionLangPackage extends EnvisionObject {
 	 * 
 	 * @param pkg The package to add
 	 */
-	public void addPackage(EnvisionLangPackage pkg) {
+	public final void addPackage(EnvisionLangPackage pkg) {
 		if (pkg == null) throw new NullPointerException();
 		
 		//define the package as a referencable object
@@ -59,11 +59,11 @@ public class EnvisionLangPackage extends EnvisionObject {
 		}
 	}
 	
-	public void defineOn(EnvisionInterpreter interpreter) {
+	public final void defineOn(EnvisionInterpreter interpreter) {
 		defineOn(interpreter.internalScope());
 	}
 	
-	public void defineOn(IScope scope) {
+	public final void defineOn(IScope scope) {
 		//add each object within the incoming package's scope
 		for (var obj : packageScope.values.entrySet()) {
 			String import_val_name = obj.getKey();
