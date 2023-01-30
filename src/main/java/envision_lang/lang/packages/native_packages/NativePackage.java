@@ -1,8 +1,5 @@
 package envision_lang.lang.packages.native_packages;
 
-import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.packages.Buildable;
 import envision_lang.lang.packages.EnvisionLangPackage;
 
@@ -27,15 +24,6 @@ abstract sealed class NativePackage extends EnvisionLangPackage implements Build
 		buildFields();
 		buildClasses();
 		buildPackages();
-	}
-	
-	protected void define(EnvisionObject object) {
-		if (object instanceof EnvisionFunction func) packageScope.defineFunction(func);
-		else if (object instanceof EnvisionClass clz) packageScope.defineClass(clz);
-	}
-	
-	protected void define(String name, EnvisionObject object) {
-		packageScope.define(name, object);
 	}
 	
 }

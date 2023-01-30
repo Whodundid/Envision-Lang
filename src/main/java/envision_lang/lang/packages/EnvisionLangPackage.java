@@ -5,6 +5,8 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
 
 /**
@@ -15,7 +17,7 @@ import envision_lang.lang.natives.Primitives;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionLangPackage extends EnvisionObject {
+public class EnvisionLangPackage extends EnvisionObject implements Buildable {
 	
 	//--------
 	// Fields
@@ -57,6 +59,15 @@ public class EnvisionLangPackage extends EnvisionObject {
 			
 			packageScope.define(import_val_name, import_entry);
 		}
+	}
+	
+	public final void define(EnvisionObject object) {
+		if (object instanceof EnvisionFunction func) packageScope.defineFunction(func);
+		else if (object instanceof EnvisionClass clz) packageScope.defineClass(clz);
+	}
+	
+	public final void define(String name, EnvisionObject object) {
+		packageScope.define(name, object);
 	}
 	
 	public final void defineOn(EnvisionInterpreter interpreter) {
