@@ -414,18 +414,21 @@ public class Tokenizer {
 				if (!empty) {
 					var list = tokenizeLine(l, lineNum);
 					
-					if (hasNextLine) {
-						var lastToken = list.getLast();
-						var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
-						var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+					// this can only happen if the tokenized line was a comment
+					if (list.isNotEmpty()) {
+						if (hasNextLine) {
+							var lastToken = list.getLast();
+							var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
+							var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+							
+							var nl = Token.newLine(lineNum, lastIndex, lastLineT);
+							list.add(nl);
+						}
 						
-						var nl = Token.newLine(lineNum, lastIndex, lastLineT);
-						list.add(nl);
+						lineTokenIndex = 0;
+						lineTokens.add(lineNum, list);
+						tokens.addAll(list);
 					}
-					
-					lineTokenIndex = 0;
-					lineTokens.add(lineNum, list);
-					tokens.addAll(list);
 				}
 				
 				//check for end of file
@@ -466,17 +469,19 @@ public class Tokenizer {
 			if (curLine.isBlank()) continue;
 			
 			var list = tokenizeLine(curLine, i + 1);
-			if (i + 1 < subLines.length) {
-				var lastToken = list.getLast();
-				var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
-				var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+			if (list.isNotEmpty()) {
+				if (i + 1 < subLines.length) {
+					var lastToken = list.getLast();
+					var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
+					var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
+					
+					var nl = Token.newLine(lineNum, lastIndex, lastLineT);
+					list.add(nl);
+				}
 				
-				var nl = Token.newLine(lineNum, lastIndex, lastLineT);
-				list.add(nl);
+				lineTokens.add(lineNum, list);
+				tokens.addAll(list);
 			}
-			
-			lineTokens.add(lineNum, list);
-			tokens.addAll(list);
 		}
 		
 		if (inString) throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
