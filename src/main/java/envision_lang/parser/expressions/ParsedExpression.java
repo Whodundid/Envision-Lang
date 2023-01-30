@@ -1,7 +1,7 @@
 package envision_lang.parser.expressions;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.ParsedObject;
+import envision_lang.parser.util.ParsedObject;
 import envision_lang.tokenizer.Token;
 
 public abstract class ParsedExpression extends ParsedObject {

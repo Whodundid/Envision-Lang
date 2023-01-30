@@ -1,4 +1,4 @@
-package envision_lang.parser;
+package envision_lang.parser.util;
 
 import envision_lang.tokenizer.Token;
 

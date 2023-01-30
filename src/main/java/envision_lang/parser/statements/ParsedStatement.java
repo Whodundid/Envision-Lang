@@ -1,6 +1,6 @@
 package envision_lang.parser.statements;
 
-import envision_lang.parser.ParsedObject;
+import envision_lang.parser.util.ParsedObject;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
