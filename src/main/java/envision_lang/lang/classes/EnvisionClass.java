@@ -164,7 +164,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * 
 	 * @param primitiveType The primitive type being wrapped
 	 */
-	public EnvisionClass(Primitives primitiveType) {
+	protected EnvisionClass(Primitives primitiveType) {
 		super(primitiveType.toDatatype());
 		
 		//assign primitive class name

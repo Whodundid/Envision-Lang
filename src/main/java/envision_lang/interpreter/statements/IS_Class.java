@@ -16,10 +16,8 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
-import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
-import envision_lang.parser.statements.statement_types.Stmt_GetSet;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import eutil.datatypes.util.EList;
@@ -122,11 +120,11 @@ public class IS_Class extends AbstractInterpreterExecutor {
 	private static void checkValid(ParsedStatement s) {
 		if (s instanceof Stmt_Class) return;
 		if (s instanceof Stmt_Block) return;
-		if (s instanceof Stmt_EnumDef) return;
+//		if (s instanceof Stmt_EnumDef) return;
 		if (s instanceof Stmt_FuncDef) return;
 		if (s instanceof Stmt_VarDef) return;
 		if (s instanceof Stmt_Expression) return;
-		if (s instanceof Stmt_GetSet) return;
+//		if (s instanceof Stmt_GetSet) return;
 		throw new InvalidClassStatement(s);
 	}
 	

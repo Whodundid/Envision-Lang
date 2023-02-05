@@ -1,6 +1,7 @@
 package envision_lang.tokenizer;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public enum Operator implements IKeyword {
 	
@@ -150,7 +151,7 @@ public enum Operator implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	private static HashMap<String, Operator> operators = new HashMap();
+	private static Map<String, Operator> operators = new HashMap<>();
 	
 	static {
 		for (var o : values()) operators.put(o.typeString, o);

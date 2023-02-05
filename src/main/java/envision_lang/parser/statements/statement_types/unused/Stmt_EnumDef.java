@@ -1,7 +1,7 @@
-package envision_lang.parser.statements.statement_types;
+package envision_lang.parser.statements.statement_types.unused;
 
-import envision_lang.parser.expressions.expression_types.Expr_Enum;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Enum;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
@@ -42,7 +42,7 @@ public class Stmt_EnumDef extends ParsedStatement {
 	
 	@Override
 	public void execute(StatementHandler handler) {
-		handler.handleEnumStatement(this);
+//		handler.handleEnumStatement(this);
 	}
 	
 	//=========

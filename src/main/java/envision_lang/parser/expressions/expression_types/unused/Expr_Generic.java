@@ -1,4 +1,4 @@
-package envision_lang.parser.expressions.expression_types;
+package envision_lang.parser.expressions.expression_types.unused;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.ExpressionHandler;
@@ -36,7 +36,8 @@ public class Expr_Generic extends ParsedExpression	{
 	
 	@Override
 	public EnvisionObject evaluate(ExpressionHandler handler) {
-		return handler.handleGeneric_E(this);
+		return null;
+//		return handler.handleGeneric_E(this);
 	}
 	
 }

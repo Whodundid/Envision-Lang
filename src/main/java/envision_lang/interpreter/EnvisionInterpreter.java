@@ -5,14 +5,9 @@ import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.interpreter.expressions.IE_Assign;
 import envision_lang.interpreter.expressions.IE_Binary;
-import envision_lang.interpreter.expressions.IE_Cast;
 import envision_lang.interpreter.expressions.IE_Compound;
-import envision_lang.interpreter.expressions.IE_Domain;
-import envision_lang.interpreter.expressions.IE_Enum;
 import envision_lang.interpreter.expressions.IE_FunctionCall;
-import envision_lang.interpreter.expressions.IE_Generic;
 import envision_lang.interpreter.expressions.IE_Get;
-import envision_lang.interpreter.expressions.IE_Grouping;
 import envision_lang.interpreter.expressions.IE_Import;
 import envision_lang.interpreter.expressions.IE_Lambda;
 import envision_lang.interpreter.expressions.IE_ListIndex;
@@ -23,7 +18,6 @@ import envision_lang.interpreter.expressions.IE_Logical;
 import envision_lang.interpreter.expressions.IE_Primitive;
 import envision_lang.interpreter.expressions.IE_Range;
 import envision_lang.interpreter.expressions.IE_Set;
-import envision_lang.interpreter.expressions.IE_Super;
 import envision_lang.interpreter.expressions.IE_Ternary;
 import envision_lang.interpreter.expressions.IE_This;
 import envision_lang.interpreter.expressions.IE_TypeOf;
@@ -34,18 +28,14 @@ import envision_lang.interpreter.statements.IS_Block;
 import envision_lang.interpreter.statements.IS_Case;
 import envision_lang.interpreter.statements.IS_Catch;
 import envision_lang.interpreter.statements.IS_Class;
-import envision_lang.interpreter.statements.IS_Enum;
 import envision_lang.interpreter.statements.IS_Exception;
 import envision_lang.interpreter.statements.IS_Expression;
 import envision_lang.interpreter.statements.IS_For;
 import envision_lang.interpreter.statements.IS_FuncDef;
-import envision_lang.interpreter.statements.IS_Generic;
-import envision_lang.interpreter.statements.IS_GetSet;
 import envision_lang.interpreter.statements.IS_If;
 import envision_lang.interpreter.statements.IS_Import;
 import envision_lang.interpreter.statements.IS_LambdaFor;
 import envision_lang.interpreter.statements.IS_LoopControl;
-import envision_lang.interpreter.statements.IS_Package;
 import envision_lang.interpreter.statements.IS_RangeFor;
 import envision_lang.interpreter.statements.IS_Return;
 import envision_lang.interpreter.statements.IS_Switch;
@@ -77,14 +67,9 @@ import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
-import envision_lang.parser.expressions.expression_types.Expr_Cast;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
-import envision_lang.parser.expressions.expression_types.Expr_Domain;
-import envision_lang.parser.expressions.expression_types.Expr_Enum;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
 import envision_lang.parser.expressions.expression_types.Expr_Get;
-import envision_lang.parser.expressions.expression_types.Expr_Grouping;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
 import envision_lang.parser.expressions.expression_types.Expr_ListIndex;
@@ -95,7 +80,6 @@ import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 import envision_lang.parser.expressions.expression_types.Expr_SetListIndex;
-import envision_lang.parser.expressions.expression_types.Expr_Super;
 import envision_lang.parser.expressions.expression_types.Expr_Ternary;
 import envision_lang.parser.expressions.expression_types.Expr_This;
 import envision_lang.parser.expressions.expression_types.Expr_TypeOf;
@@ -107,19 +91,14 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Catch;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
-import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
 import envision_lang.parser.statements.statement_types.Stmt_Exception;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.parser.statements.statement_types.Stmt_For;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
-import envision_lang.parser.statements.statement_types.Stmt_Generic;
-import envision_lang.parser.statements.statement_types.Stmt_GetSet;
 import envision_lang.parser.statements.statement_types.Stmt_If;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
-import envision_lang.parser.statements.statement_types.Stmt_InterfaceDef;
 import envision_lang.parser.statements.statement_types.Stmt_LambdaFor;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
-import envision_lang.parser.statements.statement_types.Stmt_Package;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
 import envision_lang.parser.statements.statement_types.Stmt_SwitchCase;
@@ -688,18 +667,18 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public void handleCatchStatement(Stmt_Catch s) { IS_Catch.run(this, s); }
 	@Override public void handleCaseStatement(Stmt_SwitchCase s) { IS_Case.run(this, s); }
 	@Override public void handleClassStatement(Stmt_Class s) { IS_Class.run(this, s); }
-	@Override public void handleEnumStatement(Stmt_EnumDef s) { IS_Enum.run(this, s); }
+//	@Override public void handleEnumStatement(Stmt_EnumDef s) { IS_Enum.run(this, s); }
 	@Override public void handleExceptionStatement(Stmt_Exception s) { IS_Exception.run(this, s); }
 	@Override public void handleExpressionStatement(Stmt_Expression s) { IS_Expression.run(this, s); }
 	@Override public void handleForStatement(Stmt_For s) { IS_For.run(this, s); }
-	@Override public void handleGenericStatement(Stmt_Generic s) { IS_Generic.run(this, s); }
-	@Override public void handleGetSetStatement(Stmt_GetSet s) { IS_GetSet.run(this, s); }
+//	@Override public void handleGenericStatement(Stmt_Generic s) { IS_Generic.run(this, s); }
+//	@Override public void handleGetSetStatement(Stmt_GetSet s) { IS_GetSet.run(this, s); }
 	@Override public void handleIfStatement(Stmt_If s) { IS_If.run(this, s); }
 	@Override public void handleImportStatement(Stmt_Import s) { IS_Import.run(this, s); }
-	@Override public void handleInterfaceStatement(Stmt_InterfaceDef s) {}
+//	@Override public void handleInterfaceStatement(Stmt_InterfaceDef s) {}
 	@Override public void handleLambdaForStatement(Stmt_LambdaFor s) { IS_LambdaFor.run(this, s); }
 	@Override public void handleMethodStatement(Stmt_FuncDef s) { IS_FuncDef.run(this, s); }
-	@Override public void handlePackageStatement(Stmt_Package s) { IS_Package.run(this, s); }
+//	@Override public void handlePackageStatement(Stmt_Package s) { IS_Package.run(this, s); }
 	@Override public void handleRangeForStatement(Stmt_RangeFor s) { IS_RangeFor.run(this, s); }
 	@Override public void handleReturnStatement(Stmt_Return s) { IS_Return.run(this, s); }
 	@Override public void handleSwitchStatement(Stmt_SwitchDef s) { IS_Switch.run(this, s); }
@@ -713,13 +692,13 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	
 	@Override public EnvisionObject handleAssign_E(Expr_Assign e) { return IE_Assign.run(this, e); }
 	@Override public EnvisionObject handleBinary_E(Expr_Binary e) { return IE_Binary.run(this, e); }
-	@Override public EnvisionObject handleCast_E(Expr_Cast e) { return IE_Cast.run(this, e); }
+//	@Override public EnvisionObject handleCast_E(Expr_Cast e) { return IE_Cast.run(this, e); }
 	@Override public EnvisionObject handleCompound_E(Expr_Compound e) { return IE_Compound.run(this, e); }
-	@Override public EnvisionObject handleDomain_E(Expr_Domain e) { return IE_Domain.run(this, e); }
-	@Override public EnvisionObject handleEnum_E(Expr_Enum e) { return IE_Enum.run(this, e); }
-	@Override public EnvisionObject handleGeneric_E(Expr_Generic e) { return IE_Generic.run(this, e); }
+//	@Override public EnvisionObject handleDomain_E(Expr_Domain e) { return IE_Domain.run(this, e); }
+//	@Override public EnvisionObject handleEnum_E(Expr_Enum e) { return IE_Enum.run(this, e); }
+//	@Override public EnvisionObject handleGeneric_E(Expr_Generic e) { return IE_Generic.run(this, e); }
 	@Override public EnvisionObject handleGet_E(Expr_Get e) { return IE_Get.run(this, e); }
-	@Override public EnvisionObject handleGrouping_E(Expr_Grouping e) { return IE_Grouping.run(this, e); }
+//	@Override public EnvisionObject handleGrouping_E(Expr_Grouping e) { return IE_Grouping.run(this, e); }
 	@Override public EnvisionObject handleImport_E(Expr_Import e) { return IE_Import.run(this, e); }
 	@Override public EnvisionObject handleLambda_E(Expr_Lambda e) { return IE_Lambda.run(this, e); }
 	@Override public EnvisionObject handleListIndex_E(Expr_ListIndex e) { return IE_ListIndex.run(this, e); }
@@ -731,7 +710,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public EnvisionObject handlePrimitive_E(Expr_Primitive e) { return IE_Primitive.run(this, e); }
 	@Override public EnvisionObject handleRange_E(Expr_Range e) { return IE_Range.run(this, e); }
 	@Override public EnvisionObject handleSet_E(Expr_Set e) { return IE_Set.run(this, e); }
-	@Override public EnvisionObject handleSuper_E(Expr_Super e) { return IE_Super.run(this, e); }
+//	@Override public EnvisionObject handleSuper_E(Expr_Super e) { return IE_Super.run(this, e); }
 	@Override public EnvisionObject handleTernary_E(Expr_Ternary e) { return IE_Ternary.run(this, e); }
 	@Override public EnvisionObject handleThisGet_E(Expr_This e) { return IE_This.run(this, e); }
 	@Override public EnvisionObject handleTypeOf_E(Expr_TypeOf e) { return IE_TypeOf.run(this, e); }

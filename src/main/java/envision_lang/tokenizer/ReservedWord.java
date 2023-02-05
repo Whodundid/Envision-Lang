@@ -26,7 +26,7 @@ public enum ReservedWord implements IKeyword {
 	/** Used to reference code/data in other envision program files. */
 	IMPORT("import"),
 	/** Denotes a package. */
-	PACKAGE("package"),
+//	PACKAGE("package"),
 	/** Used in conjunction with 'import' statements to denote how to specifically refer to a given import. */
 	AS("as"),
 	/** Denotes standard function declarations. */
@@ -38,9 +38,9 @@ public enum ReservedWord implements IKeyword {
 	/** Used within class instance methods to refer to the current specific class instance. */
 	THIS("this"),
 	/** Used within class methods to refer to a superclass's member. */
-	SUPER("super"),
+//	SUPER("super"),
 	/** Denotes interface declarations. */
-	INTERFACE("interface"),
+//	INTERFACE("interface"),
 	/** Used within methods to return some value or exit the current scope. */
 	RETURN("return"),
 	/** Returns a value iff the condition is true */
@@ -118,14 +118,14 @@ public enum ReservedWord implements IKeyword {
 	FOR("for"), //For loop declaration -- Types: Standard, range, and Lambda.
 	DO("do"), //Do statement which is eventually followed by a While loop -- Do While Loop.
 	WHILE("while"), //While loop declaration.
-	UNTIL("until"), //Until loop declaration.
+//	UNTIL("until"), //Until loop declaration.
 	
 	//--------------
 	// loop control
 	//--------------
 	
 	TO("to"), //Used to define a range for a for loop to iterate across.
-	UPTO("upto"),
+//	UPTO("upto"),
 	BY("by"), //Used to indicate an increment amount for range expressions.
 	BREAK("break"), //Used to prematurely exit the iteration of a loop or switch statement.
 	BREAKIF("breakif"), //Breaks a loop if the given condition is true

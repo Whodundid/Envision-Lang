@@ -112,7 +112,7 @@ public interface IDatatype {
 	 */
 	public default boolean isField() {
 		var p = getPrimitive();
-		return (p != null) ? p.isField() : false;
+		return (p != null) ? p.isField() : true;
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Generic;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
@@ -30,7 +30,7 @@ public class Stmt_Generic extends ParsedStatement {
 	
 	@Override
 	public void execute(StatementHandler handler) {
-		handler.handleGenericStatement(this);
+//		handler.handleGenericStatement(this);
 	}
 	
 	//=========

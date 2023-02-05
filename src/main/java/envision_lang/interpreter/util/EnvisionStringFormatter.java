@@ -83,8 +83,6 @@ public class EnvisionStringFormatter {
 	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst, boolean format) {
 		StringBuilder out = new StringBuilder();
 		
-		//System.out.println("TO PRINT: " + in);
-		
 		//search for escape characters and handle them accordingly
 		for (int i = 0; i < in.length(); i++) {
 			char c = in.charAt(i);
@@ -108,7 +106,7 @@ public class EnvisionStringFormatter {
 			else if (format && c == '{' && (i + 1 < in.length())) {
 				String varName = findVarName(in.substring(i + 1));
 				
-				String val = processObject(interpreter, varName, inst);
+				String val = processObject(interpreter, varName, inst, format);
 				out.append(val);
 				
 				//consume the '{varName}'
@@ -159,7 +157,7 @@ public class EnvisionStringFormatter {
 		return name.toString();
 	}
 	
-	public static String processObject(EnvisionInterpreter interpreter, String varName, ClassInstance inst) {
+	public static String processObject(EnvisionInterpreter interpreter, String varName, ClassInstance inst, boolean format) {
 		EnvisionObject obj = null;
 		
 		//find variable within the class instance's scope
@@ -170,7 +168,7 @@ public class EnvisionStringFormatter {
 		//if the obj returned is a class instance, recursive replacement will need to be performed
 		if (obj instanceof ClassInstance obj_inst) {
 			String r_str = obj_inst.executeToString_i(interpreter);
-			return handleEscapes(interpreter, r_str, obj_inst, false);
+			return handleEscapes(interpreter, r_str, obj_inst, format);
 		}
 		//otherwise append the object's string value
 		else if (obj != null) return EStringUtil.toString(obj);

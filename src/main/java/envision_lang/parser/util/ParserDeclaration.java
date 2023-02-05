@@ -2,7 +2,7 @@ package envision_lang.parser.util;
 
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.EnvisionVisibilityModifier;
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Generic;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;

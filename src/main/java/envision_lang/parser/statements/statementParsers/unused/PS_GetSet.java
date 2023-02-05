@@ -1,4 +1,4 @@
-package envision_lang.parser.statements.statementParsers;
+package envision_lang.parser.statements.statementParsers.unused;
 
 import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.ReservedWord.*;
@@ -6,7 +6,7 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.statements.ParsedStatement;
-import envision_lang.parser.statements.statement_types.Stmt_GetSet;
+import envision_lang.parser.statements.statement_types.unused.Stmt_GetSet;
 import envision_lang.parser.util.DeclarationStage;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Operator;

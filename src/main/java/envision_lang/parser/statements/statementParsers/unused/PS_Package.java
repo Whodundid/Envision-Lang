@@ -1,11 +1,11 @@
-package envision_lang.parser.statements.statementParsers;
+package envision_lang.parser.statements.statementParsers.unused;
 
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.statements.ParsedStatement;
-import envision_lang.parser.statements.statement_types.Stmt_Package;
+import envision_lang.parser.statements.statement_types.unused.Stmt_Package;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;

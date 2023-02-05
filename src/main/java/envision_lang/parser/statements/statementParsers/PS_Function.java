@@ -147,7 +147,7 @@ public class PS_Function extends ParserHead {
 	 */
 	private static void checkDeclaration(ParserDeclaration declaration) {
 		//check for invalid variable data modifiers
-		if (!DataModifier.checkMethod(declaration.getMods())) {
+		if (!DataModifier.checkFunction(declaration.getMods())) {
 			error("Invalid method data modifiers in '" + declaration.getMods() + "'!");
 		}
 	}

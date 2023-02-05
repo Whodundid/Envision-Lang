@@ -6,14 +6,12 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import java.util.Iterator;
 
 import envision_lang.parser.ParserHead;
-import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.DeclarationStage;
 import envision_lang.parser.util.ParserDeclaration;
-import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
@@ -42,15 +40,15 @@ public class PS_Class extends ParserHead {
 		
 		Stmt_Class cs = new Stmt_Class(declaration.getStartToken(), name, declaration);
 		
-		if (match(COLON)) {
-			do {
-				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
-				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
-				else error("Expected a valid super class type!");
-				cs.addSuper(new Expr_Var(previousNonTerminator()));
-			}
-			while (match(COMMA));
-		}
+//		if (match(COLON)) {
+//			do {
+//				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
+//				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
+//				else error("Expected a valid super class type!");
+//				cs.addSuper(new Expr_Var(previousNonTerminator()));
+//			}
+//			while (match(COMMA));
+//		}
 		
 		
 		//read in class body

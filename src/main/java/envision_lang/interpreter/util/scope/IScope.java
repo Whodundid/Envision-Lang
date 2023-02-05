@@ -316,8 +316,8 @@ public interface IScope {
 	 */
 	default EList<EnvisionObject> fields() {
 		return values().entrySet().stream()
-								  .filter(b -> b.getValue().isFieldType())
-								  .map(b -> b.getValue())
+			                      .map(b -> b.getValue())
+								  .filter(b -> b.isFieldType())
 								  .map(b -> b.getObject())
 								  .collect(EList.toEList());
 	}
@@ -328,8 +328,8 @@ public interface IScope {
 	 */
 	default EList<ScopeEntry> field_entries() {
 		return values().entrySet().stream()
-								  .filter(b -> b.getValue().isFieldType())
 								  .map(b -> b.getValue())
+								  .filter(b -> b.isFieldType())
 								  .collect(EList.toEList());
 	}
 	

@@ -1,6 +1,6 @@
 package envision_lang.interpreter.util;
 
-import static envision_lang.lang.natives.Primitives.*;
+import static envision_lang.lang.natives.EnvisionStaticTypes.*;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
@@ -15,7 +15,6 @@ import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
 import envision_lang.lang.exceptions.errors.VariableCastError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.EnvisionStaticTypes;
 
 /**
  * Contains functions which pertain to object types and potential
@@ -67,18 +66,6 @@ public class CastingUtil {
 			throw new EnvisionLangError("CastingUtil checkType: null type!");
 		}
 		
-		//grab primitive types
-		//IDatatype expected_ptype = expected.getPrimitive();
-		//Primitives toCheck_ptype = toCheck.getPrimitive();
-		
-		//System.out.println(StaticTypes.VAR_TYPE + " : " + StaticTypes.VAR_TYPE.hashCode());
-		//System.out.println(expected + " : " + expected.hashCode());
-		
-		//check for null passes
-		//if (toCheck_ptype == Primitives.NULL) {
-		//	return;
-		//}
-		
 		//-----------------------------------------------------------------------------
 		// While this system works, it does not account for these kinds of situations
 		//
@@ -90,19 +77,19 @@ public class CastingUtil {
 		//-----------------------------------------------------------------------------
 		
 		//accept any type if the base is 'var'
-		if (EnvisionStaticTypes.VAR_TYPE.compare(expected)) return;
+		if (VAR_TYPE.compare(expected)) return;
 		
 		//accept all incoming null values
-		if (EnvisionStaticTypes.NULL_TYPE.compare(toCheck)) return;
+		if (NULL_TYPE.compare(toCheck)) return;
 		
 		//check if a char is going into a string
-		if (EnvisionStaticTypes.STRING_TYPE.compare(expected) && EnvisionStaticTypes.CHAR_TYPE.compare(toCheck)) return;
+		if (STRING_TYPE.compare(expected) && CHAR_TYPE.compare(toCheck)) return;
 		
 		//check if an int or double is going into number
-		if (EnvisionStaticTypes.NUMBER_TYPE.compare(expected) && toCheck.isNumber() || EnvisionStaticTypes.BOOL_TYPE.compare(toCheck)) return;
+		if (NUMBER_TYPE.compare(expected) && toCheck.isNumber() || BOOL_TYPE.compare(toCheck)) return;
 		
 		//check if an int is going into a double
-		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(DOUBLE) && EnvisionStaticTypes.INT_TYPE.compare(toCheck)) return;
+		if (DOUBLE_TYPE.compare(expected) && INT_TYPE.compare(toCheck)) return;
 		
 		//if none of above, check for exact datatype match
 		if (!expected.compare(toCheck)) {

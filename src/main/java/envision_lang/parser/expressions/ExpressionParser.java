@@ -7,7 +7,6 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
-import envision_lang.parser.expressions.expression_types.Expr_Cast;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
 import envision_lang.parser.expressions.expression_types.Expr_Get;
@@ -20,7 +19,6 @@ import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 import envision_lang.parser.expressions.expression_types.Expr_SetListIndex;
-import envision_lang.parser.expressions.expression_types.Expr_Super;
 import envision_lang.parser.expressions.expression_types.Expr_Ternary;
 import envision_lang.parser.expressions.expression_types.Expr_This;
 import envision_lang.parser.expressions.expression_types.Expr_TypeOf;
@@ -360,15 +358,15 @@ public class ExpressionParser extends ParserHead {
 		consume(PAREN_R, "Expected ')' after expression!");
 		
 		//check for cast expressions
-		if (e instanceof Expr_VarDef var_def) {
-			Token<?> type = var_def.type;
-			//can only be a cast ParsedExpression if either a datatype or a object type
-			if (type.isDatatype() || type.isReference()) {
-				ParsedExpression target = parseExpression();
-				e = new Expr_Cast(type, target);
-				return e;
-			}
-		}
+//		if (e instanceof Expr_VarDef var_def) {
+//			Token<?> type = var_def.type;
+//			//can only be a cast ParsedExpression if either a datatype or a object type
+//			if (type.isDatatype() || type.isReference()) {
+//				ParsedExpression target = parseExpression();
+//				e = new Expr_Cast(type, target);
+//				return e;
+//			}
+//		}
 		
 		if (match(TERNARY)) {
 			ParsedExpression t = parseExpression();
@@ -418,27 +416,27 @@ public class ExpressionParser extends ParserHead {
 			return new Expr_This(start);
 		}
 		
-		if (match(SUPER)) {
-			Token<?> start = previous();
-			consume(PERIOD, "Expected '.' after super call!");
-			Token<?> m = consume(IDENTIFIER, "Expected superclass method name!");
-			
-			if (match(PAREN_L)) {
-				EList<ParsedExpression> args = EList.newList();
-				if (!check(PAREN_R)) {
-					do {
-						args.add(parseExpression());
-					}
-					while (match(COMMA));
-				}
-				
-				consume(PAREN_R, "Expected a ')' to close method arguments!");
-				
-				return new Expr_Super(start, m, args);
-			}
-			
-			return new Expr_Super(start, m);
-		}
+//		if (match(SUPER)) {
+//			Token<?> start = previous();
+//			consume(PERIOD, "Expected '.' after super call!");
+//			Token<?> m = consume(IDENTIFIER, "Expected superclass method name!");
+//			
+//			if (match(PAREN_L)) {
+//				EList<ParsedExpression> args = EList.newList();
+//				if (!check(PAREN_R)) {
+//					do {
+//						args.add(parseExpression());
+//					}
+//					while (match(COMMA));
+//				}
+//				
+//				consume(PAREN_R, "Expected a ')' to close method arguments!");
+//				
+//				return new Expr_Super(start, m, args);
+//			}
+//			
+//			return new Expr_Super(start, m);
+//		}
 		
 		return null;
 	}

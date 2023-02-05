@@ -6,6 +6,7 @@ import envision_lang.lang.exceptions.errors.StrongVarReassignmentError;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import eutil.strings.EStringBuilder;
 
 /**
@@ -23,9 +24,11 @@ public class ScopeEntry {
 	/** The specified datatype allowed for the paired object. */
 	private IDatatype datatype;
 	/** Determines whether or not this datatype can dynamically change over time. */
-	private boolean strong = false;
+	private boolean strong;
 	/** The object being stored at this scope entry. */
 	private EnvisionObject object = EnvisionNull.NULL;
+	/** The visibility of this object on this scope. */
+	private EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.SCOPE;
 	
 	//==============
 	// Constructors
@@ -87,6 +90,7 @@ public class ScopeEntry {
 	public ScopeEntry shallowCopy() {
 		ScopeEntry r = new ScopeEntry(datatype);
 		r.strong = strong;
+		r.visibility = visibility;
 		r.object = object;
 		return r;
 	}
@@ -100,6 +104,7 @@ public class ScopeEntry {
 	public ScopeEntry deepCopy() throws CopyNotSupportedError {
 		ScopeEntry r = new ScopeEntry(datatype);
 		r.strong = strong;
+		r.visibility = visibility;
 		
 		if (object != null) {
 			r.object = object.copy();
@@ -121,6 +126,7 @@ public class ScopeEntry {
 	public boolean isPackageType() { return datatype.isPackage(); }
 	public boolean isVoidType() { return datatype.isVoid(); }
 	public boolean isStrong() { return strong; }
+	public EnvisionVisibilityModifier getVisibility() { return visibility; }
 	public EnvisionObject getObject() { return object; }
 	
 	//=========
@@ -133,6 +139,10 @@ public class ScopeEntry {
 	
 	void modifyDatatype(IDatatype type) {
 		datatype = type;
+	}
+
+	void setVisibility(EnvisionVisibilityModifier visIn) {
+		visibility = visIn;
 	}
 	
 	public void set(EnvisionObject objectIn) {

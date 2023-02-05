@@ -9,7 +9,7 @@ import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.parser.ParserHead;
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;

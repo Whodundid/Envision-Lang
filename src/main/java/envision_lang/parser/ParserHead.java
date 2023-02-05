@@ -11,13 +11,10 @@ import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statementParsers.PS_Class;
-import envision_lang.parser.statements.statementParsers.PS_Enum;
 import envision_lang.parser.statements.statementParsers.PS_For;
 import envision_lang.parser.statements.statementParsers.PS_Function;
-import envision_lang.parser.statements.statementParsers.PS_GetSet;
 import envision_lang.parser.statements.statementParsers.PS_If;
 import envision_lang.parser.statements.statementParsers.PS_Import;
-import envision_lang.parser.statements.statementParsers.PS_Interface;
 import envision_lang.parser.statements.statementParsers.PS_LoopControl;
 import envision_lang.parser.statements.statementParsers.PS_ParseDeclaration;
 import envision_lang.parser.statements.statementParsers.PS_Return;
@@ -118,12 +115,12 @@ public abstract class ParserHead {
 		
 		case EXPR:				parsedStatement = expressionStatement(); 								break;
 		case CLASS_DEF: 		parsedStatement = PS_Class.classDeclaration(dec); 						break;
-		case ENUM_DEF: 			parsedStatement = PS_Enum.enumDeclaration(dec); 						break;
+//		case ENUM_DEF: 			parsedStatement = PS_Enum.enumDeclaration(dec); 						break;
 		case FUNC_DEF: 			parsedStatement = PS_Function.functionDeclaration(false, false, dec); 	break;
 		case INIT_DEF:			parsedStatement = PS_Function.functionDeclaration(true, false, dec); 	break;
 		case OPERATOR_DEF:  	parsedStatement = PS_Function.functionDeclaration(false, true, dec); 	break;
-		case GETSET: 			parsedStatement = PS_GetSet.getSet(dec); 								break;
-		case INTERFACE_DEF: 	parsedStatement = PS_Interface.interfaceDeclaration(dec); 				break;
+//		case GETSET: 			parsedStatement = PS_GetSet.getSet(dec); 								break;
+//		case INTERFACE_DEF: 	parsedStatement = PS_Interface.interfaceDeclaration(dec); 				break;
 		case VAR_DEF: 			parsedStatement = PS_VarDef.variableDeclaration(dec); 					break;
 		
 		//if the code has reached this point, it means a statement declaration has not been found

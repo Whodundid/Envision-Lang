@@ -1,4 +1,4 @@
-package envision_lang.parser.expressions.expression_types;
+package envision_lang.parser.expressions.expression_types.unused;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.ExpressionHandler;
@@ -7,22 +7,23 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
-public class Expr_Enum extends ParsedExpression {
+public class Expr_Super extends ParsedExpression {
 	
 	//========
 	// Fields
 	//========
 	
-	public final Token<?> name;
+	public final Token<?> target;
 	public final EList<ParsedExpression> args;
 	
 	//==============
 	// Constructors
 	//==============
 	
-	public Expr_Enum(Token<?> nameIn, EList<ParsedExpression> argsIn) {
-		super(nameIn);
-		name = nameIn;
+	public Expr_Super(Token start, Token<?> methodIn) { this(start, methodIn, null); }
+	public Expr_Super(Token start, Token<?> methodIn, EList<ParsedExpression> argsIn) {
+		super(start);
+		target = methodIn;
 		args = argsIn;
 	}
 	
@@ -32,13 +33,14 @@ public class Expr_Enum extends ParsedExpression {
 	
 	@Override
 	public String toString() {
-		String a = (args != null && args.isNotEmpty()) ? "(" + EStringUtil.toString(args, ", ") + ")" : "";
-		return name.getLexeme() + a;
+		String a = (args != null) ? "(" + ((args.isNotEmpty()) ? EStringUtil.toString(args, ", ") : "") + ")" : "";
+		return "super." + target.getLexeme() + a;
 	}
 	
 	@Override
 	public EnvisionObject evaluate(ExpressionHandler handler) {
-		return handler.handleEnum_E(this);
+		return null;
+//		return handler.handleSuper_E(this);
 	}
 	
 }

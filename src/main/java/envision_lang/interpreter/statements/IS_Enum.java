@@ -2,7 +2,7 @@ package envision_lang.interpreter.statements;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.parser.statements.statement_types.Stmt_EnumDef;
+import envision_lang.parser.statements.statement_types.unused.Stmt_EnumDef;
 import eutil.debug.Broken;
 import eutil.debug.InDevelopment;
 import eutil.debug.Unused;

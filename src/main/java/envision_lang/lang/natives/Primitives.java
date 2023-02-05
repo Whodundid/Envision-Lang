@@ -154,8 +154,8 @@ public enum Primitives implements IDatatype {
 		keywordToPrimitiveMap.put(ReservedWord.VOID, VOID);
 		keywordToPrimitiveMap.put(ReservedWord.NULL, NULL);
 		keywordToPrimitiveMap.put(ReservedWord.CLASS, CLASS);
-		keywordToPrimitiveMap.put(ReservedWord.INTERFACE, INTERFACE);
-		keywordToPrimitiveMap.put(ReservedWord.PACKAGE, PACKAGE);
+//		keywordToPrimitiveMap.put(ReservedWord.INTERFACE, INTERFACE);
+//		keywordToPrimitiveMap.put(ReservedWord.PACKAGE, PACKAGE);
 		keywordToPrimitiveMap.put(ReservedWord.FUNC, FUNCTION);
 		keywordToPrimitiveMap.put(ReservedWord.BOOLEAN, BOOLEAN);
 		keywordToPrimitiveMap.put(ReservedWord.CHAR, CHAR);
@@ -208,10 +208,11 @@ public enum Primitives implements IDatatype {
 		fieldPrimitives.add(LIST);
 		fieldPrimitives.add(TUPLE);
 		fieldPrimitives.add(VAR);
-		//fieldPrimitives.add(CLASS);
-		//fieldPrimitives.add(CODE_FILE);
-		//fieldPrimitives.add(FUNCTION);
-		//fieldPrimitives.add(ENUM);
+		fieldPrimitives.add(CLASS);
+		fieldPrimitives.add(CODE_FILE);
+		fieldPrimitives.add(FUNCTION);
+		fieldPrimitives.add(ENUM);
+		fieldPrimitives.add(CLASS_INSTANCE);
 		//fieldPrimitives.add(INTERFACE);
 		//fieldPrimitives.add(PACKAGE);
 		

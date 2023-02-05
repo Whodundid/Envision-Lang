@@ -73,7 +73,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for a variable. */
 	public static boolean isValid_varDec(List<DataModifier> mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.size(); i++) {
+			DataModifier m = mods.get(i);
 			if (!checkVariable(m)) return false;
 		}
 		return true;
@@ -81,7 +82,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for a variable. */
 	public static boolean checkVariable(DataModifier... mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.length; i++) {
+			DataModifier m = mods[i];
 			if (!checkVariable(m)) return false;
 		}
 		return true;
@@ -89,7 +91,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for a generic (var) variable. */
 	public static boolean checkGeneric(List<DataModifier> mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.size(); i++) {
+			DataModifier m = mods.get(i);
 			if (!checkGeneric(m)) return false;
 		}
 		return true;
@@ -97,31 +100,35 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for a generic (var) variable. */
 	public static boolean checkGeneric(DataModifier... mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.length; i++) {
+			DataModifier m = mods[i];
 			if (!checkGeneric(m)) return false;
 		}
 		return true;
 	}
 	
 	/** Returns true if all of the modifiers are valid for a method. */
-	public static boolean checkMethod(List<DataModifier> mods) {
-		for (DataModifier m : mods) {
+	public static boolean checkFunction(List<DataModifier> mods) {
+		for (int i = 0; i < mods.size(); i++) {
+			DataModifier m = mods.get(i);
 			if (!checkFunction(m)) return false;
 		}
 		return true;
 	}
 	
 	/** Returns true if all of the modifiers are valid for a method. */
-	public static boolean checkMethod(DataModifier... mods) {
-		for (DataModifier m : mods) {
-			if (!checkFunction(m)) return false;
+	public static boolean checkFunction(DataModifier... mods) {
+		for (int i = 0; i < mods.length; i++) {
+			DataModifier m = mods[i];
+			if (!checkVariable(m)) return false;
 		}
 		return true;
 	}
 	
 	/** Returns true if all of the modifiers are valid for a class. */
 	public static boolean checkClass(List<DataModifier> mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.size(); i++) {
+			DataModifier m = mods.get(i);
 			if (!checkClass(m)) return false;
 		}
 		return true;
@@ -129,7 +136,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for a class. */
 	public static boolean checkClass(DataModifier... mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.length; i++) {
+			DataModifier m = mods[i];
 			if (!checkClass(m)) return false;
 		}
 		return true;
@@ -137,7 +145,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for an enum. */
 	public static boolean checkEnum(List<DataModifier> mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.size(); i++) {
+			DataModifier m = mods.get(i);
 			if (!checkEnum(m)) return false;
 		}
 		return true;
@@ -145,7 +154,8 @@ public enum DataModifier {
 	
 	/** Returns true if all of the modifiers are valid for an enum. */
 	public static boolean checkEnum(DataModifier... mods) {
-		for (DataModifier m : mods) {
+		for (int i = 0; i < mods.length; i++) {
+			DataModifier m = mods[i];
 			if (!checkEnum(m)) return false;
 		}
 		return true;

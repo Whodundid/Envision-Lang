@@ -1,4 +1,4 @@
-package envision_lang.parser.statements.statement_types;
+package envision_lang.parser.statements.statement_types.unused;
 
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
@@ -37,7 +37,7 @@ public class Stmt_Package extends ParsedStatement {
 	
 	@Override
 	public void execute(StatementHandler handler) {
-		handler.handlePackageStatement(this);
+//		handler.handlePackageStatement(this);
 	}
 	
 }

@@ -1,4 +1,4 @@
-package envision_lang.parser.statements.statementParsers;
+package envision_lang.parser.statements.statementParsers.unused;
 
 import envision_lang.parser.ParserHead;
 import envision_lang.parser.statements.ParsedStatement;

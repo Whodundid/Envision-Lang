@@ -1,6 +1,6 @@
-package envision_lang.parser.statements.statement_types;
+package envision_lang.parser.statements.statement_types.unused;
 
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Generic;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
@@ -31,7 +31,7 @@ public class Stmt_InterfaceDef extends ParsedStatement {
 	
 	@Override
 	public void execute(StatementHandler handler) {
-		handler.handleInterfaceStatement(this);
+//		handler.handleInterfaceStatement(this);
 	}
 	
 	//=========
