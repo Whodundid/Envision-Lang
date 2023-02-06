@@ -32,6 +32,7 @@ import envision_lang.lang.classes.EnvisionClass;
  * <p>
  * Every EnvisionVariable is intended to wrap some Envision primitive
  * datatype.
+ * 
  * <ul>
  * The following are examples of native EnvisionVariables:
  * <p>
@@ -42,6 +43,7 @@ import envision_lang.lang.classes.EnvisionClass;
  * <li>EnvisionString
  * <li>EnvisionList
  * </ul>
+ * 
  * These primitive types are designed to not support any kind of
  * instance scope as they are technically primitive values at their
  * core. Because of this, no instance scope is passed during a

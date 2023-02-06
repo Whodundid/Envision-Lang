@@ -5,16 +5,15 @@ import static envision_lang.lang.natives.Primitives.*;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.IPrototypeHandler;
-import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.Primitives;
 
-public final class EnvisionDoubleClass extends EnvisionClass {
+public final class EnvisionDoubleClass extends EnvisionNumberClass {
 
 	/**
 	 * The singular, static Double class for which all Envision:Double
@@ -104,13 +103,13 @@ public final class EnvisionDoubleClass extends EnvisionClass {
 	//-----------
 	
 	@Override
-	public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		//bypass class construct for primitive type
 		return buildInstance(interpreter, args);
 	}
 	
 	@Override
-	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionDouble double_val = null;
 		
 		//if no args, return default char instance
@@ -132,7 +131,7 @@ public final class EnvisionDoubleClass extends EnvisionClass {
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
 		}
 		
-		//define scope memebers
+		//define scope members
 		defineScopeMembers(double_val);
 		
 		return double_val;

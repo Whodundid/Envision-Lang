@@ -242,8 +242,8 @@ public class Tokenizer {
 			}
 		}
 		
-		if (decimal) addToken(ReservedWord.NUMBER_LITERAL, Double.parseDouble(currentLineSource.substring(start, cur)));
-		else addToken(ReservedWord.NUMBER_LITERAL, Long.parseLong(currentLineSource.substring(start, cur)));
+		if (decimal) addToken(ReservedWord.DOUBLE_LITERAL, Double.parseDouble(currentLineSource.substring(start, cur)));
+		else addToken(ReservedWord.INT_LITERAL, Long.parseLong(currentLineSource.substring(start, cur)));
 	}
 	
 	/**
@@ -276,10 +276,15 @@ public class Tokenizer {
 		advance();
 		//error if at end
 		if (atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
-		//get char (could be up to 6 characters long ex. '\u4444'
-		int count = 0;
-		while (peek() != '\'' && count < 5 && !atEnd()) {
-			advance();
+		
+		boolean isUnicode = false;
+		if (getCurrent() == '\'') {
+			isUnicode = true;
+			//get char (could be up to 6 characters long ex. '\u4444'
+			int count = 0;
+			while (peek() != '\'' && count < 5 && !atEnd()) {
+				advance();
+			}
 		}
 		//consume the 2nd '
 		if (peek() != '\'' || atEnd()) throw new EnvisionLangError("Incomplete char tokenization!");
@@ -287,12 +292,18 @@ public class Tokenizer {
 		
 		// convert the string version of the parsed char to a char
 		String charStr = currentLineSource.substring(start + 1, cur - 1);
-		// convert unicode values to chars
-		charStr = charStr.toLowerCase();
-		charStr = charStr.replace("\\", "");
-		charStr = charStr.replace("u", "");
-		int hex = Integer.parseInt(charStr, 16);
-		String charVal = String.valueOf((char) hex);
+		String charVal;
+		
+		if (isUnicode) {
+			// convert unicode values to chars
+			charStr = charStr.replace("\\", "");
+			charStr = charStr.replace("u", "");
+			int hex = Integer.parseInt(charStr, 16);
+			charVal = String.valueOf(Character.toChars(hex));
+		}
+		else {
+			charVal = charStr;
+		}
 		
 		addToken(ReservedWord.CHAR_LITERAL, charVal);
 	}
@@ -394,7 +405,7 @@ public class Tokenizer {
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public boolean tokenizeFile() throws IOException {
+	public boolean tokenizeFile() throws Exception {
 		if (theFile == null) throw new FileNotFoundException("No file specified!");
 		return tokenizeFile_I();
 	}

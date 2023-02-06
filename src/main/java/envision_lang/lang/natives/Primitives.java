@@ -167,6 +167,10 @@ public enum Primitives implements IDatatype {
 		keywordToPrimitiveMap.put(ReservedWord.TUPLE, TUPLE);
 		keywordToPrimitiveMap.put(ReservedWord.VAR, VAR);
 		keywordToPrimitiveMap.put(ReservedWord.ENUM, ENUM);
+		keywordToPrimitiveMap.put(ReservedWord.CHAR_LITERAL, CHAR);
+		keywordToPrimitiveMap.put(ReservedWord.INT_LITERAL, INT);
+		keywordToPrimitiveMap.put(ReservedWord.DOUBLE_LITERAL, DOUBLE);
+		keywordToPrimitiveMap.put(ReservedWord.STRING_LITERAL, STRING);
 		
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.BOOLEAN, BOOLEAN);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.CHAR, CHAR);

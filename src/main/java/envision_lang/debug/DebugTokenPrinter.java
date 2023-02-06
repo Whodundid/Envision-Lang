@@ -40,7 +40,7 @@ public class DebugTokenPrinter {
 	 * 
 	 * @throws IOException
 	 */
-	public static void printTokensInDepth(EnvisionCodeFile codeFile) throws IOException {
+	public static void printTokensInDepth(EnvisionCodeFile codeFile) {
 		printTokensInDepth(codeFile.getFileName(), codeFile.getTokens());
 	}
 	
@@ -49,7 +49,7 @@ public class DebugTokenPrinter {
 	 * 
 	 * @throws IOException
 	 */
-	public static void printTokensInDepth(String fileName, EList<Token<?>> tokens) throws IOException {
+	public static void printTokensInDepth(String fileName, EList<Token<?>> tokens) {
 		class Longest {
 			String longestToken() { return EStringUtil.getLongest(tokens); }
 			String longestKeyword() { return EStringUtil.getLongest(tokens.map(o -> o.getKeyword())); }

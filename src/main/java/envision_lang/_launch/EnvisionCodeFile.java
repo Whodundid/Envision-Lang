@@ -105,7 +105,16 @@ public class EnvisionCodeFile extends EnvisionObject {
 	// Methods
 	//---------
 	
-	public void tokenizeFile() throws IOException {
+	private void tokenizeFileSafe() {
+		try {
+			tokenizeFile();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void tokenizeFile() throws Exception {
 		if (tokenizer == null) tokenizer = new Tokenizer(this);
 		if (tokenizer.hasFile()) {
 			tokenizer.tokenizeFile();
@@ -116,7 +125,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 		}
 	}
 	
-	public void parseFile() throws Exception {
+	public void parseFile() {
 		statements = EnvisionLangParser.parse(this);
 		isParsed = true;
 	}
@@ -129,28 +138,30 @@ public class EnvisionCodeFile extends EnvisionObject {
 	 * @return true if successfully loaded
 	 * @throws Exception
 	 */
-	public boolean load(WorkingDirectory dir) throws Exception {
+	public boolean load(WorkingDirectory dir) {
 		isLoaded = false;
 		
-		//if not tokenized, attempt to tokenize
-		if (!isTokenized) tokenizeFile();
-		if (!isParsed) parseFile();
-		
-		//if (isLoaded) throw new InvalidCodeFileError(fileName, "Is already loaded and cannot be loaded again!");
-		if (dir == null) throw new InvalidCodeFileError(fileName, "There is no paired working directory!");
-		if (!isTokenized) throw new InvalidCodeFileError(fileName, "Has not been successfully tokenized!");
-		if (!isParsed) throw new InvalidCodeFileError(fileName, "Has not been successfully parsed!");
-		if (statements == null) throw new InvalidCodeFileError(fileName, "Has somehow been parsed but does not have a valid statement list!");
-		
-		//if (EnvisionLang.debugMode) debugOutput();
-		
-		//prep interpreter
 		try {
+			//if not tokenized, attempt to tokenize
+			if (!isTokenized) tokenizeFile();
+			if (!isParsed) parseFile();
+		
+			//if (isLoaded) throw new InvalidCodeFileError(fileName, "Is already loaded and cannot be loaded again!");
+			if (dir == null) throw new InvalidCodeFileError(fileName, "There is no paired working directory!");
+			if (!isTokenized) throw new InvalidCodeFileError(fileName, "Has not been successfully tokenized!");
+			if (!isParsed) throw new InvalidCodeFileError(fileName, "Has not been successfully parsed!");
+			if (statements == null) throw new InvalidCodeFileError(fileName, "Has somehow been parsed but does not have a valid statement list!");
+		
+			//if (EnvisionLang.debugMode) debugOutput();
+		
 			workingDir = dir;
 			dir.getBuildPackages().forEach(p -> p.defineOn(codeFileScope));
 			isLoaded = true;
 		}
 		catch (EnvisionLangError e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -194,9 +205,9 @@ public class EnvisionCodeFile extends EnvisionObject {
 		System.out.println(s + "statements"); statements.forEach(o -> System.out.println(ss + o + "\n" + sss + o.getClass().getSimpleName())); System.out.println();
 	}
 	
-	public void displayTokens() throws IOException {
+	public void displayTokens() {
 		//if not tokenized, attempt to tokenize
-		if (!isTokenized) tokenizeFile();
+		if (!isTokenized) tokenizeFileSafe();
 		
 		DebugTokenPrinter.printTokensBasic(this);
 	}
@@ -206,9 +217,9 @@ public class EnvisionCodeFile extends EnvisionObject {
 	 * 
 	 * @throws IOException
 	 */
-	public void displayTokensInDepth() throws IOException {
+	public void displayTokensInDepth() {
 		//if not tokenized, attempt to tokenize
-		if (!isTokenized) tokenizeFile();
+		if (!isTokenized) tokenizeFileSafe();
 		
 		DebugTokenPrinter.printTokensInDepth(this);
 	}

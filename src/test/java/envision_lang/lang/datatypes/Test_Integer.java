@@ -1,16 +1,14 @@
-package envision_lang.interpreter.datatypes;
+package envision_lang.lang.datatypes;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import envision_lang.interpreter.InterpreterTest;
-import envision_lang.lang.datatypes.EnvisionInt;
-import envision_lang.lang.datatypes.EnvisionIntClass;
+import envision_lang.EnvisionLangTest;
 import eutil.random.ERandomUtil;
 
-public class Test_Integer extends InterpreterTest {
+public class Test_Integer extends EnvisionLangTest {
 	
 	//==================================================
 	
@@ -334,5 +332,57 @@ public class Test_Integer extends InterpreterTest {
 	}
 	
 	//=========================================================================================
+	
+	@Test
+	public void test_getMaxValue() {
+		execute("int max = int.MAX_VALUE");
+		
+		var max = get_i("max");
+		assertNotNull(max);
+		assertEquals(Long.MAX_VALUE, max);
+	}
+	
+	//=========================================================================================
+	
+	@Test
+	public void test_getMinValue() {
+		execute("int min = int.MIN_VALUE");
+		
+		var min = get_i("min");
+		assertNotNull(min);
+		assertEquals(Long.MIN_VALUE, min);
+	}
+	
+	//=========================================================================================
+	
+	@Test
+	public void test_maxValue_minus_1() {
+		execute("""
+				
+				int max = int.MAX_VALUE
+				max = max - 1
+				
+				""");
+		
+		var max = get_i("max");
+		assertNotNull(max);
+		assertEquals(Long.MAX_VALUE - 1, max);
+	}
+	
+	//=========================================================================================
+	
+	@Test
+	public void test_maxValue_plus_1() {
+		execute("""
+				
+				int max = int.MAX_VALUE
+				max = max + 1
+				
+				""");
+		
+		var max = get_i("max");
+		assertNotNull(max);
+		assertEquals(Long.MAX_VALUE + 1, max);
+	}
 	
 }

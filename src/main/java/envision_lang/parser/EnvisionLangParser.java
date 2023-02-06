@@ -54,7 +54,7 @@ public final class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) throws Exception {
+	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) {
 		// error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		

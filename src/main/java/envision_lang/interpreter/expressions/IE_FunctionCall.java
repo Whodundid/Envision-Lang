@@ -88,9 +88,9 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	
 	// handle classes
 	private static EnvisionObject classCall(EnvisionInterpreter interpreter,
-		 							 String name,
-		 							 EnvisionObject[] args,
-		 							 EnvisionClass c)
+		 							 		String name,
+		 							 		EnvisionObject[] args,
+		 							 		EnvisionClass c)
 	{
 		try {
 			if (c.isAbstract()) throw new AbstractInstantiationError(c);

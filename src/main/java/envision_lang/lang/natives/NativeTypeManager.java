@@ -1,6 +1,7 @@
 package envision_lang.lang.natives;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
@@ -28,9 +29,9 @@ import envision_lang.tokenizer.Token;
 public final class NativeTypeManager {
 
 	/** The internal native Envision class list. */
-	private static final HashMap<Primitives, EnvisionClass> native_classes = new HashMap<>();
+	private static final Map<Primitives, EnvisionClass> native_classes = new HashMap<>();
 	/** This map is used to manage each singleton native datatype in one place. */
-	private static final HashMap<String, EnvisionDatatype> native_types = new HashMap<>();
+	private static final Map<String, EnvisionDatatype> native_types = new HashMap<>();
 	/** True if Envision's natives have been registered. */
 	public static final boolean nativesRegistered;
 	
@@ -49,14 +50,6 @@ public final class NativeTypeManager {
 		native_classes.put(Primitives.STRING, EnvisionStringClass.STRING_CLASS);
 		native_classes.put(Primitives.LIST, EnvisionListClass.LIST_CLASS);
 		native_classes.put(Primitives.TUPLE, EnvisionTupleClass.TUPLE_CLASS);
-		
-		//load native classes into native types
-		//for (EnvisionClass c : native_classes) {
-		//	native_types.put(c.getClassName(), c.getDatatype().toDatatype());
-		//}
-		
-		//native_types.put(Primitives.VAR.string_type, Primitives.VAR.toDatatype());
-		//native_types.put(Primitives.BOOLEAN.string_type, Primitives.BOOLEAN.toDatatype());
 		
 		//load static natives on each native class
 		for (EnvisionClass c : native_classes.values()) {

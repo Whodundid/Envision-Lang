@@ -1,4 +1,4 @@
-package envision_lang.interpreter.expressions;
+package envision_lang.interpreter.expressions.unused;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;

@@ -1,4 +1,4 @@
-package envision_lang.interpreter;
+package envision_lang;
 
 import java.util.Map;
 

@@ -293,7 +293,10 @@ public class ExpressionParser extends ParserHead {
 		if (match(FALSE)) return new Expr_Literal(previousNonTerminator(), false);
 		if (match(TRUE)) return new Expr_Literal(previousNonTerminator(), true);
 		if (match(NULL)) return new Expr_Literal(previousNonTerminator(), null);
-		if (match(STRING_LITERAL, CHAR_LITERAL, NUMBER_LITERAL)) return new Expr_Literal(previousNonTerminator(), previousNonTerminator().getLiteral());
+		if (match(STRING_LITERAL, CHAR_LITERAL, INT_LITERAL, DOUBLE_LITERAL)) {
+			var p = previousNonTerminator();
+			return new Expr_Literal(p, p.getLiteral());
+		}
 		return null;
 	}
 	

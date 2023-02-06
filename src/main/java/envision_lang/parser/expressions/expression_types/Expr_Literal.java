@@ -11,6 +11,7 @@ public class Expr_Literal extends ParsedExpression {
 	// Fields
 	//========
 	
+	public final Token<?> literalToken;
 	public final Object value;
 	
 	//==============
@@ -19,6 +20,7 @@ public class Expr_Literal extends ParsedExpression {
 	
 	public Expr_Literal(Token<?> start, Object valueIn) {
 		super(start);
+		literalToken = start;
 		value = valueIn;
 	}
 	

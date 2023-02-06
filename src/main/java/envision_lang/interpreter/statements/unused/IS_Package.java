@@ -1,4 +1,4 @@
-package envision_lang.interpreter.statements;
+package envision_lang.interpreter.statements.unused;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;

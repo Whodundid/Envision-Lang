@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import envision_lang.EnvisionLangTest;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.parser.statements.statement_types.Stmt_If;
 
-public class Test_IS_If extends InterpreterStatementTest {
+public class Test_IS_If extends EnvisionLangTest {
 	
 	protected DebugStatement then_branch, else_branch;
 	

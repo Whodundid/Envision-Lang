@@ -158,7 +158,8 @@ public enum ReservedWord implements IKeyword {
 	// internal literals
 	//-------------------
 	
-	NUMBER_LITERAL("\\NumLiteral", KeywordType.LITERAL), //A number in token form representing either an integer or a double.
+	INT_LITERAL("\\IntLiteral", KeywordType.LITERAL),
+	DOUBLE_LITERAL("\\DoubleLiteral", KeywordType.LITERAL), //A number in token form representing either an integer or a double.
 	STRING_LITERAL("\\StringLiteral", KeywordType.LITERAL), //A string in token form.
 	CHAR_LITERAL("\\CharLiteral", KeywordType.LITERAL), //A char in token form.
 	IDENTIFIER("\\Literal", KeywordType.LITERAL), //A value that could pertain to a object name.

@@ -4,8 +4,10 @@ import static envision_lang.lang.natives.Primitives.*;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.exceptions.errors.objects.AbstractInstantiationError;
+import envision_lang.lang.exceptions.errors.ArgLengthError;
+import envision_lang.lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
 
@@ -18,7 +20,9 @@ import envision_lang.lang.natives.Primitives;
  * 
  * @author Hunter Bragg
  */
-public final class EnvisionNumberClass extends EnvisionClass {
+public sealed class EnvisionNumberClass extends EnvisionClass
+	permits EnvisionIntClass, EnvisionDoubleClass
+{
 	
 	/**
 	 * The singular, static Number class for which all Envision:Number
@@ -37,6 +41,13 @@ public final class EnvisionNumberClass extends EnvisionClass {
 	 */
 	private EnvisionNumberClass() {
 		super(Primitives.NUMBER);
+		
+		//define static members
+		staticScope.defineFunction(new IFunc_static_valueOf());
+	}
+	
+	protected EnvisionNumberClass(Primitives typeIn) {
+		super(typeIn);
 		
 		//define static members
 		staticScope.defineFunction(new IFunc_static_valueOf());
@@ -62,12 +73,43 @@ public final class EnvisionNumberClass extends EnvisionClass {
 	
 	@Override
 	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new AbstractInstantiationError(this);
+		//bypass class construct for primitive type
+		return buildInstance(interpreter, args);
 	}
 	
 	@Override
 	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new AbstractInstantiationError(this);
+		EnvisionNumber num = null;
+		
+		//if no args, return double::zero by default
+		if (args.length == 0) num = EnvisionDouble.ZERO;
+		//ensure there is at most 1 argument being passed
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be Java::Null!");
+			
+			//check for valid argument constructor types
+			else if (arg_val instanceof EnvisionInt i)		num = i;
+			else if (arg_val instanceof EnvisionDouble d)	num = d;
+			else if (arg_val instanceof EnvisionNumber n)	num = n;
+			
+			//if null, creation failed!
+			if (num == null) {
+				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to a "+getDatatype()+"!");
+			}
+		}
+		
+		return num;
+	}
+	
+	@Override
+	protected void defineScopeMembers(ClassInstance inst) {
+		//define super object's members
+		super.defineScopeMembers(inst);
 	}
 	
 	//-------------------------

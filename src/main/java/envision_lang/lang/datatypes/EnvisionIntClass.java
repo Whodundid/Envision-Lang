@@ -5,16 +5,15 @@ import static envision_lang.lang.natives.Primitives.*;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.ArgLengthError;
 import envision_lang.lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.IPrototypeHandler;
-import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.Primitives;
 
-public final class EnvisionIntClass extends EnvisionClass {
+public final class EnvisionIntClass extends EnvisionNumberClass {
 
 	/**
 	 * The singular, static int class for which all EnvisionInt
@@ -133,6 +132,10 @@ public final class EnvisionIntClass extends EnvisionClass {
 	 * @return An EnvisionInt made from the incoming value
 	 */
 	public static EnvisionInt valueOf(long value) {
+		if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+			return newInt(value);
+		}
+		
 		int i = (int) value;
 		
 		if (i >= EnvisionIntegerCache.low && i <= EnvisionIntegerCache.high) {
@@ -147,13 +150,13 @@ public final class EnvisionIntClass extends EnvisionClass {
 	//-----------
 	
 	@Override
-	public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		//bypass class construct for primitive type
 		return buildInstance(interpreter, args);
 	}
 	
 	@Override
-	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionInt int_val = null;
 		
 		//if no args, return default char instance

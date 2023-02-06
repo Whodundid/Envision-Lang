@@ -9,6 +9,8 @@ import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.expressions.expression_types.Expr_Literal;
+import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 import envision_lang.parser.expressions.expression_types.Expr_TypeOf;
 
 /**
@@ -23,11 +25,26 @@ public class IE_TypeOf extends AbstractInterpreterExecutor {
 		ParsedExpression right = e.right;
 		boolean is = e.is;
 		
-		EnvisionObject lobj = interpreter.evaluate(left);
-		EnvisionObject robj = interpreter.evaluate(right);
+		IDatatype typeA = null, typeB = null;
 		
-		IDatatype typeA = lobj.getDatatype();
-		IDatatype typeB = robj.getDatatype();
+		// convert literals and primitives to their internal datatype
+		if (left instanceof Expr_Literal literal) typeA = literal.literalToken.getPrimitiveDataType();
+		if (left instanceof Expr_Primitive primitive) typeA = primitive.primitiveType.getPrimitiveType();
+		
+		if (right instanceof Expr_Literal literal) typeB = literal.literalToken.getPrimitiveDataType();
+		if (right instanceof Expr_Primitive primitive) typeB = primitive.primitiveType.getPrimitiveType();
+		
+		// if typeA is still null, attempt to evaluate its expression and grab its datatype
+		if (typeA == null) {
+			var lobj = interpreter.evaluate(left);
+			typeA = lobj.getDatatype();
+		}
+		
+		// if typeB is still null, attempt to evaluate its expression and grab its datatype
+		if (typeB == null) {
+			var robj = interpreter.evaluate(right);
+			typeB = robj.getDatatype();
+		}
 		
 		boolean same = compare_datatypes(typeA, typeB);
 		boolean val = (is) ? same : !same;

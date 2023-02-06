@@ -133,8 +133,12 @@ public class Token<TYPE> {
 		return new Token<>(ReservedWord.STRING_LITERAL, lexemeIn, lexemeIn, lineIn);
 	}
 	
-	public static Token<Number> create(Number literalIn, int lineIn) {
-		return new Token<>(ReservedWord.NUMBER_LITERAL, String.valueOf(literalIn), literalIn, lineIn);
+	public static Token<Number> createInt(Number literalIn, int lineIn) {
+		return new Token<>(ReservedWord.INT_LITERAL, String.valueOf(literalIn), literalIn, lineIn);
+	}
+	
+	public static Token<Number> createDouble(Number literalIn, int lineIn) {
+		return new Token<>(ReservedWord.DOUBLE_LITERAL, String.valueOf(literalIn), literalIn, lineIn);
 	}
 	
 	public static Token<Void> create(IKeyword keywordIn, String lexemeIn, int lineIn) {
