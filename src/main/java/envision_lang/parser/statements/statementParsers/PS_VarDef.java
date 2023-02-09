@@ -51,6 +51,7 @@ public class PS_VarDef extends ParserHead {
 		if (check(BRACKET_L)) {
 			decrementParsingIndex();
 			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
+			consumeTerminator();
 			return new Stmt_Expression(listIndexSet);
 		}
 		
