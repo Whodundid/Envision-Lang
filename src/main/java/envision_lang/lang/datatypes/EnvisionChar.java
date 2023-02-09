@@ -130,7 +130,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 			EnvisionString new_obj = EnvisionStringClass.valueOf(new_val);
 			
 			//assign new value to vars and immediately return created object
-			interpreter.scope().set(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
+			interpreter.scope().setFast(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
 			return new_obj;
 		}
 		
@@ -153,7 +153,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 			EnvisionString new_obj = EnvisionStringClass.valueOf(new_val);
 			
 			//assign new value to vars and immediately return created object
-			interpreter.scope().set(scopeName, new_obj.getDatatype(), new_obj);
+			interpreter.scope().setFast(scopeName, new_obj.getDatatype(), new_obj);
 			return new_obj;
 		}
 		

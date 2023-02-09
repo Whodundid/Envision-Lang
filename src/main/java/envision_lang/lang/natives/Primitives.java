@@ -125,6 +125,8 @@ public enum Primitives implements IDatatype {
 	private static final Set<Primitives> fieldPrimitives = new HashSet<>();
 	/** The set of all primitive types that are natively passed by value in envision. */
 	private static final Set<Primitives> passByValuePrimitives = new HashSet<>();
+	/** The set of all native primitive datatypes in envision. */
+	private static final Set<Primitives> nativePrimitiveTypes = new HashSet<>();
 	
 	//=============
 	// Static init
@@ -228,6 +230,15 @@ public enum Primitives implements IDatatype {
 		passByValuePrimitives.add(STRING);
 		//passByValuePrimitives.add(LIST);
 		//passByValuePrimitives.add(TUPLE);
+		
+		nativePrimitiveTypes.add(BOOLEAN);
+		nativePrimitiveTypes.add(CHAR);
+		nativePrimitiveTypes.add(INT);
+		nativePrimitiveTypes.add(DOUBLE);
+		nativePrimitiveTypes.add(NUMBER);
+		nativePrimitiveTypes.add(STRING);
+		nativePrimitiveTypes.add(LIST);
+		nativePrimitiveTypes.add(TUPLE);
 	}
 	
 	//-----------
@@ -287,6 +298,13 @@ public enum Primitives implements IDatatype {
 	 */
 	public boolean isField() {
 		return fieldPrimitives.contains(this);
+	}
+	
+	/**
+	 * Returns true if this is a native primitive datatype.
+	 */
+	public boolean isNativeType() {
+		return nativePrimitiveTypes.contains(this);
 	}
 	
 	/**

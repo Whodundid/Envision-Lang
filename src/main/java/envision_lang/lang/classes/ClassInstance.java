@@ -147,7 +147,7 @@ public class ClassInstance extends EnvisionObject {
 			//first, start by checking if the assignment value is null
 			//in which case, simply assign null to this scope definition
 			if (obj == EnvisionNull.NULL) {
-				interpreter.scope().set(scopeName, internalType, EnvisionNull.NULL);
+				interpreter.scope().setFast(scopeName, internalType, EnvisionNull.NULL);
 				return EnvisionNull.NULL;
 			}
 			
@@ -159,7 +159,7 @@ public class ClassInstance extends EnvisionObject {
 			if (isStrong()) CastingUtil.assert_expected_datatype(this_type, asgn_type);
 			
 			//assign new value in scope
-			interpreter.scope().set(scopeName, asgn_type, obj);
+			interpreter.scope().setFast(scopeName, asgn_type, obj);
 			
 			//effectively this action can ultimately result in 'this' object's death
 			//within the JVM as 'this' object is removed from the scope's value
@@ -423,7 +423,7 @@ public class ClassInstance extends EnvisionObject {
 	 * Assigns a field value within this instance's scope.
 	 */
 	public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
-		instanceScope.set(name, type, in);
+		instanceScope.setFast(name, type, in);
 		return in;
 	}
 

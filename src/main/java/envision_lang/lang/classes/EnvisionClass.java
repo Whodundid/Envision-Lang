@@ -426,7 +426,7 @@ public class EnvisionClass extends EnvisionObject {
 	 * Assigns a field value within this instance's scope.
 	 */
 	public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
-		staticScope.set(name, type, in);
+		staticScope.setFast(name, type, in);
 		return in;
 	}
 	

@@ -180,9 +180,9 @@ public interface IDatatype {
 	 * @see Primitives
 	 * @return true if primitive variable type
 	 */
-	public default boolean isPrimitiveVariableType() {
+	public default boolean isNativePrimitiveType() {
 		var p = getPrimitive();
-		return (p != null) ? p.isPassByValue() : false;
+		return (p != null) ? p.isNativeType() : false;
 	}
 	
 	/**

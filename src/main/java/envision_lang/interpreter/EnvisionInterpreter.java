@@ -503,7 +503,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		} catch (UndefinedValueError e) {}
 		
 		if (existing == null) working_scope.define(name, type, toDefine);
-		else working_scope.set(name, type, toDefine);
+		else working_scope.set(name, toDefine);
 		
 		return toDefine;
 	}
@@ -636,7 +636,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 			throw new InvalidDatatypeError("The incomming datatype: '" + type + "' does not match the existing" +
 										   " datatype '" + o.getDatatype() + "'!");
 		
-		working_scope.set(name, type, object);
+		working_scope.set(name, object);
 		return object;
 	}
 	

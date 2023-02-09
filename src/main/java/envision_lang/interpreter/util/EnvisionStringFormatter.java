@@ -45,18 +45,22 @@ public class EnvisionStringFormatter {
 			if (o instanceof EnvisionList list) {
 				int cur = 0;
 				var l = list.getInternalList();
+				out.append("[");
 				for (var listObj : l) {
 					out.append(formatPrint(interpreter, listObj, format));
 					if (++cur < l.size()) out.append(", ");
 				}
+				out.append("]");
 			}
 			else if (o instanceof EnvisionTuple tuple) {
 				int cur = 0;
 				var l = tuple.getInternalList();
+				out.append("(");
 				for (var listObj : l) {
 					out.append(formatPrint(interpreter, listObj, format));
 					if (++cur < l.size()) out.append(", ");
 				}
+				out.append(")");
 			}
 			//test for toString overload
 			else if (o instanceof ClassInstance inst) {

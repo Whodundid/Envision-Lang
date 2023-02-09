@@ -71,15 +71,6 @@ public class PS_For extends ParserHead {
 		//otherwise is normal
 		else type = 0;
 		
-		switch (type) {
-		//normal
-		case 0:
-		//range
-		case 1:
-		//lambda
-		case 2:
-		}
-		
 		//don't care if there is only one statement block
 		if (numSemi > 0) {
 			//check for initializers

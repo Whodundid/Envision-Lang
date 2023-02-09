@@ -159,6 +159,16 @@ public interface IScope {
 		return define(name, entry);
 	}
 	
+	/**
+	 * Does not perform any checks on the incoming values and relies on the implementing
+	 * code to verify name, type, and value.
+	 * 
+	 * @return The defined object
+	 */
+	default EnvisionObject defineFast(String name, IDatatype typeIn, EnvisionObject obj) {
+		return define(name, new ScopeEntry(typeIn, obj));
+	}
+	
 	default EnvisionObject define(String name, ScopeEntry entry) {
 		if (name == null) throw new IllegalArgumentException("Scope object cannot have a 'NULL' name!");
 		if (entry == null) throw new IllegalArgumentException("Scope entries cannot be entirely 'NULL' !");
@@ -522,20 +532,23 @@ public interface IScope {
 	// Setters
 	//---------
 	
-	default void set(String name, EnvisionObject value) {
-		if (value == null) throw new NullVariableError();
-		set(name, value.getDatatype(), value);
-	}
-	
 	/**
 	 * Modifies the value of an already existing object within this scope.
 	 * If the object is not actually defined, and error is thrown instead.
 	 */
-	default void set(String name, IDatatype type, EnvisionObject value) {
+	default void set(String name, EnvisionObject value) {
 		var b = getTyped(name);
 		if (b == null) throw new UndefinedValueError(name);
 		if (value == null) throw new NullVariableError();
 		b.set(value);
+	}
+	
+	default void setFast(String name, EnvisionObject value) {
+		getTyped(name).set(value);
+	}
+	
+	default void setFast(String name, IDatatype type, EnvisionObject value) {
+		getTyped(name).setRT(value).modifyDatatype(type);
 	}
 	
 	/**
@@ -545,15 +558,16 @@ public interface IScope {
 		parentAt(dist).set(name, value);
 	}
 	
-	default EnvisionObject modifyDatatype(String name, IDatatype newType) {
+	default EnvisionObject modifyDatatype(String name, IDatatype newType, EnvisionObject newValue) {
 		var typedBox = getTyped(name);
 		
 		//assign new type
 		if (typedBox != null) {
 			typedBox.modifyDatatype(newType);
+			typedBox.set(newValue);
 		}
 		
-		return (typedBox != null) ? typedBox.getObject() : null;
+		return newValue;
 	}
 	
 	//-------------------

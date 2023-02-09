@@ -165,4 +165,9 @@ public class ScopeEntry {
 		return objectIn;
 	}
 	
+	public ScopeEntry setRT(EnvisionObject objectIn) {
+		set(objectIn);
+		return this;
+	}
+	
 }

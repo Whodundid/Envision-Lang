@@ -16,8 +16,8 @@ import envision_lang.lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision_lang.lang.exceptions.errors.listErrors.LockedListError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.lang.functions.FunctionPrototype;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -121,6 +121,7 @@ public final class EnvisionList extends ClassInstance {
 			if (i < internal_list.size()) sb.a(", ");
 			i++;
 		}
+		sb.a("]");
 		return sb.toString();
 	}
 	
@@ -158,7 +159,7 @@ public final class EnvisionList extends ClassInstance {
 				throw new InvalidArgumentError("Expected an integer greater than or equal to '1' here!");
 			}
 			
-			EArrayList<EnvisionObject> toCopy = new EArrayList<>(internal_list.size());
+			EList<EnvisionObject> toCopy = new EArrayList<>(internal_list.size());
 			for (var o : internal_list) toCopy.add(o);
 			
 			for (int i = 0; i < (byAmount - 1); i++) {

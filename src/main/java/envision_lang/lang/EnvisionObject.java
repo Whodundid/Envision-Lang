@@ -78,7 +78,7 @@ public abstract class EnvisionObject {
 		internalType = internalTypeIn;
 		
 		//assign primitive flag
-		isPrimitive = internalTypeIn.isPrimitiveVariableType();
+		isPrimitive = internalTypeIn.isNativePrimitiveType();
 		isPassByValue = (isPrimitive) ? internalType.getPrimitive().isPassByValue() : false;
 	}
 	

@@ -184,6 +184,7 @@ public abstract class ParserHead {
 		while (!check(CURLY_R) && !atEnd()) {
 			ParsedStatement s = declaration(inMethod);
 			if (s != null) statements.add(s);
+			//ignoreTerminators();
 		}
 		
 		consume(CURLY_R, "Expected '}' after block!");
