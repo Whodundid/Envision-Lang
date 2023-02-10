@@ -2,7 +2,7 @@ package envision_lang._launch;
 
 import java.io.File;
 
-import envision_lang.interpreter.util.throwables.EnvisionException;
+import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.workingDirectory.BadDirError;
 import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.packages.EnvisionLangPackage;
@@ -82,7 +82,7 @@ public class EnvisionProgram {
 		bundledProgramPackages.addAll(buildPackages);
 		
 		//if null -- error on invalid program path
-		if (programDir == null) throw new EnvisionException("Invalid Envision program path!");
+		if (programDir == null) throw new EnvisionLangError("Invalid Envision program path!");
 		
 		//assign default program dir and main path to Java's working dir
 		if (!EFileUtil.fileExists(programDir)) createDir();

@@ -4,7 +4,6 @@ import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.throwables.Break;
-import envision_lang.interpreter.util.throwables.EnvisionException;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.exceptions.EnvisionLangError;
@@ -45,7 +44,7 @@ public class IS_Switch extends AbstractInterpreterExecutor {
 					else caseNameValue = interpreter.scope().get(caseName.getLexeme());
 					
 					//not sure how to handle yet
-					if (isNull(caseNameValue)) throw new EnvisionException("NULL SWITCH CASE");
+					if (isNull(caseNameValue)) throw new EnvisionLangError("NULL SWITCH CASE");
 					
 					//if the case matched -- set the matched state to true and execute each case block from here on out
 					if (interpreter.isEqual_i(exprObj, caseNameValue)) caseMatched = true;

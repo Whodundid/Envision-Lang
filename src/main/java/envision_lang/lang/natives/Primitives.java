@@ -48,7 +48,7 @@ public enum Primitives implements IDatatype {
 	CODE_FILE("//code_file"),
 	FUNCTION("//function"),
 	//OPERATOR("operator"),
-	//EXCEPTION("exception"),
+	EXCEPTION("exception"),
 	
 	// basic types
 	
