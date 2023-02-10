@@ -39,8 +39,8 @@ public class ObjectCreator {
 		if (args == null) return callArgs;
 		
 		//wrap each argument into an object
-		for (Object o : args) {
-			callArgs.add(wrap(o));
+		for (int i = 0; i < args.length; i++) {
+			callArgs.add(wrap(args[i]));
 		}
 		
 		return callArgs;

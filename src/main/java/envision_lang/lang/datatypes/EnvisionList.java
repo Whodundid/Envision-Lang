@@ -32,6 +32,8 @@ import eutil.strings.EStringUtil;
  */
 public final class EnvisionList extends ClassInstance {
 	
+	public static final IDatatype LIST_TYPE = EnvisionStaticTypes.LIST_TYPE;
+	
 	//========
 	// Fields
 	//========
@@ -39,7 +41,7 @@ public final class EnvisionList extends ClassInstance {
 	/**
 	 * Internal Array list.
 	 */
-	public final EList<EnvisionObject> internal_list = new EArrayList<>();
+	public final EList<EnvisionObject> internal_list;
 	
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
@@ -59,30 +61,37 @@ public final class EnvisionList extends ClassInstance {
 	EnvisionList(IDatatype typeIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
+		internal_list = new EArrayList<>();
 	}
 	
 	EnvisionList(IDatatype typeIn, EList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = typeIn;
-		internal_list.addAll(listIn);
+		internal_list = new EArrayList<>(listIn);
 	}
 	
 	EnvisionList(EnvisionList in) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = in.list_type;
-		internal_list.addAll(in.internal_list);
+		internal_list = new EArrayList<>(in.internal_list);
 	}
 	
 	EnvisionList(EnvisionList in, EList listIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = in.list_type;
-		internal_list.addAll(listIn);
+		internal_list = new EArrayList<>(listIn);
 	}
 	
 	EnvisionList(EnvisionTuple tupleIn) {
 		super(EnvisionListClass.LIST_CLASS);
 		list_type = EnvisionStaticTypes.VAR_TYPE;
-		internal_list.addAll(tupleIn.getInternalList());
+		internal_list = new EArrayList<>(tupleIn.getInternalList());
+	}
+	
+	EnvisionList(int initialSizeIn) {
+		super(EnvisionListClass.LIST_CLASS);
+		list_type = EnvisionStaticTypes.VAR_TYPE;
+		internal_list = new EArrayList<>(initialSizeIn);
 	}
 	
 	//-----------
@@ -162,10 +171,17 @@ public final class EnvisionList extends ClassInstance {
 			EList<EnvisionObject> toCopy = new EArrayList<>(internal_list.size());
 			for (var o : internal_list) toCopy.add(o);
 			
-			for (int i = 0; i < (byAmount - 1); i++) {
-				for (var o : toCopy) {
-					if (o.isPrimitive()) internal_list.add(o.copy());
-					else internal_list.add(o);
+			if (internal_list.isEmpty()) {
+				for (int i = 0; i < byAmount; i++) {
+					internal_list.add(EnvisionNull.NULL);
+				}
+			}
+			else {
+				for (int i = 0; i < (byAmount - 1); i++) {
+					for (var o : toCopy) {
+						if (o.isPrimitive()) internal_list.add(o.copy());
+						else internal_list.add(o);
+					}
 				}
 			}
 			
@@ -329,6 +345,10 @@ public final class EnvisionList extends ClassInstance {
 	
 	public EnvisionObject set(int index, EnvisionObject obj) {
 		return internal_list.set(checkIndex(index), obj);
+	}
+	
+	public void setFast(int index, EnvisionObject obj) {
+		internal_list.set(index, obj);
 	}
 	
 	public EnvisionObject setFirst(EnvisionObject obj) {

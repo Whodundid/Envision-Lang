@@ -3,6 +3,8 @@ package envision_lang.lang.datatypes;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * The EnvisionVariable is a specific EnvisionObject type which is
@@ -60,6 +62,8 @@ import envision_lang.lang.classes.EnvisionClass;
 public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
 	permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
 {
+	
+	public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
 	
 	//--------------
 	// Constructors

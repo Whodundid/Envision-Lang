@@ -2,6 +2,7 @@ package envision_lang.lang.datatypes;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * A void object cannot be created by any normal means but is used to
@@ -10,6 +11,8 @@ import envision_lang.lang.natives.EnvisionStaticTypes;
  * @author Hunter Bragg
  */
 public class EnvisionVoid extends EnvisionObject {
+	
+	public static final IDatatype VOID_TYPE = EnvisionStaticTypes.VOID_TYPE;
 	
 	/**
 	 * The single, static void object to be used to denote all
@@ -28,7 +31,7 @@ public class EnvisionVoid extends EnvisionObject {
 	 * Private to prevent outside instantiation.
 	 */
 	private EnvisionVoid() {
-		super(EnvisionStaticTypes.VOID_TYPE);
+		super(VOID_TYPE);
 	}
 	
 	//-----------

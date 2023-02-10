@@ -4,12 +4,11 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.functions.EnvisionFunction;
-import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.EnvisionParameter;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.ParameterData;
-import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.StatementParameter;
@@ -67,7 +66,13 @@ public class FunctionCreator {
 		
 		f.setScope(scopeIn);
 		f.setVisibility(s.getDeclaration().getVisibility());
-		for (DataModifier mod : s.getDeclaration().getMods()) f.setModifier(mod, true);
+		
+		var mods = s.getDeclaration().getMods();
+		int modSize = mods.size();
+		for (int i = 0; i < modSize; i++) {
+			f.setModifier(mods.get(i), true);
+		}
+		
 		if (s.body != null) f.setBody(s.body);
 		
 		return f;

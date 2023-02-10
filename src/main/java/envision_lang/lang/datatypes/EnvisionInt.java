@@ -21,11 +21,11 @@ import envision_lang.tokenizer.Operator;
  */
 public final class EnvisionInt extends EnvisionNumber<Long> {
 	
+	public static final IDatatype INT_TYPE = EnvisionStaticTypes.INT_TYPE;
+
 	public static final EnvisionInt MIN_VALUE = EnvisionIntClass.newInt(Long.MIN_VALUE);
 	public static final EnvisionInt MAX_VALUE = EnvisionIntClass.newInt(Long.MAX_VALUE);
 	public static final EnvisionInt ZERO = EnvisionIntClass.valueOf(0L);
-	
-	public static final IDatatype INT_TYPE = EnvisionStaticTypes.INT_TYPE;
 	
 	//========
 	// Fields

@@ -2,6 +2,8 @@ package envision_lang.interpreter.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import envision_lang.lang.classes.EnvisionClass;
@@ -35,9 +37,7 @@ public class UserDefinedTypeManager {
 	 * A collection of all user defined datatypes along with
 	 * the EnvisionClass associated with them.
 	 */
-	private HashMap<String, EnvisionClass> types = new HashMap();
-	
-	public UserDefinedTypeManager() {}
+	private Map<String, EnvisionClass> types = new HashMap();
 	
 	/**
 	 * Defines a new user-defined datatype within this TypeManager.
@@ -96,14 +96,14 @@ public class UserDefinedTypeManager {
 	}
 	
 	/**
-	 * Returns a hashset of all user defined datatypes within this
+	 * Returns a set of all user defined datatypes within this
 	 * TypeManager.
 	 * 
 	 * @return a set of all types
 	 */
-	public HashSet<IDatatype> getTypes() {
+	public Set<IDatatype> getTypes() {
 		var mapped_types = types.keySet().stream().map(t -> NativeTypeManager.datatypeOf(t)).collect(Collectors.toList());
-		return new HashSet<IDatatype>(mapped_types);
+		return new HashSet<>(mapped_types);
 	}
 	
 	/*

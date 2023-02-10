@@ -13,6 +13,7 @@ import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.lang.functions.FunctionPrototype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -24,6 +25,8 @@ import eutil.debug.Broken;
  * @author Hunter Bragg
  */
 public final class EnvisionString extends EnvisionVariable<String> {
+	
+	public static final IDatatype STRING_TYPE = EnvisionStaticTypes.STRING_TYPE;
 	
 	public static final EnvisionString EMPTY_STRING = EnvisionStringClass.newString();
 	

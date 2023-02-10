@@ -8,15 +8,17 @@ import java.util.stream.Stream;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionChar;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionString;
+import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.exceptions.errors.NullVariableError;
 import envision_lang.lang.exceptions.errors.UndefinedValueError;
 import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.FunctionPrototype;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
@@ -148,6 +150,18 @@ public interface IScope {
 	// Variable Definitions
 	//----------------------
 	
+	default void defineVar(String name) {
+		define(name, EnvisionVariable.VAR_TYPE, EnvisionNull.NULL);
+	}
+	
+	/**
+	 * Defines a new variable within this scope under the given datatype and
+	 * assigns its default value to Envision::NULL.
+	 */
+	default void define(String name, IDatatype type) {
+		define(name, type, EnvisionNull.NULL);
+	}
+	
 	default EnvisionObject define(String name, EnvisionObject object) {
 		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.NULL_TYPE;
 		return define(name, type, object);
@@ -159,14 +173,23 @@ public interface IScope {
 		return define(name, entry);
 	}
 	
+	default ScopeEntry defineRT(String name, IDatatype typeIn, EnvisionObject obj) {
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
+		var entry = new ScopeEntry(type, obj);
+		define(name, entry);
+		return entry;
+	}
+	
 	/**
 	 * Does not perform any checks on the incoming values and relies on the implementing
 	 * code to verify name, type, and value.
 	 * 
 	 * @return The defined object
 	 */
-	default EnvisionObject defineFast(String name, IDatatype typeIn, EnvisionObject obj) {
-		return define(name, new ScopeEntry(typeIn, obj));
+	default ScopeEntry defineFast(String name, IDatatype typeIn, EnvisionObject obj) {
+		var entry = new ScopeEntry(typeIn, obj);
+		define(name, entry);
+		return entry;
 	}
 	
 	default EnvisionObject define(String name, ScopeEntry entry) {

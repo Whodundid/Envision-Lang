@@ -20,9 +20,7 @@ import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
 import eutil.datatypes.util.EList;
-import eutil.debug.Broken;
 
-@Broken(reason="Now that primitives are fully immutable, NumberHelper is completely broken here")
 public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {

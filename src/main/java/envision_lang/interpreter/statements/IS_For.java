@@ -30,6 +30,9 @@ public class IS_For extends AbstractInterpreterExecutor {
 			conditionValue = isTrue(interpreter.evaluate(cond));
 		}
 		
+		int postSize = (post != null) ? post.size() : 0;
+		int i = 0;
+		
 		//body
 		TOP:
 		while (conditionValue) {
@@ -44,7 +47,9 @@ public class IS_For extends AbstractInterpreterExecutor {
 			}
 			//post
 			if (post != null) {
-				for (ParsedExpression postExp : post) {
+				
+				for (i = 0; i < postSize; i++) {
+					ParsedExpression postExp = post.get(i);
 					if (postExp != null) {
 						interpreter.evaluate(postExp);
 					}

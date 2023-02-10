@@ -2,6 +2,8 @@ package envision_lang.lang.datatypes;
 
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.errors.ArithmeticError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * An abstract script variable representing a number with or without a
@@ -12,6 +14,8 @@ import envision_lang.lang.exceptions.errors.ArithmeticError;
 public abstract sealed class EnvisionNumber<TYPE extends Number> extends EnvisionVariable<TYPE>
 	permits EnvisionInt, EnvisionDouble
 {
+	
+	public static final IDatatype NUMBER_TYPE = EnvisionStaticTypes.NUMBER_TYPE;
 	
 	//--------------
 	// Constructors

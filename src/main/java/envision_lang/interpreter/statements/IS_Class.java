@@ -9,7 +9,6 @@ import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.exceptions.errors.classErrors.InvalidClassStatement;
 import envision_lang.lang.functions.EnvisionFunction;
-import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
@@ -52,10 +51,18 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		
 		// set modifiers
 		theClass.setVisibility(dec.getVisibility());
-		for (DataModifier d : dec.getMods()) theClass.setModifier(d, true);
+		
+		var mods = dec.getMods();
+		int modSize = mods.size();
+		for (int i = 0; i < modSize; i++) {
+			theClass.setModifier(mods.get(i), true);
+		}
 		
 		// go through statements and process valid ones (Variable declarations, Method declarations, Objects)
-		for (ParsedStatement s : body) checkValid(s);
+		int bodySize = body.size();
+		for (int i = 0; i < bodySize; i++) {
+			checkValid(body.get(i));
+		}
 		//for (Statement s : staticMembers) checkValid(s);
 		
 		// gather visible parent members
@@ -82,7 +89,9 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		interpreter.executeBlock(staticMembers, classScope);
 		
 		// build constructor functions -- inherently static
-		for (Stmt_FuncDef constructor : constructors) {
+		int conSize = constructors.size();
+		for (int i = 0; i < conSize; i++) {
+			Stmt_FuncDef constructor = constructors.get(i);
 			EnvisionFunction con = FunctionCreator.buildFunction(interpreter, constructor, classScope);
 			theClass.addConstructor(con);
 			// define the constructor as a static member on the class scope

@@ -2,6 +2,7 @@ package envision_lang.lang.datatypes;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * Null object representation for the Envision:Java Scripting Language.
@@ -20,6 +21,8 @@ import envision_lang.lang.natives.EnvisionStaticTypes;
  */
 public class EnvisionNull extends EnvisionObject {
 	
+	public static final IDatatype NULL_TYPE = EnvisionStaticTypes.NULL_TYPE;
+	
 	/**
 	 * The single, static null value to be used for all 'null' values
 	 * within Envision.
@@ -34,7 +37,7 @@ public class EnvisionNull extends EnvisionObject {
 	 * Creates a new 'null' object.
 	 */
 	private EnvisionNull() {
-		super(EnvisionStaticTypes.NULL_TYPE);
+		super(NULL_TYPE);
 	}
 	
 	//------------------------------------

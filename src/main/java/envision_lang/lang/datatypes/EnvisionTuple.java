@@ -11,6 +11,8 @@ import envision_lang.lang.exceptions.errors.listErrors.EmptyTupleError;
 import envision_lang.lang.exceptions.errors.listErrors.IndexOutOfBoundsError;
 import envision_lang.lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.lang.functions.FunctionPrototype;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
@@ -23,6 +25,8 @@ import eutil.strings.EStringUtil;
  * @author Hunter Bragg
  */
 public final class EnvisionTuple extends ClassInstance {
+	
+	public static final IDatatype TUPLE_TYPE = EnvisionStaticTypes.TUPLE_TYPE;
 	
 	public static final EnvisionTuple EMPTY_TUPLE = EnvisionTupleClass.newTuple();
 	

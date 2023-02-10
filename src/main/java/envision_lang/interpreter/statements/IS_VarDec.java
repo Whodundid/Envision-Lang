@@ -52,7 +52,9 @@ public class IS_VarDec extends AbstractInterpreterExecutor {
 		//---------------------------------------------------------------------------------------------------------------
 		
 		//process each variable declaration
-		for (VariableDeclaration d : unprocessed_var_declarations) {
+		int size = unprocessed_var_declarations.size();
+		for (int i = 0; i < size; i++) {
+			VariableDeclaration d = unprocessed_var_declarations.get(i);
 			
 			//---------------------------------------------------------
 			

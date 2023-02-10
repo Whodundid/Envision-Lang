@@ -19,6 +19,8 @@ import envision_lang.tokenizer.Operator;
  */
 public final class EnvisionChar extends EnvisionVariable<Character> {
 	
+	public static final IDatatype CHAR_TYPE = EnvisionStaticTypes.CHAR_TYPE;
+	
 	public static final EnvisionChar NULL_CHAR = EnvisionCharClass.valueOf('\0');
 	
 	//========

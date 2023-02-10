@@ -21,6 +21,8 @@ import envision_lang.tokenizer.Operator;
  */
 public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
 	
+	public static final IDatatype BOOL_TYPE = EnvisionStaticTypes.BOOL_TYPE;
+
 	/**
 	 * Static wrapper for the constant boolean value of 'true'.
 	 */

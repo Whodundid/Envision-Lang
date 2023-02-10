@@ -21,6 +21,8 @@ import envision_lang.tokenizer.Operator;
  */
 public final class EnvisionDouble extends EnvisionNumber<Double> {
 	
+	public static final IDatatype DOUBLE_TYPE = EnvisionStaticTypes.DOUBLE_TYPE;
+
 	public static final EnvisionDouble MIN_VALUE = EnvisionDoubleClass.newDouble(Double.MIN_VALUE);
 	public static final EnvisionDouble MIN_NORMAL = EnvisionDoubleClass.newDouble(Double.MIN_NORMAL);
 	public static final EnvisionDouble MIN_EXPONENT = EnvisionDoubleClass.newDouble(Double.MIN_EXPONENT);

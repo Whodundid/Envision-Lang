@@ -14,7 +14,9 @@ public class IE_ListInitializer extends AbstractInterpreterExecutor {
 		EnvisionList l = EnvisionListClass.newList();
 		
 		// add initializer expression values
-		for (var e : expression.values) {
+		int size = expression.values.size();
+		for (int i = 0; i < size; i++) {
+			var e = expression.values.get(i);
 			EnvisionObject o = interpreter.evaluate(e);
 			
 			// pass primitives by value -- not reference

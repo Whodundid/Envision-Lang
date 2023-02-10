@@ -97,6 +97,12 @@ public final class EnvisionListClass extends EnvisionClass {
 		return list;
 	}
 	
+	public static EnvisionList newList(int initialSize) {
+		EnvisionList list = new EnvisionList(initialSize);
+		LIST_CLASS.defineScopeMembers(list);
+		return list;
+	}
+	
 	//-----------
 	// Overrides
 	//-----------

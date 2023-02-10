@@ -18,6 +18,7 @@ import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
+import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Inefficient;
 
@@ -33,7 +34,7 @@ public class PS_For extends ParserHead {
 		
 		ParsedStatement initializer = null;
 		ParsedExpression middle = null;
-		EList<ParsedExpression> post = EList.newList();
+		EList<ParsedExpression> post = null;
 		ParsedStatement body = null;
 		
 		Stmt_VarDef vars = null;
@@ -125,8 +126,8 @@ public class PS_For extends ParserHead {
 		//check for post actions
 		if (!check(PAREN_R)) {
 			if (match(SEMICOLON)) {
-				if (check(PAREN_R)) {}
-				else {
+				if (!check(PAREN_R)) {
+					post = new EArrayList<>();
 					//gather all expressions separated by commas
 					do {
 						post.add(ExpressionParser.parseExpression());
