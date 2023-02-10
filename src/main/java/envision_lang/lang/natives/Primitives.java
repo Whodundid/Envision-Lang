@@ -408,31 +408,4 @@ public enum Primitives implements IDatatype {
 		return (t != null) ? t.string_value : NULL.string_value;
 	}
 	
-	/**
-	 * Returns true if this datatype can be assigned from the specified
-	 * type.
-	 */
-//	public boolean canBeAssignedFrom(Primitives type) {
-//		return switch (this) {
-//		//these are wildcard values so they should be able to take on any type and any value
-//		case VAR -> true;
-//		//these types can only ever be assigned by their respective type
-//		case ENUM -> this == ENUM;
-//		case FUNCTION -> this == FUNCTION;
-//		case CLASS -> this == CLASS;
-//		//case EXCEPTION: return this == EXCEPTION;
-//		//these can never be assigned
-//		case VOID, NULL -> false;
-//		//variable types
-//		case BOOLEAN -> type == BOOLEAN;
-//		case CHAR -> type == CHAR;
-//		case INT -> type == NUMBER || type == INT;
-//		case DOUBLE -> type == NUMBER || type == INT || type == DOUBLE;
-//		case STRING -> type == CHAR || type == STRING;
-//		case NUMBER -> type == NUMBER || type == INT || type == DOUBLE || type == CHAR;
-//		//assume false by default
-//		default -> false;
-//		};
-//	}
-	
 }
