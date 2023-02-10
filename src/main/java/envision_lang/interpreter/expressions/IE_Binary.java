@@ -2,7 +2,7 @@ package envision_lang.interpreter.expressions;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.OperatorOverloadHandler;
+import envision_lang.interpreter.util.OperatorOverloadHandler;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.exceptions.errors.ArithmeticError;

@@ -1,4 +1,4 @@
-package envision_lang.interpreter.util.creationUtil;
+package envision_lang.interpreter.util;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
