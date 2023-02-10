@@ -1,6 +1,5 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
 import envision_lang.parser.util.ParserDeclaration;
@@ -20,7 +19,6 @@ public class Stmt_Exception extends ParsedStatement {
 	//========
 	
 	public final Token<?> name;
-	public final EList<Expr_Var> superclasses = EList.newList();
 	public final EList<ParsedStatement> body = EList.newList();
 	
 	//==============
@@ -34,12 +32,11 @@ public class Stmt_Exception extends ParsedStatement {
 	
 	@Override
 	public String toString() {
-		String s = (superclasses.isEmpty()) ? "" : " " + superclasses.toString();
 		String b = "";
 		for (int i = 0; i < body.size(); i++) {
 			b += body.get(i);
 		}
-		return declaration + " exception " + name.getLexeme() + s + " {\n" + b + "}";
+		return declaration + " exception " + name.getLexeme() + " {\n" + b + "}";
 	}
 	
 	//===========
@@ -55,10 +52,8 @@ public class Stmt_Exception extends ParsedStatement {
 	// Methods
 	//=========
 	
-	public void addSuper(Expr_Var in) { superclasses.add(in); }
 	public void addStatement(ParsedStatement in) { body.add(in); }
-
-	public void setSupers(EList<Expr_Var> supersIn) { superclasses.clearThenAddAll(supersIn); }
+	
 	public void setBody(EList<ParsedStatement> bodyIn) { body.clearThenAddAll(bodyIn); }
 	
 }

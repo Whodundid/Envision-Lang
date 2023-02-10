@@ -10,9 +10,9 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.lang.exceptions.errors.VariableCastError;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.language_errors.error_types.VariableCastError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 

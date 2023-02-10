@@ -6,10 +6,10 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.exceptions.errors.ArgLengthError;
-import envision_lang.lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.language_errors.error_types.ArgLengthError;
+import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 

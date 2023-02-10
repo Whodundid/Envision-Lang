@@ -6,8 +6,8 @@ import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
-import envision_lang.lang.exceptions.EnvisionLangError;
 import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.Primitives;
 import eutil.random.ERandomUtil;
 

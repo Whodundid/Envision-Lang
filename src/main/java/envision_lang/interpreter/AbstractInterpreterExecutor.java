@@ -6,7 +6,7 @@ import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionNull;
-import envision_lang.lang.exceptions.errors.NullVariableError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.parser.expressions.ParsedExpression;

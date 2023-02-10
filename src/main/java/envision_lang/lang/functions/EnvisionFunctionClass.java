@@ -11,7 +11,7 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 

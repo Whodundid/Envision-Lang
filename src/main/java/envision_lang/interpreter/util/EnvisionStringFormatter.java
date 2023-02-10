@@ -5,8 +5,8 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionTuple;
-import envision_lang.lang.exceptions.EnvisionLangError;
-import envision_lang.lang.exceptions.errors.NullVariableError;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.tokenizer.EscapeCode;
 import eutil.strings.EStringUtil;
 

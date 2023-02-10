@@ -3,7 +3,7 @@ package envision_lang.lang;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.exceptions.errors.objects.CopyNotSupportedError;
+import envision_lang.lang.language_errors.error_types.objects.CopyNotSupportedError;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.DataModifierHandler;
 import envision_lang.lang.natives.EnvisionVisibilityModifier;

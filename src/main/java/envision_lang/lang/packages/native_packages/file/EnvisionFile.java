@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.exceptions.errors.file.NoSuchFileError;
+import envision_lang.lang.language_errors.error_types.file.NoSuchFileError;
 import eutil.EUtil;
 import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;

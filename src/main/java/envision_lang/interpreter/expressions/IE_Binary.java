@@ -5,7 +5,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.OperatorOverloadHandler;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.exceptions.errors.ArithmeticError;
+import envision_lang.lang.language_errors.error_types.ArithmeticError;
 import envision_lang.parser.expressions.expression_types.Expr_Binary;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.Operator;

@@ -6,7 +6,7 @@ import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_SwitchCase;

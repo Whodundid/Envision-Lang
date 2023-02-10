@@ -1,7 +1,7 @@
 package envision_lang.lang.datatypes;
 
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.exceptions.errors.ArithmeticError;
+import envision_lang.lang.language_errors.error_types.ArithmeticError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 

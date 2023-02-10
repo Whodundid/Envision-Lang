@@ -22,6 +22,7 @@ public class EnvisionStaticTypes {
 	public static final EnvisionDatatype CLASS_TYPE 		= 	NativeTypeManager.datatypeOf(Primitives.CLASS);
 	public static final EnvisionDatatype INTERFACE_TYPE 	= 	NativeTypeManager.datatypeOf(Primitives.INTERFACE);
 	public static final EnvisionDatatype FUNC_TYPE 			= 	NativeTypeManager.datatypeOf(Primitives.FUNCTION);
+	public static final EnvisionDatatype EXCEPTION_TYPE		=	NativeTypeManager.datatypeOf(Primitives.EXCEPTION);
 	public static final EnvisionDatatype PACKAGE_TYPE		= 	NativeTypeManager.datatypeOf(Primitives.PACKAGE);
 	public static final EnvisionDatatype CODE_FILE			=	NativeTypeManager.datatypeOf(Primitives.CODE_FILE);
 	

@@ -1,6 +1,6 @@
 package envision_lang._launch;
 
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 
 public interface EnvisionLangErrorCallBack {
 	

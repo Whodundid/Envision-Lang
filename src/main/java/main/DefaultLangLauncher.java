@@ -6,7 +6,7 @@ import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")

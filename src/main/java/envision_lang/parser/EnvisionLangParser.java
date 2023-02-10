@@ -1,7 +1,7 @@
 package envision_lang.parser;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Expression;

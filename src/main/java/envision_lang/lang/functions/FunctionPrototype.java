@@ -3,7 +3,7 @@ package envision_lang.lang.functions;
 import java.util.HashMap;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.exceptions.EnvisionLangError;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;

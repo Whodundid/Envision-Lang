@@ -3,8 +3,8 @@ package envision_lang._launch;
 import java.io.File;
 import java.io.IOException;
 
-import envision_lang.lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
-import envision_lang.lang.exceptions.errors.workingDirectory.MultipleMainsError;
+import envision_lang.lang.language_errors.error_types.workingDirectory.InvalidCodeFileError;
+import envision_lang.lang.language_errors.error_types.workingDirectory.MultipleMainsError;
 import envision_lang.lang.packages.EnvisionLangPackage;
 import eutil.EUtil;
 import eutil.datatypes.util.EList;

@@ -5,8 +5,8 @@ import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.exceptions.errors.InvalidTargetError;
-import envision_lang.lang.exceptions.errors.NullVariableError;
+import envision_lang.lang.language_errors.error_types.InvalidTargetError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 
 public class IE_Set extends AbstractInterpreterExecutor {
