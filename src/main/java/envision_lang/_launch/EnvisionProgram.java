@@ -2,10 +2,11 @@ package envision_lang._launch;
 
 import java.io.File;
 
-import envision_lang.exceptions.errors.workingDirectory.BadDirError;
-import envision_lang.interpreter.util.throwables.EnvisionException;
-import envision_lang.packages.EnvisionLangPackage;
-import eutil.datatypes.EArrayList;
+import envision_lang.lang.java.EnvisionJavaObject;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.workingDirectory.BadDirError;
+import envision_lang.lang.packages.EnvisionLangPackage;
+import eutil.datatypes.util.EList;
 import eutil.file.EFileUtil;
 
 /**
@@ -27,7 +28,10 @@ public class EnvisionProgram {
 	/** The Envision Scripting Language's active program working directory. */
 	private WorkingDirectory dir;
 	/** The settings to run the Envision Scripting Language with. */
-	private EnvisionLangSettings settings;
+	private EnvisionLaunchSettings settings;
+	
+	private EList<EnvisionLangPackage> bundledProgramPackages = EList.newList();
+	private EList<EnvisionJavaObject> envisionJavaObjects = EList.newList();
 	
 	//--------------
 	// Constructors
@@ -70,14 +74,15 @@ public class EnvisionProgram {
 	 * @param programDirIn The directory to use for the program
 	 */
 	public EnvisionProgram(File programDirIn) {
-		this(programDirIn, new EArrayList<EnvisionLangPackage>());
+		this(programDirIn, EList.newList());
 	}
 	
-	public EnvisionProgram(File programDirIn, EArrayList<EnvisionLangPackage> buildPackages) {
+	public EnvisionProgram(File programDirIn, EList<EnvisionLangPackage> buildPackages) {
 		programDir = programDirIn;
+		bundledProgramPackages.addAll(buildPackages);
 		
 		//if null -- error on invalid program path
-		if (programDir == null) throw new EnvisionException("Invalid Envision program path!");
+		if (programDir == null) throw new EnvisionLangError("Invalid Envision program path!");
 		
 		//assign default program dir and main path to Java's working dir
 		if (!EFileUtil.fileExists(programDir)) createDir();
@@ -100,15 +105,14 @@ public class EnvisionProgram {
 		
 		//attempt to check if the working dir is actually valid
 		if (!dir.isValid()) throw new BadDirError(dir);
-		
-		//build the working directory
-		try {
-			buildPackages.forEach(dir::addBuildPackage);
-		}
-		catch (Exception err) {
-			err.printStackTrace();
-			throw new RuntimeException(err);
-		}
+	}
+	
+	//=========
+	// Methods
+	//=========
+	
+	public void addJavaObjectToProgram(EnvisionJavaObject object) {
+		envisionJavaObjects.add(object);
 	}
 	
 	//------------------
@@ -157,7 +161,10 @@ public class EnvisionProgram {
 	 * 
 	 * @return The launch settings for this program
 	 */
-	public EnvisionLangSettings getLaunchArgs() { return settings; }
+	public EnvisionLaunchSettings getLaunchArgs() { return settings; }
+	
+	public EList<EnvisionLangPackage> getBundledPackages() { return bundledProgramPackages; }
+	public EList<EnvisionJavaObject> getEnvisionJavaObjects() { return envisionJavaObjects; }
 	
 	//---------
 	// Setters
@@ -168,7 +175,7 @@ public class EnvisionProgram {
 	 * 
 	 * @param settingsIn The settings to run with this program
 	 */
-	public void setLaunchArgs(EnvisionLangSettings settingsIn) {
+	public void setLaunchArgs(EnvisionLaunchSettings settingsIn) {
 		settings = settingsIn;
 	}
 	

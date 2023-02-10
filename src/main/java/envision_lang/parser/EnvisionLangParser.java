@@ -1,15 +1,17 @@
 package envision_lang.parser;
 
 import envision_lang._launch.EnvisionCodeFile;
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.parser.statements.Statement;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
+import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
-import envision_lang.tokenizer.Operator;
-import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.boxes.BoxList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /**
@@ -19,29 +21,28 @@ import eutil.strings.EStringUtil;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionLangParser {
+public final class EnvisionLangParser {
 	
-	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 	
 	/** The tokens of each line, line by line. Used to generate error messages. */
-	private EArrayList<EArrayList<Token>> tokenLines;
+	private BoxList<Integer, EList<Token<?>>> tokenLines;
 	/** A complete list of all tokens within the file currently being parsed. */
-	private EArrayList<Token> tokens;
-	/** A non tokenized version of the file being parsed.
-	 *  This is simply each line of the file in a list.
-	 *  Used to help generate error messages. */
-	private EArrayList<String> lines;
-	/** A counter to keep track of the current token as parsing continues. */
-	private int current = 0;
+	private EList<Token<?>> tokens;
+	/** A non tokenized version of the file being parsed. This is simply each
+	 *  line of the file in a list. Used to help generate error messages. */
+	private EList<String> lines;
+	/** A counter to keep track of the current token index as parsing continues. */
+	private int currentTokenIndex = 0;
 	
-	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 	
 	/**
 	 * Private so as to force use of static factory methods.
 	 */
 	private EnvisionLangParser() {}
 	
-	//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 	
 	/**
 	 * Attempts to parse a list of valid statements from
@@ -53,44 +54,46 @@ public class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EArrayList<Statement> parse(EnvisionCodeFile codeFile) throws Exception {
-		//error on invalid code files
+	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) {
+		// error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
-		//create a new isolated parser instance
+		// create a new isolated parser instance
 		EnvisionLangParser p = new EnvisionLangParser();
 		
-		//unpack the code file's tokenized values
-		EArrayList<Statement> statements = new EArrayList();
+		// unpack the code file's tokenized values
+		EList<ParsedStatement> statements = new EArrayList<>();
 		p.tokenLines = codeFile.getLineTokens();
 		p.tokens = codeFile.getTokens();
 		p.lines = codeFile.getLines();
 		
-		//Any error that is thrown during parsing
+		// Any error that is thrown during parsing
 		//ParsingError error = null;
 		
-		//ignore empty files and return an empty statement list
+		// ignore empty files and return an empty statement list
 		if (p.tokens.isEmpty()) return statements;
 		
 		try {
-			//continue until the end of the file
+			// continue until the end of the file
 			while (!p.atEnd()) {
-				Statement s = GenericParser.parse(p);
+				ParsedStatement s = ParserHead.parse(p);
 				//only add non-null statements
 				statements.addIf(s != null, s);
 			}
 		}
 		catch (Exception e) {
-			//wrap the thrown exception into a parsing error
+			// wrap the thrown exception into a parsing error
 			//error = new ParsingError(e);
 			throw e;
 		}
 		
-		//throw the wrapped error (if there is one)
+		// throw the wrapped error (if there is one)
 		//if (error != null) throw error;
-		//otherwise return parsed statements
+		// otherwise return parsed statements
 		return statements;
 	}
+	
+	//-------------------------------------------------------------------------------------------
 	
 	/**
 	 * Parses a single line as opposed to an entire file.
@@ -105,18 +108,71 @@ public class EnvisionLangParser {
 	 * @return A valid statement
 	 * @throws Exception In the event a statement is invalid or incomplete
 	 */
-	public static Statement parseStatement(String lineIn) throws Exception {
+	public static ParsedStatement parseStatement(String lineIn) {
 		Tokenizer t = new Tokenizer(lineIn);
 		EnvisionLangParser p = new EnvisionLangParser();
 		p.tokenLines = t.getLineTokens();
 		p.tokens = t.getTokens();
 		p.lines = t.getLines();
-		return GenericParser.parse(p);
+		return ParserHead.parse(p);
 	}
 	
-	//-----------------------------------------------------------------------------------------------------
-	// Factory Creation Methods
-	//-----------------------------------------------------------------------------------------------------
+	public static ParsedExpression parseExpression(String lineIn) {
+		Tokenizer t = new Tokenizer(lineIn);
+		EnvisionLangParser p = new EnvisionLangParser();
+		p.tokenLines = t.getLineTokens();
+		p.tokens = t.getTokens();
+		p.lines = t.getLines();
+		ParsedStatement s = ParserHead.parse(p);
+		if (s instanceof Stmt_Expression e) return e.expression;
+		throw new RuntimeException("Parsed type was not an expression! Was a '" + s.getClass() + "' instead!");
+	}
+	
+	//-------------------------------------------------------------------------------------------
+	
+	//=================
+	// Consume Methods
+	//=================
+	
+	/**
+	 * Attempts to match the current token's keyword to the IKeyword.
+	 * <p>
+	 * Note: This method requires that the given IKeyword matches the very next
+	 * non-terminator token with the one exception being that the given
+	 * IKeyword is in fact a terminator itself.
+	 * 
+	 * @param errorMessage An error message to be displayed in the event of a
+	 *                     bad parse
+	 * 
+	 * @param keyword      The IKeyword to check for
+	 * 
+	 * @return The consumed token if matching.
+	 */
+	Token<?> consume(String errorMessage, IKeyword keyword) {
+		if (check(keyword)) return getAdvance();
+		throw error(errorMessage);
+	}
+	
+	/**
+	 * Attempts to match the current token's keyword to either of the given
+	 * IKeywords.
+	 * <p>
+	 * Note: This method requires that one of the given IKeywords matches the
+	 * very next non-terminator token with the one exception being that either
+	 * of the given IKeywords are in fact terminators themselves.
+	 * 
+	 * @param errorMessage An error message to be displayed in the event of a
+	 *                     bad parse
+	 * 
+	 * @param keywordA     The first IKeyword to try matching against
+	 * @param keywordB     The second IKeyword to try matching against
+	 * 
+	 * @return The consumed token if matching.
+	 */
+	Token<?> consume(String errorMessage, IKeyword keywordA, IKeyword keywordB) {
+		if (check(keywordA, keywordB)) return getAdvance();
+		throw error(errorMessage);
+	}
 	
 	/**
 	 * Attempts to match the current token to one of the IKeyword's
@@ -134,8 +190,48 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The consumed if matching.
 	 */
-	protected Token consume(String errorMessage, IKeyword... toCheck) {
+	Token<?> consume(String errorMessage, IKeyword... toCheck) {
 		if (check(toCheck)) return getAdvance();
+		throw error(errorMessage);
+	}
+	
+	/**
+	 * Attempts to match the current token's keyword type to the keyword types.
+	 * <p>
+	 * Note: This method requires that the given keyword types matches the very
+	 * next non-terminator token with the one exception being that either of
+	 * the given IKeywords are in fact terminators themselves.
+	 * 
+	 * @param errorMessage An error message to be displayed in the event of a
+	 *                     bad parse
+	 * 
+	 * @param type         The keyword type to try matching against
+	 * 
+	 * @return The consumed token if matching.
+	 */
+	Token<?> consumeType(String errorMessage, KeywordType type) {
+		if (checkType(type)) return getAdvance();
+		throw error(errorMessage);
+	}
+	
+	/**
+	 * Attempts to match the current token's keyword type to either of the
+	 * given keyword types.
+	 * <p>
+	 * Note: This method requires that one of the given keyword types matches
+	 * the very next non-terminator token with the one exception being that
+	 * either of the given IKeywords are in fact terminators themselves.
+	 * 
+	 * @param errorMessage An error message to be displayed in the event of a
+	 *                     bad parse
+	 * 
+	 * @param typeA        The first keyword type to try matching against
+	 * @param typeB        The second keyword type to try matching against
+	 * 
+	 * @return The consumed token if matching.
+	 */
+	Token<?> consumeType(String errorMessage, KeywordType typeA, KeywordType typeB) {
+		if (checkType(typeA, typeB)) return getAdvance();
 		throw error(errorMessage);
 	}
 	
@@ -161,9 +257,60 @@ public class EnvisionLangParser {
 	 * 					
 	 * @return The consumed if matching.
 	 */
-	protected Token consumeType(String errorMessage, KeywordType... typesToCheck) {
-		if (checkType(typesToCheck)) return getAdvance();
+	Token<?> consumeType(String errorMessage, KeywordType... typesToCheck) {
+		for (KeywordType t : typesToCheck) {
+			// check to see if they are consuming a TERMINATOR
+			// in which case, all empty lines should NOT be ignored
+			if (t == KeywordType.TERMINATOR) {
+				if (checkType(t)) return getAdvance();
+			}
+			else {
+				// otherwise, ignore all empty lines until actual tokens are found again
+				if (checkType(t)) return getAdvance();
+			}
+		}
 		throw error(errorMessage);
+	}
+	
+	//===============
+	// Match Methods
+	//===============
+	
+	/**
+	 * If the current token's keyword matches the given IKeyword, then the
+	 * current parsing position is incremented by 1 and true is returned. If
+	 * the given IKeyword does not match the current token's keyword, then
+	 * false is returned instead.
+	 * 
+	 * @param type An IKeyword to compare against the current token's keyword
+	 * 
+	 * @return true if the current token's keyword matches the given IKeyword
+	 */
+	boolean match(IKeyword toCheck) {
+		if (check(toCheck)) {
+			advance();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * If the current token's keyword matches either of the given IKeywords,
+	 * then the current parsing position is incremented by 1 and true is
+	 * returned. If either of the given IKeywords do not match the current
+	 * token's keyword, then false is returned instead.
+	 * 
+	 * @param type The first keyword to compare against the current token's keyword
+	 * @param type The second keyword to compare against the current token's keyword
+	 * 
+	 * @return true if the current token's keyword matches either of the given IKeywords
+	 */
+	boolean match(IKeyword keywordA, IKeyword keywordB) {
+		if (check(keywordA) || check(keywordB)) {
+			advance();
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -178,12 +325,51 @@ public class EnvisionLangParser {
 	 * @return true if the current token matches any of the given
 	 *         'toCheck' Keywords
 	 */
-	protected boolean match(IKeyword... toCheck) {
-		for (var o : toCheck)
-			if (check(o)) {
+	boolean match(IKeyword... toCheck) {
+		for (int i = 0; i < toCheck.length; i++) {
+			var k = toCheck[i];
+			if (check(k)) {
 				advance();
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * If the current token type matches the given KeywordType, then the
+	 * current parsing position is incremented by 1 and true is returned. If
+	 * the given KeywordType does not match the current token type, then false
+	 * is returned instead.
+	 * 
+	 * @param type A KeywordType to compare against the current token type
+	 * 
+	 * @return true if the current token type matches the given KeywordType
+	 */
+	boolean matchType(KeywordType type) {
+		if (checkType(type)) {
+			advance();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * If the current token type matches either of the given KeywordTypes, then
+	 * the current parsing position is incremented by 1 and true is returned.
+	 * If neither of the given KeywordTypes match the current token type, then
+	 * false is returned instead.
+	 * 
+	 * @param typeA The first type to compare against the current token type
+	 * @param typeB The second type to compare against the current token type
+	 * 
+	 * @return true if the current token type matches either given KeywordType
+	 */
+	boolean matchType(KeywordType typeA, KeywordType typeB) {
+		if (checkType(typeA) || checkType(typeB)) {
+			advance();
+			return true;
+		}
 		return false;
 	}
 	
@@ -199,78 +385,160 @@ public class EnvisionLangParser {
 	 * @return true if the current token type matches any of the given
 	 *         'toCheck' KeywordTypes
 	 */
-	protected boolean matchType(KeywordType... type) {
-		for (var t : type)
+	boolean matchType(KeywordType... types) {
+		for (int i = 0; i < types.length; i++) {
+			var t = types[i];
 			if (checkType(t)) {
 				advance();
 				return true;
 			}
-		return false;
-	}
-	
-	protected boolean matchBoth(IKeyword first, IKeyword second) {
-		if (check(first)) {
-			Token n = next();
-			if (n != null && n.keyword == second) {
-				advance();
-				advance();
-				return true;
-			}
 		}
 		return false;
 	}
 	
-	protected boolean checkAll(IKeyword... in) {
-		if (in.length == 0) return false;
-		int i = 0;
-		for (IKeyword k : in) {
-			Token t = tokens.get(current + i++);
-			//System.out.println(i + " : " + t);
-			if (!check(t, k)) return false;
-		}
-		return true;
+	//===============
+	// Check Methods
+	//===============
+	
+	/** Returns true if the current token's keyword matches any of the given keywords. */
+	boolean check(IKeyword keyword) { return check(current(), keyword); }
+	boolean check(IKeyword keywordA, IKeyword keywordB) { return check(current(), keywordA, keywordB); }
+	boolean check(IKeyword... keywords) { return check(current(), keywords); }
+	/** Returns true if the keyword of the token immediately after the current token index matches any of the given keywords. */
+	boolean checkNext(IKeyword keyword) { return check(next(), keyword); }
+	boolean checkNext(IKeyword keywordA, IKeyword keywordB) { return check(next(), keywordA, keywordB); }
+	boolean checkNext(IKeyword... keywords) { return check(next(), keywords); }
+	/** Returns true if the keyword of the token immediately before the current token index matches any of the given keywords. */
+	boolean checkPrevious(IKeyword keyword) { return check(previous(), keyword); }
+	boolean checkPrevious(IKeyword keywordA, IKeyword keywordB) { return check(previous(), keywordA, keywordB); }
+	boolean checkPrevious(IKeyword... keywords) { return check(previous(), keywords); }
+	
+	public boolean checkAtIndex(int index, IKeyword keyword) { return check(getTokenAt(index), keyword); }
+	public boolean checkAtIndex(int index, IKeyword keywordA, IKeyword keywordB) { return check(getTokenAt(index), keywordA, keywordB); }
+	public boolean checkAtIndex(int index, IKeyword... keywords) { return check(getTokenAt(index), keywords); }
+	
+	/** Returns true if the next non-terminator token has any of the given keyword types. */
+	boolean checkNextNonTerminator(IKeyword keyword) { return check(nextNonTerminator(), keyword); }
+	boolean checkNextNonTerminator(IKeyword keywordA, IKeyword keywordB) { return check(nextNonTerminator(), keywordA, keywordB); }
+	boolean checkNextNonTerminator(IKeyword... keywords) { return check(nextNonTerminator(), keywords); }
+	
+	/** Returns true if the previous non-terminator token has any of the given keyword types. */
+	boolean checkPreviousNonTerminator(IKeyword keyword) { return check(previousNonTerminator(), keyword); }
+	boolean checkPreviousTerminator(IKeyword keywordA, IKeyword keywordB) { return check(previousNonTerminator(), keywordA, keywordB); }
+	boolean checkPreviousNonTerminator(IKeyword... keywords) { return check(previousNonTerminator(), keywords); }
+	
+	/**
+	 * Returns true if the given token's keyword matches the given keyword.
+	 * 
+	 * @param t       The given token to check through
+	 * @param keyword The keyword to check for
+	 * 
+	 * @return True if the given token's keyword matches the given keyword
+	 */
+	public static boolean check(Token<?> t, IKeyword keyword) {
+		var kw = t.getKeyword();
+		return kw == keyword;
 	}
 	
-	protected boolean check(IKeyword... val) { return check(current(), val); }
-	protected boolean checkNext(IKeyword... val) { return check(next(), val); }
-	protected boolean checkPrevious(IKeyword... val) { return check(previous(), val); }
+	/**
+	 * Returns true if the given token's keyword matches any of the given keywords.
+	 * 
+	 * @param t        The given token to check through
+	 * @param keywordA The first keyword to check for
+	 * @param keywordB The second keyword to check for
+	 * 
+	 * @return True if the given token's keyword matches either of the given keywords
+	 */
+	public static boolean check(Token<?> t, IKeyword keywordA, IKeyword keywordB) {
+		var kw = t.getKeyword();
+		return kw == keywordA || kw == keywordB;
+	}
 	
-	protected boolean check(Token t, IKeyword... val) {
-		if (atEnd()) {
-			for (var k : val) if (k == ReservedWord.EOF) return true;
-			return false;
+	/**
+	 * Returns true if the given token's keyword matches any of the given keywords.
+	 * 
+	 * @param t The given token to check through
+	 * @param types The keywords to check for
+	 * @return True if the given token's keyword matches any of the given keywords
+	 */
+	public static boolean check(Token<?> t, IKeyword... keywordsToCheck) {
+		var kw = t.getKeyword();
+		for (int i = 0; i < keywordsToCheck.length; i++) {
+			var k = keywordsToCheck[i];
+			if (kw == k) return true;
 		}
-		for (var k : val) {
-			if (t.keyword == k) return true;
-		}
+		
 		return false;
 	}
 	
-	protected boolean checkType(KeywordType... val) { return checkType(current(), val); }
-	protected boolean checkNextType(KeywordType... val) { return checkType(next(), val); }
-	protected boolean checkPreviousType(KeywordType... val) { return checkType(previous(), val); }
+	/** Returns true if the current token has any of the given keyword types. */
+	boolean checkType(KeywordType type) { return checkType(current(), type); }
+	boolean checkType(KeywordType typeA, KeywordType typeB) { return checkType(current(), typeA, typeB); }
+	boolean checkType(KeywordType... types) { return checkType(current(), types); }
+	/** Returns true if the token immediately after the current token index has any of the given keyword types. */
+	boolean checkNextType(KeywordType type) { return checkType(next(), type); }
+	boolean checkNextType(KeywordType typeA, KeywordType typeB) { return checkType(next(), typeA, typeB); }
+	boolean checkNextType(KeywordType... types) { return checkType(next(), types); }
+	/** Returns true if the token immediately before the current token index has any of the given keyword types. */
+	boolean checkPreviousType(KeywordType type) { return checkType(previous(), type); }
+	boolean checkPreviousType(KeywordType typeA, KeywordType typeB) { return checkType(previous(), typeA, typeB); }
+	boolean checkPreviousType(KeywordType... types) { return checkType(previous(), types); }
 	
-	private boolean checkType(Token t, KeywordType... type) {
-		if (atEnd()) return false;
-		for (var kt : type) {
-			if (t.keyword.hasType(kt)) return true;
+	/**
+	 * Returns true if the given token has the given keyword type.
+	 * 
+	 * @param t    The token to check through
+	 * @param type The keyword type to check for
+	 * 
+	 * @return True if the given token has the given keyword type
+	 */
+	public static boolean checkType(Token<?> t, KeywordType type) {
+		var kw = t.getKeyword();
+		return kw.hasType(type);
+	}
+	
+	/**
+	 * Returns true if the given token has either of the given keyword types.
+	 * 
+	 * @param t     The token to check through
+	 * @param typeA The keyword type to check for
+	 * @param typeB The keyword type to check for
+	 * 
+	 * @return True if the given token has either of the given keyword types
+	 */
+	public static boolean checkType(Token<?> t, KeywordType typeA, KeywordType typeB) {
+		var kw = t.getKeyword();
+		return kw.hasType(typeA) || kw.hasType(typeB);
+	}
+	
+	/**
+	 * Returns true if the given token has any of the given keyword types.
+	 * 
+	 * @param t The given token to check through
+	 * @param types The keyword types to check for
+	 * @return True if the given token has any of the given types
+	 */
+	public static boolean checkType(Token<?> t, KeywordType... types) {
+		var kw = t.getKeyword();
+		for (int i = 0; i < types.length; i++) {
+			var kt = types[i];
+			if (kw.hasType(kt)) return true;
 		}
+		
 		return false;
 	}
 	
-	protected boolean checkAdvance(IKeyword k) {
-		boolean val = check(k);
-		if (val) advance();
-		return val;
-	}
+	//=========================
+	// Parsing Position Checks
+	//=========================
 	
-	protected boolean checkAdvance(KeywordType k) {
-		boolean val = checkType(k);
-		if (val) advance();
-		return val;
-	}
-	
-	protected boolean atEnd() {
+	/**
+	 * Returns true if the current token is the 'EOF' token.
+	 * <p>
+	 * If true, then the end of the file has been reached and no more tokens
+	 * should be present beyond this point.
+	 */
+	boolean atEnd() {
 		return current().isEOF();
 	}
 	
@@ -278,8 +546,8 @@ public class EnvisionLangParser {
 	 * Increments the current parsing position by 1 unless already at
 	 * the end of the file/line.
 	 */
-	protected void advance() {
-		if (!atEnd()) current++;
+	void advance() {
+		if (!atEnd()) currentTokenIndex++;
 	}
 	
 	/**
@@ -288,23 +556,50 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The current token
 	 */
-	protected Token getAdvance() {
-		Token cur = current();
+	Token<?> getAdvance() {
+		Token<?> cur = current();
 		advance();
 		return cur;
 	}
 	
+	
 	/**
-	 * Continuously consumes empty lines or lines which only contain a
-	 * semicolon.
+	 * Continuously consumes terminator tokens until a non-terminator token is found.
+	 * <p>
+	 * A terminator token is either a ';' or a 'newline'.
 	 */
-	protected void consumeEmptyLines() {
-		while (match(ReservedWord.NEWLINE, Operator.SEMICOLON));
+	void consumeEmptyLines() {
+		while (!atEnd()) {
+			Token<?> curToken = current();
+			IKeyword keyword = curToken.getKeyword();
+			
+			if (keyword.isTerminator()) {
+				currentTokenIndex++;
+				continue;
+			}
+			
+			// break if the current token is a non-terminator keyword
+			break;
+		}
 	}
 	
-	//-----------------------------------------------------------------------------------------------------
-	// Simple Parsing Position Helpers
-	//-----------------------------------------------------------------------------------------------------
+	//==========================
+	// Parsing Position Helpers
+	//==========================
+	
+	/**
+	 * Returns the token at the specified index.
+	 * <p>
+	 * Note: No boundary checks are made so this could blow up if a bad index
+	 * is given!
+	 * 
+	 * @param index The index to grab a token at
+	 * 
+	 * @return The Token at the given index
+	 */
+	Token<?> getTokenAt(int index) {
+		return tokens.get(index);
+	}
 	
 	/**
 	 * Returns the token at the current token position within the
@@ -312,8 +607,15 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token at the current parsing position
 	 */
-	protected Token current() {
-		return tokens.get(current);
+	Token<?> current() {
+		return tokens.get(currentTokenIndex);
+	}
+	
+	/**
+	 * Returns the keyword of the current token.
+	 */
+	IKeyword currentKeyword() {
+		return current().getKeyword();
 	}
 	
 	/**
@@ -322,8 +624,44 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token in front of the current parsing position
 	 */
-	protected Token previous() {
-		return tokens.get(current - 1);
+	Token<?> previous() {
+		if (currentTokenIndex <= 0) return null;
+		return tokens.get(currentTokenIndex - 1);
+	}
+	
+	/**
+	 * Returns the keyword of the token directly before the current token position
+	 * within the file/line currently being parsed.
+	 * 
+	 * @return The keyword of the token directly before the current parsing position
+	 */
+	IKeyword previousKeyword() {
+		var prevToken = previous();
+		return (prevToken != null) ? prevToken.getKeyword() : null;
+	}
+	
+	/**
+	 * Returns the previous non-terminator token before the current token position.
+	 * 
+	 * @return The previous non-terminator token
+	 */
+	Token<?> previousNonTerminator() {
+		int i = currentTokenIndex - 1;
+		if (i < 0) return tokens.getFirst();
+		
+		var curToken = tokens.get(i);
+		
+		while (i > 0) {
+			if (curToken.getKeyword().isTerminator()) {
+				i--;
+				curToken = tokens.get(i);
+				continue;
+			}
+			
+			break;
+		}
+		
+		return curToken;
 	}
 	
 	/**
@@ -332,21 +670,64 @@ public class EnvisionLangParser {
 	 * 
 	 * @return The token directly after the current parsing position
 	 */
-	protected Token next() {
-		return tokens.get(current + 1);
+	Token<?> next() {
+		if (currentTokenIndex + 1 >= tokens.size()) return null;
+		return tokens.get(currentTokenIndex + 1);
 	}
 	
-	//-----------------------------------------------------------------------------------------------------
-	// Current Token Position Manipulators
-	//-----------------------------------------------------------------------------------------------------
+	/**
+	 * Returns the keyword of the token directly after the current token position
+	 * within the file/line currently being parsed.
+	 * 
+	 * @return The keyword of the token directly after the current parsing position
+	 */
+	IKeyword nextKeyword() {
+		var nextToken = next();
+		return (nextToken != null) ? nextToken.getKeyword() : null;
+	}
 	
 	/**
-	 * Returns the current parsing position.
+	 * Returns the next non-terminator token after the current token position.
 	 * 
-	 * @return the current parsing position.
+	 * @return The next non-terminator token
 	 */
-	protected int getCurrentIndex() {
-		return current;
+	Token<?> nextNonTerminator() {
+		int i = currentTokenIndex + 1;
+		var size = tokens.size();
+		
+		if (i >= size) return current();
+		
+		var curToken = tokens.get(i);
+		
+		while (i < size) {
+			if (curToken.getKeyword().isTerminator()) {
+				i++;
+				curToken = tokens.get(i);
+				continue;
+			}
+			
+			break;
+		}
+		
+		return curToken;
+	}
+	
+	/**
+	 * @return The list of all tokens being parsed through.
+	 */
+	EList<Token<?>> getTokens() {
+		return tokens;
+	}
+	
+	//=====================================
+	// Current Token Position Manipulators
+	//=====================================
+	
+	/**
+	 * @return The current parsing position index.
+	 */
+	int getCurrentParsingIndex() {
+		return currentTokenIndex;
 	}
 	
 	/**
@@ -356,9 +737,9 @@ public class EnvisionLangParser {
 	 * 
 	 * @param in
 	 */
-	protected void setCurrentIndex(int in) {
-		current = in;
-		if (current < 0) current = 0;
+	void setCurrentParsingIndex(int in) {
+		currentTokenIndex = in;
+		if (currentTokenIndex < 0) currentTokenIndex = 0;
 	}
 	
 	/**
@@ -366,14 +747,24 @@ public class EnvisionLangParser {
 	 * In the event that the current position is already at the start,
 	 * no action is performed.
 	 */
-	protected void setPrevious() {
-		if (current == 0) return;
-		current--;
+	void decrementParsingIndex() {
+		if (currentTokenIndex == 0) return;
+		currentTokenIndex--;
 	}
 	
-	//-----------------------------------------------------------------------------------------------------
-	// Error Production Hanler
-	//-----------------------------------------------------------------------------------------------------
+	/**
+	 * Increments the current parsing position by one.
+	 * In the event that current position is already at the end,
+	 * no action is performed.
+	 */
+	void incrementParsingIndex() {
+		if (atEnd()) return;
+		currentTokenIndex++;
+	}
+	
+	//==================================
+	// Parsing Error Production Handler
+	//==================================
 	
 	/**
 	 * Generates an error with the given message at the current token position.
@@ -384,7 +775,7 @@ public class EnvisionLangParser {
 	 * @param message The error message to be displayed
 	 * @return The generated error
 	 */
-	public EnvisionLangError error(String message) {
+	EnvisionLangError error(String message) {
 		return new EnvisionLangError("\n\n" + getErrorMessage(message) + "\n");
 	}
 	
@@ -396,72 +787,37 @@ public class EnvisionLangParser {
 	 * @param message The error message to be displayed
 	 * @return The generated error message
 	 */
-	public String getErrorMessage(String message) {
-		//In the event that the problematic token is at the end of the file,
-		//set the current token to the previous so that the problematic token
-		//is not a hidden token.
-		if (current().isEOF()) setPrevious();
+	private String getErrorMessage(String message) {
+		// In the event that the problematic token is at the end of the file,
+		// set the current token to the previous so that the problematic token
+		// is not a hidden token.
+		if (current().isEOF()) decrementParsingIndex();
 		
-		//grab the problematic token's line number
-		int theLine = current().line;
-		//if (theLine > tokenLines.size()) theLine -= 1;
+		// grab the problematic token's line number
+		int theLine = current().getLineNum();
+		// if (theLine > tokenLines.size()) theLine -= 1;
 		
-		//The individual parts of the error message to be generated
+		String tab = "    ";
+		
+		// The individual parts of the error message to be generated
 		String border = "";
-		String title = "\tParsing Error!";
-		String lineNumber = "\tLine " + theLine + ":";
-		String line = "\t\t" + lines.get(theLine - 1);
+		String title = tab + "Parsing Error!";
+		String lineNumber = tab + "Line " + theLine + ":";
+		String line = tab + tab + lines.get(theLine - 1);
 		String arrow = "";
-		String error = "\t" + message + "   ->   '" + current() + "'";
+		String error = tab + message + "   ->   '" + current() + "'";
 		
-		//determine border length
+		// determine border length
 		String longest = EStringUtil.getLongest(title, lineNumber, line, error);
-		border = EStringUtil.repeatString("-", longest.length() + 16);
+		border = EStringUtil.repeatString("-", longest.length() + 4);
 		
-		//find arrow position
-		EArrayList<Token> tokenLine = tokenLines.get(theLine - 1);
-		int problem_token_pos = 0;
-		for (int i = 0; i < tokenLine.size(); i++) {
-			if (tokenLine.get(i).checkID(current().id)) {
-				problem_token_pos = i;
-				break;
-			}
-		}
+		// get arrow position
+		int arrow_pos = current().getLineIndex();
 		
-		//counter to keep track of the number of individual spaces that should
-		//come before the arrow
-		int spaces_before_arrow = 0;
-		String actual_line = lines.get(theLine - 1);
+		// position arrow in string
+		arrow = "\t\t" + EStringUtil.repeatString(" ", arrow_pos) + "^";
 		
-		//iterate across each token in the line that is before the problem token
-		//and add that token's string length to the spaces_before_arrow counter.
-		for (int i = 0; i < problem_token_pos; i++) {
-			Token t = tokenLine.get(i);
-			int len = t.lexeme.length();
-			//add the same number of spaces as the length of the token
-			spaces_before_arrow += len;
-			
-			actual_line = actual_line.substring(len);
-			StringBuilder spacer = new StringBuilder();
-			
-			//increment by 1 for any actual space
-			for (int j = 0; j < actual_line.length(); j++) {
-				if (actual_line.charAt(j) != ' ') {
-					break;
-				}
-				spacer.append(" ");
-			}
-			
-			//add the number of spaces
-			spaces_before_arrow += spacer.length();
-			//move onto the next token string-wise
-			actual_line = actual_line.substring(spacer.length());
-		}
-		
-		//position arrow in string
-		arrow = "\t\t" + EStringUtil.repeatString(" ", spaces_before_arrow) + "^";
-		
-		//assemble the generated error message parts
+		// assemble the generated error message parts
 		var generatedError = new StringBuilder();
 		generatedError.append(border).append("\n")
 					  .append(title).append("\n\n")

@@ -43,10 +43,10 @@ public enum DeclarationType {
 			case FUNC -> FUNC_DEF;
 			case INIT -> INIT_DEF;
 			case CLASS -> CLASS_DEF;
-			case ENUM -> ENUM_DEF;
-			case INTERFACE -> INTERFACE_DEF;
+//			case ENUM -> ENUM_DEF;
+//			case INTERFACE -> INTERFACE_DEF;
 			case OPERATOR_ -> OPERATOR_DEF;
-			case GET, SET -> GETSET;
+//			case GET, SET -> GETSET;
 			default -> OTHER;
 			};
 		}

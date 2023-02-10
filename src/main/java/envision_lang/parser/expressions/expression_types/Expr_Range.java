@@ -1,18 +1,31 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 
-public class Expr_Range implements Expression {
+public class Expr_Range extends ParsedExpression {
 	
-	public final Expression left, right, by;
+	//========
+	// Fields
+	//========
 	
-	public Expr_Range(Expression leftIn, Expression rightIn, Expression byIn) {
+	public final ParsedExpression left, right, by;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Range(ParsedExpression leftIn, ParsedExpression rightIn, ParsedExpression byIn) {
+		super(leftIn);
 		left = leftIn;
 		right = rightIn;
 		by = byIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -21,7 +34,7 @@ public class Expr_Range implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleRange_E(this);
 	}
 	

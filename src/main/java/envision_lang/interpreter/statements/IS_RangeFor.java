@@ -1,9 +1,8 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.errors.InvalidDatatypeError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.NumberHelper;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.lang.EnvisionObject;
@@ -12,61 +11,63 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.util.StaticTypes;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_RangeFor;
-import eutil.datatypes.Box3;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
+public class IS_RangeFor extends AbstractInterpreterExecutor {
 	
-	public IS_RangeFor(EnvisionInterpreter intIn) {
-		super(intIn);
-	}
-	
-	@Override
-	public void run(Stmt_RangeFor statement) {
-		EArrayList<Expr_Range> ranges = statement.ranges;
-		EArrayList<Box3<EnvisionVariable, Long, Long>> rangeValues = new EArrayList();
-		Statement body = statement.body;
-		pushScope();
+	public static void run(EnvisionInterpreter interpreter, Stmt_RangeFor s) {
+		EList<Expr_Range> ranges = s.ranges;
+		int size = ranges.size();
+		
+		//EList<Box3<EnvisionVariable, Long, Long>> rangeValues = EList.newList();
+		IncNumber[] rangeValues = new IncNumber[size];
+		ParsedStatement body = s.body;
+		IScope theScope = interpreter.pushScope();
 		
 		//handle initializers (if there are any)
-		if (statement.init != null) interpreter.execute(statement.init);
+		if (s.init != null) interpreter.execute(s.init);
 		
 		//build range values
-		for (int i = 0; i < ranges.size(); i++) {
+		for (int i = 0; i < size; i++) {
 			Expr_Range range_expr = ranges.get(i);
 			
-			Expression left_expr = range_expr.left;
-			Expression right_expr = range_expr.right;
-			Expression by_expr = range_expr.by;
+			ParsedExpression left_expr = range_expr.left;
+			ParsedExpression right_expr = range_expr.right;
+			ParsedExpression by_expr = range_expr.by;
 			
-			// There is an issue here where actual arithmetic expressions are being created as compound expressions.
+			if (!(left_expr instanceof Expr_Var)) throw new EnvisionLangError("Expected a var type here!");
 			
-			//System.out.println(left + " : " + right + " : " + by);
-			//System.out.println(right.getClass());
+			Expr_Var leftVarExpr = (Expr_Var) left_expr;
+			String varName = leftVarExpr.getName();
 			
-			EnvisionObject left = handleLeft(left_expr);
-			EnvisionObject right = evaluate(right_expr);
-			EnvisionObject by = (by_expr != null) ? evaluate(by_expr) : EnvisionIntClass.newInt(1);
+			if (!theScope.exists(varName)) {
+				theScope.defineFast(varName, EnvisionInt.INT_TYPE, EnvisionInt.ZERO);
+			}
 			
-			EnvisionVariable leftObject = null;
+			EnvisionObject left = handleLeft(interpreter, left_expr);
+			EnvisionObject right = interpreter.evaluate(right_expr);
+			EnvisionObject by = (by_expr != null) ? interpreter.evaluate(by_expr) : EnvisionInt.ZERO;
 			
 			long right_val = 0;
 			long by_val = 1;
 			
 			try {
-				//handle left value
+				//check left value
 				if (left instanceof EnvisionVariable env_var) {
 					//ensure that the variable being used is an integer
-					if (!(env_var instanceof EnvisionInt)) throw new Exception();
-					leftObject = env_var;
+					if (!(env_var instanceof EnvisionInt)) {
+						throw new InvalidDatatypeError("Expected an int for range for start bound!");
+					}
 				}
-				else throw new Exception();
+				else throw new InvalidDatatypeError("Expected an int for range for start bound!");
 				
 				{
 				//handle right
@@ -90,292 +91,157 @@ public class IS_RangeFor extends StatementExecutor<Stmt_RangeFor> {
 				throw new InvalidDatatypeError("Range expression must use integer based numbers.");
 			}
 			
-			rangeValues.add(new Box3(leftObject, right_val, by_val));
+			rangeValues[i] = new IncNumber(theScope, varName, right_val, by_val);
 		}
 		
-		//ripple carry across ranges
-		boolean done = false;
-		boolean canCarry = rangeValues.size() > 1;
+		var lastRange = rangeValues[size - 1];
 		
 		TOP:
-		while (!done) {
-			Box3<EnvisionVariable, Long, Long> range = rangeValues.getLast();
-			
-			while (checkLess(range)) {
+		while (true) {
+			while (checkLess(lastRange)) {
 				try {
 					//run body
-					execute(body);
+					interpreter.execute(body);
 					//increment
 				}
-				catch (Continue c) { inc(range.a, range.c); break; }
+				catch (Continue c) { inc(lastRange); break; }
 				catch (Break b) { break TOP; }
 				catch (Exception e) { throw e; }
 				
-				inc(range.a, range.c);
+				inc(lastRange);
 			}
 			
-			if (canCarry) {
-				//go to the next position
-				boolean carrying = true;
-				int i = ranges.size() - 2;
+			zeroOut(lastRange);
+			
+			//if there are no other ranges, break out
+			if (rangeValues.length == 1) break TOP;
+			
+			//start at the second to last index
+			int curRangeIndex = size - 2;
+			//go until i < 0
+			while (curRangeIndex >= 0) {
+				var curRange = rangeValues[curRangeIndex];
+				//System.out.println("CUR INDEX: " + curRangeIndex + " : " + curRange);
 				
-				Box3<EnvisionVariable, Long, Long> next = rangeValues.get(i);
-				//first check if the range should continue
-				if (!checkKeepGoing(rangeValues)) break;
-				
-				//begin the carry by zeroing the first
-				range.a.set_i(0);
-				
-				while (carrying && i >= 0) {
-					next = rangeValues.get(i);
-					
-					//if the next most position is less than it's respective limit, increment it
-					if (checkLess(next)) {
-						NumberHelper.increment(next.a, next.c, true);
-						carrying = false;
-					}
-					//otherwise, zero it out then continue until a range is found that is not at the end
-					else {
-						next.a.set_i(0);
-						i--;
-					}
+				//check if curRange is less than its upper limit
+				if (checkLessOne(curRange)) {
+					inc(curRange);
+					break;
 				}
+				else {
+					zeroOut(curRange);
+					if (curRangeIndex == 0) break TOP;
+				}
+				
+				curRangeIndex--;
 			}
-			
-			//if not all values are fully set, restart the loop
-			if (checkKeepGoing(rangeValues)) continue;
-			
-			done = true;
 		}
 		
-		popScope();
+		interpreter.popScope();
 	}
 	
-	public static void run(EnvisionInterpreter in, Stmt_RangeFor s) {
-		new IS_RangeFor(in).run(s);
+	private static class IncNumber {
+		IScope scope;
+		String scopeName; // 'i'
+		long upperBound; // i to '5' <-
+		long incrementAmount; // 'by'
+		
+		public IncNumber(IScope scopeIn, String scopeNameIn, long upperBoundIn, long incrementAmountIn) {
+			scope = scopeIn;
+			scopeName = scopeNameIn;
+			upperBound = upperBoundIn;
+			incrementAmount = incrementAmountIn;
+		}
+		
+		public void inc() {
+			var value = (EnvisionInt) scope.get(scopeName);
+			scope.setFast(scopeName, EnvisionIntClass.valueOf(value.int_val + 1L));
+		}
+		
+		public void zeroOut() {
+			scope.setFast(scopeName, EnvisionInt.ZERO);
+		}
+		
+		public boolean checkLess() {
+			var value = (EnvisionInt) scope.get(scopeName);
+			return value.int_val < upperBound;
+		}
+		
+		public boolean checkLessOne() {
+			var value = (EnvisionInt) scope.get(scopeName);
+			return (value.int_val + 1) < upperBound;
+		}
 	}
 	
 	//-------------------------------
 	
-	private void inc(EnvisionObject obj, Number amount) {
-		NumberHelper.increment(obj, amount, true);
-	}
+	private static void inc(IncNumber num) { num.inc(); }
+	private static void zeroOut(IncNumber num) { num.zeroOut(); }
+	private static boolean checkLess(IncNumber num) { return num.checkLess(); }
+	private static boolean checkLessOne(IncNumber num) { return num.checkLessOne(); }
 	
-	private boolean checkLess(Box3<EnvisionVariable, Long, Long> box) {
-		return (long) box.a.get_i() < box.b;
-	}
-	
-	private EnvisionObject handleLeft(Expression left) {
+	private static EnvisionObject handleLeft(EnvisionInterpreter interpreter, ParsedExpression left) {
 		if (left instanceof Expr_Var var) {
-			return defineIfNot(var.getName(), StaticTypes.INT_TYPE, EnvisionIntClass.newInt());
+			return interpreter.defineIfNot(var.getName(), EnvisionStaticTypes.INT_TYPE, EnvisionInt.ZERO);
 		}
-		return evaluate(left);
-	}
-	
-	private boolean checkKeepGoing(EArrayList<Box3<EnvisionVariable, Long, Long>> list) {
-		//calculate whether or not the loop is done
-		for (var box : list) {
-			long a = (long) box.a.get_i();
-			long b = box.b;
-			//System.out.println("checking: " + a + ":" + b + " = " + (a < b - 1));
-			if (a < b) return true;
-		}
-		
-		return false;
+		return interpreter.evaluate(left);
 	}
 	
 }
 
 /*
-package envision.interpreter.statements;
+//ripple carry across ranges
+boolean done = false;
+boolean canCarry = rangeValues.size() > 1;
 
-import envision.interpreter.EnvisionInterpreter;
-import envision.interpreter.util.interpreterBase.StatementExecutor;
-import envision.interpreter.util.throwables.Break;
-import envision.interpreter.util.throwables.Continue;
-import envision.interpreter.util.variables.VariableUtil;
-import envision.lang.objects.EnvisionObject;
-import envision.lang.objects.objects.EnvisionList;
-import envision.lang.objects.variables.EnvisionInt;
-import envision.lang.objects.variables.EnvisionString;
-import envision.lang.objects.variables.EnvisionVariable;
-import envision.parser.expressions.Expression;
-import envision.parser.expressions.types.RangeExpression;
-import envision.parser.expressions.types.VarExpression;
-import envision.parser.statements.Statement;
-import envision.parser.statements.types.RangeForStatement;
-import eutil.storage.EArrayList;
-import eutil.storage.TrippleBox;
-
-public class IS_RangeFor extends StatementExecutor<RangeForStatement> {
+TOP:
+while (!done) {
+	Box3<EnvisionVariable, Long, Long> range = rangeValues.getLast();
 	
-	public IS_RangeFor(EnvisionInterpreter intIn) {
-		super(intIn);
-	}
-	
-	@Override
-	public Void run(RangeForStatement statement) {
-		EArrayList<RangeExpression> ranges = statement.ranges;
-		EArrayList<TrippleBox<EnvisionVariable, Long, Long>> rangeValues = new EArrayList();
-		Statement body = statement.body;
-		pushScope();
-		
-		//handle initializers (if there are any)
-		interpreter.execute(statement.init);
-		
-		//build range values
-		for (int i = 0; i < ranges.size(); i++) {
-			RangeExpression r = ranges.get(i);
-			
-			Expression left = r.left;
-			Expression right = r.right;
-			Expression by = r.by;
-			
-			// There is an issue here where actual arithmetic expressions are being created as compound expressions.
-			
-			//System.out.println(left + " : " + right + " : " + by);
-			//System.out.println(right.getClass());
-			
-			Object lVal = handleLeft(left);
-			Object rVal = evaluate(right);
-			Object bVal = (by != null) ? evaluate(by) : (long) 1;
-			
-			EnvisionVariable leftObject = null;
-			
-			try {
-				//handle right
-				if (lVal instanceof Number) {
-					//ensure that the number being used is an integer
-					if (!(lVal instanceof Integer) && !(lVal instanceof Long)) { throw new Exception(); }
-					leftObject = new EnvisionInt((Number) lVal);
-				}
-				else if (lVal instanceof EnvisionVariable) {
-					EnvisionVariable v = (EnvisionVariable) lVal;
-					//ensure that the variable being used is an integer
-					if (!(v instanceof EnvisionInt)) { throw new Exception(); }
-					leftObject = v;
-				}
-				else { throw new Exception(); }
-				
-				rVal = (rVal instanceof EnvisionVariable) ? ((EnvisionVariable) rVal).get() : rVal;
-				bVal = (bVal instanceof EnvisionVariable) ? ((EnvisionVariable) bVal).get() : bVal;
-				
-				//handle right
-				if (rVal instanceof EnvisionList) { rVal = (long) ((EnvisionList) rVal).size() - 1; }
-				else if (rVal instanceof String) { rVal = (long) ((String) rVal).length(); }
-				else if (rVal instanceof EnvisionString) { rVal = (long) ((EnvisionString) rVal).length(); }
-				else if (rVal instanceof EnvisionInt) { rVal = (long) ((EnvisionInt) rVal).get(); }
-				else { rVal = ((Number) rVal).longValue(); }
-				
-				//handle by
-				if (bVal instanceof EnvisionList) { bVal = (long) ((EnvisionList) bVal).size(); }
-				else if (bVal instanceof String) { bVal = (long) ((String) bVal).length(); }
-				else if (bVal instanceof EnvisionString) { bVal = (long) ((EnvisionString) bVal).length(); }
-				else if (bVal instanceof EnvisionInt) { bVal = (long) ((EnvisionInt) bVal).get(); }
-				else { bVal = ((Number) bVal).longValue(); }
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Range expression must use integer based numbers.");
-			}
-			
-			rangeValues.add(new TrippleBox(leftObject, rVal, bVal));
+	while (checkLess(range)) {
+		try {
+			//run body
+			execute(body);
+			//increment
 		}
+		catch (Continue c) { inc(range.a, range.c); break; }
+		catch (Break b) { break TOP; }
+		catch (Exception e) { throw e; }
 		
-		//ripple carry across ranges
-		boolean done = false;
-		boolean canCarry = rangeValues.size() > 1;
+		inc(range.a, range.c);
+	}
+	
+	if (canCarry) {
+		//go to the next position
+		boolean carrying = true;
+		int i = ranges.size() - 2;
 		
-		TOP:
-		while (!done) {
-			TrippleBox<EnvisionVariable, Long, Long> range = rangeValues.getLast();
-			Expression inc = ranges.getLast().left;
+		Box3<EnvisionVariable, Long, Long> next = rangeValues.get(i);
+		//first check if the range should continue
+		if (!checkKeepGoing(rangeValues)) break;
+		
+		//begin the carry by zeroing the first
+		range.a.set_i(0);
+		
+		while (carrying && i >= 0) {
+			next = rangeValues.get(i);
 			
-			while (checkLess(range)) {
-				try {
-					//run body
-					execute(body);
-					//increment
-				}
-				catch (Continue c) { inc(range.a, range.c); break; }
-				catch (Break b) { break TOP; }
-				catch (Exception e) { throw e; }
-				
-				inc(range.a, range.c);
+			//if the next most position is less than it's respective limit, increment it
+			if (checkLess(next)) {
+				inc(next.a, next.c);
+				carrying = false;
 			}
-			
-			if (canCarry) {
-				//go to the next position
-				boolean carrying = true;
-				int i = ranges.size() - 2;
-				
-				TrippleBox<EnvisionVariable, Long, Long> next = rangeValues.get(i);
-				//first check if the range should continue
-				if (!checkKeepGoing(rangeValues)) { break; }
-				
-				//begin the carry by zeroing the first
-				range.a.set(0);
-				
-				while (carrying && i >= 0) {
-					next = rangeValues.get(i);
-					
-					//if the next most position is less than it's respective limit, increment it
-					if ((long) next.a.get() < (next.b)) {
-						VariableUtil.incrementValue(next.a, next.c, true);
-						carrying = false;
-					}
-					//otherwise, zero it out then continue until a range is found that is not at the end
-					else {
-						next.a.set(0);
-						i--;
-					}
-				}
-			}
-			
-			//if not all values are fully set, restart the loop
-			if (checkKeepGoing(rangeValues)) { continue; }
-			
-			done = true;
-		}
-		
-		popScope();
-		
-		return null;
-	}
-	
-	public static Void run(EnvisionInterpreter in, RangeForStatement s) {
-		return new IS_RangeFor(in).run(s);
-	}
-	
-	//-------------------------------
-	
-	private void inc(EnvisionObject obj, Number amount) { VariableUtil.incrementValue(obj, amount, true); }
-	
-	private Object handleLeft(Expression left) {
-		if (left instanceof VarExpression) {
-			VarExpression leftVar = (VarExpression) left;
-			return (EnvisionVariable) defineIfNot(leftVar.name, new EnvisionInt(0));
-		}
-		return evaluate(left);
-	}
-	
-	private boolean checkLess(TrippleBox<EnvisionVariable, Long, Long> box) {
-		return (long) box.a.get() <= box.b;
-	}
-	
-	private boolean checkKeepGoing(EArrayList<TrippleBox<EnvisionVariable, Long, Long>> list) {
-		//cacluate if the loop is done
-		for (TrippleBox<EnvisionVariable, Long, Long> box : list) {
-			long a = (long) box.a.get();
-			long b = box.b;
-			//System.out.println("checking: " + a + ":" + b + " = " + (a < b - 1));
-			if (a < b) {
-				return true;
+			//otherwise, zero it out then continue until a range is found that is not at the end
+			else {
+				next.a.set_i(0);
+				i--;
 			}
 		}
-		
-		return false;
 	}
 	
+	//if not all values are fully set, restart the loop
+	if (checkKeepGoing(rangeValues)) continue;
+	
+	done = true;
 }
 */

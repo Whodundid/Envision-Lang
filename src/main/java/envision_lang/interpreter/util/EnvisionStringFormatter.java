@@ -1,11 +1,12 @@
 package envision_lang.interpreter.util;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.NullVariableError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
+import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.tokenizer.EscapeCode;
 import eutil.strings.EStringUtil;
 
@@ -36,16 +37,33 @@ public class EnvisionStringFormatter {
 	public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args, boolean format) {
 		StringBuilder out = new StringBuilder();
 		
-		if (args.length == 1 && args[0] instanceof EnvisionList list) {
-			out.append(list);
-			return out.toString();
-		}
-		
 		for (int i = 0; i < args.length; i++) {
 			EnvisionObject o = args[i];
 			
+			//check for lists/tuples separately because they can have several 
+			//layers 'toString' argument formatting and variable inserts.
+			if (o instanceof EnvisionList list) {
+				int cur = 0;
+				var l = list.getInternalList();
+				out.append("[");
+				for (var listObj : l) {
+					out.append(formatPrint(interpreter, listObj, format));
+					if (++cur < l.size()) out.append(", ");
+				}
+				out.append("]");
+			}
+			else if (o instanceof EnvisionTuple tuple) {
+				int cur = 0;
+				var l = tuple.getInternalList();
+				out.append("(");
+				for (var listObj : l) {
+					out.append(formatPrint(interpreter, listObj, format));
+					if (++cur < l.size()) out.append(", ");
+				}
+				out.append(")");
+			}
 			//test for toString overload
-			if (o instanceof ClassInstance inst) {
+			else if (o instanceof ClassInstance inst) {
 				//grab the toString of the instance as well as the instance itself
 				String str = inst.executeToString_i(interpreter);
 				
@@ -68,8 +86,6 @@ public class EnvisionStringFormatter {
 	/** Processes an incomming string and parses for escape characters and performs the according function if one is found. */
 	public static String handleEscapes(EnvisionInterpreter interpreter, String in, ClassInstance inst, boolean format) {
 		StringBuilder out = new StringBuilder();
-		
-		//System.out.println("TO PRINT: " + in);
 		
 		//search for escape characters and handle them accordingly
 		for (int i = 0; i < in.length(); i++) {
@@ -94,7 +110,7 @@ public class EnvisionStringFormatter {
 			else if (format && c == '{' && (i + 1 < in.length())) {
 				String varName = findVarName(in.substring(i + 1));
 				
-				String val = processObject(interpreter, varName, inst);
+				String val = processObject(interpreter, varName, inst, format);
 				out.append(val);
 				
 				//consume the '{varName}'
@@ -145,7 +161,7 @@ public class EnvisionStringFormatter {
 		return name.toString();
 	}
 	
-	public static String processObject(EnvisionInterpreter interpreter, String varName, ClassInstance inst) {
+	public static String processObject(EnvisionInterpreter interpreter, String varName, ClassInstance inst, boolean format) {
 		EnvisionObject obj = null;
 		
 		//find variable within the class instance's scope
@@ -156,7 +172,7 @@ public class EnvisionStringFormatter {
 		//if the obj returned is a class instance, recursive replacement will need to be performed
 		if (obj instanceof ClassInstance obj_inst) {
 			String r_str = obj_inst.executeToString_i(interpreter);
-			return handleEscapes(interpreter, r_str, obj_inst, false);
+			return handleEscapes(interpreter, r_str, obj_inst, format);
 		}
 		//otherwise append the object's string value
 		else if (obj != null) return EStringUtil.toString(obj);

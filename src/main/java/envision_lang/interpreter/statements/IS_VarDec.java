@@ -1,47 +1,38 @@
 package envision_lang.interpreter.statements;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.AlreadyDefinedError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.UndefinedTypeError;
-import envision_lang.exceptions.errors.VoidAssignmentError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
-import envision_lang.interpreter.util.TypeManager;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
-import envision_lang.interpreter.util.interpreterBase.StatementExecutor;
+import envision_lang.interpreter.util.UserDefinedTypeManager;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.internal.EnvisionVoid;
+import envision_lang.lang.datatypes.EnvisionVoid;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.AlreadyDefinedError;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.language_errors.error_types.UndefinedTypeError;
+import envision_lang.lang.language_errors.error_types.VoidAssignmentError;
+import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.util.DataModifier;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.VariableDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
+public class IS_VarDec extends AbstractInterpreterExecutor {
 	
-	public IS_VarDec(EnvisionInterpreter in) {
-		super(in);
-	}
-	
-	public static void run(EnvisionInterpreter in, Stmt_VarDef s) {
-		new IS_VarDec(in).run(s);
-	}
-
-	@Override
-	public void run(Stmt_VarDef statement) {
-		TypeManager typeMan = interpreter.getTypeManager();
+	public static void run(EnvisionInterpreter interpreter, Stmt_VarDef s) {
+		UserDefinedTypeManager typeMan = interpreter.getTypeManager();
 		
 		//extract base statement parts
-		ParserDeclaration statement_declaration = statement.getDeclaration();
-		EArrayList<VariableDeclaration> unprocessed_var_declarations = statement.vars;
+		ParserDeclaration statement_declaration = s.getDeclaration();
+		EList<VariableDeclaration> unprocessed_var_declarations = s.vars;
 		Token token_returntype = statement_declaration.getReturnType();
 		IDatatype var_dec_datatype = NativeTypeManager.datatypeOf(token_returntype);
 		
@@ -51,9 +42,9 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		if (isNull(var_dec_datatype)) {
 			throw new UndefinedTypeError("No type defined for the variable(s): " + unprocessed_var_declarations);
 		}
-		else if (!typeMan.isTypeDefined(var_dec_datatype)) {
-			throw new UndefinedTypeError("The type '" + var_dec_datatype + "' is undefined within the current scope!");
-		}
+		//else if (!typeMan.isTypeDefined(var_dec_datatype)) {
+		//	throw new UndefinedTypeError("The type '" + var_dec_datatype + "' is undefined within the current scope!");
+		//}
 		
 		//if the rType corresponds to a specific user defined type, grab its class
 		EnvisionClass typeClass = typeMan.getTypeClass(var_dec_datatype);
@@ -61,7 +52,9 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 		//---------------------------------------------------------------------------------------------------------------
 		
 		//process each variable declaration
-		for (VariableDeclaration d : unprocessed_var_declarations) {
+		int size = unprocessed_var_declarations.size();
+		for (int i = 0; i < size; i++) {
+			VariableDeclaration d = unprocessed_var_declarations.get(i);
 			
 			//---------------------------------------------------------
 			
@@ -75,11 +68,11 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			//---------------------------------------------------------
 			
 			//check that the variable doesn't already exist locally
-			if (scope().existsLocally(var_name)) throw new AlreadyDefinedError(var_name);
+			if (interpreter.scope().existsLocally(var_name)) throw new AlreadyDefinedError(var_name);
 			
 			//evaluate the assignment value (if there is one)
 			if (d.assignment_value != null) {
-				assignment_value = evaluate(d.assignment_value);
+				assignment_value = interpreter.evaluate(d.assignment_value);
 				
 				//don't allow void assignment
 				if (assignment_value instanceof EnvisionVoid) throw new VoidAssignmentError(var_name);
@@ -102,10 +95,15 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			
 			
 			//create the default instance of the variable : defaults to a null object
-			EnvisionObject obj = ObjectCreator.createDefault(var_dec_datatype);
+			//EnvisionObject obj = obj = ObjectCreator.createDefault(var_dec_datatype);
+			EnvisionObject obj;
 			
+			//check for null assignment
+			if (assignment_value == EnvisionNull.NULL) {
+				obj = EnvisionNull.NULL;
+			}
 			//create the variable with its initial value(s)
-			if (assignment_value != null) {
+			else if (assignment_value != null) {
 				//first check if list
 				if (assignment_value instanceof EnvisionList env_list) {
 					obj = env_list;
@@ -121,12 +119,15 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 					obj = env_class_inst;
 				}
 				//otherwise, create new object with the given assignment_value
-
+				else {
+					obj = assignment_value;
+				}
 			}
 			//the assignment_value is null -- handle as if class defined type
 			else {
 				//assign default value
-				obj = ObjectCreator.createDefault(var_dec_datatype, false);
+				//obj = ObjectCreator.createDefault(var_dec_datatype, false);
+				obj = EnvisionNull.NULL;
 			}
 			
 			
@@ -151,11 +152,13 @@ public class IS_VarDec extends StatementExecutor<Stmt_VarDef> {
 			}
 			
 			//define the object within the current interpreter scope
-			scope().define(var_name, var_dec_datatype, obj);
+			interpreter.scope().define(var_name, var_dec_datatype, obj);
+			//System.out.println("def Scope: " + interpreter.scope());
+			//System.out.println("def scope: " + var_name + " : " + interpreter.scope().getTyped(var_name));
 		}
 	}
 	
-	private void checkClassType(EnvisionClass typeClass, Object value) {
+	private static void checkClassType(EnvisionClass typeClass, Object value) {
 		//if typeClass isn't null, check that the types match
 		if (typeClass != null) {
 			if (!typeClass.isInstanceof(value))

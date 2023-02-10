@@ -1,14 +1,14 @@
 package envision_lang._launch;
 
-import eutil.EUtil;
-import eutil.datatypes.EArrayList;
-
 import java.io.File;
 import java.io.IOException;
 
-import envision_lang.exceptions.errors.workingDirectory.InvalidCodeFileError;
-import envision_lang.exceptions.errors.workingDirectory.MultipleMainsError;
-import envision_lang.packages.EnvisionLangPackage;
+import envision_lang.lang.language_errors.error_types.workingDirectory.InvalidCodeFileError;
+import envision_lang.lang.language_errors.error_types.workingDirectory.MultipleMainsError;
+import envision_lang.lang.packages.EnvisionLangPackage;
+import eutil.EUtil;
+import eutil.datatypes.util.EList;
+import eutil.debug.Broken;
 
 /** Handles code file discovery and wrapping. */
 public class WorkingDirectory {
@@ -18,11 +18,11 @@ public class WorkingDirectory {
 	/** True if the given directory is not null and actually exists. */
 	private final boolean isValid;
 	/** All successfully parsed code files. */
-	private final EArrayList<EnvisionCodeFile> codeFiles = new EArrayList<>();
+	private final EList<EnvisionCodeFile> codeFiles = EList.newList();
 	/** The main code file. */
 	private EnvisionCodeFile main = null;
 	/** Packages to be added to the interpreters at run time. */
-	private EArrayList<EnvisionLangPackage> packages = new EArrayList<>();
+	private EList<EnvisionLangPackage> packages = EList.newList();
 	
 	//--------------
 	// Constructors
@@ -56,10 +56,10 @@ public class WorkingDirectory {
 			return;
 		}
 		
-		EArrayList<File> start = EUtil.toList(dir.listFiles());
-		EArrayList<File> found = new EArrayList<>();
-		EArrayList<File> directories = new EArrayList<>();
-		EArrayList<File> workList = new EArrayList<>();
+		EList<File> start = EList.newList(dir.listFiles());
+		EList<File> found = EList.newList();
+		EList<File> directories = EList.newList();
+		EList<File> workList = EList.newList();
 		
 		//add all envision code files to be found
 		found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
@@ -99,6 +99,7 @@ public class WorkingDirectory {
 	/**
 	 * Attempts to return a code file of the given name (if it exists).
 	 */
+	@Broken(reason="Does not account for nested files!")
 	public EnvisionCodeFile getFile(String name) {
 		for (EnvisionCodeFile f : codeFiles) {
 			if (f.getFileName().equals(name)) return f;
@@ -120,6 +121,14 @@ public class WorkingDirectory {
 	}
 	
 	/**
+	 * This will print out the tokenized version of each code file without actually
+	 * executing any code. This will also show the metadata of each token.
+	 */
+	public void debugTokenizeInDepth() throws IOException {
+		for (EnvisionCodeFile f : codeFiles) f.displayTokensInDepth();
+	}
+	
+	/**
 	 * This will print out the parsed statements of each code file without actually
 	 * executing any code.
 	 */
@@ -138,8 +147,8 @@ public class WorkingDirectory {
 	/** Returns the main code file (if there is one) from the parsed directory. */
 	public EnvisionCodeFile getMain() { return main; }
 	/** Returns all parsed Envision code files from the given directory. */
-	public EArrayList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
+	public EList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
 	/** Returns all packages to be added at program start. */
-	public EArrayList<EnvisionLangPackage> getBuildPackages() { return packages; }
+	public EList<EnvisionLangPackage> getBuildPackages() { return packages; }
 	
 }

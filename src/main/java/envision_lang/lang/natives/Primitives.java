@@ -1,15 +1,22 @@
 package envision_lang.lang.natives;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.packages.EnvisionPackage;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.packages.EnvisionLangPackage;
+import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.datatypes.util.JavaDatatype;
 
 /**
@@ -20,9 +27,9 @@ import eutil.datatypes.util.JavaDatatype;
  * <p>
  * Primitive types are used in conjunction with the EnvisionDataType
  * object for encapsulation purposes while being associated with any
- * specific object created within the language.
+ * specific object created within the Envision scripting language.
  * <p>
- * Certain primitive types are array types which are used to pass an
+ * Certain primitive types can be array types which are used to pass an
  * unspecified number of arguments to functions and are represented
  * with the variable arguments keyword '...' or varargs for short.
  * 
@@ -30,70 +37,208 @@ import eutil.datatypes.util.JavaDatatype;
  */
 public enum Primitives implements IDatatype {
 	
-	// required language types
+	// native language types
 	
-	VOID("void"),
+	VOID("//void"),
 	NULL("//_null_"),
 	CLASS("//class"),
 	CLASS_INSTANCE("//class_inst"),
 	INTERFACE("//interface"),
-	PACKAGE("package"),
+	PACKAGE("//package"),
 	CODE_FILE("//code_file"),
 	FUNCTION("//function"),
 	//OPERATOR("operator"),
-	//EXCEPTION("exception"),
+	EXCEPTION("exception"),
 	
 	// basic types
 	
-	BOOLEAN("boolean"),
-	CHAR("char"),
-	INT("int"),
-	DOUBLE("double"),
-	STRING("string"),
-	NUMBER("number"),
-	LIST("list"),
+	BOOLEAN("//boolean"),
+	CHAR("//char"),
+	INT("//int"),
+	DOUBLE("//double"),
+	NUMBER("//number"),
+	STRING("//string"),
+	LIST("//list"),
+	TUPLE("//tuple"),
 	
 	// dynamic object types
 	
 	VAR("//var_type"),
-	ENUM("enum"),
+	ENUM("//enum"),
 	ENUM_TYPE("//enum_type"),
 	
-	// vararg types
+	// array types
 	
-	BOOLEAN_A("//[boolean"),
-	CHAR_A("//[char"),
-	INT_A("//[int"),
-	DOUBLE_A("//[double"),
-	STRING_A("//[string"),
-	NUMBER_A("//[number"),
-	LIST_A("//[list"),
-	VAR_A("//[var"),
+	BOOLEAN_A("//[boolean", BOOLEAN),
+	CHAR_A("//[char", CHAR),
+	INT_A("//[int", INT),
+	DOUBLE_A("//[double", DOUBLE),
+	STRING_A("//[string", STRING),
+	NUMBER_A("//[number", NUMBER),
+	VAR_A("//[var", VAR),
 	
 	;
 	
-	/**
-	 * The String version of the primitive type.
-	 */
-	public final String string_type;
+	/** The String value of the primitive type. */
+	public final String string_value;
+	/** True if this primitive type is a special type used for varargs type passing. */
+	public final boolean is_array_type;
+	/** The non-array type of this varargs type. NOTE: this will be null unless this is an array type. */
+	private final Primitives non_array_type;
 	
-	//--------------
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
-	private Primitives(String typeIn) {
-		string_type = typeIn;
+	private Primitives(String valueIn) {
+		string_value = valueIn;
+		is_array_type = false;
+		non_array_type = null;
+	}
+	
+	private Primitives(String valueIn, Primitives non_array_type_in) {
+		string_value = valueIn;
+		is_array_type = true;
+		non_array_type = non_array_type_in;
 	}
 	
 	//---------------------------------------
 	
-	private static final EArrayList<Primitives> primitivesList = new EArrayList<>();
+	/** The internal mapping of all known primitive type values. */
+	private static final EList<Primitives> primitivesList = new EArrayList<>();
 	
-	public static void initPrimitives() {
-		if (primitivesList.isNotEmpty()) return;
+	/** Maps string representations of primitives directly to its actual primitive type. */
+	private static final Map<String, Primitives> stringValueToPrimitiveMap = new HashMap<>();
+	/** Maps envision IKeyword types directly to primitive types. */
+	private static final Map<IKeyword, Primitives> keywordToPrimitiveMap = new HashMap<>();
+	/** Maps Java datatypes directly to an envision datatype (if applicable). */
+	private static final Map<JavaDatatype, Primitives> javaDatatypeToPrimitiveMap = new HashMap<>();
+	
+	/** A set of all primitives that can have parameters. */
+	private static final Set<Primitives> primitivesThatCanBeParameterized = new HashSet<>();
+	/** A set of all primitives that can have generics. */
+	private static final Set<Primitives> primitivesThatCanHaveGenerics = new HashSet<>();
+	
+	/** The set of all primitives that are numbers in envision. */
+	private static final Set<Primitives> numberPrimitives = new HashSet<>();
+	/** The set of all primitive types that could be used as a class field in envision. */
+	private static final Set<Primitives> fieldPrimitives = new HashSet<>();
+	/** The set of all primitive types that are natively passed by value in envision. */
+	private static final Set<Primitives> passByValuePrimitives = new HashSet<>();
+	/** The set of all native primitive datatypes in envision. */
+	private static final Set<Primitives> nativePrimitiveTypes = new HashSet<>();
+	
+	//=============
+	// Static init
+	//=============
+	
+	static {
 		for (Primitives p : values()) {
 			primitivesList.add(p);
+			stringValueToPrimitiveMap.put(p.string_value, p);
 		}
+		
+		stringValueToPrimitiveMap.put(ReservedWord.VAR.typeString, VAR);
+		stringValueToPrimitiveMap.put(ReservedWord.VOID.typeString, VOID);
+		stringValueToPrimitiveMap.put(ReservedWord.NULL.typeString, NULL);
+		stringValueToPrimitiveMap.put(ReservedWord.BOOLEAN.typeString, BOOLEAN);
+		stringValueToPrimitiveMap.put(ReservedWord.NUMBER.typeString, NUMBER);
+		stringValueToPrimitiveMap.put(ReservedWord.INT.typeString, INT);
+		stringValueToPrimitiveMap.put(ReservedWord.DOUBLE.typeString, DOUBLE);
+		stringValueToPrimitiveMap.put(ReservedWord.CHAR.typeString, CHAR);
+		stringValueToPrimitiveMap.put(ReservedWord.STRING.typeString, STRING);
+		stringValueToPrimitiveMap.put(ReservedWord.ENUM.typeString, ENUM);
+		stringValueToPrimitiveMap.put(ReservedWord.LIST.typeString, LIST);
+		stringValueToPrimitiveMap.put(ReservedWord.TUPLE.typeString, TUPLE);
+		
+		keywordToPrimitiveMap.put(ReservedWord.TRUE, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.FALSE, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.VOID, VOID);
+		keywordToPrimitiveMap.put(ReservedWord.NULL, NULL);
+		keywordToPrimitiveMap.put(ReservedWord.CLASS, CLASS);
+//		keywordToPrimitiveMap.put(ReservedWord.INTERFACE, INTERFACE);
+//		keywordToPrimitiveMap.put(ReservedWord.PACKAGE, PACKAGE);
+		keywordToPrimitiveMap.put(ReservedWord.FUNC, FUNCTION);
+		keywordToPrimitiveMap.put(ReservedWord.BOOLEAN, BOOLEAN);
+		keywordToPrimitiveMap.put(ReservedWord.CHAR, CHAR);
+		keywordToPrimitiveMap.put(ReservedWord.INT, INT);
+		keywordToPrimitiveMap.put(ReservedWord.DOUBLE, DOUBLE);
+		keywordToPrimitiveMap.put(ReservedWord.STRING, STRING);
+		keywordToPrimitiveMap.put(ReservedWord.NUMBER, NUMBER);
+		keywordToPrimitiveMap.put(ReservedWord.LIST, LIST);
+		keywordToPrimitiveMap.put(ReservedWord.TUPLE, TUPLE);
+		keywordToPrimitiveMap.put(ReservedWord.VAR, VAR);
+		keywordToPrimitiveMap.put(ReservedWord.ENUM, ENUM);
+		keywordToPrimitiveMap.put(ReservedWord.CHAR_LITERAL, CHAR);
+		keywordToPrimitiveMap.put(ReservedWord.INT_LITERAL, INT);
+		keywordToPrimitiveMap.put(ReservedWord.DOUBLE_LITERAL, DOUBLE);
+		keywordToPrimitiveMap.put(ReservedWord.STRING_LITERAL, STRING);
+		
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.BOOLEAN, BOOLEAN);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CHAR, CHAR);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.BYTE, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.SHORT, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.INT, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.LONG, INT);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.FLOAT, DOUBLE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.DOUBLE, DOUBLE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.STRING, STRING);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.NUMBER, NUMBER);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.OBJECT, VAR);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.ARRAY, LIST);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.INTERFACE, INTERFACE);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CONSTRUCTOR, FUNCTION);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.METHOD, FUNCTION);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.CLASS, CLASS);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.ENUM, ENUM);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.VOID, VOID);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.NULL, NULL);
+		
+		primitivesThatCanBeParameterized.add(LIST);
+		primitivesThatCanBeParameterized.add(FUNCTION);
+		primitivesThatCanBeParameterized.add(CLASS);
+		
+		primitivesThatCanHaveGenerics.add(FUNCTION);
+		primitivesThatCanHaveGenerics.add(CLASS);
+		
+		numberPrimitives.add(INT);
+		numberPrimitives.add(DOUBLE);
+		numberPrimitives.add(NUMBER);
+		
+		fieldPrimitives.add(BOOLEAN);
+		fieldPrimitives.add(CHAR);
+		fieldPrimitives.add(INT);
+		fieldPrimitives.add(DOUBLE);
+		fieldPrimitives.add(NUMBER);
+		fieldPrimitives.add(STRING);
+		fieldPrimitives.add(LIST);
+		fieldPrimitives.add(TUPLE);
+		fieldPrimitives.add(VAR);
+		fieldPrimitives.add(CLASS);
+		fieldPrimitives.add(CODE_FILE);
+		fieldPrimitives.add(FUNCTION);
+		fieldPrimitives.add(ENUM);
+		fieldPrimitives.add(CLASS_INSTANCE);
+		//fieldPrimitives.add(INTERFACE);
+		//fieldPrimitives.add(PACKAGE);
+		
+		passByValuePrimitives.add(BOOLEAN);
+		passByValuePrimitives.add(CHAR);
+		passByValuePrimitives.add(INT);
+		passByValuePrimitives.add(DOUBLE);
+		passByValuePrimitives.add(NUMBER);
+		passByValuePrimitives.add(STRING);
+		//passByValuePrimitives.add(LIST);
+		//passByValuePrimitives.add(TUPLE);
+		
+		nativePrimitiveTypes.add(BOOLEAN);
+		nativePrimitiveTypes.add(CHAR);
+		nativePrimitiveTypes.add(INT);
+		nativePrimitiveTypes.add(DOUBLE);
+		nativePrimitiveTypes.add(NUMBER);
+		nativePrimitiveTypes.add(STRING);
+		nativePrimitiveTypes.add(LIST);
+		nativePrimitiveTypes.add(TUPLE);
 	}
 	
 	//-----------
@@ -102,7 +247,7 @@ public enum Primitives implements IDatatype {
 	
 	@Override public Primitives getPrimitive() { return this; }
 	@Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(this); }
-	@Override public String getType() { return string_type; }
+	@Override public String getStringValue() { return string_value; }
 	
 	//---------
 	// Methods
@@ -116,40 +261,28 @@ public enum Primitives implements IDatatype {
 		return canBeParameterized(this);
 	}
 	
-	/**
-	 * Returns true if this datatype is a variable argument type.
-	 */
-	public boolean isArrayType() {
-		switch (this) {
-		case VAR_A:
-		case BOOLEAN_A:
-		case CHAR_A:
-		case INT_A:
-		case DOUBLE_A:
-		case STRING_A:
-		case NUMBER_A:
-		case LIST_A:
-			return true;
-		default:
-			return false;
-		}
+	public boolean isVarType() {
+		return this == VAR;
 	}
 	
 	/**
-	 * If this type is a varags type, return the non varags type.
+	 * Returns true if this type is passed-by-value.
+	 * I.E. boolean, int, double, etc.
+	 * 
+	 * @return true if this primitive follows pass-by-value rules
 	 */
-	public Primitives getNonArrayType() {
-		return switch (this) {
-		case VAR_A -> VAR;
-		case BOOLEAN_A -> BOOLEAN;
-		case CHAR_A -> CHAR;
-		case INT_A -> INT;
-		case DOUBLE_A -> DOUBLE;
-		case STRING_A -> STRING;
-		case NUMBER_A -> NUMBER;
-		case LIST_A -> LIST;
-		default -> this;
-		};
+	public boolean isPassByValue() {
+		return passByValuePrimitives.contains(this);
+	}
+	
+	/**
+	 * Returns true if this type is passed-by-reference.
+	 * I.E. list, tuple, function, etc.
+	 * 
+	 * @return true if this primitive follows pass-by-reference rules
+	 */
+	public boolean isPassByReference() {
+		return !isPassByValue();
 	}
 	
 	/**
@@ -157,52 +290,21 @@ public enum Primitives implements IDatatype {
 	 * I.E. int, double, number.
 	 */
 	public boolean isNumber() {
-		return switch (this) {
-		case INT, DOUBLE, NUMBER -> true;
-		default -> false;
-		};
+		return numberPrimitives.contains(this);
 	}
 	
 	/**
 	 * Returns true if this primitive type could be used as a field.
 	 */
 	public boolean isField() {
-		switch (this) {
-		case NULL:
-		case BOOLEAN:
-		case CHAR:
-		case INT:
-		case DOUBLE:
-		case STRING:
-		case NUMBER:
-		case LIST:
-		case VAR:
-		case CLASS_INSTANCE:
-			return true;
-		default:
-			return false;
-		}
+		return fieldPrimitives.contains(this);
 	}
 	
 	/**
-	 * Returns true if this type is a primitive variable.
-	 * I.E. boolean, int, double, etc.
-	 * 
-	 * @return true if a variable
+	 * Returns true if this is a native primitive datatype.
 	 */
-	public boolean isVariableType() {
-		switch (this) {
-		case BOOLEAN:
-		case CHAR:
-		case INT:
-		case DOUBLE:
-		case STRING:
-		case NUMBER:
-		case LIST:
-			return true;
-		default:
-			return false;
-		}
+	public boolean isNativeType() {
+		return nativePrimitiveTypes.contains(this);
 	}
 	
 	/**
@@ -210,6 +312,20 @@ public enum Primitives implements IDatatype {
 	 */
 	public boolean isFunction() {
 		return this == FUNCTION;
+	}
+	
+	/**
+	 * Returns true if this datatype is a variable argument type.
+	 */
+	public boolean isArrayType() {
+		return is_array_type;
+	}
+	
+	/**
+	 * If this type is a varags type, return the non varags type.
+	 */
+	public Primitives getNonArrayType() {
+		return non_array_type;
 	}
 	
 	//----------------
@@ -222,11 +338,11 @@ public enum Primitives implements IDatatype {
 	 * @return
 	 */
 	public static boolean isArrayType(Primitives t) {
-		return (t != null) ? t.isArrayType() : false;
+		return (t != null) ? t.is_array_type : false;
 	}
 	
-	public static boolean isNumber(Primitives typeIn) {
-		return typeIn.isNumber();
+	public static boolean isNumber(Primitives t) {
+		return numberPrimitives.contains(t);
 	}
 	
 	public static boolean isNumber(String typeIn) {
@@ -234,155 +350,62 @@ public enum Primitives implements IDatatype {
 	}
 	
 	public static boolean canBeParameterized(Primitives typeIn) {
-		switch (typeIn) {
-		case LIST:
-		case FUNCTION:
-		case CLASS:
-		case VAR:
-			return true;
-		//case EXCEPTION: return true;
-		default:
-			return false;
-		}
+		return primitivesThatCanBeParameterized.contains(typeIn);
 	}
 	
 	public static boolean canHaveGenerics(Primitives typeIn) {
-		switch (typeIn) {
-		case FUNCTION:
-		case CLASS:
-			return true;
-		default:
-			return false;
-		}
+		return primitivesThatCanHaveGenerics.contains(typeIn);
 	}
 	
-	public static Primitives getDataType(Token token) {
-		return getDataType(token.getKeyword());
+	public static Primitives getPrimitiveType(Token token) {
+		return getPrimitiveType(token.getKeyword());
+	}
+	
+	public static Primitives getPrimitiveType(IKeyword keyword) {
+		if (keyword.isOperator()) return null;
+		return keywordToPrimitiveMap.getOrDefault(keyword, null);
 	}
 	
 	public static Primitives getPrimitiveType(String typeIn) {
 		if (typeIn == null) return null;
-		return switch (typeIn) {
-		case "var" -> VAR;
-		case "[var" -> VAR_A;
-		case "boolean" -> BOOLEAN;
-		case "[boolean" -> BOOLEAN_A;
-		case "char" -> CHAR;
-		case "[char" -> CHAR_A;
-		case "int" -> INT;
-		case "[int" -> INT_A;
-		case "double" -> DOUBLE;
-		case "[double" -> DOUBLE_A;
-		case "number" -> NUMBER;
-		case "[number" -> NUMBER_A;
-		case "string" -> STRING;
-		case "[string" -> STRING_A;
-		case "list" -> LIST;
-		case "[list" -> LIST_A;
-		case "package" -> PACKAGE;
-		default -> null;
-		};
+		return stringValueToPrimitiveMap.getOrDefault(typeIn, null);
 	}
 	
-	public static Primitives getDataType(ReservedWord keyIn) {
-		return (keyIn == null) ? null : switch (keyIn) {
-		case VAR -> VAR;
-		case BOOLEAN -> BOOLEAN;
-		case CHAR -> CHAR;
-		case INT -> INT;
-		case DOUBLE -> DOUBLE;
-		case STRING -> STRING;
-		case NUMBER -> NUMBER;
-		case LIST -> LIST;
-		case VOID -> VOID;
-		case NULL -> NULL;
-		case ENUM -> ENUM;
-		case FUNC -> FUNCTION;
-		case CLASS -> CLASS;
-		default -> null;
-		};
+	public static Primitives getPrimitiveType(JavaDatatype typeIn) {
+		if (typeIn == null) return null;
+		return javaDatatypeToPrimitiveMap.getOrDefault(typeIn, null);
 	}
 	
-	public static Primitives getDataType(JavaDatatype typeIn) {
-		return (typeIn == null) ? null : switch (typeIn) {
-		case VOID -> VOID;
-		case OBJECT -> VAR;
-		case BOOLEAN -> BOOLEAN;
-		case CHAR -> CHAR;
-		case BYTE, SHORT, INT, LONG -> INT;
-		case FLOAT, DOUBLE -> DOUBLE;
-		case STRING -> STRING;
-		case NUMBER -> NUMBER;
-		case CONSTRUCTOR, METHOD -> FUNCTION;
-		case ARRAY -> LIST;
-		case CLASS -> CLASS;
-		case ENUM -> ENUM;
-		case NULL -> NULL;
-		default -> null;
-		};
-	}
-	
-	public static Primitives getDataType(EnvisionObject obj) {
+	public static Primitives getPrimitiveType(EnvisionObject obj) {
 		if (obj instanceof EnvisionVariable env_var) return env_var.getPrimitiveType();
-		if (obj instanceof EnvisionList env_list) return LIST;
-		if (obj instanceof EnvisionFunction env_func) return FUNCTION;
-		if (obj instanceof EnvisionClass env_class) return CLASS;
+		if (obj instanceof EnvisionList) return LIST;
+		if (obj instanceof EnvisionFunction) return FUNCTION;
+		if (obj instanceof EnvisionClass) return CLASS;
 		//if (obj instanceof ClassInstance env_inst) return CLASS_INSTANCE;
 		//if (obj instanceof EnvisionEnum env_enum) return ENUM;
 		//if (obj instanceof EnumValue env_enum_val) return ENUM_TYPE;
-		if (obj instanceof EnvisionCodeFile env_code) return CODE_FILE;
-		if (obj instanceof EnvisionPackage env_pkg) return PACKAGE;
+		if (obj instanceof EnvisionCodeFile) return CODE_FILE;
+		if (obj instanceof EnvisionLangPackage) return PACKAGE;
 		return (obj != null) ? obj.getDatatype().getPrimitive() : null;
 	}
 	
-	public static Primitives getDataType(Object in) {
+	public static Primitives getPrimitiveType(Object in) {
 		//if (in instanceof IKeyword k && k.isOperator()) return OPERATOR;
-		if (in instanceof EnvisionObject env_obj) return getDataType(env_obj);
-		return getDataType(JavaDatatype.getDataType(in));
+		if (in instanceof EnvisionObject env_obj) return getPrimitiveType(env_obj);
+		return getPrimitiveType(JavaDatatype.getDataType(in));
 	}
 	
 	public static Primitives getNumberType(String in) {
-		return getDataType(JavaDatatype.getNumberType(in));
+		return getPrimitiveType(JavaDatatype.getNumberType(in));
 	}
 	
 	public static Primitives getNumberType(Number in) {
-		return getDataType(JavaDatatype.getNumberType(in));
+		return getPrimitiveType(JavaDatatype.getNumberType(in));
 	}
 	
 	public static String getTypeString(Object in) {
-		Primitives t = getDataType(in);
-		return (t != null) ? t.string_type : NULL.string_type;
-	}
-	
-	/**
-	 * Returns true if this datatype can be assigned from the specified
-	 * type.
-	 */
-	public boolean canBeAssignedFrom(Primitives type) {
-		return switch (this) {
-		//these are wildcard values so they should be able to take on any type and any value
-		case VAR -> true;
-		//these types can only ever be assigned by their respective type
-		case ENUM -> this == ENUM;
-		case FUNCTION -> this == FUNCTION;
-		case CLASS -> this == CLASS;
-		//case EXCEPTION: return this == EXCEPTION;
-		//these can never be assigned
-		case VOID, NULL -> false;
-		//variable types
-		case BOOLEAN -> type == BOOLEAN;
-		case CHAR -> type == CHAR;
-		case INT -> type == NUMBER || type == INT;
-		case DOUBLE -> type == NUMBER || type == INT || type == DOUBLE;
-		case STRING -> type == CHAR || type == STRING;
-		case NUMBER -> type == NUMBER || type == INT || type == DOUBLE || type == CHAR;
-		//assume false by default
-		default -> false;
-		};
-	}
-	
-	public boolean isObject() {
-		return this == VAR;
+		Primitives t = getPrimitiveType(in);
+		return (t != null) ? t.string_value : NULL.string_value;
 	}
 	
 }

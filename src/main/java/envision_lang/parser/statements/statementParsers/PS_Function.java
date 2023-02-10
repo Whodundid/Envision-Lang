@@ -4,25 +4,26 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.lang.util.DataModifier;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.StatementParameter;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * Attempts to parse a method declaration statement from tokens.
  * 
  * @author Hunter Bragg
  */
-public class PS_Function extends GenericParser {
+public class PS_Function extends ParserHead {
 	
 	//-------------------------------------------------------------------------------------
 	// Function Declaration Parsing
@@ -75,7 +76,7 @@ public class PS_Function extends GenericParser {
 	//--------------------------------------------------
 	// Envision Code Example:
 	//
-	// This example will automatically initalize the
+	// This example will automatically initialize the
 	// values of a, b and c when they are passed to
 	// Example's init.
 	//
@@ -88,13 +89,13 @@ public class PS_Function extends GenericParser {
 	//
 	//--------------------------------------------------
 	
-	public static Statement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
+	public static ParsedStatement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
 		if (declaration == null) declaration = new ParserDeclaration();
 		checkDeclaration(declaration);
 		
 		//variables used to build the function statement
-		Token name = null, op = null;
-		Token returnType = null;
+		Token<?> name = null, op = null;
+		Token<?> returnType = null;
 		boolean constructor = init;
 		
 		//first check if this function should be handled as an operator overload function
@@ -122,11 +123,11 @@ public class PS_Function extends GenericParser {
 		//internal value used for error outputs
 		String funcType = (constructor) ? "initializer" : "function";
 		//start parsing for function parameters
-		EArrayList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
+		EList<StatementParameter> parameters = getFunctionParameters(operator, funcType);
 		//attempt to parse function body
-		EArrayList<Statement> body = getFunctionBody(constructor);
+		EList<ParsedStatement> body = getFunctionBody(constructor);
 		
-		return new Stmt_FuncDef(name, op, parameters, body, declaration, constructor, operator);
+		return new Stmt_FuncDef(declaration.getStartToken(), name, op, parameters, body, declaration, constructor, operator);
 	}
 	
 	
@@ -146,7 +147,7 @@ public class PS_Function extends GenericParser {
 	 */
 	private static void checkDeclaration(ParserDeclaration declaration) {
 		//check for invalid variable data modifiers
-		if (!DataModifier.checkMethod(declaration.getMods())) {
+		if (!DataModifier.checkFunction(declaration.getMods())) {
 			error("Invalid method data modifiers in '" + declaration.getMods() + "'!");
 		}
 	}
@@ -156,10 +157,10 @@ public class PS_Function extends GenericParser {
 	 * 
 	 * @return The operator Token
 	 */
-	private static Token getOperator() {
+	private static Token<?> getOperator() {
 		if (match(BRACKET_L)) {
 			errorIf(!match(BRACKET_R), "Expected an operator!");
-			return Token.create(ARRAY_OP, "[]", current().line);
+			return Token.create(ARRAY_OP, "[]", current().getLineNum());
 		}
 		else if (match(NUMBER)) {
 			return Token.create(ReservedWord.NUMBER, current());
@@ -176,9 +177,9 @@ public class PS_Function extends GenericParser {
 	 * @param methodType : passed for potential error outputs
 	 * @return A list of all parsed method parameters
 	 */
-	public static EArrayList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
-	public static EArrayList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
-		EArrayList<StatementParameter> parameters = new EArrayList();
+	public static EList<StatementParameter> getFunctionParameters() { return getFunctionParameters(false, "method"); }
+	public static EList<StatementParameter> getFunctionParameters(boolean operator, String funcType) {
+		EList<StatementParameter> parameters = EList.newList();
 		boolean varargs = false;
 		
 		//consume the '(' token for parameter start
@@ -186,12 +187,12 @@ public class PS_Function extends GenericParser {
 		
 		//if the next token is a ')', then there are no parameters
 		if (!check(PAREN_R)) {
-			Token lastType = null;
+ 			Token<?> lastType = null;
 			
 			//If this is an operator function, only read in one parameter
 			if (operator) {
 				//read in a parameter type
-				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
+				if ((checkType(DATATYPE) || check(IDENTIFIER)) && (checkNextNL(VARARGS) || !checkNextNL(COMMA, PAREN_R, ASSIGN))) {
 					lastType = getAdvance();
 				}
 				
@@ -200,7 +201,7 @@ public class PS_Function extends GenericParser {
 				errorIf(match(VARARGS), "An operator function cannot take '...' varaiable arguments!");
 				
 				//get the parameter's name (always required)
-				Token paramName = consume(IDENTIFIER, "Expected parameter name!");
+				Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 				
 				//used for direct value assignment if passed value is null
 				//ex: var thing(int x = 5) ..
@@ -220,14 +221,13 @@ public class PS_Function extends GenericParser {
 					
 					//if there is no type associated with the current parameter, use the last one (if there is one)
 					if ((checkType(DATATYPE) || check(IDENTIFIER, OPERATOR_)) && (checkNext(VARARGS) || !checkNext(COMMA, PAREN_R, ASSIGN))) {
-						lastType = current();
-						advance();
+						lastType = getAdvance();
 					}
 					
 					if (match(VARARGS)) varargs = true;
-					Token paramName = consume(IDENTIFIER, "Expected parameter name!");
+					Token<?> paramName = consume(IDENTIFIER, "Expected parameter name!");
 					
-					Expression assign = null;
+					ParsedExpression assign = null;
 					if (matchType(ASSIGNMENT)) {
 						assign = ExpressionParser.parseExpression();
 					}
@@ -252,92 +252,40 @@ public class PS_Function extends GenericParser {
 	
 	/**
 	 * Gathers all method body statements.
+	 * <p>
+	 * constructors do not necessarily need to specify a body EX: 'init(x, y)'
 	 * 
 	 * @param constructor : don't necessarily have a body
 	 * @return EArrayList<Statement> : list of all parsed method body statements
 	 */
-	public static EArrayList<Statement> getFunctionBody() { return getFunctionBody(false); }
-	public static EArrayList<Statement> getFunctionBody(boolean constructor) {
-		EArrayList<Statement> body = null;
+	public static EList<ParsedStatement> getFunctionBody() { return getFunctionBody(false); }
+	public static EList<ParsedStatement> getFunctionBody(boolean constructor) {
+		EList<ParsedStatement> body = null;
 		
-		//consume newlines
-		//while (match(NEWLINE));
-		
-		//constructors do not necessarily need to specify a body
+		//if this is a normal function definition and not a constructor, require a body
 		if (!constructor) {
-			if (match(LAMBDA)) {
-				body = new EArrayList<Statement>();
+			if (check(LAMBDA)) {
+				body = new EArrayList<>();
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) {
 				body = getBlock(true);
 			}
 			else {
-				(body = new EArrayList<Statement>()).addIfNotNull(declaration());
+				(body = new EArrayList<>()).addIfNotNull(declaration());
 			}
 		}
-		else {
-			if (match(LAMBDA)) {
-				body = new EArrayList<Statement>();
-				body.add(PS_Return.returnStatement());
-			}
-			else if (match(CURLY_L)) body = getBlock(true);
-			else errorIf(!match(SEMICOLON, NEWLINE), "Constructor declaration must be concluded with either a ';' or a new line!");
+		// EX: 'init() -> 5'
+		else if (match(LAMBDA)) {
+			body = new EArrayList<>();
+			body.add(PS_Return.returnStatement());
+		}
+		// EX: 'func test() { return 5 }'
+		else if (match(CURLY_L)) {
+			body = getBlock(true);
 		}
 		
 		return body;
 	}
 	
 }
-
-
-
-
-
-/*
- * From 'public static Statement methodDeclaration(boolean operator, ParserDeclaration declaration) {'
- * 
-System.out.println(declaration);
-
-//variables used to build the method statement
-Token name = null, op = null;
-boolean constructor = false;
-
-//first check if this method should be handled as an operator overload method
-if (operator) {
-	op = getOperator();
-}
-else {
-	if (check(MODULAR_VALUE)) name = consume(MODULAR_VALUE, "Expected a '@' to denote modular naming!");
-	else name = consume(IDENTIFIER, "Expected a valid name!");
-	//check if constructor
-	constructor = checkConstructor(name, declaration);
-}
-
-//if it's not a constructor and it's not an operator then check to see if it could be a variable instead
-if (!operator && !constructor) {
-	if (check(LESS_THAN, COMMA, SEMICOLON, NEWLINE, EOF) || checkType(ASSIGNMENT) || checkType(OPERATOR)) {
-		return varDeclaration(name, declaration);
-	}
-}
-
-//internal value used for error outputs
-String methodType = (constructor) ? "constructor" : "method";
-//determine if this is a modular function declaration
-@Experimental_Envision
-boolean modular = checkModular();
-//start parsing for method parameters
-EArrayList<StatementParameter> parameters = getMethodParameters(operator, methodType);
-//attempt to parse method body
-EArrayList<Statement> body = getMethodBody(constructor);
-
-//build the method statement
-if (modular) {
-	Statement r = new ModularMethodStatement(name, ParserStage.modularValues, parameters, body, declaration);
-	ParserStage.modularValues = null; //clear the values from the parser
-	return r;
-}
-return new MethodDeclarationStatement(name, op, parameters, body, declaration, constructor, operator);
-*/
-
-

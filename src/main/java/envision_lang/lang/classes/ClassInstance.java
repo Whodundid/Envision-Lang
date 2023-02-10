@@ -1,29 +1,30 @@
 package envision_lang.lang.classes;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.DuplicateOverloadError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
-import envision_lang.exceptions.errors.NotAFunctionError;
-import envision_lang.exceptions.errors.UndefinedFunctionError;
-import envision_lang.exceptions.errors.objects.ClassCastError;
-import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionIntClass;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.datatypes.EnvisionVariable;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.FunctionPrototype;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.DuplicateOverloadError;
+import envision_lang.lang.language_errors.error_types.FinalVarReassignmentError;
+import envision_lang.lang.language_errors.error_types.NotAFunctionError;
+import envision_lang.lang.language_errors.error_types.UndefinedFunctionError;
+import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
+import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.ParameterData;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -36,20 +37,20 @@ public class ClassInstance extends EnvisionObject {
 	 * scope and the over-arching class's scope from which this instance
 	 * was defined from.
 	 */
-	protected Scope instanceScope;
+	protected IScope instanceScope;
 	
 	/**
 	 * Used for operator overloading. In the event that a class defines
 	 * specific methods detailing operator functionality, the operators which
 	 * have been overloaded will be statically referenced here.
 	 */
-	protected HashMap<Operator, EnvisionFunction> operators = new HashMap();
+	protected Map<Operator, EnvisionFunction> operators = new HashMap<>();
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	public ClassInstance(EnvisionClass derivingClassIn, Scope instanceScopeIn) {
+	public ClassInstance(EnvisionClass derivingClassIn, IScope instanceScopeIn) {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = instanceScopeIn;
@@ -62,7 +63,7 @@ public class ClassInstance extends EnvisionObject {
 	 * 
 	 * @param derivingClassIn
 	 */
-	protected ClassInstance(EnvisionClass derivingClassIn) {
+	public ClassInstance(EnvisionClass derivingClassIn) {
 		super(derivingClassIn.getDatatype());
 		internalClass = derivingClassIn;
 		instanceScope = new Scope(derivingClassIn.staticScope);
@@ -79,17 +80,12 @@ public class ClassInstance extends EnvisionObject {
 	
 	@Override
 	public String toString() {
-		return getDatatype() + "_" + Integer.toHexString(hashCode());
+		return getDatatype() + "_#" + Integer.toHexString(hashCode());
 	}
 	
 	//---------
 	// Methods
 	//---------
-	
-	/**
-	 * Called during instance initialization.
-	 */
-	//protected void registerNatives() {};
 	
 	/**
 	 * Used to natively handle operator overloads within class instances.
@@ -151,7 +147,7 @@ public class ClassInstance extends EnvisionObject {
 			//first, start by checking if the assignment value is null
 			//in which case, simply assign null to this scope definition
 			if (obj == EnvisionNull.NULL) {
-				interpreter.scope().set(scopeName, internalType, EnvisionNull.NULL);
+				interpreter.scope().setFast(scopeName, internalType, EnvisionNull.NULL);
 				return EnvisionNull.NULL;
 			}
 			
@@ -162,15 +158,8 @@ public class ClassInstance extends EnvisionObject {
 			//check for type mismatch
 			if (isStrong()) CastingUtil.assert_expected_datatype(this_type, asgn_type);
 			
-			//check for exact type matches
-			//this approach does not require value overwriting within the scope
-			if (this_type.compare(asgn_type) && this instanceof EnvisionVariable env_var) {
-				env_var.set(obj);
-				return this;
-			}
-			
 			//assign new value in scope
-			interpreter.scope().set(scopeName, asgn_type, obj);
+			interpreter.scope().setFast(scopeName, asgn_type, obj);
 			
 			//effectively this action can ultimately result in 'this' object's death
 			//within the JVM as 'this' object is removed from the scope's value
@@ -181,14 +170,14 @@ public class ClassInstance extends EnvisionObject {
 		if (op == Operator.EQUALS) {
 			//each native primitive type should have their own method 
 			//of 'equals' to account for cross language design barriers
-			return EnvisionBooleanClass.newBoolean(equals(obj));
+			return EnvisionBooleanClass.valueOf(equals(obj));
 		}
 		
 		//natively support not equals '!='
 		if (op == Operator.NOT_EQUALS) {
 			//each native primitive type should have their own method 
 			//of 'equals' to account for cross language design barriers
-			return EnvisionBooleanClass.newBoolean(!equals(obj));
+			return EnvisionBooleanClass.valueOf(!equals(obj));
 		}
 		
 		throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
@@ -300,8 +289,6 @@ public class ClassInstance extends EnvisionObject {
 		EnvisionObject obj = instanceScope.get(funcName);
 		
 		if (obj == null) {
-			System.out.println("NO FUNC!");
-			System.out.println(this.getScope());
 			throw new UndefinedFunctionError(funcName, this);
 		}
 		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);
@@ -332,14 +319,14 @@ public class ClassInstance extends EnvisionObject {
 		String funcName = proto.getFunctionName();
 		//switch on funcName
 		return switch (funcName) {
-		case "equals" -> EnvisionBooleanClass.newBoolean(equals(args[0]));
-		case "hash" -> EnvisionIntClass.newInt(getObjectHash());
-		case "hexHash" -> EnvisionStringClass.newString(getHexHash());
-		case "isStatic" -> EnvisionBooleanClass.newBoolean(isStatic());
-		case "isFinal" -> EnvisionBooleanClass.newBoolean(isFinal());
-		case "toString" -> EnvisionStringClass.newString(toString());
-		case "type" -> EnvisionStringClass.newString(getDatatype());
-		case "typeString" -> EnvisionStringClass.newString(getTypeString());
+		case "equals" -> EnvisionBooleanClass.valueOf(equals(args[0]));
+		case "hash" -> EnvisionIntClass.valueOf(getObjectHash());
+		case "hexHash" -> EnvisionStringClass.valueOf(getHexHash());
+		case "isStatic" -> EnvisionBooleanClass.valueOf(isStatic());
+		case "isFinal" -> EnvisionBooleanClass.valueOf(isFinal());
+		case "toString" -> EnvisionStringClass.valueOf(toString());
+		case "type" -> EnvisionStringClass.valueOf(getDatatype());
+		case "typeString" -> EnvisionStringClass.valueOf(getTypeString());
 		//case "members" -> EnvisionListClass.newList(EnvisionDatatype.STRING_TYPE, instanceScope.getMethods());
 		//always error if this point is reached
 		default -> throw new UndefinedFunctionError(funcName, this);
@@ -380,11 +367,11 @@ public class ClassInstance extends EnvisionObject {
 	}
 	
 	public boolean executeEquals_i(EnvisionInterpreter interpreter, EnvisionObject obj) {
-		return executeEquals(interpreter, new EnvisionObject[]{obj}).bool_val;
+		return executeEquals(interpreter, new EnvisionObject[]{obj}).get_i();
 	}
 	
 	public boolean executeEquals_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		return executeEquals(interpreter, args).bool_val;
+		return executeEquals(interpreter, args).get_i();
 	}
 	
 	//---------
@@ -394,7 +381,7 @@ public class ClassInstance extends EnvisionObject {
 	/**
 	 * Returns the scope of this class instance.
 	 */
-	public Scope getScope() {
+	public IScope getScope() {
 		return instanceScope;
 	}
 	
@@ -420,7 +407,7 @@ public class ClassInstance extends EnvisionObject {
 	// Setters
 	//---------
 	
-	public void setScope(Scope in) {
+	public void setScope(IScope in) {
 		instanceScope = in;
 	}
 	
@@ -436,7 +423,7 @@ public class ClassInstance extends EnvisionObject {
 	 * Assigns a field value within this instance's scope.
 	 */
 	public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
-		instanceScope.set(name, type, in);
+		instanceScope.setFast(name, type, in);
 		return in;
 	}
 
@@ -475,7 +462,7 @@ public class ClassInstance extends EnvisionObject {
 	 * Returns the list of all operators being overloaded with their
 	 * corresponding overload method.
 	 */
-	public HashMap<Operator, EnvisionFunction> getOperators() {
+	public Map<Operator, EnvisionFunction> getOperators() {
 		return operators;
 	}
 	

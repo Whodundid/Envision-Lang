@@ -2,20 +2,23 @@ package envision_lang.interpreter.util.creationUtil;
 
 import java.util.List;
 
-import envision_lang.exceptions.EnvisionLangError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
+import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import eutil.datatypes.EArrayList;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import eutil.datatypes.util.EList;
+import eutil.debug.PotentiallyBroken;
 import eutil.math.ENumUtil;
 
 /** Utility class designed to help with general object creation. */
@@ -29,15 +32,15 @@ public class ObjectCreator {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/** Wraps the given set of arguments in corresponding EnvisionObjects for internal language data communication. */
-	public static EArrayList<EnvisionObject> createArgs(Object... args) {
-		EArrayList<EnvisionObject> callArgs = new EArrayList();
+	public static EList<EnvisionObject> createArgs(Object... args) {
+		EList<EnvisionObject> callArgs = EList.newList();
 		
 		//return if incomming args is null
 		if (args == null) return callArgs;
 		
 		//wrap each argument into an object
-		for (Object o : args) {
-			callArgs.add(wrap(o));
+		for (int i = 0; i < args.length; i++) {
+			callArgs.add(wrap(args[i]));
 		}
 		
 		return callArgs;
@@ -45,6 +48,7 @@ public class ObjectCreator {
 	
 	/** Wraps the unknown object into an EnvisionObject. If the object was already an EnvisionObject, a casting is performed on the input instead. */
 	public static EnvisionObject wrap(Object in) {
+		if (in == null) return EnvisionNull.NULL;
 		if (in instanceof EnvisionObject env_obj) return env_obj;
 		
 		IDatatype type = IDatatype.dynamicallyDetermineType(in);
@@ -70,8 +74,11 @@ public class ObjectCreator {
 		return createObject(typeIn, valueIn, strongIn, false);
 	}
 	
+	@PotentiallyBroken("I have no idea what the 'passByValue' check is doing..")
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
-		if (typeIn == null) return EnvisionNull.NULL;
+		if (typeIn == null || EnvisionStaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
+			return EnvisionNull.NULL;
+		}
 		
 		//format incomming arguments
 		//convert var type to definitive type
@@ -82,55 +89,65 @@ public class ObjectCreator {
 		EnvisionObject obj = null;
 		
 		//if not primitive, check for default value and furthermore matching datatype
-		if (p_type == null)
+		if (p_type == null) {
 			if (valueIn == null) return EnvisionNull.NULL;
 			else if (valueIn instanceof ClassInstance ci && typeIn.compare(ci.getDatatype())) {
 				return ci;
 			}
+		}
 		
-		//check if creating a variable type
-		if (p_type.isVariableType()) {
+		// !??!   What is this doing   !??!
+		if (p_type.isPassByValue()) {
 			if (defaultIn) {
 				switch (p_type) {
-				case BOOLEAN: return EnvisionBooleanClass.newBoolean();
-				case CHAR: return EnvisionCharClass.newChar();
-				case INT: return EnvisionIntClass.newInt();
+				case BOOLEAN: return EnvisionBooleanClass.defaultValue();
+				case CHAR: return EnvisionCharClass.defaultValue();
+				case INT: return EnvisionIntClass.defaultValue();
 				case NUMBER:
-				case DOUBLE: return EnvisionDoubleClass.newDouble();
-				case STRING: return EnvisionStringClass.newString();
-				default: throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
+				case DOUBLE: return EnvisionDoubleClass.defaultValue();
+				case STRING: return EnvisionStringClass.defaultValue();
+//				case LIST:
+//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
+//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+//					return new_list;
+				default: throw new EnvisionLangError("Invalid Datatype: '" + p_type + "'! This should not be possible!");
 				}
 			}
 			else {
 				switch (p_type) {
-				case BOOLEAN: obj = EnvisionBooleanClass.newBoolean((boolean) valueIn); break;
-				case CHAR: obj = EnvisionCharClass.newChar(charify(valueIn)); break; //charify the input
-				case INT: obj = EnvisionIntClass.newInt(((Number) valueIn).longValue()); break;
-				case DOUBLE: obj = EnvisionDoubleClass.newDouble(((Number) valueIn).doubleValue()); break;
-				case STRING: obj = EnvisionStringClass.newString(stringify(valueIn)); break;
-				case NUMBER: 
-					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.newInt((long) valueIn);
-					else obj = EnvisionDoubleClass.newDouble((double) valueIn);
+				case BOOLEAN: obj = EnvisionBooleanClass.valueOf((boolean) valueIn); break;
+				case CHAR: obj = EnvisionCharClass.valueOf(charify(valueIn)); break; //charify the input
+				case INT: obj = EnvisionIntClass.valueOf((long) valueIn); break;
+				case DOUBLE: obj = EnvisionDoubleClass.valueOf((double) valueIn); break;
+				case STRING: obj = EnvisionStringClass.valueOf(stringify(valueIn)); break;
+				case NUMBER:
+					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.valueOf((long) valueIn);
+					else obj = EnvisionDoubleClass.valueOf((double) valueIn);
 					break;
+//				case LIST:
+//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
+//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+//					return new_list;
 				default:
 					throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
 				}
 			}
 		}
-		
-		//check for other valid primitive types
-		switch (p_type) {
-		case LIST:
-			EnvisionList new_list = EnvisionListClass.newList(typeIn);
-			if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
-			obj = new_list;
-			break;
-			
-		case NULL:
-			obj = EnvisionNull.NULL;
-			break;
-			
-		default: break;
+		else {
+			//check for other valid primitive types
+			switch (p_type) {
+			case LIST:
+				EnvisionList new_list = EnvisionListClass.newList(typeIn);
+				if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
+				obj = new_list;
+				break;
+				
+			case NULL:
+				obj = EnvisionNull.NULL;
+				break;
+				
+			default: break;
+			}
 		}
 		
 		//assign name and strong attribute
@@ -160,6 +177,10 @@ public class ObjectCreator {
 	 */
 	public static char charify(Object input) {
 		if (input == null) return '\0';
+		
+		if (input instanceof Integer i) return Character.valueOf((char) (int) i);
+		if (input instanceof Long l) return Character.valueOf((char) (long) l);
+		if (input instanceof EnvisionInt i) return Character.valueOf((char) (long) i.get_i());
 		
 		String s = String.valueOf(input);
 		

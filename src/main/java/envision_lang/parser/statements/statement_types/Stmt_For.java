@@ -1,29 +1,52 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
+import envision_lang.tokenizer.Token;
+import eutil.datatypes.util.EList;
 
 /** Standard for loop. */
-public class Stmt_For implements Statement {
+public class Stmt_For extends ParsedStatement {
 	
-	public final Statement init;
-	public final Expression cond;
-	public final EArrayList<Expression> post;
-	public final Statement body;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_For(Statement initIn, Expression condIn, Expression postIn, Statement bodyIn) {
-		this(initIn, condIn, new EArrayList<Expression>(postIn), bodyIn);
+	public final ParsedStatement init;
+	public final ParsedExpression cond;
+	public final EList<ParsedExpression> post;
+	public final ParsedStatement body;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_For(Token<?> start,
+					ParsedStatement initIn,
+					ParsedExpression condIn,
+					ParsedExpression postIn,
+					ParsedStatement bodyIn)
+	{
+		this(start, initIn, condIn, (postIn != null) ? EList.newList(postIn) : null, bodyIn);
 	}
 	
-	public Stmt_For(Statement initIn, Expression condIn, EArrayList<Expression> postIn, Statement bodyIn) {
+	public Stmt_For(Token<?> start,
+					ParsedStatement initIn,
+					ParsedExpression condIn,
+					EList<ParsedExpression> postIn,
+					ParsedStatement bodyIn)
+	{
+		super(start);
 		init = initIn;
 		cond = condIn;
 		post = postIn;
 		body = bodyIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -32,11 +55,6 @@ public class Stmt_For implements Statement {
 		String p = (post != null) ? " " + post.toString() : "";
 		String b = (body != null) ? " " + body + " " : "";
 		return "for (" + i + ";" + c + ";" + p + ") {" + b + "}";
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
 	}
 	
 	@Override

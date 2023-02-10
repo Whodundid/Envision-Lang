@@ -1,32 +1,39 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class Stmt_Catch implements Statement {
+public class Stmt_Catch extends ParsedStatement {
 	
-	public final Token type;
-	public final Token var;
-	public final EArrayList<Statement> body;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_Catch(Token typeIn, Token varIn, EArrayList<Statement> bodyIn) {
+	public final Token<?> type;
+	public final Token<?> var;
+	public final EList<ParsedStatement> body;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Catch(Token<?> start, Token<?> typeIn, Token<?> varIn, EList<ParsedStatement> bodyIn) {
+		super(start);
 		type = typeIn;
 		var = varIn;
 		body = bodyIn;
 	}
 	
+	//===========
+	// Overrides
+	//===========
+	
 	@Override
 	public String toString() {
 		String b = (body != null && body.isEmpty()) ? "" : " " + body + " ";
-		return "catch (" + type.lexeme + " " + var.lexeme + ") {" + b + "}";
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
+		return "catch (" + type.getLexeme() + " " + var.getLexeme() + ") {" + b + "}";
 	}
 	
 	@Override

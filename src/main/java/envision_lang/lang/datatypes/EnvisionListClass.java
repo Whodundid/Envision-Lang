@@ -8,13 +8,13 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
-public class EnvisionListClass extends EnvisionClass {
+public final class EnvisionListClass extends EnvisionClass {
 
 	/**
 	 * The singular, static List class for which all Envision:List
@@ -22,6 +22,9 @@ public class EnvisionListClass extends EnvisionClass {
 	 */
 	public static final EnvisionListClass LIST_CLASS = new EnvisionListClass();
 	
+	/**
+	 * The set of functions that a list is capable of performing.
+	 */
 	private static final IPrototypeHandler LIST_PROTOTYPES = new IPrototypeHandler();
 	
 	static {
@@ -32,7 +35,7 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("contains", BOOLEAN, VAR).assignDynamicClass(IFunc_contains.class);
 		LIST_PROTOTYPES.define("copy", LIST).assignDynamicClass(IFunc_copy.class);
 		LIST_PROTOTYPES.define("fill", LIST, VAR_A).assignDynamicClass(IFunc_fill.class);
-		LIST_PROTOTYPES.define("flip", LIST).assignDynamicClass(IFunc_flip.class);
+		LIST_PROTOTYPES.define("reverse", LIST).assignDynamicClass(IFunc_reverse.class);
 		LIST_PROTOTYPES.define("get", VAR, INT).assignDynamicClass(IFunc_get.class);
 		LIST_PROTOTYPES.define("getFirst", VAR).assignDynamicClass(IFunc_getFirst.class);
 		LIST_PROTOTYPES.define("getLast", VAR).assignDynamicClass(IFunc_getLast.class);
@@ -45,17 +48,20 @@ public class EnvisionListClass extends EnvisionClass {
 		LIST_PROTOTYPES.define("notContains", BOOLEAN, VAR).assignDynamicClass(IFunc_notContains.class);
 		LIST_PROTOTYPES.define("push", LIST, VAR).assignDynamicClass(IFunc_push.class);
 		LIST_PROTOTYPES.define("pop", VAR).assignDynamicClass(IFunc_pop.class);
+		LIST_PROTOTYPES.define("random", VAR).assignDynamicClass(IFunc_random.class);
 		LIST_PROTOTYPES.define("remove", VAR, INT).assignDynamicClass(IFunc_remove.class);
 		LIST_PROTOTYPES.define("removeFirst", VAR).assignDynamicClass(IFunc_removeFirst.class);
 		LIST_PROTOTYPES.define("removeLast", VAR).assignDynamicClass(IFunc_removeLast.class);
 		LIST_PROTOTYPES.define("set", LIST, INT, VAR).assignDynamicClass(IFunc_set.class);
 		LIST_PROTOTYPES.define("setFirst", LIST, VAR).assignDynamicClass(IFunc_setFirst.class);
 		LIST_PROTOTYPES.define("setLast", LIST, VAR).assignDynamicClass(IFunc_setLast.class);
+		LIST_PROTOTYPES.define("setSize", LIST, INT);
 		LIST_PROTOTYPES.define("shiftLeft", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftLeft.class);
 		LIST_PROTOTYPES.define("shiftRight", LIST).addOverload(LIST, INT).assignDynamicClass(IFunc_shiftRight.class);
 		LIST_PROTOTYPES.define("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
 		LIST_PROTOTYPES.define("size", INT).assignDynamicClass(IFunc_size.class);
 		LIST_PROTOTYPES.define("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
+		LIST_PROTOTYPES.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
 	}
 	
 	//--------------
@@ -77,7 +83,7 @@ public class EnvisionListClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionList newList() { return newList(StaticTypes.VAR_TYPE); }
+	public static EnvisionList newList() { return newList(EnvisionStaticTypes.VAR_TYPE); }
 	public static EnvisionList newList(IDatatype type) {
 		EnvisionList list = new EnvisionList(type);
 		LIST_CLASS.defineScopeMembers(list);
@@ -86,8 +92,14 @@ public class EnvisionListClass extends EnvisionClass {
 	
 	public static EnvisionList newList(IDatatype type, List<? extends EnvisionObject> data) {
 		EnvisionList list = newList(type);
-		list.getList().ensureCapacity(data.size());
+		list.getInternalList().ensureCapacity(data.size());
 		for (var o : data) list.add(o);
+		return list;
+	}
+	
+	public static EnvisionList newList(int initialSize) {
+		EnvisionList list = new EnvisionList(initialSize);
+		LIST_CLASS.defineScopeMembers(list);
 		return list;
 	}
 	
@@ -126,6 +138,14 @@ public class EnvisionListClass extends EnvisionClass {
 	//---------------------------
 	// Instance Member Functions
 	//---------------------------
+	
+	public static class IFunc_toString<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_toString() { super(STRING, "toString"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			var toString = inst.convertToString(interpreter);
+			ret(EnvisionStringClass.valueOf(toString));
+		}
+	}
 	
 	/**
 	 * Adds an object to the current list instance.
@@ -242,10 +262,10 @@ public class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the list with elements in reversed order
 	 */
-	public static class IFunc_flip<E extends EnvisionList> extends InstanceFunction<E> {
-		public IFunc_flip() { super(LIST, "flip"); }
+	public static class IFunc_reverse<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_reverse() { super(LIST, "reverse"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst.flip());
+			ret(inst.reverse());
 		}
 	}
 	
@@ -358,6 +378,18 @@ public class EnvisionListClass extends EnvisionClass {
 		public IFunc_pop() { super(VAR, "pop"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.pop());
+		}
+	}
+	
+	/**
+	 * Returns a random element from this list.
+	 * 
+	 * @return Random element in this list
+	 */
+	public static class IFunc_random<E extends EnvisionList> extends InstanceFunction<E> {
+		public IFunc_random() { super(VAR, "random"); }
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			ret(inst.random());
 		}
 	}
 	

@@ -2,20 +2,18 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.ArgLengthError;
-import envision_lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.ArgLengthError;
+import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.StaticTypes;
 
-public class EnvisionIntClass extends EnvisionClass {
+public final class EnvisionIntClass extends EnvisionNumberClass {
 
 	/**
 	 * The singular, static int class for which all EnvisionInt
@@ -29,10 +27,41 @@ public class EnvisionIntClass extends EnvisionClass {
 	private static final IPrototypeHandler INT_PROTOS = new IPrototypeHandler();
 	
 	static {
-		INT_PROTOS.define("get", INT).assignDynamicClass(IFunc_get.class);
-		INT_PROTOS.define("set", INT).assignDynamicClass(IFunc_set.class);
-		INT_PROTOS.define("min", INT, INT).assignDynamicClass(IFunc_min.class);
-		INT_PROTOS.define("max", INT, INT).assignDynamicClass(IFunc_min.class);
+		// no integer prototypes
+	}
+	
+	/**
+	 * Internally caches low-value integers to reduce overall integer
+	 * instantiation.
+	 * <p>
+	 * This range of what constitutes a low/high value is configurable as a
+	 * Envision VM argument.
+	 * <p>
+	 * Java Integer.IntegerCache heavily referenced.
+	 * 
+	 * @author Hunter Bragg
+	 */
+	private static final class EnvisionIntegerCache {
+		static final int low = -128;
+		static final int high;
+		static final EnvisionInt[] cache;
+		
+		static {
+			int h = 127;
+			// make configurable in Envision VM args
+			high = h;
+			
+			int size = (high - low) + 1;
+			
+			EnvisionInt[] c = new EnvisionInt[size];
+			int j = low;
+			for (int i = 0; i < c.length; i++) {
+				c[i] = newInt(j++);
+			}
+			cache = c;
+		}
+		
+		private EnvisionIntegerCache() {}
 	}
 	
 	//--------------
@@ -53,8 +82,8 @@ public class EnvisionIntClass extends EnvisionClass {
 	@Override
 	protected void registerStaticNatives() {
 		staticScope.defineFunction(new IFunc_static_valueOf());
-		staticScope.define("MIN_VALUE", StaticTypes.INT_TYPE, EnvisionInt.MIN_VALUE);
-		staticScope.define("MAX_VALUE", StaticTypes.INT_TYPE, EnvisionInt.MAX_VALUE);
+		staticScope.define("MIN_VALUE", EnvisionStaticTypes.INT_TYPE, EnvisionInt.MIN_VALUE);
+		staticScope.define("MAX_VALUE", EnvisionStaticTypes.INT_TYPE, EnvisionInt.MAX_VALUE);
 	}
 	
 	//---------------------
@@ -62,13 +91,58 @@ public class EnvisionIntClass extends EnvisionClass {
 	//---------------------
 	
 	public static EnvisionInt newInt() { return newInt(0); }
-	public static EnvisionInt newInt(boolean value) { return newInt(value ? 1 : 0); }
-	public static EnvisionInt newInt(char value) { return newInt((int) value); }
+	public static EnvisionInt newInt(boolean value) { return newInt(value ? 1L : 0L); }
+	public static EnvisionInt newInt(char value) { return newInt((long) value); }
 	public static EnvisionInt newInt(EnvisionNumber value) { return newInt(value.intVal_i()); }
-	public static EnvisionInt newInt(Number value) {
+	public static EnvisionInt newInt(long value) {
 		EnvisionInt i = new EnvisionInt(value);
 		INT_CLASS.defineScopeMembers(i);
 		return i;
+	}
+
+	public static EnvisionInt defaultValue() {
+		return EnvisionInt.ZERO;
+	}
+	
+	/** Return back direct instances. */
+	public static EnvisionInt valueOf(EnvisionInt value) { return value; }
+	public static EnvisionInt valueOf(boolean value) { return valueOf((value) ? 1L : 0L); }
+	public static EnvisionInt valueOf(char value) { return valueOf((long) value); }
+
+	/**
+	 * Converts the given EnvisionNumber value into an EnvisionInt.
+	 * 
+	 * @param value The EnvisionNumber to convert to an EnvisionInt
+	 * 
+	 * @return An EnvisionInt made from the incoming value
+	 */
+	public static EnvisionInt valueOf(EnvisionNumber value) {
+		// return direct instances
+		if (value instanceof EnvisionInt i) return i;
+		
+		long int_val = value.intVal_i();
+		return valueOf(int_val);
+	}
+	
+	/**
+	 * Wraps the given long value within an EnvisionInt.
+	 * 
+	 * @param value The long to wrap into an EnvisionInt
+	 * 
+	 * @return An EnvisionInt made from the incoming value
+	 */
+	public static EnvisionInt valueOf(long value) {
+		if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+			return newInt(value);
+		}
+		
+		int i = (int) value;
+		
+		if (i >= EnvisionIntegerCache.low && i <= EnvisionIntegerCache.high) {
+			return EnvisionIntegerCache.cache[i + (-EnvisionIntegerCache.low)];
+		}
+		
+		return newInt(value);
 	}
 	
 	//-----------
@@ -76,13 +150,13 @@ public class EnvisionIntClass extends EnvisionClass {
 	//-----------
 	
 	@Override
-	public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		//bypass class construct for primitive type
 		return buildInstance(interpreter, args);
 	}
 	
 	@Override
-	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionInt int_val = null;
 		
 		//if no args, return default char instance
@@ -97,8 +171,8 @@ public class EnvisionIntClass extends EnvisionClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
-			if (arg_val instanceof EnvisionNumber n) int_val = n.intVal();
-			if (arg_val instanceof EnvisionBoolean b) int_val = new EnvisionInt((b.bool_val) ? 1l : 0l);
+			else if (arg_val instanceof EnvisionNumber n) int_val = n.intVal();
+			else if (arg_val instanceof EnvisionBoolean b) int_val = new EnvisionInt((b.bool_val) ? 1l : 0l);
 			
 			if (int_val == null)
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");
@@ -118,43 +192,6 @@ public class EnvisionIntClass extends EnvisionClass {
 		INT_PROTOS.defineOn(inst);
 	}
 	
-	//---------------------------
-	// Instance Member Functions
-	//---------------------------
-	
-	private static class IFunc_get<E extends EnvisionInt> extends InstanceFunction<E> {
-		public IFunc_get() { super(INT, "get"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionIntClass.newInt(inst.int_val));
-		}
-	}
-	
-	private static class IFunc_set<E extends EnvisionInt> extends InstanceFunction<E> {
-		public IFunc_set() { super(INT, "set", INT); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			inst.int_val = ((EnvisionInt) args[0]).int_val;
-			ret(inst);
-		}
-	}
-	
-	private static class IFunc_min<E extends EnvisionInt> extends InstanceFunction<E> {
-		public IFunc_min() { super(INT, "min", INT); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionInt in = (EnvisionInt) args[0];
-			long min = (inst.int_val <= in.int_val) ? inst.int_val : in.int_val;
-			ret(EnvisionIntClass.newInt(min));
-		}
-	}
-	
-	private static class IFunc_max<E extends EnvisionInt> extends InstanceFunction<E> {
-		public IFunc_max() { super(INT, "max", INT); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionInt in = (EnvisionInt) args[0];
-			long max = (inst.int_val >= in.int_val) ? inst.int_val : in.int_val;
-			ret(EnvisionIntClass.newInt(max));
-		}
-	}
-	
 	//-------------------------
 	// Static Member Functions
 	//-------------------------
@@ -166,7 +203,7 @@ public class EnvisionIntClass extends EnvisionClass {
 			setStatic();
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionNumber env_num) ret(EnvisionIntClass.newInt(env_num));
+			if (args[0] instanceof EnvisionNumber env_num) ret(EnvisionIntClass.valueOf(env_num));
 			else throw new EnvisionLangError("Invalid type -- should not have reached here!");
 		}
 	}

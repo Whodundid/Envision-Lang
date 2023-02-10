@@ -1,67 +1,58 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.InvalidTargetError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.OperatorOverloadHandler;
-import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
+import envision_lang.interpreter.util.OperatorOverloadHandler;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.InvalidTargetError;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Unary;
 import envision_lang.parser.expressions.expression_types.Expr_Var;
 import envision_lang.tokenizer.Operator;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class IE_Unary extends ExpressionExecutor<Expr_Unary> {
+public class IE_Unary extends AbstractInterpreterExecutor {
 
-	public IE_Unary(EnvisionInterpreter in) {
-		super(in);
-	}
-
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Unary e) {
-		return new IE_Unary(in).run(e);
-	}
-	
-	@Override
-	public EnvisionObject run(Expr_Unary expression) {
+	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Unary expression) {
 		Operator op = expression.operator;
-		Expression left = expression.left;
-		Expression right = expression.right;
+		ParsedExpression left = expression.left;
+		ParsedExpression right = expression.right;
 		
-		//handle left hand operator (!x)
+		// handle left hand operator (!x)
 		if (left == null) {
-			//check for class level operator overloading
-			if (evaluate(right) instanceof ClassInstance inst) {
-				return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, null);
+			// check for class level operator overloading
+			if (interpreter.evaluate(right) instanceof ClassInstance inst) {
+				return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, inst);
 			}
 		}
-		//check for post increment/decrement (x++)
+		// check for post increment/decrement (x++)
 		else if (left instanceof Expr_Var var) {
 			String scopeName = var.getName();
-			EnvisionObject l = evaluate(var);
+			EnvisionObject l = interpreter.evaluate(var);
 			
-			//check for class level operator overloading
+			// check for class level operator overloading
 			if (l instanceof ClassInstance class_inst) {
 				EnvisionObject obj = OperatorOverloadHandler.handleOverload(interpreter,
-															  scopeName,
-															  Operator.makePost(op),
-															  class_inst,
-															  null);
+															  				scopeName,
+															  				Operator.makePost(op),
+															  				class_inst,
+															  				null);
 				return obj;
 			}
 		}
 		else if (left instanceof Expr_Compound ce) {
-			EArrayList<Expression> expressions = ce.expressions;
+			EList<ParsedExpression> expressions = ce.expressions;
 			EnvisionList l = EnvisionListClass.newList();
 			
-			for (Expression e : expressions) {
+			for (ParsedExpression e : expressions) {
 				if (e == null) throw new EnvisionLangError("The expression is null! This really shouldn't be possible!");
 				if (!(e instanceof Expr_Var)) throw new InvalidTargetError("Expected a Variable Expression but got a " + e.getClass().getSimpleName() + "!");
-				EnvisionObject result = evaluate(e);
+				EnvisionObject result = interpreter.evaluate(e);
 				l.add(result);
 			}
 			

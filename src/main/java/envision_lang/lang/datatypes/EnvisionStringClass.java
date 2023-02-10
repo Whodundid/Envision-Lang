@@ -2,17 +2,17 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.ArgLengthError;
-import envision_lang.exceptions.errors.InvalidArgumentError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.internal.EnvisionNull;
-import envision_lang.lang.internal.IPrototypeHandler;
-import envision_lang.lang.internal.InstanceFunction;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.IPrototypeHandler;
+import envision_lang.lang.functions.InstanceFunction;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.ArgLengthError;
+import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
 import envision_lang.lang.natives.Primitives;
 
 public class EnvisionStringClass extends EnvisionClass {
@@ -37,8 +37,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		STRING_PROTOS.define("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
 		STRING_PROTOS.define("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
 		STRING_PROTOS.define("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
-		STRING_PROTOS.define("get", STRING).assignDynamicClass(IFunc_get.class);
-		STRING_PROTOS.define("set", STRING, STRING).assignDynamicClass(IFunc_set.class);
+		STRING_PROTOS.define("reverse", STRING).assignDynamicClass(IFunc_reverse.class);
 		STRING_PROTOS.define("toUpperCase", STRING).assignDynamicClass(IFunc_toUpperCase.class);
 		STRING_PROTOS.define("toLowerCase", STRING).assignDynamicClass(IFunc_toLowerCase.class);
 		STRING_PROTOS.define("substring", STRING, INT).addOverload(STRING, INT, INT).assignDynamicClass(IFunc_substring.class);
@@ -82,9 +81,16 @@ public class EnvisionStringClass extends EnvisionClass {
 	}
 	
 	public static EnvisionString newStrting(EnvisionObject value) {
-		EnvisionString str = new EnvisionString(value);
+		String str_val = null;
+		if (value == null) str_val = EnvisionNull.NULL.getTypeString();
+		else str_val = value.getTypeString();
+		EnvisionString str = new EnvisionString(str_val);
 		STRING_CLASS.defineScopeMembers(str);
 		return str;
+	}
+	
+	public static EnvisionString defaultValue() {
+		return EnvisionString.EMPTY_STRING;
 	}
 	
 	/**
@@ -97,12 +103,23 @@ public class EnvisionStringClass extends EnvisionClass {
 	 *         object
 	 */
 	public static EnvisionString valueOf(EnvisionObject value) {
-		String str_val = null;
-		if (value == null) str_val = EnvisionNull.NULL.getTypeString();
-		else str_val = value.getTypeString();
-		EnvisionString str = new EnvisionString(str_val);
-		STRING_CLASS.defineScopeMembers(str);
-		return str;
+		if (value instanceof EnvisionString s) return s;
+		return newString(value);
+	}
+	
+	public static EnvisionString valueOf(StringBuilder value) {
+		if (value == null || value.isEmpty()) return EnvisionString.EMPTY_STRING;
+		return newString(value);
+	}
+	
+	public static EnvisionString valueOf(String value) {
+		if (value.isEmpty()) return EnvisionString.EMPTY_STRING;
+		return newString(value);
+	}
+	
+	public static EnvisionString valueOf(Object value) {
+		if (value instanceof String s && s.isEmpty()) return EnvisionString.EMPTY_STRING;
+		return newString(value);
 	}
 	
 	/**
@@ -114,7 +131,13 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(EnvisionString a, EnvisionString b) {
-		return newString(a.string_val.append(b.string_val));
+		return valueOf(a.string_val.append(b.string_val));
+	}
+	
+	public static EnvisionString concatenate(EnvisionInterpreter interpreter, EnvisionObject a, EnvisionObject b) {
+		var a_str = EnvisionStringFormatter.formatPrint(interpreter, a, true);
+		var b_str = EnvisionStringFormatter.formatPrint(interpreter, b, true);
+		return valueOf(a_str + b_str);
 	}
 	
 	/**
@@ -126,7 +149,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(String a, EnvisionString b) {
-		return newString(a + b.string_val);
+		return valueOf(a + b.string_val);
 	}
 	
 	/**
@@ -138,7 +161,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(EnvisionString a, String b) {
-		return newString(a.string_val + b);
+		return valueOf(a.string_val + b);
 	}
 	
 	/**
@@ -150,7 +173,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(String a, String b) {
-		return newString(a + b);
+		return valueOf(a + b);
 	}
 	
 	//-----------
@@ -168,7 +191,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		EnvisionString str = null;
 		
 		//if no args, return default string instance
-		if (args.length == 0) str = new EnvisionString();
+		if (args.length == 0) str = EnvisionString.EMPTY_STRING;
 		//ensure there is at most 1 argument being passed
 		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
 		//otherwise, attempt to create from passed args
@@ -178,11 +201,11 @@ public class EnvisionStringClass extends EnvisionClass {
 			//don't accept null arguments
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
-			str = new EnvisionString(arg_val);
+			str = valueOf(arg_val);
 		}
 		
 		//define scope members
-		defineScopeMembers(str);
+		//defineScopeMembers(str);
 		
 		//return built list instance
 		return str;
@@ -209,7 +232,7 @@ public class EnvisionStringClass extends EnvisionClass {
 			EnvisionObject obj = args[0];
 			boolean eq = false;
 			if (obj instanceof EnvisionString env_str) eq = inst.string_val.equals(env_str.string_val);
-			EnvisionBoolean eq_obj = EnvisionBooleanClass.newBoolean(eq);
+			EnvisionBoolean eq_obj = EnvisionBooleanClass.valueOf(eq);
 			ret(eq_obj);
 		}
 	}
@@ -288,23 +311,10 @@ public class EnvisionStringClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_get<E extends EnvisionString> extends InstanceFunction<E> {
-		public IFunc_get() { super(STRING, "get"); }
+	private static class IFunc_reverse<E extends EnvisionString> extends InstanceFunction<E> {
+		public IFunc_reverse() { super(STRING, "reverse"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst);
-		}
-	}
-	
-	/**
-	 * Internally assign the value of this EnvisionString's Java:String value.
-	 * 
-	 * @param val The new String value
-	 * @return This EnvisionString
-	 */
-	private static class IFunc_set<E extends EnvisionString> extends InstanceFunction<E> {
-		public IFunc_set() { super(STRING, "set", VAR); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(inst.set_i(String.valueOf(args[0])));
+			ret(inst.reverse());
 		}
 	}
 	
@@ -340,7 +350,7 @@ public class EnvisionStringClass extends EnvisionClass {
 			setStatic();
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.newString(args[0]));
+			ret(EnvisionStringClass.valueOf(args[0]));
 		}
 	}
 	

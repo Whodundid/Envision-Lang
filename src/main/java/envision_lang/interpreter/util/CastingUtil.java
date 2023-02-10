@@ -1,10 +1,7 @@
 package envision_lang.interpreter.util;
 
-import static envision_lang.lang.natives.Primitives.*;
+import static envision_lang.lang.natives.EnvisionStaticTypes.*;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.VariableCastError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionCharClass;
@@ -13,6 +10,9 @@ import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionNumber;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.language_errors.error_types.VariableCastError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 
@@ -32,7 +32,7 @@ public class CastingUtil {
 			throw new InvalidDatatypeError(errC.err(toType));
 		}
 		
-		//only allow nubers to be cast
+		//only allow numbers to be cast
 		if (!(in instanceof EnvisionNumber)) {
 			throw new InvalidDatatypeError(errC.err(in.getTypeString()));
 		}
@@ -66,15 +66,6 @@ public class CastingUtil {
 			throw new EnvisionLangError("CastingUtil checkType: null type!");
 		}
 		
-		//grab primitive types
-		Primitives expected_ptype = expected.getPrimitive();
-		Primitives toCheck_ptype = toCheck.getPrimitive();
-		
-		//check for null passes
-		if (toCheck_ptype == Primitives.NULL) {
-			return;
-		}
-		
 		//-----------------------------------------------------------------------------
 		// While this system works, it does not account for these kinds of situations
 		//
@@ -86,16 +77,19 @@ public class CastingUtil {
 		//-----------------------------------------------------------------------------
 		
 		//accept any type if the base is 'var'
-		if (expected_ptype == Primitives.VAR) return;
+		if (VAR_TYPE.compare(expected)) return;
+		
+		//accept all incoming null values
+		if (NULL_TYPE.compare(toCheck)) return;
 		
 		//check if a char is going into a string
-		if (expected_ptype == STRING && toCheck_ptype == CHAR) return;
+		if (STRING_TYPE.compare(expected) && CHAR_TYPE.compare(toCheck)) return;
 		
 		//check if an int or double is going into number
-		if (expected_ptype == NUMBER && toCheck_ptype.isNumber() || toCheck_ptype == BOOLEAN) return;
+		if (NUMBER_TYPE.compare(expected) && toCheck.isNumber() || BOOL_TYPE.compare(toCheck)) return;
 		
 		//check if an int is going into a double
-		if (expected_ptype == DOUBLE && toCheck_ptype == INT) return;
+		if (DOUBLE_TYPE.compare(expected) && INT_TYPE.compare(toCheck)) return;
 		
 		//if none of above, check for exact datatype match
 		if (!expected.compare(toCheck)) {
@@ -125,11 +119,11 @@ public class CastingUtil {
 			var charVal = (char) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> EnvisionCharClass.newChar(charVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(charVal);
-			case INT -> EnvisionIntClass.newInt(charVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(charVal);
-			case STRING -> EnvisionStringClass.newString(charVal);
+			case CHAR -> EnvisionCharClass.valueOf(charVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(charVal);
+			case INT -> EnvisionIntClass.valueOf(charVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(charVal);
+			case STRING -> EnvisionStringClass.valueOf(charVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -139,11 +133,11 @@ public class CastingUtil {
 			var boolVal = (boolean) varIn.get_i();
 			
 			return switch (to) {
-			case CHAR -> EnvisionCharClass.newChar(boolVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(boolVal);
-			case INT -> EnvisionIntClass.newInt(boolVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(boolVal);
-			case STRING -> EnvisionStringClass.newString(boolVal);
+			case CHAR -> EnvisionCharClass.valueOf(boolVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(boolVal);
+			case INT -> EnvisionIntClass.valueOf(boolVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(boolVal);
+			case STRING -> EnvisionStringClass.valueOf(boolVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -153,10 +147,10 @@ public class CastingUtil {
 			
 			return switch (to) {
 			//case CHAR -> EnvisionCharClass.newChar(longVal);
-			case BOOLEAN -> EnvisionBooleanClass.newBoolean(longVal != 0);
-			case INT -> EnvisionIntClass.newInt(longVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(longVal);
-			case STRING -> EnvisionStringClass.newString(longVal);
+			case BOOLEAN -> EnvisionBooleanClass.valueOf(longVal != 0);
+			case INT -> EnvisionIntClass.valueOf(longVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(longVal);
+			case STRING -> EnvisionStringClass.valueOf(longVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}
@@ -167,9 +161,9 @@ public class CastingUtil {
 			return switch (to) {
 			//case CHAR -> EnvisionCharClass.newChar(doubleVal);
 			//case BOOLEAN -> EnvisionBooleanClass.newBoolean(doubleVal);
-			case INT -> EnvisionIntClass.newInt(doubleVal);
-			case NUMBER, DOUBLE -> EnvisionDoubleClass.newDouble(doubleVal);
-			case STRING -> EnvisionStringClass.newString(doubleVal);
+			case INT -> EnvisionIntClass.valueOf((long) doubleVal);
+			case NUMBER, DOUBLE -> EnvisionDoubleClass.valueOf(doubleVal);
+			case STRING -> EnvisionStringClass.valueOf(doubleVal);
 			default -> throw new VariableCastError("Invalid cast type: " + typeIn + "!");
 			};
 		}

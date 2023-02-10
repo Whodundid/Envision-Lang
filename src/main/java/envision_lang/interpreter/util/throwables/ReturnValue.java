@@ -1,7 +1,7 @@
 package envision_lang.interpreter.util.throwables;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.EnvisionNull;
+import envision_lang.lang.datatypes.EnvisionNull;
 
 /**
  * A means of returning data across method/class scopes within the
@@ -83,6 +83,16 @@ public class ReturnValue extends RuntimeException {
 	public static ReturnValue wrap(EnvisionObject object) {
 		instance.result = object;
 		return instance;
+	}
+	
+	/**
+	 * Wraps the given EnvisionObject into this ReturnValue's instance
+	 * and immediately throws it to initiate the return.
+	 * 
+	 * @param object The EnvisonObject to return
+	 */
+	public static void ret(EnvisionObject object) {
+		throw wrap(object);
 	}
 	
 	//---------

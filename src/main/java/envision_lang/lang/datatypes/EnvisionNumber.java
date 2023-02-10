@@ -1,7 +1,9 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.errors.ArithmeticError;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.language_errors.error_types.ArithmeticError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * An abstract script variable representing a number with or without a
@@ -9,7 +11,11 @@ import envision_lang.lang.classes.EnvisionClass;
  * 
  * @author Hunter Bragg
  */
-public abstract class EnvisionNumber extends EnvisionVariable {
+public abstract sealed class EnvisionNumber<TYPE extends Number> extends EnvisionVariable<TYPE>
+	permits EnvisionInt, EnvisionDouble
+{
+	
+	public static final IDatatype NUMBER_TYPE = EnvisionStaticTypes.NUMBER_TYPE;
 	
 	//--------------
 	// Constructors
@@ -62,13 +68,25 @@ public abstract class EnvisionNumber extends EnvisionVariable {
 	 */
 	public abstract EnvisionDouble doubleVal();
 	
+	
+	@Override
+	public Number convertToJavaObject() {
+		return doubleVal_i();
+	}
+	
 	//-----------------------
 	// Static Helper Methods
 	//-----------------------
 	
 	/** Throws / by zero error. */
-	protected static void div0(Number a, Number b) {
-		if (b.doubleValue() == 0) {
+	protected static void div0_l(long a, long b) {
+		if (b == 0) {
+			throw new ArithmeticError("("+a+" / "+b+") error! Division by zero!");
+		}
+	}
+	
+	protected static void div0_d(double a, double b) {
+		if (b == 0) {
 			throw new ArithmeticError("("+a+" / "+b+") error! Division by zero!");
 		}
 	}

@@ -1,17 +1,16 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.NoOverloadError;
-import envision_lang.exceptions.errors.NullVariableError;
-import envision_lang.exceptions.errors.objects.ClassCastError;
-import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.functions.FunctionPrototype;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.language_errors.error_types.NoOverloadError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
+import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
+import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -20,35 +19,50 @@ import envision_lang.tokenizer.Operator;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionDouble extends EnvisionNumber {
+public final class EnvisionDouble extends EnvisionNumber<Double> {
 	
+	public static final IDatatype DOUBLE_TYPE = EnvisionStaticTypes.DOUBLE_TYPE;
+
 	public static final EnvisionDouble MIN_VALUE = EnvisionDoubleClass.newDouble(Double.MIN_VALUE);
+	public static final EnvisionDouble MIN_NORMAL = EnvisionDoubleClass.newDouble(Double.MIN_NORMAL);
+	public static final EnvisionDouble MIN_EXPONENT = EnvisionDoubleClass.newDouble(Double.MIN_EXPONENT);
 	public static final EnvisionDouble MAX_VALUE = EnvisionDoubleClass.newDouble(Double.MAX_VALUE);
+	public static final EnvisionDouble MAX_EXPONENT = EnvisionDoubleClass.newDouble(Double.MAX_EXPONENT);
+	public static final EnvisionDouble NaN = EnvisionDoubleClass.newDouble(Double.NaN);
+	public static final EnvisionDouble POSITIVE_INFINITY = EnvisionDoubleClass.newDouble(Double.POSITIVE_INFINITY);
+	public static final EnvisionDouble NEGATIVE_INFINITY = EnvisionDoubleClass.newDouble(Double.NEGATIVE_INFINITY);
 	
-	public double double_val;
+	public static final EnvisionDouble ZERO = EnvisionDoubleClass.newDouble(0.0D);
+	public static final EnvisionDouble ONE = EnvisionDoubleClass.newDouble(1.0D);
+	
+	//========
+	// Fields
+	//========
+	
+	public final double double_val;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	protected EnvisionDouble() { this(0.0); }
-	protected EnvisionDouble(Number in) { this(in.doubleValue()); }
-	protected EnvisionDouble(double in) {
+	EnvisionDouble() { this(0.0); }
+	EnvisionDouble(Number in) { this(in.doubleValue()); }
+	EnvisionDouble(double in) {
 		super(EnvisionDoubleClass.DOUBLE_CLASS);
 		double_val = in;
 	}
 	
-	protected EnvisionDouble(boolean val) {
+	EnvisionDouble(boolean val) {
 		super(EnvisionDoubleClass.DOUBLE_CLASS);
 		double_val = (val) ? 1.0 : 0.0;
 	}
 	
-	protected EnvisionDouble(EnvisionDouble in) {
+	EnvisionDouble(EnvisionDouble in) {
 		super(EnvisionDoubleClass.DOUBLE_CLASS);
 		double_val = in.double_val;
 	}
 	
-	protected EnvisionDouble(EnvisionNumber in) {
+	EnvisionDouble(EnvisionNumber in) {
 		super(EnvisionDoubleClass.DOUBLE_CLASS);
 		double_val = in.doubleVal().double_val;
 	}
@@ -62,49 +76,29 @@ public class EnvisionDouble extends EnvisionNumber {
 		return (obj instanceof EnvisionDouble env_double && env_double.double_val == double_val);
 	}
 	
-	@Override public String toString() { return String.valueOf(double_val); }
-	@Override public EnvisionDouble copy() { return EnvisionDoubleClass.newDouble(double_val); }
+	/**
+	 * Returns this exact same double.
+	 */
+	@Override
+	public EnvisionDouble copy() {
+		return this;
+	}
 	
-	@Override public EnvisionDouble negate() { double_val = -double_val; return this; }
+	@Override
+	public String toString() {
+		return String.valueOf(double_val);
+	}
 	
+	@Override public EnvisionDouble negate() { return EnvisionDoubleClass.valueOf(-double_val); }
+	
+	@Override public Double convertToJavaObject() { return double_val; }
 	@Override public long intVal_i() { return (long) double_val; }
 	@Override public double doubleVal_i() { return double_val; }
-	@Override public EnvisionInt intVal() { return EnvisionIntClass.newInt(double_val); }
+	@Override public EnvisionInt intVal() { return EnvisionIntClass.valueOf((long) double_val); }
 	@Override public EnvisionDouble doubleVal() { return this; }
 	
 	@Override public EnvisionDouble get() { return this; }
-	@Override public Object get_i() { return double_val; }
-	
-	/**
-	 * Internally assigns this double_val from an existing EnvisionDouble's double_val.
-	 */
-	@Override
-	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof EnvisionDouble env_double) {
-			this.double_val = env_double.double_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-double value to a double!");
-	}
-	
-	/**
-	 * Internally assigns this double_val to either a float or a double.
-	 */
-	@Override
-	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof Double double_val) {
-			this.double_val = double_val;
-			return this;
-		}
-		//have to account for float in this case
-		else if (valIn instanceof Float float_val) {
-			this.double_val = float_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-double value to a double!");
-	}
+	@Override public Double get_i() { return double_val; }
 	
 	@Override
 	public boolean supportsOperator(Operator op) {
@@ -114,6 +108,7 @@ public class EnvisionDouble extends EnvisionNumber {
 		case ADD, SUB, MUL, DIV, MOD -> true;
 		case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> true;
 		case NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+		//don't accept any other operator types
 		default -> false;
 		};
 	}
@@ -126,43 +121,49 @@ public class EnvisionDouble extends EnvisionNumber {
 		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
 			throws UnsupportedOverloadError
 	{
-		//don't allow null expression objects
-		if (obj == null) throw new NullVariableError();
+		// if the operator isn't a unary operation, don't allow object to be null
+		if (!op.isUnary()) {
+			if (obj == null) throw new NullVariableError();
+			
+			//only allow numbers
+			if (!obj.getPrimitiveType().isNumber()) {
+				throw new InvalidDatatypeError(EnvisionStaticTypes.NUMBER_TYPE, obj.getDatatype());
+			}
+		}
 		
-		//only allow numbers
-		if (!obj.getPrimitiveType().isNumber())
-			throw new InvalidDatatypeError(StaticTypes.NUMBER_TYPE, obj.getDatatype());
+		// extract this variable's direct scope entry so that assignment operations can effectively update the value
+		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
 		
-		EnvisionNumber num = (EnvisionNumber) obj;
+		// convert the incoming binary operation target object into an EnvisionNumber
+		EnvisionNumber numIn = (EnvisionNumber) obj;
 		
 		switch (op) {
+		case NEGATE:			return negate();
 		//relational operators
-		case GT:				return EnvisionBooleanClass.newBoolean(double_val > num.doubleVal_i());
-		case LT:				return EnvisionBooleanClass.newBoolean(double_val < num.doubleVal_i());
-		case GTE:				return EnvisionBooleanClass.newBoolean(double_val >= num.doubleVal_i());
-		case LTE:				return EnvisionBooleanClass.newBoolean(double_val <= num.doubleVal_i());
+		case GT:				return EnvisionBooleanClass.valueOf(double_val > numIn.doubleVal_i());
+		case LT:				return EnvisionBooleanClass.valueOf(double_val < numIn.doubleVal_i());
+		case GTE:				return EnvisionBooleanClass.valueOf(double_val >= numIn.doubleVal_i());
+		case LTE:				return EnvisionBooleanClass.valueOf(double_val <= numIn.doubleVal_i());
 		//binary operators
-		case ADD:				return EnvisionDoubleClass.newDouble(double_val + num.doubleVal_i());
-		case SUB:				return EnvisionDoubleClass.newDouble(double_val - num.doubleVal_i());
-		case MUL:				return EnvisionDoubleClass.newDouble(double_val * num.doubleVal_i());
-		case DIV:				div0(double_val, num.doubleVal_i()); //check for div by zero errors
-								return EnvisionDoubleClass.newDouble(double_val / num.doubleVal_i());
-		case MOD:				return EnvisionDoubleClass.newDouble(double_val % num.doubleVal_i());
+		case ADD:				return EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i());
+		case SUB:				return EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i());
+		case MUL:				return EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i());
+		case DIV:				div0_d(double_val, numIn.doubleVal_i()); //check for div by zero errors
+								return EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i());
+		case MOD:				return EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i());
 		//assignment operators
-		case ADD_ASSIGN:		double_val += num.doubleVal_i(); return this;
-		case SUB_ASSIGN:		double_val -= num.doubleVal_i(); return this;
-		case MUL_ASSIGN:		double_val *= num.doubleVal_i(); return this;
-		case DIV_ASSIGN:		double_val /= num.doubleVal_i(); return this;
-		case MOD_ASSIGN:		double_val %= num.doubleVal_i(); return this;
+		case ADD_ASSIGN:		return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i()));
+		case SUB_ASSIGN:		return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i()));
+		case MUL_ASSIGN:		return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i()));
+		case DIV_ASSIGN:		return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i()));
+		case MOD_ASSIGN:		return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i()));
 		//inc/dec
-		case NEGATE:			return EnvisionDoubleClass.newDouble(-double_val);
-		case INC:				double_val++; return this;
-		case DEC:				double_val--; return this;
-		case POST_INC:			return EnvisionDoubleClass.newDouble(double_val++);
-		case POST_DEC:			return EnvisionDoubleClass.newDouble(double_val--);
+		case INC:				return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + 1.0D));
+		case DEC:				return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - 1.0D));
+		//post inc/dec
+		case POST_INC:			scopeEntry.set(EnvisionDoubleClass.valueOf(double_val + 1.0D)); return this;
+		case POST_DEC:			scopeEntry.set(EnvisionDoubleClass.valueOf(double_val - 1.0D)); return this;
 		
-		//throw error if this point is reached
-		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}
@@ -170,13 +171,18 @@ public class EnvisionDouble extends EnvisionNumber {
 	@Override
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (StaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.newBoolean(double_val != 0);
-		if (StaticTypes.INT_TYPE.compare(castType)) return intVal();
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(double_val);
-		if (StaticTypes.LIST_TYPE.compare(castType)) {
-			EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
+		if (EnvisionStaticTypes.INT_TYPE.compare(castType)) return intVal();
+		if (EnvisionStaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(double_val != 0);
+		if (EnvisionStaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(double_val);
+		
+		if (EnvisionStaticTypes.LIST_TYPE.compare(castType)) {
+			EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.CHAR_TYPE);
 			String str = String.valueOf(double_val);
-			for (int i = 0; i < str.length(); i++) list.add(new EnvisionChar(str.charAt(i)));
+			
+			for (int i = 0; i < str.length(); i++) {
+				list.add(EnvisionCharClass.valueOf(str.charAt(i)));
+			}
+			
 			return list;
 		}
 		
@@ -190,7 +196,6 @@ public class EnvisionDouble extends EnvisionNumber {
 		
 		return switch (funcName) {
 		case "get" -> get();
-		case "set" -> set(args[0]);
 		case "min" -> min((EnvisionDouble) args[0], (EnvisionDouble) args[1]);
 		case "max" -> max((EnvisionDouble) args[0], (EnvisionDouble) args[1]);
 		default -> super.handlePrimitive(proto, args);

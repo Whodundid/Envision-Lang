@@ -4,11 +4,11 @@ import envision_lang.lang.natives.Primitives;
 
 public interface IKeyword {
 	
-	default Operator asOperator() { return Operator.class.cast(this); }
-	default ReservedWord asReservedWord() { return ReservedWord.class.cast(this); }
+	default Operator asOperator() { return (Operator) this; }
+	default ReservedWord asReservedWord() { return (ReservedWord) this; }
 	
-	default boolean isOperator() { return Operator.class.isInstance(this); }
-	default boolean isReservedWord() { return ReservedWord.class.isInstance(this); }
+	boolean isOperator();
+	boolean isReservedWord();
 	
 	default String typeString() {
 		if (isOperator()) return asOperator().typeString;
@@ -45,12 +45,19 @@ public interface IKeyword {
 	}
 	
 	/**
-	 * Returns the associated EDataType type of this keyword.
-	 * If this keyword is not a datatype, EDataType.NULL is
+	 * Returns the associated Primitive type of this keyword.
+	 * If this keyword is not a primitive type, Java::null is
 	 * returned instead.
 	 */
-	default Primitives getDataType() {
-		return Primitives.getDataType(this);
+	default Primitives getPrimitiveType() {
+		return Primitives.getPrimitiveType(this);
+	}
+	
+	/**
+	 * Returns true if this keyword is a statement terminator.
+	 */
+	default boolean isTerminator() {
+		return hasType(KeywordType.TERMINATOR);
 	}
 	
 }

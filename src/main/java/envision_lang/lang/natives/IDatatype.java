@@ -1,7 +1,6 @@
 package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
-import eutil.debug.Broken;
 
 /**
  * An over-arching wrapper to effectively group the types of Primitives and
@@ -9,7 +8,6 @@ import eutil.debug.Broken;
  * 
  * @author Hunter Bragg
  */
-@Broken
 public interface IDatatype {
 	
 	//-----------------------
@@ -38,7 +36,7 @@ public interface IDatatype {
 	 * 
 	 * @return String
 	 */
-	public String getType();
+	public String getStringValue();
 	
 	//-------------------
 	// Default Functions
@@ -114,7 +112,7 @@ public interface IDatatype {
 	 */
 	public default boolean isField() {
 		var p = getPrimitive();
-		return (p != null) ? p.isField() : false;
+		return (p != null) ? p.isField() : true;
 	}
 	
 	/**
@@ -182,9 +180,9 @@ public interface IDatatype {
 	 * @see Primitives
 	 * @return true if primitive variable type
 	 */
-	public default boolean isPrimitiveVariableType() {
+	public default boolean isNativePrimitiveType() {
 		var p = getPrimitive();
-		return (p != null) ? p.isVariableType() : false;
+		return (p != null) ? p.isNativeType() : false;
 	}
 	
 	/**
@@ -207,7 +205,7 @@ public interface IDatatype {
 		}
 		
 		//check string type
-		return typeIn.getType().equals(this.getType());
+		return typeIn.getStringValue().equals(this.getStringValue());
 	}
 	
 	//--------
@@ -230,8 +228,27 @@ public interface IDatatype {
 	 */
 	public static IDatatype dynamicallyDetermineType(Object obj) {
 		if (obj instanceof EnvisionObject o) return o.getDatatype();
-		Primitives type = Primitives.getDataType(obj);
-		return new EnvisionDatatype(type);
+		Primitives type = Primitives.getPrimitiveType(obj);
+		return NativeTypeManager.datatypeOf(type);
+	}
+	
+	public static IDatatype of(String typeName) {
+		if (typeName == null) return EnvisionStaticTypes.NULL_TYPE;
+		
+		String lower = typeName.toLowerCase();
+		IDatatype parsedType = null;
+		
+		parsedType = switch (lower) {
+		case "boolean" -> EnvisionStaticTypes.BOOL_TYPE;
+		case "byte", "short", "int", "integer", "long" -> EnvisionStaticTypes.INT_TYPE;
+		case "float", "double", "number" -> EnvisionStaticTypes.DOUBLE_TYPE;
+		case "char", "character" -> EnvisionStaticTypes.CHAR_TYPE;
+		case "string" -> EnvisionStaticTypes.STRING_TYPE;
+		default -> null;
+		};
+		
+		if (parsedType == null) return NativeTypeManager.datatypeOf(typeName);
+		return parsedType;
 	}
 	
 }

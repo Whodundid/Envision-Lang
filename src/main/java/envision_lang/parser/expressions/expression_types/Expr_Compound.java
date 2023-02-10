@@ -1,28 +1,34 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
-import eutil.datatypes.EArrayList;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.tokenizer.Token;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /** A grouping of multiple expressions to be executed together. */
-public class Expr_Compound implements Expression {
+public class Expr_Compound extends ParsedExpression {
 	
-	public final EArrayList<Expression> expressions;
+	//========
+	// Fields
+	//========
 	
-	//--------------
+	public final EList<ParsedExpression> expressions;
+	
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
-	public Expr_Compound() { this(new EArrayList<Expression>()); }
-	public Expr_Compound(EArrayList<Expression> expressionsIn) {
-		expressions = expressionsIn;
+	public Expr_Compound(Token<?> start) { this(start, (EList<ParsedExpression>) null); }
+	public Expr_Compound(Token<?> start, EList<ParsedExpression> expressionsIn) {
+		super(start);
+		expressions = EList.of(expressionsIn);
 	}
 	
-	public Expr_Compound(Expression in) {
-		expressions = new EArrayList();
-		expressions.add(in);
+	public Expr_Compound(Token start, ParsedExpression in) {
+		super(start);
+		expressions = EList.of(in);
 	}
 	
 	//-----------
@@ -36,42 +42,41 @@ public class Expr_Compound implements Expression {
 	
 	@Override
 	public Expr_Compound copy() {
-		Expr_Compound n = new Expr_Compound();
-		for (Expression e : expressions) {
+		var n = new Expr_Compound(getStartingToken());
+		for (var e : expressions) {
 			n.add(e.copy());
 		}
 		return n;
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleCompound_E(this);
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
-	public Expr_Compound add(Expression in) {
+	public void add(ParsedExpression in) {
 		expressions.add(in);
-		return this;
 	}
 	
 	public boolean isEmpty() { return expressions.isEmpty(); }
 	public boolean hasOne() { return expressions.hasOne(); }
 	public int size() { return expressions.size(); }
-	public Expression getFirst() { return expressions.get(0); }
+	public ParsedExpression getFirst() { return expressions.get(0); }
 	
-	//----------------
+	//================
 	// Static Methods
-	//----------------
+	//================
 	
 	/** Returns the expression wrapped inside of a compound expression.
 	 *  If the expression already was a CompoundExpression, the expression
 	 *  is simply returned as is. */
-	public static Expr_Compound wrap(Expression in) {
+	public static Expr_Compound wrap(Token<?> definingToken, ParsedExpression in) {
 		if (in instanceof Expr_Compound) return (Expr_Compound) in;
-		else return new Expr_Compound(in);
+		else return new Expr_Compound(definingToken, in);
 	}
 	
 }

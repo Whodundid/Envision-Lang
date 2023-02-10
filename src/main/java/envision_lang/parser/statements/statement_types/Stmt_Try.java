@@ -1,21 +1,34 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
+import envision_lang.tokenizer.Token;
+import eutil.datatypes.util.EList;
 
-public class Stmt_Try implements Statement {
+public class Stmt_Try extends ParsedStatement {
 	
-	public final Statement tryBlock;
-	public final EArrayList<Stmt_Catch> catches;
-	public final Statement finallyBlock;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_Try(Statement tryIn, EArrayList<Stmt_Catch> catchesIn, Statement finallyIn) {
+	public final ParsedStatement tryBlock;
+	public final EList<Stmt_Catch> catches;
+	public final ParsedStatement finallyBlock;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Try(Token<?> start, ParsedStatement tryIn, EList<Stmt_Catch> catchesIn, ParsedStatement finallyIn) {
+		super(start);
 		tryBlock = tryIn;
 		catches = catchesIn;
 		finallyBlock = finallyIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -27,11 +40,6 @@ public class Stmt_Try implements Statement {
 		String f = (finallyBlock != null) ? " finally { " + finallyBlock + " }" : "";
 		
 		return "Try: " + tryBlock + c + f;
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
 	}
 	
 	@Override

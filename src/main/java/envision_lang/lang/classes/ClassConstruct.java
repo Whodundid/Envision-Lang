@@ -3,15 +3,15 @@ package envision_lang.lang.classes;
 import java.util.Map;
 
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.EnvisionFunction;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
-import eutil.datatypes.Box2;
-import eutil.datatypes.BoxList;
-import eutil.datatypes.EArrayList;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import eutil.datatypes.boxes.BoxList;
+import eutil.datatypes.util.EList;
 
 /**
  * ClassConstructs are intended to optimize class instance creation by
@@ -41,16 +41,16 @@ public class ClassConstruct {
 	private final String constructName;
 	
 	/** The class for which instances of this construct are based on. */
-	private EnvisionClass theClass;
+	private final EnvisionClass theClass;
 	/** The scope for which base instance members are interpreted into. */
-	private Scope internalScope;
+	private final IScope internalScope;
 	
-	private EnvisionFunction constructor;
-	private BoxList<String, EnvisionObject> fields;
-	private EArrayList<EnvisionFunction> functions;
+	private final EnvisionFunction constructor;
+	private BoxList<String, ScopeEntry> fields;
+	private EList<EnvisionFunction> functions;
 	
 	/** Pulling scope map out for fast reference. */
-	private Map<String, Box2<IDatatype, EnvisionObject>> internal_scope_values;
+	private final Map<String, ScopeEntry> internal_scope_values;
 	
 	//--------------
 	// Constructors
@@ -60,7 +60,7 @@ public class ClassConstruct {
 		theClass = c;
 		constructName = c.getTypeString();
 		internalScope = new Scope(c.getClassScope());
-		internal_scope_values = internalScope.values;
+		internal_scope_values = internalScope.values();
 		constructor = c.getConstructor();
 		
 		buildInstanceScope(interpreter);
@@ -101,10 +101,10 @@ public class ClassConstruct {
 		//create copies of fields
 		buildScope.define("this", inst.getDatatype(), inst);
 		for (int i = 0; i < fields.size(); i++) {
-			Box2<String, EnvisionObject> f = fields.get(i);
-			String field_name = f.getA();
-			EnvisionObject the_field = f.getB();
-			buildScope.define(field_name, the_field.getDatatype(), the_field.copy());
+			var box = fields.get(i);
+			String field_name = box.getA();
+			ScopeEntry the_entry = box.getB();
+			buildScope.define(field_name, the_entry.deepCopy());
 		}
 		
 		//define scope members
@@ -118,7 +118,7 @@ public class ClassConstruct {
 			if (f.isOperator()) inst.addOperatorOverload(f.getOperator(), copy);
 			
 			//copy the method
-			buildScope.define(f.getFunctionName(), StaticTypes.FUNC_TYPE, copy);
+			buildScope.define(f.getFunctionName(), EnvisionStaticTypes.FUNC_TYPE, copy);
 		}
 		
 		//init constructor

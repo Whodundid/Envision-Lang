@@ -1,32 +1,47 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.tokenizer.Token;
 
-public class Expr_Import implements Expression {
-
-	public final String path;
-	public final String object;
+public class Expr_Import extends ParsedExpression {
 	
-	public Expr_Import(String pathIn, String objectIn) {
+	//========
+	// Fields
+	//========
+	
+	public final Token<?> path;
+	public final Token<?> object;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Import(Token<?> pathIn, Token<?> objectIn) {
+		super(pathIn);
 		path = pathIn;
 		object = objectIn;
 	}
 	
+	//===========
+	// Overrides
+	//===========
+	
 	@Override
 	public String toString() {
-		String p = (path != null && !path.isEmpty()) ? path + "." : "";
-		return p + object;
+		String p = (path != null && path.getLexeme() != null) ? path.getLexeme() : "";
+		String ip = (!p.isEmpty()) ? p + "." : "";
+		return ip + object;
 	}
 	
 	@Override
 	public Expr_Import copy() {
-		return new Expr_Import(path, object);
+		return new Expr_Import(path.copy(), object.copy());
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleImport_E(this);
 	}
 

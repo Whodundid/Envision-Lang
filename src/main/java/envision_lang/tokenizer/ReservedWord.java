@@ -1,10 +1,13 @@
 package envision_lang.tokenizer;
 
-import eutil.EUtil;
-
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import envision_lang.lang.natives.Primitives;
+import eutil.EUtil;
 
 /**
  *  The complete set of Envision reserved keywords and operators.
@@ -22,6 +25,8 @@ public enum ReservedWord implements IKeyword {
 	
 	/** Used to reference code/data in other envision program files. */
 	IMPORT("import"),
+	/** Denotes a package. */
+//	PACKAGE("package"),
 	/** Used in conjunction with 'import' statements to denote how to specifically refer to a given import. */
 	AS("as"),
 	/** Denotes standard function declarations. */
@@ -33,25 +38,25 @@ public enum ReservedWord implements IKeyword {
 	/** Used within class instance methods to refer to the current specific class instance. */
 	THIS("this"),
 	/** Used within class methods to refer to a superclass's member. */
-	SUPER("super"),
+//	SUPER("super"),
 	/** Denotes interface declarations. */
-	INTERFACE("interface"),
+//	INTERFACE("interface"),
 	/** Used within methods to return some value or exit the current scope. */
 	RETURN("return"),
 	/** Returns a value iff the condition is true */
 	RETIF("retif"),
 	/** Hardcoded boolean value -- can be assigned to booleans and generic types */
-	TRUE("true"),
+	TRUE("true", KeywordType.LITERAL),
 	/** Hardcoded boolean value -- can be assigned to booleans and generic types */
-	FALSE("false"),
+	FALSE("false", KeywordType.LITERAL),
 	/** Shortcut to create getter methods for passed variables. */
 	GET("get"),
 	/** Shortcut to create setter methods for passed variables. */
 	SET("set"),
 	/** Denotes the start of a new line. */
-	NEWLINE("\\NewLine"),
+	NEWLINE("\\NewLine", KeywordType.TERMINATOR),
 	
-	/** Bundles data within the following block into the same pacakge -- similar to 'namespace' in C++/C#. */
+	/** Bundles data within the following block into the same package -- similar to 'namespace' in C++/C#. */
 	//PACKAGE("package", KeywordType.BASE),
 	//READ("read", KeywordType.BASE), //Used to read console input from the user
 	//PRINT("print", KeywordType.BASE),
@@ -74,7 +79,7 @@ public enum ReservedWord implements IKeyword {
 	/**
 	 *  Denotes the start of an Operator Overload function.
 	 */
-	OPERATOR_("operator"), //Used to incate operator overloading
+	OPERATOR_("operator"), //Used to indicate operator overloading
 	//MODULAR_VALUE("@", KeywordType.OPERATOR_TYPE), //Used for modular function declarations
 	//OPERATOR_EXPR("~", true, KeywordType.OPERATOR_TYPE), //Used for modular operator expressions
 	
@@ -104,6 +109,7 @@ public enum ReservedWord implements IKeyword {
 	
 	ENUM("enum", KeywordType.DATATYPE),
 	LIST("list", KeywordType.DATATYPE),
+	TUPLE("tuple", KeywordType.DATATYPE),
 	
 	//-------
 	// loops
@@ -112,14 +118,14 @@ public enum ReservedWord implements IKeyword {
 	FOR("for"), //For loop declaration -- Types: Standard, range, and Lambda.
 	DO("do"), //Do statement which is eventually followed by a While loop -- Do While Loop.
 	WHILE("while"), //While loop declaration.
-	UNTIL("until"), //Until loop declaration.
+//	UNTIL("until"), //Until loop declaration.
 	
 	//--------------
 	// loop control
 	//--------------
 	
 	TO("to"), //Used to define a range for a for loop to iterate across.
-	UPTO("upto"),
+//	UPTO("upto"),
 	BY("by"), //Used to indicate an increment amount for range expressions.
 	BREAK("break"), //Used to prematurely exit the iteration of a loop or switch statement.
 	BREAKIF("breakif"), //Breaks a loop if the given condition is true
@@ -135,7 +141,8 @@ public enum ReservedWord implements IKeyword {
 	SWITCH("switch"), //Tests a value against a series of potential matching cases.
 	CASE("case"), //A potential match for data being tested in a switch.
 	DEFAULT("default"), //A catch-all case for switch statements when no case matches the tested value.
-	IS("is"), //Compares the underlying object types of two objects -- instanceof in Java.
+	TYPEOF("typeof"), //Compares the underlying object types of two objects -- instanceof in Java.
+	//IS("is"), //Compares the underlying object types of two objects -- instanceof in Java.
 	//ISNOT("isnot", KeywordType.LOGIC), //Compares the underlying object types such that the compared is not the same. !(instanceof)
 	
 	//------------
@@ -151,11 +158,12 @@ public enum ReservedWord implements IKeyword {
 	// internal literals
 	//-------------------
 	
-	NUMBER_LITERAL("\\NumLiteral", KeywordType.LITERAL), //A number in token form representing either an integer or a double.
+	INT_LITERAL("\\IntLiteral", KeywordType.LITERAL),  //A number in token form representing an integer value.
+	DOUBLE_LITERAL("\\DoubleLiteral", KeywordType.LITERAL), //A number in token form representing a double value.
 	STRING_LITERAL("\\StringLiteral", KeywordType.LITERAL), //A string in token form.
 	CHAR_LITERAL("\\CharLiteral", KeywordType.LITERAL), //A char in token form.
 	IDENTIFIER("\\Literal", KeywordType.LITERAL), //A value that could pertain to a object name.
-	EOF("\\EOF", KeywordType.LITERAL), //Denotes the end of the current file
+	EOF("\\EOF", KeywordType.LITERAL, KeywordType.TERMINATOR), //Denotes the end of the current file
 	
 	;
 	
@@ -174,10 +182,20 @@ public enum ReservedWord implements IKeyword {
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	private static HashMap<String, ReservedWord> keywords = new HashMap();
+	public static final Map<String, ReservedWord> KEYWORDS;
+	public static final Set<ReservedWord> DATATYPES;
 	
 	static {
-		for (var k : values()) keywords.put(k.typeString, k);
+		Map<String, ReservedWord> keywords_build = new HashMap<>();
+		Set<ReservedWord> d_types = new HashSet<>();
+		
+		for (var k : values()) {
+			keywords_build.put(k.typeString, k);
+			if (k.isDataType()) d_types.add(k);
+		}
+		
+		KEYWORDS = Collections.unmodifiableMap(keywords_build);
+		DATATYPES = Collections.unmodifiableSet(d_types);
 	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -191,7 +209,7 @@ public enum ReservedWord implements IKeyword {
 	 * If no keywords match, null is returned instead.
 	 */
 	public static ReservedWord getKeyword(String in) {
-		return keywords.getOrDefault(in, null);
+		return KEYWORDS.getOrDefault(in, null);
 	}
 	
 	/**
@@ -212,14 +230,17 @@ public enum ReservedWord implements IKeyword {
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
 	public static Primitives getDataType(String in) {
-		return EUtil.nullApplyR(getKeyword(in), k -> k.getDataType(), Primitives.NULL);
+		return EUtil.nullApplyR(getKeyword(in), k -> k.getPrimitiveType(), Primitives.NULL);
 	}
 	
 	/**
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
 	public static Primitives getDataType(ReservedWord in) {
-		return EUtil.nullApplyR(in, k -> k.getDataType(), Primitives.NULL);
+		return EUtil.nullApplyR(in, k -> k.getPrimitiveType(), Primitives.NULL);
 	}
+	
+	@Override public boolean isOperator() { return false; }
+	@Override public boolean isReservedWord() { return true; }
 	
 }

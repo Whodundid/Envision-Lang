@@ -2,11 +2,13 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.exceptions.errors.objects.AbstractInstantiationError;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.internal.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.language_errors.error_types.ArgLengthError;
+import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
 import envision_lang.lang.natives.Primitives;
 
 /**
@@ -18,7 +20,9 @@ import envision_lang.lang.natives.Primitives;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionNumberClass extends EnvisionClass {
+public sealed class EnvisionNumberClass extends EnvisionClass
+	permits EnvisionIntClass, EnvisionDoubleClass
+{
 	
 	/**
 	 * The singular, static Number class for which all Envision:Number
@@ -42,16 +46,25 @@ public class EnvisionNumberClass extends EnvisionClass {
 		staticScope.defineFunction(new IFunc_static_valueOf());
 	}
 	
+	protected EnvisionNumberClass(Primitives typeIn) {
+		super(typeIn);
+		
+		//define static members
+		staticScope.defineFunction(new IFunc_static_valueOf());
+	}
+	
 	//---------------------
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionNumber newNumber() { return newNumber(0.0d); }
-	public static EnvisionNumber newNumber(long val) { return new EnvisionInt(val); }
-	public static EnvisionNumber newNumber(double val) { return new EnvisionDouble(val); }
+	public static EnvisionNumber newNumber() { return EnvisionInt.ZERO; }
+	public static EnvisionNumber newNumber(long val) { return EnvisionIntClass.valueOf(val); }
+	public static EnvisionNumber newNumber(double val) { return EnvisionDoubleClass.valueOf(val); }
 	public static EnvisionNumber newNumber(Number val) {
-		if (val instanceof Integer || val instanceof Long) return new EnvisionInt(val);
-		return new EnvisionDouble(val);
+		if (val instanceof Float || val instanceof Double) {
+			return EnvisionDoubleClass.valueOf(val.doubleValue());
+		}
+		return EnvisionIntClass.valueOf(val.longValue());
 	}
 	
 	//-----------
@@ -60,12 +73,43 @@ public class EnvisionNumberClass extends EnvisionClass {
 	
 	@Override
 	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new AbstractInstantiationError(this);
+		//bypass class construct for primitive type
+		return buildInstance(interpreter, args);
 	}
 	
 	@Override
 	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new AbstractInstantiationError(this);
+		EnvisionNumber num = null;
+		
+		//if no args, return double::zero by default
+		if (args.length == 0) num = EnvisionDouble.ZERO;
+		//ensure there is at most 1 argument being passed
+		else if (args.length > 1) throw new ArgLengthError(this, 1, args.length);
+		//otherwise, attempt to create from passed args
+		else {
+			EnvisionObject arg_val = args[0];
+			
+			//don't accept null arguments
+			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be Java::Null!");
+			
+			//check for valid argument constructor types
+			else if (arg_val instanceof EnvisionInt i)		num = i;
+			else if (arg_val instanceof EnvisionDouble d)	num = d;
+			else if (arg_val instanceof EnvisionNumber n)	num = n;
+			
+			//if null, creation failed!
+			if (num == null) {
+				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to a "+getDatatype()+"!");
+			}
+		}
+		
+		return num;
+	}
+	
+	@Override
+	protected void defineScopeMembers(ClassInstance inst) {
+		//define super object's members
+		super.defineScopeMembers(inst);
 	}
 	
 	//-------------------------
@@ -78,9 +122,10 @@ public class EnvisionNumberClass extends EnvisionClass {
 			//make static
 			setStatic();
 		}
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionInt env_int) ret(new EnvisionInt(env_int));
-			else if (args[0] instanceof EnvisionDouble env_double) ret(new EnvisionDouble(env_double));
+		@Override
+		public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+			if (args[0] instanceof EnvisionInt env_int) ret(env_int);
+			else if (args[0] instanceof EnvisionDouble env_double) ret(env_double);
 		}
 	}
 	

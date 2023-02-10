@@ -1,13 +1,12 @@
 package main;
 
-import static envision_lang._launch.EnvisionLangSettings.LaunchArgs.*;
-
 import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLangSettings;
-import envision_lang._launch.EnvisionLangSettings.LaunchArgs;
-import envision_lang.exceptions.EnvisionLangError;
-import eutil.random.ERandomUtil;
+import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
+import envision_lang._launch.EnvisionProgram;
+import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.sys.TracingPrintStream;
 
 @SuppressWarnings("unused")
@@ -18,42 +17,41 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		TracingPrintStream.enableTracingEmptyLines(true);
 		TracingPrintStream.disableTrace();
 		
-		/*
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			var a = new Java_Performance_Reference(RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5), RandomUtil.getRoll(0, 5));
-			var b = new Java_Performance_Reference(RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4), RandomUtil.getRoll(0, 4));
-			
-			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
-		}
-		System.out.println(System.currentTimeMillis() - start);
-		*/
+//		long start = System.currentTimeMillis();
+//		for (int i = 0; i < 10000000; i++) {
+//			var a = new Java_Performance_Reference(ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5));
+//			var b = new Java_Performance_Reference(ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4));
+//			
+//			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
+//		}
+//		System.out.println(System.currentTimeMillis() - start);
 		
 		new DefaultLangLauncher();
 	}
 	
 	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
+		EnvisionLang.setErrorCallback(this);
 		
-		EnvisionLang env = null;
-		env = new EnvisionLang();
-		//env = new EnvisionLang(PRELOAD_LANGUAGE);
-		//env = new EnvisionLang(TOKENIZE, PARSE_STATEMENTS, DONT_EXECUTE);
-		//env = new EnvisionLang(PARSE_STATEMENTS, TOKENIZE);
-		env.setErrorCallback(this);
+		//TestPoint t = new TestPoint(0, 0);
+		EnvisionProgram program = new EnvisionProgram("program");
+		//program.addJavaObjectToProgram(t);
 		
 		//long preStart = System.currentTimeMillis();
 		//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		
-		//env.runProgram("program");
+		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
+		//EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH, LaunchSetting.DEBUG_MODE);
+		//EnvisionLang.runProgram(program);
 		//env.runProgram("program");
 		//env.runProgram("program");
 		
 		long start = System.currentTimeMillis();
 		{
-			env.runProgram("program");
+			EnvisionLang.runProgram(program);
+			//env.runProgram("program");
 			//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
 			//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
 		}
@@ -61,6 +59,15 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//System.out.println(" Total: " + (System.currentTimeMillis() - preStart) + " ms");
 	}
 
+	private void testThing(EnvisionInterpreter interpreter) {
+		TestPoint t = new TestPoint(0, 0);
+		
+		var c = t.getInternalClass();
+		var scope = c.getClassScope();
+		
+		var inst = c.newInstance(interpreter, new EnvisionObject[0]);
+	}
+	
 	@Override
 	public void handleError(EnvisionLangError e) {
 		handleException(e);
@@ -74,6 +81,30 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 }
 
 /*
++class Vector {
+	// Fields
+	-int x, y, z
+	
+	// Constructors
+	+init(x, y, z)
+	
+	// Functions
+	+func toString() -> "<{x}, {y}, {z}>"
+	+func add(Vector t) -> Vector(x + t.x, y + t.y, z + t.z)
+	
+	// Operator Overloads
+	+operator +(Vector t) -> add(t)
+}
+
+for (int i = 0; i < 100000; i++) {
+	a = Vector(randInt(0, 5), randInt(0, 5), randInt(0, 5))
+	b = Vector(randInt(0, 4), randInt(0, 4), randInt(0, 4))
+	
+	println(i, a, "|", b, "|", a + b)
+}
+ */
+
+/*
 public class Vector {
 	int x, y, z
 	public {
@@ -84,6 +115,19 @@ public class Vector {
 		Vector add(v) -> Vector(x + v.x, y + v.y, z + v.z)
 		Vector sub(v) -> Vector(x - v.x, y - v.y, z - v.z)
 	}
+}
+*/
+
+/*
++class Vector {
+	-int x, y, z
+	
+	+init(x, y, z)
+	
+	+func toString() -> "<{x}, {y}, {z}>"
+	
+	+func Vector [add:+, sub:-](Vector v) -> Vector(x @ v.x, y @ v.y, z @ v.z)
+	+operator Vector [+:add(v), -:sub(v)](Vector v) -> @
 }
 */
 

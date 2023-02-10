@@ -1,29 +1,52 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
+import envision_lang.tokenizer.Token;
+import eutil.datatypes.util.EList;
 
-public class Stmt_LambdaFor implements Statement {
+public class Stmt_LambdaFor extends ParsedStatement {
 	
-	public final Statement init;
+	//========
+	// Fields
+	//========
+	
+	public final ParsedStatement init;
 	public final Expr_Lambda lambda;
-	public final EArrayList<Expression> post;
-	public final Statement body;
+	public final EList<ParsedExpression> post;
+	public final ParsedStatement body;
 	
-	public Stmt_LambdaFor(Statement initIn, Expr_Lambda lambdaIn, Expression postIn, Statement bodyIn) {
-		this(initIn, lambdaIn, new EArrayList<Expression>(postIn), bodyIn);
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_LambdaFor(Token<?> start,
+						  ParsedStatement initIn,
+						  Expr_Lambda lambdaIn,
+						  ParsedExpression postIn,
+						  ParsedStatement bodyIn)
+	{
+		this(start, initIn, lambdaIn, EList.of(postIn), bodyIn);
 	}
 	
-	public Stmt_LambdaFor(Statement initIn, Expr_Lambda lambdaIn, EArrayList<Expression> postIn, Statement bodyIn) {
+	public Stmt_LambdaFor(Token<?> start,
+						  ParsedStatement initIn,
+						  Expr_Lambda lambdaIn,
+						  EList<ParsedExpression> postIn,
+						  ParsedStatement bodyIn)
+	{
+		super(start);
 		init = initIn;
 		lambda = lambdaIn;
 		post = postIn;
 		body = bodyIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -31,11 +54,6 @@ public class Stmt_LambdaFor implements Statement {
 		String m = (lambda != null) ? lambda + ((post != null) ? "; " : "") : ""; 
 		String p = (post != null) ? post + "" : "";
 		return "For (" + i + m + p + ") { " + body + " }";
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
 	}
 	
 	@Override

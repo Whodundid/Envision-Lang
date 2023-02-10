@@ -3,11 +3,12 @@ package envision_lang.parser.statements.statementParsers;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.ExpressionParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
+import envision_lang.tokenizer.Token;
 
 /**
  * Parses for break and continue statements and their conditional
@@ -15,7 +16,7 @@ import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
  * 
  * @author Hunter Bragg
  */
-public class PS_LoopControl extends GenericParser {
+public class PS_LoopControl extends ParserHead {
 	
 	/**
 	 * Parses break statements. Break statements can have conditional
@@ -24,15 +25,23 @@ public class PS_LoopControl extends GenericParser {
 	 * 
 	 * @return The parsed break statement.
 	 */
-	public static Statement handleBreak() {
-		if (match(BREAK)) return new Stmt_LoopControl(true);
+	public static ParsedStatement handleBreak() {
+		Token<?> start = null;
+		ParsedExpression condition = null;
 		
-		consume(BREAKIF, "Expected a 'breakif' statement!");
-		consume(PAREN_L, "Expected the start of an expression! '('");
-		Expression condition = ExpressionParser.parseExpression();
-		consume(PAREN_R, "Expected the end of the given expression! ')'");
+		if (match(BREAK)) {
+			start = previous();
+		}
+		else {
+			start = consume(BREAKIF, "Expected a 'breakif' statement!");
+			consume(PAREN_L, "Expected the start of an expression! '('");
+			condition = ExpressionParser.parseExpression();
+			consume(PAREN_R, "Expected the end of the given expression! ')'");
+		}
 		
-		return new Stmt_LoopControl(true, condition);
+		consumeTerminator();
+		
+		return new Stmt_LoopControl(start, true, condition);
 	}
 	
 	/**
@@ -42,15 +51,23 @@ public class PS_LoopControl extends GenericParser {
 	 * 
 	 * @return The parsed continue statement.
 	 */
-	public static Statement handleContinue() {
-		if (match(CONTINUE)) return new Stmt_LoopControl(false);
+	public static ParsedStatement handleContinue() {
+		Token<?> start = null;
+		ParsedExpression condition = null;
 		
-		consume(CONTIF, "Expected a 'contif' statement!");
-		consume(PAREN_L, "Expected the start of an expression! '('");
-		Expression condition = ExpressionParser.parseExpression();
-		consume(PAREN_R, "Expected the end of the given expression! ')'");
+		if (match(CONTINUE)) {
+			start = previous();
+		}
+		else {
+			start = consume(CONTIF, "Expected a 'contif' statement!");
+			consume(PAREN_L, "Expected the start of an expression! '('");
+			condition = ExpressionParser.parseExpression();
+			consume(PAREN_R, "Expected the end of the given expression! ')'");
+		}
 		
-		return new Stmt_LoopControl(false, condition);
+		consumeTerminator();
+		
+		return new Stmt_LoopControl(start, false, condition);
 	}
 	
 }

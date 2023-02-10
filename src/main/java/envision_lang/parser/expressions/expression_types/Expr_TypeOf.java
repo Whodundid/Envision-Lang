@@ -1,34 +1,47 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 
-public class Expr_TypeOf implements Expression {
+public class Expr_TypeOf extends ParsedExpression {
 	
-	public final Expression left, right;
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression left, right;
 	public final boolean is;
 	
-	public Expr_TypeOf(Expression leftIn, boolean isIn, Expression rightIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_TypeOf(ParsedExpression leftIn, boolean isIn, ParsedExpression rightIn) {
+		super(leftIn);
 		left = leftIn;
 		is = isIn;
 		right = rightIn;
 	}
 	
-	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
-		return handler.handleTypeOf_E(this);
-	}
-	
-	@Override
-	public Expr_TypeOf copy() {
-		return new Expr_TypeOf(Expression.copy(left), is, Expression.copy(right));
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
 		String n = (is) ? " is " : " isnot ";
 		return left + n + right;
+	}
+
+	@Override
+	public Expr_TypeOf copy() {
+		return new Expr_TypeOf(left.copy(), is, right.copy());
+	}
+
+	@Override
+	public EnvisionObject evaluate(ExpressionHandler handler) {
+		return handler.handleTypeOf_E(this);
 	}
 	
 }

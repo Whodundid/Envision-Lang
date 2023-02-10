@@ -1,26 +1,33 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
 
-public class Stmt_Expression implements Statement {
+public class Stmt_Expression extends ParsedStatement {
 	
-	public final Expression expression;
+	//========
+	// Fields
+	//========
 	
-	public Stmt_Expression(Expression expressionIn) {
+	public final ParsedExpression expression;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_Expression(ParsedExpression expressionIn) {
+		super(expressionIn.getStartingToken());
 		expression = expressionIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
 		return expression + "";
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
 	}
 	
 	@Override

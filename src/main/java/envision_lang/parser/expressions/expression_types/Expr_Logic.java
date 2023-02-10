@@ -1,20 +1,33 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
 
-public class Expr_Logic implements Expression {
-
-	public final Expression left, right;
+public class Expr_Logic extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression left, right;
 	public final Operator operator;
 	
-	public Expr_Logic(Expression leftIn, Operator operatorIn, Expression rightIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Logic(ParsedExpression leftIn, Operator operatorIn, ParsedExpression rightIn) {
+		super(leftIn);
 		left = leftIn;
 		operator = operatorIn;
 		right = rightIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -27,7 +40,7 @@ public class Expr_Logic implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleLogical_E(this);
 	}
 	

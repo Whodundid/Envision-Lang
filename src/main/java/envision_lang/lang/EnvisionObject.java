@@ -1,14 +1,15 @@
 package envision_lang.lang;
 
-import envision_lang.exceptions.errors.objects.CopyNotSupportedError;
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionVariable;
+import envision_lang.lang.language_errors.error_types.objects.CopyNotSupportedError;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.DataModifierHandler;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.InternalJavaObjectWrapper;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.DataModifierHandler;
-import envision_lang.lang.util.VisibilityType;
 
 /**
  * The underlying parent object class for which all Envision:Java
@@ -52,6 +53,18 @@ public abstract class EnvisionObject {
 	 */
 	protected final boolean isPrimitive;
 	
+	/**
+	 * True if this object will follow pass-by-value rules. As in, whenever
+	 * this object is given as an argument to a receiving target (such as a
+	 * function, class initializer, variable assignment, etc.) it will be deep
+	 * copied and then given to its target. Otherwise, this object is passed by
+	 * reference.
+	 * <p>
+	 * Most primitives follow pass-by-value rules with the exception of Lists
+	 * and Tuples which follow pass-by-reference rules instead.
+	 */
+	protected final boolean isPassByValue;
+	
 	//--------------
 	// Constructors
 	//--------------
@@ -65,7 +78,8 @@ public abstract class EnvisionObject {
 		internalType = internalTypeIn;
 		
 		//assign primitive flag
-		isPrimitive = internalTypeIn.isPrimitiveVariableType();
+		isPrimitive = internalTypeIn.isNativePrimitiveType();
+		isPassByValue = (isPrimitive) ? internalType.getPrimitive().isPassByValue() : false;
 	}
 	
 	//-----------
@@ -93,6 +107,11 @@ public abstract class EnvisionObject {
 		throw new CopyNotSupportedError();
 	}
 	
+	public Object convertToJavaObject() {
+		if (this instanceof InternalJavaObjectWrapper jw) return jw.javaObject;
+		return toString();
+	}
+	
 	//---------
 	// Getters
 	//---------
@@ -102,10 +121,10 @@ public abstract class EnvisionObject {
 	 */
 	public IDatatype getDatatype() { return internalType; }
 	public Primitives getPrimitiveType() { return internalType.getPrimitive(); }
-	public String getTypeString() { return internalType.getType(); }
+	public String getTypeString() { return internalType.getStringValue(); }
 	
 	public int getObjectHash() { return hashCode(); }
-	public String getHexHash() { return Integer.toHexString(hashCode()); }
+	public String getHexHash() { return "#" + Integer.toHexString(hashCode()); }
 	
 	/**
 	 * In the event that this object represents a primitive object type such as an
@@ -117,9 +136,21 @@ public abstract class EnvisionObject {
 	public boolean isPrimitive() { return isPrimitive; }
 	
 	/**
+	 * If this object is a primitive type AND it is set to pass-by-value, then
+	 * any time that this object is 'passed' to another scope [I.E. Function,
+	 * Class, File, etc.] it will be deep copied into the new scope.
+	 * <p>
+	 * If this object is not pass-by-value, then this exact object reference
+	 * will be passed instead.
+	 * 
+	 * @return true if this object follows pass-by-value rules
+	 */
+	public boolean isPassByValue() { return isPassByValue; }
+	
+	/**
 	 * @return This object's visibility
 	 */
-	public VisibilityType getVisibility() { return modifierHandler.getVisibility(); }
+	public EnvisionVisibilityModifier getVisibility() { return modifierHandler.getVisibility(); }
 	
 	public boolean isStatic() { return modifierHandler.isStatic(); }
 	public boolean isFinal() { return modifierHandler.isFinal(); }
@@ -147,7 +178,7 @@ public abstract class EnvisionObject {
 	 * @param visIn Visibility to assign
 	 * @return This EnvisionObject
 	 */
-	public EnvisionObject setVisibility(VisibilityType visIn) {
+	public EnvisionObject setVisibility(EnvisionVisibilityModifier visIn) {
 		modifierHandler.setVisibility(visIn);
 		return this;
 	}
@@ -175,7 +206,7 @@ public abstract class EnvisionObject {
 	 * @return The converted object value
 	 */
 	public static Object convert(Object in) {
-		return (in instanceof EnvisionVariable env_var) ? env_var.get_i() : in;
+		return (in instanceof EnvisionVariable<?> env_var) ? env_var.get_i() : in;
 	}
 	
 	/**

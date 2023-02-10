@@ -5,8 +5,8 @@ import static envision_lang.tokenizer.ReservedWord.*;
 
 import java.util.Iterator;
 
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.ParserHead;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
@@ -15,18 +15,18 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
-public class PS_Class extends GenericParser {
+public class PS_Class extends ParserHead {
 	
 	/**
 	 * Attempts to parse a class from tokens.
 	 * @return Statement
 	 */
-	public static Statement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
-	public static Statement classDeclaration(ParserDeclaration declaration) {
+	public static ParsedStatement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
+	public static ParsedStatement classDeclaration(ParserDeclaration declaration) {
 		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
-		Token name = consume(IDENTIFIER, "Expected a valid class name!");
-		//ParserStage.curClassName = name;
+		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		
 		//removing class parameter parsing for now
 		//check for parameters
@@ -38,51 +38,48 @@ public class PS_Class extends GenericParser {
 		}
 		*/
 		
-		Stmt_Class cs = new Stmt_Class(name, declaration);
+		Stmt_Class cs = new Stmt_Class(declaration.getStartToken(), name, declaration);
 		
-		//removing parent class parsing for now
-		/*
-		if (match(COLON)) {
-			do {
-				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
-				else if (checkType(DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
-				else error("Expected a valid super class type!");
-				cs.addSuper(new Expr_Var(previous()));
-			}
-			while (match(COMMA));
-		}
-		*/
+//		if (match(COLON)) {
+//			do {
+//				if (check(IDENTIFIER)) consume(IDENTIFIER, "Expected super class name.");
+//				else if (checkType(KeywordType.DATATYPE)) consume("Expected a valid datatype.", BOOLEAN, INT, DOUBLE, CHAR, STRING, NUMBER);
+//				else error("Expected a valid super class type!");
+//				cs.addSuper(new Expr_Var(previousNonTerminator()));
+//			}
+//			while (match(COMMA));
+//		}
+		
 		
 		//read in class body
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
 		//get the base class body then proceed to isolate static members and constructors
-		EArrayList<Statement> body = getBlock();
-		EArrayList<Statement> staticMembers = new EArrayList();
-		//EArrayList<MethodDeclarationStatement> methods = new EArrayList();
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
+		EList<ParsedStatement> body = getBlock();
+		EList<ParsedStatement> staticMembers = EList.newList();
+		EList<Stmt_FuncDef> constructors = EList.newList();
 		
 		//unpack top level block statements from body
 		int bodySize = body.size();
 		
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			//check if constructor -- remove from body
 			if (s instanceof Stmt_Block) {
 				Stmt_Block b = (Stmt_Block) body.remove(i);
 				bodySize--;
-				for (Statement bs : b.statements) {
+				for (ParsedStatement bs : b.statements) {
 					body.add(i, bs);
 					bodySize++;
 					i++;
 				}
-				i--; //decrement to realign the loop
+				i--; //decrement to realign the loop index
 			}
 		}
 		
 		//isolate static members
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			ParserDeclaration dec = s.getDeclaration();
 			
 			//check if static -- remove from body
@@ -95,11 +92,10 @@ public class PS_Class extends GenericParser {
 		
 		//isolate constructors and methods
 		for (int i = 0; i < bodySize; i++) {
-			Statement s = body.get(i);
+			ParsedStatement s = body.get(i);
 			
-			if (s instanceof Stmt_Block) {
-				constructors.addAll(isolateConstructors((Stmt_Block) s));
-				//System.out.println("add: " + constructors);
+			if (s instanceof Stmt_Block b) {
+				constructors.addAll(isolateConstructors(b));
 			}
 			
 			//check if constructor -- remove from body
@@ -110,41 +106,31 @@ public class PS_Class extends GenericParser {
 					bodySize--;
 					i--;
 				}
-				//else methods.add((MethodDeclarationStatement) body.remove(i));
-				//bodySize--;
-				//i--;
 			}
 		}
 		
 		//apply body, static members, and constructors
 		cs.setBody(body);
 		cs.setStaticMembers(staticMembers);
-		//cs.setMethods(methods);
 		cs.setInitializers(constructors);
-		
-		//System.out.println("Body: " + body);
-		//System.out.println("Static: " + staticMembers);
-		//System.out.println("Constr: " + constructors);
-		
-		//return curClassName to null
-		//ParserStage.curClassName = null;
 		
 		return cs;
 	}
 	
-	private static EArrayList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
-		EArrayList<Stmt_FuncDef> constructors = new EArrayList();
-		Iterator<Statement> it = in.statements.iterator();
+	/** Recursively pulls out constructors out of blocks. */
+	private static EList<Stmt_FuncDef> isolateConstructors(Stmt_Block in) {
+		EList<Stmt_FuncDef> constructors = new EArrayList<>();
+		Iterator<ParsedStatement> it = in.statements.iterator();
 		
 		while (it.hasNext()) {
-			Statement s = it.next();
+			ParsedStatement s = it.next();
 			
 			if (s instanceof Stmt_Block bs) {
 				constructors.addAll(isolateConstructors(bs));
 			}
-			else if (s instanceof Stmt_FuncDef mds && mds.isConstructor) {
-				mds.name = Token.create(ReservedWord.STRING_LITERAL, "init", mds.name.line);
-				constructors.add(mds);
+			else if (s instanceof Stmt_FuncDef funcDef && funcDef.isConstructor) {
+				funcDef.name = Token.create(ReservedWord.STRING_LITERAL, "init", funcDef.name.getLineNum());
+				constructors.add(funcDef);
 				it.remove();
 			}
 		}

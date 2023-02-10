@@ -5,17 +5,18 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.lang.util.DataModifier;
-import envision_lang.lang.util.VisibilityType;
-import envision_lang.parser.GenericParser;
-import envision_lang.parser.expressions.expression_types.Expr_Generic;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.natives.DataModifier;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
+import envision_lang.parser.ParserHead;
+import envision_lang.parser.expressions.expression_types.unused.Expr_Generic;
 import envision_lang.parser.util.DeclarationType;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
+import eutil.debug.PotentiallyBroken;
 
-public class PS_ParseDeclaration extends GenericParser {
+public class PS_ParseDeclaration extends ParserHead {
 	
 	/**
 	 * Attempts to parse a complete statement declaration from current
@@ -36,18 +37,18 @@ public class PS_ParseDeclaration extends GenericParser {
 		//handle data modifiers
 		parseDataModifiers(dec);
 		
-		if (check(GET, SET)) 	return dec.setDeclarationType(GETSET);
-		if (match(ENUM)) 		return dec.setDeclarationType(ENUM_DEF);
-		if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF);
+		//if (check(GET, SET)) 	return dec.setDeclarationType(GETSET).setStartToken(current());
+		if (match(ENUM)) 			return dec.setDeclarationType(ENUM_DEF).setStartToken(previous());
+		else if (check(CURLY_L)) 	return dec.setDeclarationType(BLOCK_DEF).setStartToken(current());
 		
 		//parse generics
 		parseGenerics(dec);
 		
 		//check for appropriate continuing statement
-		if (check(INIT)) 				return dec.setDeclarationType(INIT_DEF);
-		if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF);
-		if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF);
-		if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF);
+		if (check(INIT)) 					return dec.setDeclarationType(INIT_DEF).setStartToken(current());
+		else if (match(FUNC)) 				return dec.setDeclarationType(FUNC_DEF).setStartToken(previous());
+		else if (match(OPERATOR_))			return dec.setDeclarationType(OPERATOR_DEF).setStartToken(previous());
+		else if (match(CLASS)) 				return dec.setDeclarationType(CLASS_DEF).setStartToken(previous());
 		
 		//parse datatype
 		parseDataType(dec);
@@ -61,6 +62,7 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * 
 	 * @return A valid scope variable declaration
 	 */
+	@PotentiallyBroken("I am not sure if the 'advance' statement here should actually be here at all!")
 	public static ParserDeclaration parseScopeVar() {
 		ParserDeclaration declaration = new ParserDeclaration();
 		
@@ -72,7 +74,6 @@ public class PS_ParseDeclaration extends GenericParser {
 			throw new EnvisionLangError("Invalid variable declaration!");
 		
 		//grab any additional variable values
-		advance();
 		parseGenerics(declaration);
 		
 		return declaration;
@@ -84,8 +85,8 @@ public class PS_ParseDeclaration extends GenericParser {
 	public static void parseVisibility(ParserDeclaration dec) {
 		if (!checkType(VISIBILITY_MODIFIER)) return;
 		
-		Token vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
-		VisibilityType visibility = VisibilityType.parse(vis_token);
+		Token<?> vis_token = consumeType(VISIBILITY_MODIFIER, "Expected a visibility modifier!");
+		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.parse(vis_token);
 		
 		errorIf(checkType(VISIBILITY_MODIFIER), "Can only have one visibility modifier!");
 		
@@ -98,12 +99,12 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * @see DeclarationType
 	 */
 	public static void parseDataType(ParserDeclaration dec) {
-		Token t = current();
+		Token<?> t = current();
 		DeclarationType type = DeclarationType.parseType(t);
 		
 		if (type == VAR_DEF) {
 			//check for method calls or class member references
-			if (checkNext(PAREN_L, PERIOD)) type = OTHER;
+			if (checkNextNL(PAREN_L, PERIOD)) type = OTHER;
 			//check for type-less var assignment
 			else if (dec.hasDataMods()) type = VAR_DEF;
 			//check for expression calls
@@ -111,6 +112,7 @@ public class PS_ParseDeclaration extends GenericParser {
 		}
 		
 		dec.setDeclarationType(type);
+		dec.setStartToken(t);
 		
 		//if the keyword is a datatype, immediately set return type
 		//if (t.keyword.isDataType()) dec.applyReturnType(t);
@@ -131,11 +133,11 @@ public class PS_ParseDeclaration extends GenericParser {
 	 */
 	public static void parseDataModifiers(ParserDeclaration dec) {
 		//collect modifiers
-		EArrayList<DataModifier> modifiers = new EArrayList();
+		EList<DataModifier> modifiers = EList.newList();
 		
 		while (checkType(DATA_MODIFIER)) {
-			Token mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
-			DataModifier m = DataModifier.of(mod_token.keyword);
+			Token<?> mod_token = consumeType(DATA_MODIFIER, "Expected a data modifier!");
+			DataModifier m = DataModifier.of(mod_token.getKeyword());
 			modifiers.addIf(m != null, m);
 		}
 		
@@ -147,14 +149,14 @@ public class PS_ParseDeclaration extends GenericParser {
 	 * Parses data generics from tokens.
 	 */
 	public static void parseGenerics(ParserDeclaration dec) {
-		EArrayList<Expr_Generic> generics = new EArrayList();
+		EList<Expr_Generic> generics = EList.newList();
 		
 		if (check(LT)) {
 			consume(LT, "Expceted '<' for generic declaration start!");
 			if (!check(GT)) {
 				do {
-					Token generic = consume(IDENTIFIER, "Expected generic type!");
-					Token extension = null;
+					Token<?> generic = consume(IDENTIFIER, "Expected generic type!");
+					Token<?> extension = null;
 					if (match(COLON)) {
 						extension = getAdvance();
 					}
@@ -167,8 +169,12 @@ public class PS_ParseDeclaration extends GenericParser {
 		dec.applyGenerics(generics);
 	}
 	
+	public static void parseGetSet(ParserDeclaration dec) {
+		
+	}
+	
 	public static void parseReturnType(ParserDeclaration dec) {
-		Token t = consume(IDENTIFIER, "Expected a name identifier!");
+		Token<?> t = consume(IDENTIFIER, "Expected a name identifier!");
 		dec.applyReturnType(t);
 	}
 	

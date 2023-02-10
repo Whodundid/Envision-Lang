@@ -1,36 +1,49 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 import eutil.strings.EStringUtil;
 
 /** Used to declare variables within expressions. */
-public class Expr_VarDef implements Expression {
-
-	public final Token type;
-	public final EArrayList<Token> params;
+public class Expr_VarDef extends ParsedExpression {
 	
-	public Expr_VarDef(Token typeIn, EArrayList<Token> paramsIn) {
+	//========
+	// Fields
+	//========
+	
+	public final Token<?> type;
+	public final EList<Token<?>> params;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_VarDef(Token<?> typeIn, EList<Token<?>> paramsIn) {
+		super(typeIn);
 		type = typeIn;
 		params = paramsIn;
 	}
 	
+	//===========
+	// Overrides
+	//===========
+	
 	@Override
 	public String toString() {
 		String p = (params != null) ? "<" + EStringUtil.toString(params, ", ") + ">": "";
-		return type.lexeme + p;
+		return type.getLexeme() + p;
 	}
 	
 	@Override
 	public Expr_VarDef copy() {
-		return new Expr_VarDef(Token.copy(type), params);
+		return new Expr_VarDef(type.copy(), params);
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleVarDec_E(this);
 	}
 	

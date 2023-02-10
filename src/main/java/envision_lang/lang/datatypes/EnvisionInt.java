@@ -1,17 +1,16 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.EnvisionLangError;
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
-import envision_lang.exceptions.errors.InvalidDatatypeError;
-import envision_lang.exceptions.errors.NoOverloadError;
-import envision_lang.exceptions.errors.NullVariableError;
-import envision_lang.exceptions.errors.objects.ClassCastError;
-import envision_lang.exceptions.errors.objects.UnsupportedOverloadError;
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.internal.FunctionPrototype;
+import envision_lang.lang.functions.FunctionPrototype;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.lang.language_errors.error_types.NoOverloadError;
+import envision_lang.lang.language_errors.error_types.NullVariableError;
+import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
+import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.util.StaticTypes;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -20,35 +19,42 @@ import envision_lang.tokenizer.Operator;
  * 
  * @author Hunter Bragg
  */
-public class EnvisionInt extends EnvisionNumber {
+public final class EnvisionInt extends EnvisionNumber<Long> {
 	
+	public static final IDatatype INT_TYPE = EnvisionStaticTypes.INT_TYPE;
+
 	public static final EnvisionInt MIN_VALUE = EnvisionIntClass.newInt(Long.MIN_VALUE);
 	public static final EnvisionInt MAX_VALUE = EnvisionIntClass.newInt(Long.MAX_VALUE);
+	public static final EnvisionInt ZERO = EnvisionIntClass.valueOf(0L);
 	
-	public long int_val;
+	//========
+	// Fields
+	//========
+	
+	public final long int_val;
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	protected EnvisionInt() { this(0l); }
-	protected EnvisionInt(Number in) { this(in.longValue()); }
-	protected EnvisionInt(long in) {
+	EnvisionInt() { this(0L); }
+	EnvisionInt(Number in) { this(in.longValue()); }
+	EnvisionInt(long in) {
 		super(EnvisionIntClass.INT_CLASS);
 		int_val = in;
 	}
 	
-	protected EnvisionInt(boolean val) {
+	EnvisionInt(boolean val) {
 		super(EnvisionIntClass.INT_CLASS);
-		int_val = (val) ? 1 : 0;
+		int_val = (val) ? 1L : 0L;
 	}
 	
-	protected EnvisionInt(EnvisionInt in) {
+	EnvisionInt(EnvisionInt in) {
 		super(EnvisionIntClass.INT_CLASS);
 		int_val = in.int_val;
 	}
 	
-	protected EnvisionInt(EnvisionNumber in) {
+	EnvisionInt(EnvisionNumber in) {
 		super(EnvisionIntClass.INT_CLASS);
 		int_val = in.intVal().int_val;
 	}
@@ -62,43 +68,29 @@ public class EnvisionInt extends EnvisionNumber {
 		return (obj instanceof EnvisionInt env_int && env_int.int_val == int_val);
 	}
 	
-	@Override public String toString() { return String.valueOf(int_val); }
-	@Override public EnvisionInt copy() { return EnvisionIntClass.newInt(int_val); }
+	/**
+	 * Return this exact same integer.
+	 */
+	@Override
+	public EnvisionInt copy() {
+		return this;
+	}
 	
-	@Override public EnvisionInt negate() { int_val = -int_val; return this; }
+	@Override
+	public String toString() {
+		return String.valueOf(int_val);
+	}
 	
+	@Override public EnvisionInt negate() { return EnvisionIntClass.valueOf(-int_val); }
+	
+	@Override public Long convertToJavaObject() { return int_val; }
 	@Override public long intVal_i() { return int_val; }
 	@Override public double doubleVal_i() { return (double) int_val; }
 	@Override public EnvisionInt intVal() { return this; }
-	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.newDouble(int_val); }
+	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.valueOf(int_val); }
 	
 	@Override public EnvisionInt get() { return this; }
-	@Override public Object get_i() { return int_val; }
-	
-	@Override
-	public EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof EnvisionInt env_int) {
-			this.int_val = env_int.int_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-long value to a long!");
-	}
-	
-	@Override
-	public EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError {
-		if (isFinal()) throw new FinalVarReassignmentError(this, valIn);
-		if (valIn instanceof Long long_val) {
-			this.int_val = long_val;
-			return this;
-		}
-		//have to account for integers in this case
-		else if (valIn instanceof Integer int_val) {
-			this.int_val = int_val;
-			return this;
-		}
-		throw new EnvisionLangError("Attempted to internally set non-long value to a long!");
-	}
+	@Override public Long get_i() { return int_val; }
 	
 	@Override
 	public boolean supportsOperator(Operator op) {
@@ -114,6 +106,7 @@ public class EnvisionInt extends EnvisionNumber {
 		//assignment
 		case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> true;
 		case SHL_ASSIGN, SHR_ASSIGN, SHR_AR_ASSIGN, BW_AND_ASSIGN, BW_OR_ASSIGN, BW_XOR_ASSIGN -> true;
+		//don't accept any other operator types
 		default -> false;
 		};
 	}
@@ -123,68 +116,63 @@ public class EnvisionInt extends EnvisionNumber {
 		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
 			throws UnsupportedOverloadError
 	{
-		//unary operators
-		if (op.isUnary()) {
-			if (obj != null) throw new EnvisionLangError("The given operator object should be null! Unary Operator!");
+		// if the operator isn't a unary operation, don't allow object to be null
+		if (!op.isUnary()) {
+			if (obj == null) throw new NullVariableError();
 			
-			switch (op) {
-			//inc/dec
-			case NEGATE:			return EnvisionIntClass.newInt(-int_val);
-			case INC:				int_val++; return this;
-			case DEC:				int_val--; return this;
-			case POST_INC:			return EnvisionIntClass.newInt(int_val++);
-			case POST_DEC:			return EnvisionIntClass.newInt(int_val--);
-			
-			//throw error if this point is reached
-			default: throw new UnsupportedOverloadError(this, op);
+			//only allow numbers
+			if (!obj.getPrimitiveType().isNumber()) {
+				throw new InvalidDatatypeError(EnvisionStaticTypes.NUMBER_TYPE, obj.getDatatype());
 			}
 		}
 		
-		//don't allow object to be null
-		if (obj == null) throw new NullVariableError();
+		// extract this variable's direct scope entry so that assignment operations can effectively update the value
+		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
 		
-		//only allow numbers
-		if (!obj.getPrimitiveType().isNumber())
-			throw new InvalidDatatypeError(StaticTypes.NUMBER_TYPE, obj.getDatatype());
-		
-		EnvisionNumber num = (EnvisionNumber) obj;
+		// convert the incoming binary operation target object into an EnvisionNumber
+		EnvisionNumber numIn = (EnvisionNumber) obj;
 		
 		switch (op) {
+		case NEGATE:			return negate();
 		//relational operators
-		case NOT_EQUALS:		return EnvisionBooleanClass.newBoolean(int_val != num.intVal_i());
-		case GT:				return EnvisionBooleanClass.newBoolean(int_val > num.intVal_i());
-		case LT:				return EnvisionBooleanClass.newBoolean(int_val < num.intVal_i());
-		case GTE:				return EnvisionBooleanClass.newBoolean(int_val >= num.intVal_i());
-		case LTE:				return EnvisionBooleanClass.newBoolean(int_val <= num.intVal_i());
+		case NOT_EQUALS:		return EnvisionBooleanClass.valueOf(int_val != numIn.intVal_i());
+		case GT:				return EnvisionBooleanClass.valueOf(int_val > numIn.intVal_i());
+		case LT:				return EnvisionBooleanClass.valueOf(int_val < numIn.intVal_i());
+		case GTE:				return EnvisionBooleanClass.valueOf(int_val >= numIn.intVal_i());
+		case LTE:				return EnvisionBooleanClass.valueOf(int_val <= numIn.intVal_i());
 		//arithmetic operators
-		case ADD:				return EnvisionIntClass.newInt(int_val + num.intVal_i());
-		case SUB:				return EnvisionIntClass.newInt(int_val - num.intVal_i());
-		case MUL:				return EnvisionIntClass.newInt(int_val * num.intVal_i());
-		case DIV:				div0(int_val, num.intVal_i()); //check for div by zero errors
-								return EnvisionIntClass.newInt(int_val / num.intVal_i());
-		case MOD:				return EnvisionIntClass.newInt(int_val % num.intVal_i());
+		case ADD:				return EnvisionIntClass.valueOf(int_val + numIn.intVal_i());
+		case SUB:				return EnvisionIntClass.valueOf(int_val - numIn.intVal_i());
+		case MUL:				return EnvisionIntClass.valueOf(int_val * numIn.intVal_i());
+		case DIV:				div0_l(int_val, numIn.intVal_i()); //check for div by zero errors
+								return EnvisionIntClass.valueOf(int_val / numIn.intVal_i());
+		case MOD:				return EnvisionIntClass.valueOf(int_val % numIn.intVal_i());
 		//binary operators
-		case SHL:				return EnvisionIntClass.newInt(int_val << num.intVal_i());
-		case SHR:				return EnvisionIntClass.newInt(int_val >> num.intVal_i());
-		case SHR_AR:			return EnvisionIntClass.newInt(int_val >>> num.intVal_i());
-		case BW_AND:			return EnvisionIntClass.newInt(int_val & num.intVal_i());
-		case BW_OR:				return EnvisionIntClass.newInt(int_val | num.intVal_i());
-		case BW_XOR:			return EnvisionIntClass.newInt(int_val ^ num.intVal_i());
+		case SHL:				return EnvisionIntClass.valueOf(int_val << numIn.intVal_i());
+		case SHR:				return EnvisionIntClass.valueOf(int_val >> numIn.intVal_i());
+		case SHR_AR:			return EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i());
+		case BW_AND:			return EnvisionIntClass.valueOf(int_val & numIn.intVal_i());
+		case BW_OR:				return EnvisionIntClass.valueOf(int_val | numIn.intVal_i());
+		case BW_XOR:			return EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i());
 		//assignment operators
-		case ADD_ASSIGN:		int_val += num.intVal_i(); return this;
-		case SUB_ASSIGN:		int_val -= num.intVal_i(); return this;
-		case MUL_ASSIGN:		int_val *= num.intVal_i(); return this;
-		case DIV_ASSIGN:		int_val /= num.intVal_i(); return this;
-		case MOD_ASSIGN:		int_val %= num.intVal_i(); return this;
-		case SHL_ASSIGN:		int_val <<= num.intVal_i(); return this;
-		case SHR_ASSIGN:		int_val >>= num.intVal_i(); return this;
-		case SHR_AR_ASSIGN:		int_val >>>= num.intVal_i(); return this;
-		case BW_AND_ASSIGN:		int_val &= num.intVal_i(); return this;
-		case BW_OR_ASSIGN:		int_val |= num.intVal_i(); return this;
-		case BW_XOR_ASSIGN:		int_val ^= num.intVal_i(); return this;
+		case ADD_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + numIn.intVal_i()));
+		case SUB_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - numIn.intVal_i()));
+		case MUL_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val * numIn.intVal_i()));
+		case DIV_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val / numIn.intVal_i()));
+		case MOD_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val % numIn.intVal_i()));
+		case SHL_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val << numIn.intVal_i()));
+		case SHR_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >> numIn.intVal_i()));
+		case SHR_AR_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i()));
+		case BW_AND_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val & numIn.intVal_i()));
+		case BW_OR_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val | numIn.intVal_i()));
+		case BW_XOR_ASSIGN:		return scopeEntry.setR(EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i()));
+		//inc/dec
+		case INC:				return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + 1L));
+		case DEC:				return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - 1L));
+		//post inc/dec
+		case POST_INC: 			scopeEntry.set(EnvisionIntClass.valueOf(int_val + 1L)); return this;
+		case POST_DEC: 			scopeEntry.set(EnvisionIntClass.valueOf(int_val - 1L)); return this;
 		
-		//throw error if this point is reached
-		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}
@@ -192,14 +180,18 @@ public class EnvisionInt extends EnvisionNumber {
 	@Override
 	public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
 		//determine specific cast types
-		if (StaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.newBoolean(int_val != 0);
-		if (StaticTypes.DOUBLE_TYPE.compare(castType)) return doubleVal();
-		if (StaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.newString(int_val);
-		if (StaticTypes.CHAR_TYPE.compare(castType)) return EnvisionCharClass.newChar(int_val);
-		if (StaticTypes.LIST_TYPE.compare(castType)) {
-			EnvisionList list = EnvisionListClass.newList(StaticTypes.CHAR_TYPE);
+		if (EnvisionStaticTypes.DOUBLE_TYPE.compare(castType)) return doubleVal();
+		if (EnvisionStaticTypes.BOOL_TYPE.compare(castType)) return EnvisionBooleanClass.valueOf(int_val != 0);
+		if (EnvisionStaticTypes.STRING_TYPE.compare(castType)) return EnvisionStringClass.valueOf(int_val);
+		
+		if (EnvisionStaticTypes.LIST_TYPE.compare(castType)) {
+			EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.CHAR_TYPE);
 			String str = String.valueOf(int_val);
-			for (int i = 0; i < str.length(); i++) list.add(new EnvisionChar(str.charAt(i)));
+			
+			for (int i = 0; i < str.length(); i++) {
+				list.add(EnvisionCharClass.newChar(str.charAt(i)));
+			}
+			
 			return list;
 		}
 		
@@ -212,10 +204,7 @@ public class EnvisionInt extends EnvisionNumber {
 		if (!proto.hasOverload(args)) throw new NoOverloadError(funcName, args);
 		
 		return switch (funcName) {
-		case "get" -> get();
-		case "set" -> set(args[0]);
-		case "min" -> min((EnvisionInt) args[0], (EnvisionInt) args[1]);
-		case "max" -> max((EnvisionInt) args[0], (EnvisionInt) args[1]);
+		// NO INT FUNCTIONS
 		default -> super.handlePrimitive(proto, args);
 		};
 	}

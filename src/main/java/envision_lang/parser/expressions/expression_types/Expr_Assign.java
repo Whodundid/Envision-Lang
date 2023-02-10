@@ -1,29 +1,42 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
 import envision_lang.tokenizer.Token;
-import eutil.datatypes.BoxList;
+import eutil.datatypes.boxes.BoxList;
 
-public class Expr_Assign implements Expression {
+public class Expr_Assign extends ParsedExpression {
 
-	public Expr_Assign leftAssign;
-	public Token name;
-	public Operator operator;
-	public Expression value;
-	public final BoxList<Token, Token> modulars;
+	//========
+	// Fields
+	//========
 	
-	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn) { this(nameIn, operatorIn, valueIn, null); }
-	public Expr_Assign(Token nameIn, Operator operatorIn, Expression valueIn, BoxList<Token, Token> modularsIn) {
+	public Expr_Assign leftAssign;
+	public Token<?> name;
+	public Operator operator;
+	public ParsedExpression value;
+	public final BoxList<Token<?>, Token<?>> modulars;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, ParsedExpression valueIn) {
+		this(nameIn, operatorIn, valueIn, null);
+	}
+	
+	public Expr_Assign(Token<?> nameIn, Operator operatorIn, ParsedExpression valueIn, BoxList<Token<?>, Token<?>> modularsIn) {
+		super(nameIn);
 		name = nameIn;
 		operator = operatorIn;
 		value = valueIn;
 		modulars = modularsIn;
 	}
 	
-	public Expr_Assign(Expr_Assign left, Operator operatorIn, Expression valueIn) {
+	public Expr_Assign(Expr_Assign left, Operator operatorIn, ParsedExpression valueIn) {
+		super(left);
 		leftAssign = left;
 		name = null;
 		operator = operatorIn;
@@ -31,14 +44,14 @@ public class Expr_Assign implements Expression {
 		modulars = null;
 	}
 	
-	public String getName() {
-		return name.lexeme;
-	}
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
 		String n = "";
-		if (name != null) n = name.lexeme;
+		if (name != null) n = name.getLexeme();
 		else if (modulars != null) n = modulars + "";
 		else n = leftAssign + "";
 		return n + " " + operator.typeString() + " " + value;
@@ -46,12 +59,20 @@ public class Expr_Assign implements Expression {
 	
 	@Override
 	public Expr_Assign copy() {
-		return new Expr_Assign(Token.copy(name), operator, value.copy(), modulars);
+		return new Expr_Assign(name.copy(), operator, value.copy(), modulars);
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleAssign_E(this);
+	}
+	
+	//=========
+	// Getters
+	//=========
+	
+	public String getName() {
+		return name.getLexeme();
 	}
 	
 }

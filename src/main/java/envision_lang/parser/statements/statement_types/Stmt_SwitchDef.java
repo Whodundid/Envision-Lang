@@ -1,31 +1,43 @@
 package envision_lang.parser.statements.statement_types;
 
-import envision_lang.parser.expressions.Expression;
-import envision_lang.parser.statements.Statement;
+import envision_lang.parser.expressions.ParsedExpression;
+import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.StatementHandler;
-import envision_lang.parser.util.ParserDeclaration;
-import eutil.datatypes.EArrayList;
+import envision_lang.tokenizer.Token;
+import eutil.datatypes.util.EList;
 
-public class Stmt_SwitchDef implements Statement {
+public class Stmt_SwitchDef extends ParsedStatement {
 	
-	public final Expression expression;
-	public final EArrayList<Stmt_SwitchCase> cases;
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression expression;
+	public final EList<Stmt_SwitchCase> cases;
 	public final Stmt_SwitchCase defaultCase;
 	
-	public Stmt_SwitchDef(Expression expressionIn, EArrayList<Stmt_SwitchCase> casesIn, Stmt_SwitchCase defaultCaseIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Stmt_SwitchDef(Token start,
+						  ParsedExpression expressionIn,
+						  EList<Stmt_SwitchCase> casesIn,
+						  Stmt_SwitchCase defaultCaseIn)
+	{
+		super(start);
 		expression = expressionIn;
 		cases = casesIn;
 		defaultCase = defaultCaseIn;
 	}
 	
+	//===========
+	// Overrides
+	//===========
+	
 	@Override
 	public String toString() {
 		return "Switch: (" + expression + ") { " + cases + " }";
-	}
-	
-	@Override
-	public ParserDeclaration getDeclaration() {
-		return null;
 	}
 	
 	@Override

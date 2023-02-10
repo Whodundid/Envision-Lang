@@ -31,7 +31,7 @@ public enum KeywordType {
 	ARITHMETIC				(0b00010000),
 	ASSIGNMENT				(0b00100000),
 	OPERATOR				(0b01000000),
-	SEPARATOR				(0b10000000);
+	TERMINATOR				(0b10000000);
 	
 	public final int byte_val;
 	

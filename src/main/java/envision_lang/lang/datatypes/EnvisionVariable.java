@@ -1,9 +1,10 @@
 package envision_lang.lang.datatypes;
 
-import envision_lang.exceptions.errors.FinalVarReassignmentError;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 /**
  * The EnvisionVariable is a specific EnvisionObject type which is
@@ -33,6 +34,7 @@ import envision_lang.lang.classes.EnvisionClass;
  * <p>
  * Every EnvisionVariable is intended to wrap some Envision primitive
  * datatype.
+ * 
  * <ul>
  * The following are examples of native EnvisionVariables:
  * <p>
@@ -43,6 +45,7 @@ import envision_lang.lang.classes.EnvisionClass;
  * <li>EnvisionString
  * <li>EnvisionList
  * </ul>
+ * 
  * These primitive types are designed to not support any kind of
  * instance scope as they are technically primitive values at their
  * core. Because of this, no instance scope is passed during a
@@ -56,7 +59,11 @@ import envision_lang.lang.classes.EnvisionClass;
  * 
  * @author Hunter Bragg
  */
-public abstract class EnvisionVariable extends ClassInstance {
+public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
+	permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
+{
+	
+	public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
 	
 	//--------------
 	// Constructors
@@ -91,14 +98,6 @@ public abstract class EnvisionVariable extends ClassInstance {
 	 * 
 	 * @return The backing Java Object
 	 */
-	public abstract Object get_i();
-	
-	//---------
-	// Setters
-	//---------
-	
-	public abstract EnvisionVariable set(EnvisionObject valIn) throws FinalVarReassignmentError;
-	
-	public abstract EnvisionVariable set_i(Object valIn) throws FinalVarReassignmentError;
+	public abstract TYPE get_i();
 	
 }

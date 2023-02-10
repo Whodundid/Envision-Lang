@@ -1,37 +1,28 @@
 package envision_lang.interpreter.expressions;
 
-import envision_lang.exceptions.errors.NotABooleanError;
+import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.interpreterBase.ExpressionExecutor;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionBoolean;
-import envision_lang.parser.expressions.Expression;
+import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Ternary;
 
-public class IE_Ternary extends ExpressionExecutor<Expr_Ternary> {
-
-	public IE_Ternary(EnvisionInterpreter in) {
-		super(in);
-	}
+public class IE_Ternary extends AbstractInterpreterExecutor {
 	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Ternary e) {
-		return new IE_Ternary(in).run(e);
-	}
-	
-	@Override
-	public EnvisionObject run(Expr_Ternary expression) {
-		Expression condition = expression.condition;
-		Expression ifTrue = expression.ifTrue;
-		Expression ifFalse = expression.ifFalse;
+	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Ternary expression) {
+		ParsedExpression condition = expression.condition;
+		ParsedExpression ifTrue = expression.ifTrue;
+		ParsedExpression ifFalse = expression.ifFalse;
 		
-		EnvisionObject value = evaluate(condition);
+		EnvisionObject value = interpreter.evaluate(condition);
 		
-		//check that the value is actually a boolean
+		// check that the value is actually a boolean
 		if (!(value instanceof EnvisionBoolean)) {
-			throw new NotABooleanError(value);
+			throw new InvalidDatatypeError("Expected a boolean here but got '" + value + "' instead!");
 		}
 		
-		return (isTrue(value)) ? evaluate(ifTrue) : evaluate(ifFalse);
+		return (isTrue(value)) ? interpreter.evaluate(ifTrue) : interpreter.evaluate(ifFalse);
 	}
 	
 }

@@ -1,18 +1,31 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 
-public class Expr_Ternary implements Expression {
+public class Expr_Ternary extends ParsedExpression {
 	
-	public final Expression condition, ifTrue, ifFalse;
+	//========
+	// Fields
+	//========
 	
-	public Expr_Ternary(Expression conditionIn, Expression ifTrueIn, Expression ifFalseIn) {
+	public final ParsedExpression condition, ifTrue, ifFalse;
+	
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Ternary(ParsedExpression conditionIn, ParsedExpression ifTrueIn, ParsedExpression ifFalseIn) {
+		super(conditionIn);
 		condition = conditionIn;
 		ifTrue = ifTrueIn;
 		ifFalse = ifFalseIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -25,7 +38,7 @@ public class Expr_Ternary implements Expression {
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleTernary_E(this);
 	}
 	

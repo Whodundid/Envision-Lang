@@ -1,23 +1,39 @@
 package envision_lang.parser.expressions.expression_types;
 
 import envision_lang.lang.EnvisionObject;
-import envision_lang.parser.expressions.Expression;
 import envision_lang.parser.expressions.ExpressionHandler;
+import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.tokenizer.Operator;
 
-public class Expr_Binary implements Expression	{
-
-	public final Expression left, right;
+public class Expr_Binary extends ParsedExpression {
+	
+	//========
+	// Fields
+	//========
+	
+	public final ParsedExpression left, right;
 	public Operator operator;
 	public boolean modular;
 	
-	public Expr_Binary(Expression leftIn, Operator operatorIn, Expression rightIn) { this(leftIn, operatorIn, rightIn, false); }
-	public Expr_Binary(Expression leftIn, Operator operatorIn, Expression rightIn, boolean modularIn) {
+	//==============
+	// Constructors
+	//==============
+	
+	public Expr_Binary(ParsedExpression leftIn, Operator operatorIn, ParsedExpression rightIn) {
+		this(leftIn, operatorIn, rightIn, false);
+	}
+	
+	public Expr_Binary(ParsedExpression leftIn, Operator operatorIn, ParsedExpression rightIn, boolean modularIn) {
+		super(leftIn);
 		left = leftIn;
 		operator = operatorIn;
 		right = rightIn;
 		modular = modularIn;
 	}
+	
+	//===========
+	// Overrides
+	//===========
 	
 	@Override
 	public String toString() {
@@ -31,7 +47,7 @@ public class Expr_Binary implements Expression	{
 	}
 	
 	@Override
-	public EnvisionObject execute(ExpressionHandler handler) {
+	public EnvisionObject evaluate(ExpressionHandler handler) {
 		return handler.handleBinary_E(this);
 	}
 	
