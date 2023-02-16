@@ -158,9 +158,9 @@ public enum Operator implements IKeyword {
 	}
 	
 	/** Returns a keyword from the given input String. If no keywords match, null is returned instead. */
-	public static Operator getOperator(String in) {
-		return (in != null) ? operators.get(in) : null;
-	}
+//	public static Operator getOperator(String in) {
+//		return (in != null) ? operators.get(in) : null;
+//	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	

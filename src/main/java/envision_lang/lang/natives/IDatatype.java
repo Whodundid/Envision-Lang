@@ -1,6 +1,7 @@
 package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
+import eutil.datatypes.util.JavaDatatype;
 
 /**
  * An over-arching wrapper to effectively group the types of Primitives and
@@ -249,6 +250,31 @@ public interface IDatatype {
 		
 		if (parsedType == null) return NativeTypeManager.datatypeOf(typeName);
 		return parsedType;
+	}
+	
+	/**
+	 * Attempts to parse a valid Envision Datatype from the given Java Datatype.
+	 * <p>
+	 * Note: only a handful of Java types can be directly mapped to Envision types.
+	 * Java types that do not have a valid Envision mapping will return Java::NULL.
+	 * 
+	 * @param type The Java type
+	 * @return The mapped Envision type or Java::NULL if not valid
+	 */
+	public static IDatatype fromJavaType(JavaDatatype type) {
+		return switch (type) {
+		case NULL -> EnvisionStaticTypes.NULL_TYPE;
+		case OBJECT -> EnvisionStaticTypes.VAR_TYPE;
+		case BOOLEAN -> EnvisionStaticTypes.BOOL_TYPE;
+		case CHAR -> EnvisionStaticTypes.CHAR_TYPE;
+		case BYTE, SHORT, INT, LONG -> EnvisionStaticTypes.INT_TYPE;
+		case FLOAT, DOUBLE -> EnvisionStaticTypes.DOUBLE_TYPE;
+		case STRING -> EnvisionStaticTypes.STRING_TYPE;
+		case NUMBER -> EnvisionStaticTypes.NUMBER_TYPE;
+		case ARRAY -> EnvisionStaticTypes.LIST_TYPE;
+		case CLASS -> EnvisionStaticTypes.CLASS_TYPE;
+		default -> null;
+		};
 	}
 	
 }

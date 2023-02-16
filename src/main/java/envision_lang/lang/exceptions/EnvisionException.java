@@ -20,6 +20,8 @@ public class EnvisionException extends ClassInstance {
 	// Fields
 	//========
 	
+	/** The exception type. */
+	public String type;
 	/** The stated reason that this exception was thrown. */
 	public String reason = "";
 	
@@ -28,25 +30,25 @@ public class EnvisionException extends ClassInstance {
 	//==============
 	
 	EnvisionException() {
-		super(EnvisionExceptionClass.DEFAULT_EXCEPTION_CLASS);
+		super(EnvisionExceptionClass.EXCEPTION_CLASS);
+		type = EnvisionExceptionClass.EXCEPTION_CLASS.getClassName();
 	}
 	
 	EnvisionException(String reasonIn) {
-		super(EnvisionExceptionClass.DEFAULT_EXCEPTION_CLASS);
+		super(EnvisionExceptionClass.EXCEPTION_CLASS);
+		type = EnvisionExceptionClass.EXCEPTION_CLASS.getClassName();
 		reason = reasonIn;
 	}
 	
-	EnvisionException(EnvisionExceptionClass throwingClassIn) {
-		super(throwingClassIn);
-	}
-	
-	EnvisionException(EnvisionExceptionClass throwingClassIn, String reasonIn) {
-		super(throwingClassIn);
+	EnvisionException(String typeIn, String reasonIn) {
+		super(EnvisionExceptionClass.EXCEPTION_CLASS);
+		type = typeIn;
 		reason = reasonIn;
 	}
 	
 	EnvisionException(EnvisionException toCopyIn) {
 		super(toCopyIn.internalClass);
+		type = toCopyIn.type;
 		reason = toCopyIn.reason;
 	}
 	
@@ -64,12 +66,15 @@ public class EnvisionException extends ClassInstance {
 	
 	@Override
 	public String toString() {
-		return reason;
+		return type + ((reason != null) ? ":" + reason : "");
 	}
 	
 	@Override
 	public EnvisionException copy() {
 		return EnvisionExceptionClass.copy(this);
 	}
+	
+	public String getType() { return type; }
+	public String getReason() { return reason; }
 	
 }

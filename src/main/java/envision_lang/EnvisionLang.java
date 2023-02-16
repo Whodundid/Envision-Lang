@@ -22,9 +22,7 @@ import envision_lang.lang.packages.EnvisionLangPackage;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
-import eutil.debug.Experimental;
 import eutil.debug.InDevelopment;
-import eutil.debug.Unused;
 
 /**
  * The Envision Scripting Language - Implemented in Java.
@@ -86,9 +84,9 @@ public class EnvisionLang {
 	 * can very easily lead to unintended results in code which is why this is false
 	 * by default.
 	 */
-	@Unused
-	@Experimental
-	private static boolean allowClassFileStatements = false;
+	//@Unused
+	//@Experimental
+	//private static boolean allowClassFileStatements = false;
 	
 	/**
 	 * When declaring a class, only specific statements are permitted within the
@@ -132,9 +130,9 @@ public class EnvisionLang {
 	 * 
 	 * </blockquote>
 	 */
-	@Unused
-	@Experimental
-	private static boolean allowClassBodyStatements = false;
+	//@Unused
+	//@Experimental
+	//private static boolean allowClassBodyStatements = false;
 	
 	/**
 	 * Due to the nature of how Java loads programs on a per-class basis, the simple
@@ -219,9 +217,12 @@ public class EnvisionLang {
 		
 		for (var arg : launchSettings.getEnvArgs()) {
 			switch (arg) {
-			case PRELOAD_LANGUAGE: preloadLanguage = true; EnvisionLoader.loadLang(); break;
-			case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
-			case CLASS_FILE_STATEMENTS: allowClassFileStatements = true; break;
+			case PRELOAD_LANGUAGE:
+				preloadLanguage = true;
+				for (int i = 0; i < 10; i++) EnvisionLoader.loadLang();
+				break;
+			//case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
+			//case CLASS_FILE_STATEMENTS: allowClassFileStatements = true; break;
 			case DEBUG_MODE: debugMode = true; break;
 			case LIVE_MODE: liveMode = true; break;
 			case TOKENIZE: tokenize = true; break;

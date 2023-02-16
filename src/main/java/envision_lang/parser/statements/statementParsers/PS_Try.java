@@ -20,17 +20,30 @@ public class PS_Try extends ParserHead {
 		
 		EList<Stmt_Catch> catches = EList.newList();
 		
-		do {
-			Token<?> catchToken = consume(CATCH, "Expected 'catch' statement block after try block!");
-			
-			consume(PAREN_L, "Expected catch expression start!");
-			Token<?> exceptionType = consume(IDENTIFIER, "Expected an exception type!");
-			Token<?> var = consume(IDENTIFIER, "Expected a variable to pair against exception type!");
-			consume(PAREN_R, "Expected catch expression end!");
-			consume(CURLY_L, "Expected block start after catch declaration!");
-			catches.add(new Stmt_Catch(catchToken, exceptionType, var, getBlock()));
+		ignoreTerminators();
+		if (check(CATCH)) {
+			do {
+				Token<?> catchToken = consume(CATCH, "Expected 'catch' statement block after try block!");
+				consume(PAREN_L, "Expected catch expression start!");
+								
+				Token<?> type, name;
+				
+				type = consume(IDENTIFIER, "Expected an exception type!");
+				
+				if (check(IDENTIFIER)) {
+					name = consume(IDENTIFIER, "Expected a variable to pair against exception type!");
+				}
+				else {
+					name = type;
+					type = null;
+				}
+				
+				consume(PAREN_R, "Expected catch expression end!");
+				consume(CURLY_L, "Expected block start after catch declaration!");
+				catches.add(new Stmt_Catch(catchToken, type, name, getBlock()));
+			}
+			while (check(CATCH));
 		}
-		while (check(CATCH));
 		
 		Stmt_Block finallyBlock = null;
 		if (match(FINALLY)) {

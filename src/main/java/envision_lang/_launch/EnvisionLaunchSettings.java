@@ -6,7 +6,6 @@ import java.util.List;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
-import eutil.debug.Unused;
 
 /**
  * A collection of valid launch arguments to be given to either the Envision
@@ -69,10 +68,10 @@ public class EnvisionLaunchSettings {
 	//-----------------
 	
 	public static enum LaunchSetting {
-		@Unused
-		CLASS_FILE_STATEMENTS("allowClassFileStatements"),
-		@Unused
-		CLASS_BODY_STATEMENTS("allowClassBodyStatements"),
+		//@Unused
+		//CLASS_FILE_STATEMENTS("allowClassFileStatements"),
+		//@Unused
+		//CLASS_BODY_STATEMENTS("allowClassBodyStatements"),
 		/** Loads primary Envision system classes up-front before executing Envision code. */
 		@Broken
 		PRELOAD_LANGUAGE("preloadLang"),

@@ -12,7 +12,6 @@ import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 import eutil.file.LineReader;
-import eutil.strings.EStringBuilder;
 
 public class Tokenizer {
 	
@@ -48,7 +47,7 @@ public class Tokenizer {
 	
 	//--------------------------------------------------------------------------------------------------------------------
 	
-	public Tokenizer() {}
+//	public Tokenizer() {}
 	public Tokenizer(EnvisionCodeFile codeFileIn) {
 		theFile = codeFileIn;
 	}
@@ -531,45 +530,45 @@ public class Tokenizer {
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	/** Removes both single line and multi-line comments from strings. */
-	public static String stripComments(String in) {
-		if (in.startsWith("//")) return "";
-		EStringBuilder cur = new EStringBuilder();
-		
-		boolean start = false;
-		boolean multistart = false;
-		boolean inMultiComment = false;
-		
-		for (int i = 0; i < in.length(); i++) {
-			char c = in.charAt(i);
-			
-			if (inMultiComment) {
-				if (multistart) {
-					if (c == '/') {
-						inMultiComment = false;
-						if (i + 1 < in.length() && in.charAt(i + 1) == ' ') {
-							i++;
-							continue;
-						}
-					}
-					else start = false;
-				}
-				else if (c == '*') multistart = true;
-			}
-			else {
-				if (start) {
-					if (c == '/') break;
-					if (c == '*') {
-						inMultiComment = true;
-						cur.setSubstring(0, cur.length() - 1);
-					}
-				}
-				else if (c == '/') start = true;
-			}
-			
-			if (!inMultiComment) cur.append(c);
-		}
-		
-		return cur.toString();
-	}
+//	public static String stripComments(String in) {
+//		if (in.startsWith("//")) return "";
+//		EStringBuilder cur = new EStringBuilder();
+//		
+//		boolean start = false;
+//		boolean multistart = false;
+//		boolean inMultiComment = false;
+//		
+//		for (int i = 0; i < in.length(); i++) {
+//			char c = in.charAt(i);
+//			
+//			if (inMultiComment) {
+//				if (multistart) {
+//					if (c == '/') {
+//						inMultiComment = false;
+//						if (i + 1 < in.length() && in.charAt(i + 1) == ' ') {
+//							i++;
+//							continue;
+//						}
+//					}
+//					else start = false;
+//				}
+//				else if (c == '*') multistart = true;
+//			}
+//			else {
+//				if (start) {
+//					if (c == '/') break;
+//					if (c == '*') {
+//						inMultiComment = true;
+//						cur.setSubstring(0, cur.length() - 1);
+//					}
+//				}
+//				else if (c == '/') start = true;
+//			}
+//			
+//			if (!inMultiComment) cur.append(c);
+//		}
+//		
+//		return cur.toString();
+//	}
 	
 }
