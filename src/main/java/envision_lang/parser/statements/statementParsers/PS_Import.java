@@ -7,6 +7,7 @@ import envision_lang.parser.ParserHead;
 import envision_lang.parser.expressions.expression_types.Expr_Import;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Import;
+import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.strings.EStringBuilder;
 import eutil.strings.EStringUtil;
@@ -21,7 +22,7 @@ public class PS_Import extends ParserHead {
 	 * 
 	 * @return ImportStatement
 	 */
-	public static ParsedStatement handleImport() {
+	public static ParsedStatement handleImport(ParserDeclaration dec) {
 		Token<?> importToken = consume(IMPORT, "Expected 'import' here!");
 		String m = "Expected a valid identifier for an import path name!";
 		boolean all = false;
@@ -57,7 +58,11 @@ public class PS_Import extends ParserHead {
 			asName = consume(IDENTIFIER, "Expected a valid identifier for which to map an import into!");
 		}
 		
-		return new Stmt_Import(importToken, new Expr_Import(pathToken, objectToken), asName, all);
+		var stmt = new Stmt_Import(importToken, new Expr_Import(pathToken, objectToken), asName, all);
+		
+		if (dec != null) stmt.setBlockStatement(dec.isBlockingStatement());
+		
+		return stmt;
 	}
 	
 }

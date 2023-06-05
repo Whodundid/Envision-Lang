@@ -4,6 +4,7 @@ import envision_lang.lang.packages.native_packages.debug.DebugInfo;
 import envision_lang.lang.packages.native_packages.debug.DebugParsed;
 import envision_lang.lang.packages.native_packages.debug.DebugScope;
 import envision_lang.lang.packages.native_packages.debug.DebugScopeFull;
+import envision_lang.lang.packages.native_packages.debug.DebugStackFrames;
 
 public final class DebugPackage extends NativePackage {
 	
@@ -17,6 +18,7 @@ public final class DebugPackage extends NativePackage {
 		define(new DebugScopeFull());
 		define(new DebugInfo());
 		define(new DebugParsed());
+		define(new DebugStackFrames());
 	}
 	
 }

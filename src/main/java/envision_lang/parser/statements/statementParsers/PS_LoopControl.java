@@ -8,6 +8,7 @@ import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_LoopControl;
+import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
 /**
@@ -25,7 +26,7 @@ public class PS_LoopControl extends ParserHead {
 	 * 
 	 * @return The parsed break statement.
 	 */
-	public static ParsedStatement handleBreak() {
+	public static ParsedStatement handleBreak(ParserDeclaration dec) {
 		Token<?> start = null;
 		ParsedExpression condition = null;
 		
@@ -41,7 +42,11 @@ public class PS_LoopControl extends ParserHead {
 		
 		consumeTerminator();
 		
-		return new Stmt_LoopControl(start, true, condition);
+		var stmt = new Stmt_LoopControl(start, true, condition);
+		
+		if (dec != null) stmt.setBlockStatement(dec.isBlockingStatement());
+		
+		return stmt;
 	}
 	
 	/**
@@ -51,7 +56,7 @@ public class PS_LoopControl extends ParserHead {
 	 * 
 	 * @return The parsed continue statement.
 	 */
-	public static ParsedStatement handleContinue() {
+	public static ParsedStatement handleContinue(ParserDeclaration dec) {
 		Token<?> start = null;
 		ParsedExpression condition = null;
 		
@@ -67,7 +72,11 @@ public class PS_LoopControl extends ParserHead {
 		
 		consumeTerminator();
 		
-		return new Stmt_LoopControl(start, false, condition);
+		var stmt = new Stmt_LoopControl(start, false, condition);
+		
+		if (dec != null) stmt.setBlockStatement(dec.isBlockingStatement());
+		
+		return stmt;
 	}
 	
 }

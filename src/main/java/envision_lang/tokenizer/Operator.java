@@ -44,6 +44,9 @@ public enum Operator implements IKeyword {
 	/** A special type of operator used to override the array brackets. */
 	ARRAY_OP("\\[]", KeywordType.OPERATOR),
 	
+	/** A special type of operator that is capable of parsing a block statement (if enabled). */
+	BLOCK_STATEMENT_TOKEN("#"),
+	
 	//--------------------
 	// enclosing operator
 	//--------------------

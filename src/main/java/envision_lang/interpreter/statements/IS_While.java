@@ -5,7 +5,6 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.throwables.Break;
 import envision_lang.interpreter.util.throwables.Continue;
 import envision_lang.parser.statements.ParsedStatement;
-import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_While;
 
 public class IS_While extends AbstractInterpreterExecutor {
@@ -31,22 +30,15 @@ public class IS_While extends AbstractInterpreterExecutor {
 			ParsedStatement b = statement.body;
 			if (b == null) continue;
 			
-			interpreter.pushScope();
-			
-			if (b instanceof Stmt_Block block) {
-				for (ParsedStatement s : block.statements) {
-					try { interpreter.execute(s); }
-					catch (Break e) { break TOP; }
-					catch (Continue e) { continue TOP; }
-				}
+			try {
+				interpreter.pushScope();
+				interpreter.execute(b);
 			}
-			else {
-				try { interpreter.execute(statement.body); }
-				catch (Break e) { break TOP; }
-				catch (Continue e) { continue TOP; }
+			catch (Break e) { break TOP; }
+			catch (Continue e) { continue TOP; }
+			finally {
+				interpreter.popScope();
 			}
-			
-			interpreter.popScope();
 		}
 		while (isTrue(interpreter.evaluate(statement.condition)));
 	}
@@ -63,22 +55,15 @@ public class IS_While extends AbstractInterpreterExecutor {
 			ParsedStatement b = statement.body;
 			if (b == null) continue;
 			
-			interpreter.pushScope();
-			
-			if (b instanceof Stmt_Block block) {
-				for (ParsedStatement s : block.statements) {
-					try { interpreter.execute(s); }
-					catch (Break e) { break TOP; }
-					catch (Continue e) { continue TOP; }
-				}
+			try {
+				interpreter.pushScope();
+				interpreter.executeNext(b);
 			}
-			else {
-				try { interpreter.execute(statement.body); }
-				catch (Break e) { break TOP; }
-				catch (Continue e) { continue TOP; }
+			catch (Break e) { break TOP; }
+			catch (Continue e) { continue TOP; }
+			finally {
+				interpreter.popScope();
 			}
-			
-			interpreter.popScope();
 		}
 	}
 	

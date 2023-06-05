@@ -25,7 +25,7 @@ import eutil.debug.Inefficient;
 @Inefficient(reason="I swear there has to be a better way of going about this..")
 public class PS_For extends ParserHead {
 	
-	public static ParsedStatement forStatement() {
+	public static ParsedStatement forStatement(ParserDeclaration declaration) {
 		Token<?> forToken = consume(FOR, "Expected 'for' here!");
 		consume(PAREN_L, "Expected '(' after for statement!");
 		
@@ -148,6 +148,8 @@ public class PS_For extends ParserHead {
 		case 2: forStatement = new Stmt_LambdaFor(forToken, vars, (Expr_Lambda) middle, post, body); break;
 		default: error("INVALID FOR LOOP TYPE! (" + type + ") -- THIS SHOULDN'T BE POSSIBLE!!");
 		}
+		
+		forStatement.setBlockStatement(declaration.isBlockingStatement());
 		
 		return forStatement;
 	}

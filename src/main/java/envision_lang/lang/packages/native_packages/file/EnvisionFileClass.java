@@ -108,15 +108,18 @@ public class EnvisionFileClass extends EnvisionClass {
 	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		EnvisionFile file = null;
 		
-		if (args.length == 0) throw InvalidArgumentError.expectedAtLeast(1);
+		//if (args.length == 0) throw InvalidArgumentError.expectedAtLeast(1);
 		if (args.length > 2) throw InvalidArgumentError.expectedAtMost(2);
 		
-		EnvisionObject first = args[0];
-		
-		//don't accept null arguments
-		if (first == null) throw InvalidArgumentError.nullArgument();
-		
-		if (args.length == 2) {
+		if (args.length == 0) {
+			file = new EnvisionFile((String) null);
+		}
+		else if (args.length == 2) {
+			EnvisionObject first = args[0];
+			
+			//don't accept null arguments
+			if (first == null) throw InvalidArgumentError.nullArgument();
+			
 			EnvisionObject second = args[1];
 			
 			//don't accept null arguments
@@ -133,14 +136,22 @@ public class EnvisionFileClass extends EnvisionClass {
 			else throw InvalidArgumentError.conversionError(second, FILE_DATATYPE);
 		}
 		else {
+			EnvisionObject first = args[0];
+			
+			//don't accept null arguments
+			if (first == null) throw InvalidArgumentError.nullArgument();
+			
 			//attempt creation from single arg
 			if (first instanceof EnvisionString env_str) file = new EnvisionFile(env_str.toString());
 			else if (first instanceof EnvisionFile env_file) file = new EnvisionFile(env_file.iFile.getAbsolutePath());
 		}
 		
 		//if null, creation failed!
-		if (file == null) throw InvalidArgumentError.conversionError(first, getDatatype());
-		
+		if (file == null) //throw InvalidArgumentError.conversionError(first, getDatatype());
+		{
+			throw new InvalidArgumentError("Failed to create a File object from the given arguments!");
+		}
+			
 		//define scope members
 		defineScopeMembers(file);
 				
@@ -167,7 +178,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	private static class IFunc_toString<E extends EnvisionFile> extends InstanceFunction<E> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			ret(EnvisionStringClass.valueOf(String.valueOf(inst.iFile).replace("\\", "\\\\")));
+			ret(EnvisionStringClass.valueOf(inst.iFile.getPath().replace("\\", "\\\\")));
 		}
 	}
 	

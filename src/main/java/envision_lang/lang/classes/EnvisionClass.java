@@ -269,7 +269,7 @@ public class EnvisionClass extends EnvisionObject {
 		instanceScope.define("this", instance);
 		
 		//build the body of the new instance
-		interpreter.executeBlock(bodyStatements, instanceScope);
+		interpreter.executeStatements(bodyStatements, instanceScope);
 		
 		//extract operator overloads from scope
 		EList<EnvisionFunction> operators = instanceScope.functions().filter(f -> f.isOperator());

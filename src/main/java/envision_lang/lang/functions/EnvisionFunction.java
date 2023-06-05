@@ -589,7 +589,7 @@ public class EnvisionFunction extends ClassInstance {
 		}
 		
 		// handle block execution and any return values thrown from the executed block
-		interpreter.executeBlockForReturns(m.statements, scope);
+		interpreter.executeStatementsForReturns(m.statements, scope);
 		
 		// if this point is reached and the function is a constructor, return 'this' by default
 		if (isConstructor) ret(scope.get("this"));

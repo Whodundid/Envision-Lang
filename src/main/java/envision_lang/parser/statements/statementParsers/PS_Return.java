@@ -8,6 +8,7 @@ import envision_lang.parser.expressions.ExpressionParser;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Return;
+import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
@@ -18,19 +19,8 @@ import eutil.datatypes.util.EList;
  */
 public class PS_Return extends ParserHead {
 	
-	/**
-	 * Parses return statements and its conditional counterpart. Returns
-	 * statements can have conditional logic in the form of 'retif' where
-	 * the statement will only return if the given parsed condition is
-	 * true.
-	 * <p>
-	 * Returns statements have the ability to return multiple values by
-	 * wrapping individual arguments into a list.
-	 * 
-	 * @return The parsed return statement
-	 */
 	public static ParsedStatement returnStatement() {
-		return returnStatement(false);
+		return returnStatement(null, false);
 	}
 	
 	/**
@@ -44,7 +34,22 @@ public class PS_Return extends ParserHead {
 	 * 
 	 * @return The parsed return statement
 	 */
-	public static ParsedStatement returnStatement(boolean parseForCondition) {
+	public static ParsedStatement returnStatement(ParserDeclaration dec) {
+		return returnStatement(dec, false);
+	}
+	
+	/**
+	 * Parses return statements and its conditional counterpart. Returns
+	 * statements can have conditional logic in the form of 'retif' where
+	 * the statement will only return if the given parsed condition is
+	 * true.
+	 * <p>
+	 * Returns statements have the ability to return multiple values by
+	 * wrapping individual arguments into a list.
+	 * 
+	 * @return The parsed return statement
+	 */
+	public static ParsedStatement returnStatement(ParserDeclaration dec, boolean parseForCondition) {
 		Token<?> returnToken;
 		if (check(LAMBDA, RETURN)) returnToken = getAdvance();
 		else returnToken = previousNonTerminator();
@@ -68,7 +73,11 @@ public class PS_Return extends ParserHead {
 		
 		consumeTerminator();
 		
-		return new Stmt_Return(returnToken, cond, retVals);
+		var stmt = new Stmt_Return(returnToken, cond, retVals);
+		
+		if (dec != null) stmt.setBlockStatement(dec.isBlockingStatement());
+		
+		return stmt;
 	}
 	
 }

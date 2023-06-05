@@ -1,13 +1,10 @@
 package main;
 
-import static envision_lang._launch.EnvisionLaunchSettings.LaunchSetting.*;
-
 import envision_lang.EnvisionLang;
+import envision_lang._launch.EnvisionEnvironmnetSettings.EnvironmentSetting;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang._launch.EnvisionProgram;
-import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.lang.EnvisionObject;
+import envision_lang._launch.EnvisionProgramRunner;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.sys.TracingPrintStream;
 
@@ -34,18 +31,22 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		//program.addJavaObjectToProgram(t);
 		
 		EnvisionLang.setLaunchSettings(
+			EnvironmentSetting.ENABLE_BLOCK_STATEMENT_PARSING,
+			EnvironmentSetting.ENABLE_BLOCKING_STATEMENTS
 //			PRELOAD_LANGUAGE
-//			,DEBUG_MODE
-//			,LIVE_MODE
+//			DEBUG_MODE,
+//			LIVE_MODE,
 //			,TOKENIZE
-			TOKENIZE_IN_DEPTH
+//			TOKENIZE_IN_DEPTH
 //			,PARSE_STATEMENTS
 //			,DONT_EXECUTE
 		);
 		
 		long start = System.currentTimeMillis();
 		{
-			EnvisionLang.runProgram(program);
+			var runner = new EnvisionProgramRunner(program);
+			runner.execute();
+			//EnvisionLang.runProgram(program);
 		}
 		System.out.print("END: " + (System.currentTimeMillis() - start) + " ms");
 	}

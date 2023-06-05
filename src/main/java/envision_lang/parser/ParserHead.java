@@ -113,7 +113,7 @@ public abstract class ParserHead {
 		//determine next path
 		switch (dec.getDeclarationType()) {
 		
-		case EXPR:				parsedStatement = expressionStatement(); 								break;
+		case EXPR:				parsedStatement = expressionStatement(dec); 							break;
 		case CLASS_DEF: 		parsedStatement = PS_Class.classDeclaration(dec); 						break;
 //		case ENUM_DEF: 			parsedStatement = PS_Enum.enumDeclaration(dec); 						break;
 		case FUNC_DEF: 			parsedStatement = PS_Function.functionDeclaration(false, false, dec); 	break;
@@ -126,49 +126,63 @@ public abstract class ParserHead {
 		//if the code has reached this point, it means a statement declaration has not been found
 		//and so the parser will now attempt to find a standard statement beginning.
 		case OTHER:
-		default: 				parsedStatement = parseStatement();
+		default: 				parsedStatement = parseStatement(dec);
 		}
 		
 		//consume("Expected either a ';' or a new line to complete statement!", EOF, NEWLINE, SEMICOLON);
 		
+		// pretty sure this is wrong
+		if (dec != null) parsedStatement.setBlockStatement(dec.isBlockingStatement());
+		
 		return parsedStatement;
+	}
+	
+	public static ParsedStatement parseStatement() {
+		return parseStatement(null);
 	}
 	
 	/**
 	 * Returns a statement of some kind that is not the start of a declaration.
 	 * @return Statement
 	 */
-	public static ParsedStatement parseStatement() {
+	public static ParsedStatement parseStatement(ParserDeclaration dec) {
 		//consume any new line characters or semicolons first -- these by themselves are to be ignored
 		ignoreTerminators();
 		
-		if (match(CURLY_L))				return new Stmt_Block(previous(), getBlock());
-		if (check(IMPORT))				return PS_Import.handleImport();
-		if (check(TRY))					return PS_Try.tryStatement();
-		if (check(FOR))					return PS_For.forStatement();
-		if (check(SWITCH))				return PS_Switch.switchStatement();
-		if (check(IF))					return PS_If.ifStatement();
-		if (check(RETURN))				return PS_Return.returnStatement();
-		if (check(RETIF))				return PS_Return.returnStatement(true);
-		if (check(CONTINUE, CONTIF))	return PS_LoopControl.handleContinue();
-		if (check(BREAK, BREAKIF))		return PS_LoopControl.handleBreak();
-		if (check(DO, WHILE))			return PS_While.whileStatement();
+		if (dec == null) {
+			dec = PS_ParseDeclaration.parseDeclaration();
+		}
+		
+		if (match(CURLY_L))				return new Stmt_Block(dec, previous(), getBlock());
+		if (check(IMPORT))				return PS_Import.handleImport(dec);
+		if (check(TRY))					return PS_Try.tryStatement(dec);
+		if (check(FOR))					return PS_For.forStatement(dec);
+		if (check(SWITCH))				return PS_Switch.switchStatement(dec);
+		if (check(IF))					return PS_If.ifStatement(dec);
+		if (check(RETURN))				return PS_Return.returnStatement(dec);
+		if (check(RETIF))				return PS_Return.returnStatement(dec, true);
+		if (check(CONTINUE, CONTIF))	return PS_LoopControl.handleContinue(dec);
+		if (check(BREAK, BREAKIF))		return PS_LoopControl.handleBreak(dec);
+		if (check(DO, WHILE))			return PS_While.whileStatement(dec);
 		
 		//if none of the statement beginnings then try to parse the token into an expression
-		return expressionStatement();
+		return expressionStatement(dec);
 	}
 	
 	/**
 	 * Attempts to parse an expression from tokens.
 	 * @return Statement
 	 */
-	public static ParsedStatement expressionStatement() {
+	public static ParsedStatement expressionStatement(ParserDeclaration dec) {
 		ParsedExpression e = ExpressionParser.parseExpression();
 		
 		errorIf(e instanceof Expr_Literal, "Invalid declaration start!");
 		consumeTerminator("An expression statement must be followed by either a ';' or a new line!");
 		
-		return new Stmt_Expression(e);
+		var expr = new Stmt_Expression(e);
+		expr.setBlockStatement(dec.isBlockingStatement());
+		
+		return expr;
 	}
 	
 	//-----------------------------------------------------------------------------------------------------

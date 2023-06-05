@@ -8,15 +8,15 @@ import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 
 /**
- * A collection of valid launch arguments to be given to either the Envision
+ * A collection of valid environment arguments to be given to either the Envision
  * language as parameters or to user programs executing during runtime.
  * 
  * @author Hunter Bragg
  */
-public class EnvisionLaunchSettings {
+public class EnvisionEnvironmnetSettings {
 	
 	/** Arguments passed to the Envision Language. */
-	private EList<LaunchSetting> envArgs = new EArrayList<>();
+	private EList<EnvironmentSetting> envArgs = new EArrayList<>();
 	/** Arguments passed to programs running on the Envision Language. */
 	private EList<String> userArgs = new EArrayList<>();
 	
@@ -24,17 +24,17 @@ public class EnvisionLaunchSettings {
 	// Constructors
 	//--------------
 	
-	public EnvisionLaunchSettings() {}
+	public EnvisionEnvironmnetSettings() {}
 	
-	public EnvisionLaunchSettings(String[] in) {
+	public EnvisionEnvironmnetSettings(String[] in) {
 		parseArgs(in);
 	}
 	
-	public EnvisionLaunchSettings(LaunchSetting... argsIn) {
+	public EnvisionEnvironmnetSettings(EnvironmentSetting... argsIn) {
 		envArgs.addIfNotContains(argsIn);
 	}
 	
-	public EnvisionLaunchSettings(Collection<String> in) {
+	public EnvisionEnvironmnetSettings(Collection<String> in) {
 		parseArgs(in.toArray(new String[0]));
 	}
 	
@@ -47,7 +47,7 @@ public class EnvisionLaunchSettings {
 		for (String s : in) {
 			if (s.startsWith("-") && s.length() > 1) {
 				String option = s.substring(1); //strip '-'
-				LaunchSetting arg = LaunchSetting.matchArg(option);
+				EnvironmentSetting arg = EnvironmentSetting.matchArg(option);
 				if (arg != null) envArgs.addIfNotContains(arg);
 				else userArgs.add(s);
 			}
@@ -57,17 +57,17 @@ public class EnvisionLaunchSettings {
 		}
 	}
 	
-	public EList<LaunchSetting> getEnvArgs() { return envArgs; }
+	public EList<EnvironmentSetting> getEnvArgs() { return envArgs; }
 	public EList<String> getUserArgs() { return userArgs; }
 	
 	public void addUserArg(String arg) { userArgs.add(arg); }
-	public void addLaunchArg(LaunchSetting arg) { envArgs.addIfNotContains(arg); }
+	public void addLaunchArg(EnvironmentSetting arg) { envArgs.addIfNotContains(arg); }
 	
 	//-----------------
 	// Launch Arg Enum
 	//-----------------
 	
-	public static enum LaunchSetting {
+	public static enum EnvironmentSetting {
 		//@Unused
 		//CLASS_FILE_STATEMENTS("allowClassFileStatements"),
 		//@Unused
@@ -89,17 +89,21 @@ public class EnvisionLaunchSettings {
 		PARSE_STATEMENTS("parse_statements"),
 		/** Does not allow Envision code execution to commence. */
 		DONT_EXECUTE("dont_execute"),
+		/** Enables blocking statements. */
+		ENABLE_BLOCKING_STATEMENTS("enable_blocking_statements"),
+		/** Enables the parsing of blocking statements by starting them with a '#'. */
+		ENABLE_BLOCK_STATEMENT_PARSING("enable_block_statement_parsing"),
 		//PRINTLN_AS_KEYWORD("println_as_keyword"),
 		;
 		
 		public final String name;
 		
-		private LaunchSetting(String argName) {
+		private EnvironmentSetting(String argName) {
 			name = argName;
 		}
 		
-		public static LaunchSetting matchArg(String argNameIn) {
-			for (LaunchSetting a : values()) if (a.name.equals(argNameIn)) return a;
+		public static EnvironmentSetting matchArg(String argNameIn) {
+			for (EnvironmentSetting a : values()) if (a.name.equals(argNameIn)) return a;
 			return null;
 		}
 	}
@@ -108,13 +112,13 @@ public class EnvisionLaunchSettings {
 	// Static Default Settings
 	//-------------------------
 	
-	public static EnvisionLaunchSettings of(String... args) { return new EnvisionLaunchSettings(args); }
-	public static EnvisionLaunchSettings of(LaunchSetting... args) { return new EnvisionLaunchSettings(args); }
-	public static EnvisionLaunchSettings of(List<String> args) { return new EnvisionLaunchSettings(args); }
-	public static EnvisionLaunchSettings of(EList<String> args) { return new EnvisionLaunchSettings(args); }
-	public static EnvisionLaunchSettings preload() { return new EnvisionLaunchSettings(LaunchSetting.PRELOAD_LANGUAGE); }
-	public static EnvisionLaunchSettings live() { return new EnvisionLaunchSettings(LaunchSetting.LIVE_MODE); }
-	public static EnvisionLaunchSettings tokenize() { return new EnvisionLaunchSettings(LaunchSetting.TOKENIZE); }
-	public static EnvisionLaunchSettings parse() { return new EnvisionLaunchSettings(LaunchSetting.PARSE_STATEMENTS); }
+	public static EnvisionEnvironmnetSettings of(String... args) { return new EnvisionEnvironmnetSettings(args); }
+	public static EnvisionEnvironmnetSettings of(EnvironmentSetting... args) { return new EnvisionEnvironmnetSettings(args); }
+	public static EnvisionEnvironmnetSettings of(List<String> args) { return new EnvisionEnvironmnetSettings(args); }
+	public static EnvisionEnvironmnetSettings of(EList<String> args) { return new EnvisionEnvironmnetSettings(args); }
+	public static EnvisionEnvironmnetSettings preload() { return new EnvisionEnvironmnetSettings(EnvironmentSetting.PRELOAD_LANGUAGE); }
+	public static EnvisionEnvironmnetSettings live() { return new EnvisionEnvironmnetSettings(EnvironmentSetting.LIVE_MODE); }
+	public static EnvisionEnvironmnetSettings tokenize() { return new EnvisionEnvironmnetSettings(EnvironmentSetting.TOKENIZE); }
+	public static EnvisionEnvironmnetSettings parse() { return new EnvisionEnvironmnetSettings(EnvironmentSetting.PARSE_STATEMENTS); }
 	
 }

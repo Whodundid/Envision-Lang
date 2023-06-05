@@ -6,6 +6,7 @@ import static envision_lang.tokenizer.ReservedWord.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.datatypes.boxes.BoxList;
@@ -104,6 +105,11 @@ public class Tokenizer {
 		
 		//break on null chars
 		case '\0': break;
+		
+		case '#':																	// '#'
+			if (EnvisionLang.enableBlockStatementParsing) addToken(BLOCK_STATEMENT_TOKEN);
+			else throw new EnvisionLangError("Block statement parsing not enabled!");
+			break;
 		
 		case '{': addToken(CURLY_L); break;											// '{'
 		case '}': addToken(CURLY_R); break;											// '}'

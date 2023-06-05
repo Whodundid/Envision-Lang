@@ -12,7 +12,7 @@ public class IS_Block extends AbstractInterpreterExecutor {
 		IScope scope = new Scope(interpreter.scope());
 		
 		// executes block statements within the specified scope
-		interpreter.executeBlock(s.statements, scope);
+		interpreter.executeBlock(s, scope);
 	}
 	
 }
