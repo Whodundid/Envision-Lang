@@ -55,6 +55,7 @@ import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionNull;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.ExpressionError;
 import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
 import envision_lang.lang.language_errors.error_types.NullVariableError;
@@ -169,13 +170,28 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 */
 	private final UserDefinedTypeManager typeManager = new UserDefinedTypeManager();
 	
-	
+	private boolean hasError = false;
+	private Exception errorObject;
+	private int statementIndex = -1;
 	private int lastLineNum = -1;
 	private Token<?> lastLineToken = null;
 	
-	private boolean runNext = false;
-	private boolean runningParsedStatement = false;
+	private volatile boolean runNext;
+	private boolean advancePassedBlock;
 	
+	private EList<ParsedStatement> statements;
+	private EList<StackFrame> frames = EList.newList();
+	//private EList<ParsedStatement> statementStack = EList.newList();
+	
+	public static class StackFrame {
+		public EList<ParsedStatement> statementStack = EList.newList();
+		
+		public StackFrame(EList<ParsedStatement> in) {
+			statementStack = EList.of(in);
+		}
+		
+		@Override public String toString() { return "" + statementStack; }
+	}
 	
 	//--------------
 	// Constructors
@@ -189,47 +205,138 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		
 		if (topDir == null) topDir = dirIn;
 		active_dir = dirIn;
+		
+		EnvPackage.ENV_PACKAGE.defineOn(this);
 	}
 	
-	protected void interpret(EList<String> userArgs) {
-		EnvPackage.ENV_PACKAGE.defineOn(this);
-		EList<ParsedStatement> statements = startingFile.getStatements();
-		
+	public void setup(EList<String> userArgs) {
 		InternalEnvision.init(EnvisionLang.getInstance(), internalScope, userArgs);
+		statements = startingFile.getStatements();
+		if (statements.isNotEmpty()) {
+			frames.push(new StackFrame(statements));			
+		}
+		hasError = false;
+	}
+	
+	public void executeNext() {
+		if (hasError) {
+			//this could error so this should probably be re-thought
+			System.out.println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(statementIndex));
+			System.out.println(errorObject);
+			return;
+		}
 		
-		int cur = 0;
 		try {
-			for (ParsedStatement s : statements) {
-				execute(s);
-				cur++;
-			}
-			
-			//System.out.println("Complete: " + codeFile() + " : " + scope);
+			executeNext_i();
 		}
 		//exit silently on shutdown call
 		catch (LangShutdownCall shutdownCall) {}
 		//report error on statement execution error
 		catch (Exception error) {
+			hasError = true;
+			errorObject = error;
 			//such professional error handler
-			System.out.println("(" + startingFile.getSystemFile() + ") error at: " + statements.get(cur));
+			System.out.println("(" + startingFile.getSystemFile() + ") error at: " + frames.getFirst());
+			printStackFrames();
 			//error.printStackTrace();
 			throw error;
 		}
+	}
+	
+	public void executeNext(ParsedStatement s) {
+		if (s == null) return;
+		else if (s instanceof Stmt_Block b) this.executeBlock(b, working_scope);
+		else {
+			frames.push(new StackFrame(EList.of(s)));
+		}
+	}
+	
+	private void executeNext_i() {
+		if (frames.isEmpty()) return;
 		
-
+		// set this flag to true whenever we enter this method so that the next
+		// instruction will be run even if it is a blocking instruction
+		advancePassedBlock = true;
+		runNext = true;
+		
+		final var curFrame = frames.peek();
+		final var frameStatements = curFrame.statementStack;
+		final boolean isLastStatement = hasOnlyOneInstructionLeft();
+		
+		while (frameStatements.isNotEmpty()) {
+			ParsedStatement s = frameStatements.peek();
+			
+			if (EnvisionLang.debugMode) {
+				printStackFrames();
+				//System.out.println(IScope.printFullStack(working_scope));
+			}
+			
+			// error on NULL statements (this really shouldn't be possible!)
+			if (s == null) throw new EnvisionLangError("NULL statement detected! Interpreting aborted!");
+			
+			execute(s);
+			
+			// pop off the statement from the stack frame
+			frameStatements.pop();
+			
+			// break out on blocking statements when not explicitly told to advance
+			
+			if (EnvisionLang.enableBlockingStatements && (!runNext || s.isBlockingStatement())) {
+				if (!isLastStatement) throw new LangShutdownCall();
+			}
+			
+			// reset state
+			advancePassedBlock = false;
+		}
+		
+		// pop off the stack frame
+		frames.pop();
+	}
+	
+	public boolean hasError() { return hasError; }
+	private boolean hasOnlyOneInstructionLeft() {
+		return (frames.size() == 1) && (frames.get(0).statementStack.size() == 1);
 	}
 	
 	//---------------------------------------------------------------------------------
 	
+	public static EnvisionInterpreter build(EnvisionCodeFile codeFileIn, EList<String> userArgs) throws Exception {
+		var interpreter = new EnvisionInterpreter(codeFileIn);
+		
+		EnvPackage.ENV_PACKAGE.defineOn(interpreter);
+		InternalEnvision.init(EnvisionLang.getInstance(), interpreter.internalScope, userArgs);
+		interpreter.setup(userArgs);
+		
+		return interpreter;
+	}
+	
 	public static EnvisionInterpreter interpret(EnvisionCodeFile codeFileIn, EList<String> userArgs) throws Exception {
 		var interpreter = new EnvisionInterpreter(codeFileIn);
-		interpreter.interpret(userArgs);
+		interpreter.setup(userArgs);
+		interpreter.executeNext();
 		return interpreter;
 	}
 	
 	//---------------------
 	// Interpreter Methods
 	//---------------------
+	
+	public void terminate() {
+		frames.clear();
+	}
+	
+	public boolean hasNext() {
+		return frames.isNotEmpty();
+	}
+	
+	public void pauseExecution() {
+		runNext = false;
+	}
+	
+	public StackFrame getCurrentStackFrame() { return frames.getFirst(); }
+	public EList<StackFrame> getStackFrames() { return frames; }
+	public int getFrameSize() { return frames.size(); }
+	public StackFrame popStackFrame() { return frames.pop(); }
 	
 	/**
 	 * Attempts to execute the given statement.
@@ -240,6 +347,23 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	public void execute(ParsedStatement s) {
 		if (s == null) throw new StatementError("The given statement is null!");
 		s.execute(this);
+	}
+	
+	public void printStackFrames() {
+		System.out.println("\nSTACK FRAMES:");
+		final int fsize = frames.size();
+		for (int i = 0; i < fsize; i++) {
+			System.out.println("\t" + (fsize - i - 1) + " FRAME:");
+			
+			var s = frames.get(i).statementStack;
+			final int size = s.size();
+			
+			for (int j = 0; j < size; j++) {
+				System.out.println("\t\t" + (size - j - 1) + ": '" + s.get(j) + "'");
+			}
+			
+		}
+		System.out.println();
 	}
 	
 	/**
@@ -263,11 +387,38 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param statements The list of statements to be executed
 	 * @param scopeIn    The scope for which to execute the statements on
 	 */
-	public void executeBlock(EList<ParsedStatement> statements, IScope scopeIn) {
+	public void executeBlock(Stmt_Block block, IScope scopeIn) {
 		IScope prev = working_scope;
 		try {
 			working_scope = scopeIn;
-			for (ParsedStatement s : statements) {
+			
+			final var statements = block.statements;
+			frames.push(new StackFrame(statements));
+			
+			executeNext_i();
+		}
+		finally {
+			working_scope = prev;
+		}
+	}
+	
+	/**
+	 * Executes a series of given statements under the specific scope. The
+	 * original scope is momentarily swapped out for the incoming scope.
+	 * Regardless of execution sucess, the original interpreter scope will be
+	 * restored once this method returns.
+	 * 
+	 * @param statements The list of statements to be executed
+	 * @param scopeIn    The scope for which to execute the statements on
+	 */
+	public void executeStatements(EList<ParsedStatement> statements, IScope scopeIn) {
+		IScope prev = working_scope;
+		try {
+			working_scope = scopeIn;
+			
+			final int size = statements.size();
+			for (int i = 0; i < size; i++) {
+				final var s = statements.get(i);
 				execute(s);
 			}
 		}
@@ -284,9 +435,26 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	 * @param statements The list of statements to be executed
 	 * @param scopeIn The scope for which to execute the statements on
 	 */
-	public void executeBlockForReturns(EList<ParsedStatement> statements, IScope scopeIn) {
+	public void executeBlockForReturns(Stmt_Block block, IScope scopeIn) {
 		try {
-			executeBlock(statements, scopeIn);
+			executeBlock(block, scopeIn);
+		}
+		catch (ReturnValue r) {
+			throw r;
+		}
+	}
+	
+	/**
+	 * This method simply serves as a wrapper around a block execution but
+	 * specifically indicates that there may potentially be a return value
+	 * thrown from the resulting execution.
+	 * 
+	 * @param statements The list of statements to be executed
+	 * @param scopeIn The scope for which to execute the statements on
+	 */
+	public void executeStatementsForReturns(EList<ParsedStatement> statements, IScope scopeIn) {
+		try {
+			executeStatements(statements, scopeIn);
 		}
 		catch (ReturnValue r) {
 			throw r;

@@ -11,13 +11,14 @@ import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_SwitchCase;
 import envision_lang.parser.statements.statement_types.Stmt_SwitchDef;
+import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 import eutil.EUtil;
 import eutil.datatypes.util.EList;
 
 public class PS_Switch extends ParserHead {
 	
-	public static ParsedStatement switchStatement() {
+	public static ParsedStatement switchStatement(ParserDeclaration dec) {
 		Token<?> switchToken = consume(SWITCH, "Expected 'switch' here!");
 		consume(PAREN_L, "Expected '(' after while declaration!");
 		ParsedExpression switchExpression = ExpressionParser.parseExpression();
@@ -79,7 +80,11 @@ public class PS_Switch extends ParserHead {
 		
 		consume(CURLY_R, "Expected a '}' to close switch statement!");
 		
-		return new Stmt_SwitchDef(switchToken, switchExpression, cases, defaultCase);
+		var stmt = new Stmt_SwitchDef(switchToken, switchExpression, cases, defaultCase);
+		
+		if (dec != null) stmt.setBlockStatement(dec.isBlockingStatement());
+		
+		return stmt;
 	}
 	
 	private static boolean hasCase(EList<Stmt_SwitchCase> cases, Token<?> t) {

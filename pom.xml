@@ -4,7 +4,7 @@
 	
 	<groupId>whodundid</groupId>
 	<artifactId>Envision-Lang</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Envision-Lang</name>
 	<packaging>jar</packaging>
 
@@ -20,7 +20,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<release>19</release>
+					<release>18</release>
 					<parameters>true</parameters>
 					<testCompilerArgument>-parameters</testCompilerArgument>
 				</configuration>
@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>whodundid</groupId>
 			<artifactId>EUtil</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>2.3.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>

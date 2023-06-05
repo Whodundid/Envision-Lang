@@ -8,6 +8,9 @@ public class IS_Catch extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter in, Stmt_Catch s) {
 		
+		in.pushScope();
+		//in.scope().de
+		
 	}
 	
 }

@@ -158,7 +158,7 @@ public abstract class EnvisionLangTest {
 	protected static void execute(String statement) {
 		try {
 			stmt(statement);
-			interpreter.executeBlock(codeFile.getStatements(), interpreter.scope());
+			interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
 		}
 		catch (Exception e) {
 			e.printStackTrace();

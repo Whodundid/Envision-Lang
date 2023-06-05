@@ -1,5 +1,7 @@
 package envision_lang.parser;
 
+import java.util.Scanner;
+
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.parser.expressions.ParsedExpression;
@@ -12,6 +14,7 @@ import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
+import eutil.strings.EStringBuilder;
 import eutil.strings.EStringUtil;
 
 /**
@@ -94,6 +97,43 @@ public final class EnvisionLangParser {
 	}
 	
 	//-------------------------------------------------------------------------------------------
+	
+	public static ParsedStatement parseStatementLive() {
+		boolean needsMore = true;
+		
+		@SuppressWarnings("resource")
+		Scanner reader = new Scanner(System.in);
+		var sb = new EStringBuilder();
+		
+		while (needsMore) {
+			sb.println(reader.nextLine());
+			
+			int openCurlys = 0;
+			
+			// check for open curlys
+			for (int i = 0; i < sb.length(); i++) {
+				char c = sb.charAt(i);
+				if (c == '{') openCurlys++;
+				else if (c == '}') {
+					// if the number of open curlys somehow goes negative, fail out
+					if (openCurlys <= 0) throw new EnvisionLangError("Bad live statement input!");
+					openCurlys--;
+				}
+			}
+			
+			// assume that if the number of open curlys is 0, then we've potentially parsed a complete statement
+			if (openCurlys == 0) {
+				needsMore = false;
+			}
+			
+			reader.reset();
+		}
+		
+		if (sb.isBlank() || sb.isEmpty()) return null;
+		
+		// attempt to actually build the statement from the parsed lines
+		return parseStatement(sb.toString());
+	}
 	
 	/**
 	 * Parses a single line as opposed to an entire file.

@@ -131,22 +131,20 @@ abstract class EnvisionBridge {
 		Object value = EReflectionUtil.forceGet(theField, this);
 		
 		IDatatype envisionType = Primitives.getPrimitiveType(type).toDatatype();
-		boolean strong = false;
 		
 		//check if null
 		if (value == null) {
 			value = EnvisionNull.NULL;
 		}
 		//parse var values separately
-		else if (value instanceof EnvisionVar v) {
+		else if (value instanceof BridgeVariable v) {
 			envisionType = EnvisionStaticTypes.VAR_TYPE;
 			value = v.getEnvisionObject();
-			strong = v.isStrong();
 		}
 		
 		EnvisionObject obj = ObjectCreator.createObject(envisionType, value);
-		if (strong) obj.setStrong();
 		if (isFinal) obj.setFinal();
+		obj.setStrong();
 		obj.setVisibility(visibility);
 		
 		if (isStatic) {

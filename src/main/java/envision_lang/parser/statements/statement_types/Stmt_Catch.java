@@ -12,7 +12,7 @@ public class Stmt_Catch extends ParsedStatement {
 	//========
 	
 	public final Token<?> type;
-	public final Token<?> var;
+	public final Token<?> name;
 	public final EList<ParsedStatement> body;
 	
 	//==============
@@ -22,7 +22,7 @@ public class Stmt_Catch extends ParsedStatement {
 	public Stmt_Catch(Token<?> start, Token<?> typeIn, Token<?> varIn, EList<ParsedStatement> bodyIn) {
 		super(start);
 		type = typeIn;
-		var = varIn;
+		name = varIn;
 		body = bodyIn;
 	}
 	
@@ -33,7 +33,8 @@ public class Stmt_Catch extends ParsedStatement {
 	@Override
 	public String toString() {
 		String b = (body != null && body.isEmpty()) ? "" : " " + body + " ";
-		return "catch (" + type.getLexeme() + " " + var.getLexeme() + ") {" + b + "}";
+		var t = (type != null) ? type.getLexeme() : "NO_TYPE";
+		return "catch (" + t + " " + name.getLexeme() + ") {" + b + "}";
 	}
 	
 	@Override

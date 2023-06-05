@@ -31,7 +31,7 @@ public class EnvisionJavaClass extends EnvisionClass {
 		buildScope.define("this", instance);
 		
 		//build the body of the new instance
-		interpreter.executeBlock(bodyStatements, buildScope);
+		interpreter.executeStatements(bodyStatements, buildScope);
 		
 		//extract operator overloads from scope
 		//set the overloaded operators onto the class instance

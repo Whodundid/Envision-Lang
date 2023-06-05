@@ -10,7 +10,7 @@ public final class EnvisionExceptionClass extends EnvisionClass {
 	// Statics
 	//=========
 	
-	public static final EnvisionExceptionClass DEFAULT_EXCEPTION_CLASS = new EnvisionExceptionClass();
+	public static final EnvisionExceptionClass EXCEPTION_CLASS = new EnvisionExceptionClass();
 	
 	/** Exception function prototypes. */
 	private static final IPrototypeHandler prototypes = new IPrototypeHandler();
@@ -57,5 +57,10 @@ public final class EnvisionExceptionClass extends EnvisionClass {
 	//===========================
 	// Custom Exception Creation
 	//===========================
+	
+	public static EnvisionException newInstance(String exceptionType, String reason) {
+		EnvisionException newExc = new EnvisionException(exceptionType, reason);
+		return newExc;
+	}
 	
 }

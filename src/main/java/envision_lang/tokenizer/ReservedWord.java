@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import envision_lang.lang.natives.Primitives;
-import eutil.EUtil;
-
 /**
  *  The complete set of Envision reserved keywords and operators.
  *  <p>
@@ -215,30 +212,30 @@ public enum ReservedWord implements IKeyword {
 	/**
 	 * Returns true if the specified string is a datatype keyword.
 	 */
-	public static boolean isDataType(String in) {
-		return EUtil.nullApplyR(getKeyword(in), k -> k.isDataType(), false);
-	}
+//	public static boolean isDataType(String in) {
+//		return EUtil.nullApplyR(getKeyword(in), k -> k.isDataType(), false);
+//	}
 	
 	/**
 	 * Returns true if the specified string is a datatype keyword.
 	 */
-	public static boolean isDataType(ReservedWord in) {
-		return EUtil.nullApplyR(in, k -> k.isDataType(), false);
-	}
+//	public static boolean isDataType(ReservedWord in) {
+//		return EUtil.nullApplyR(in, k -> k.isDataType(), false);
+//	}
 	
 	/**
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
-	public static Primitives getDataType(String in) {
-		return EUtil.nullApplyR(getKeyword(in), k -> k.getPrimitiveType(), Primitives.NULL);
-	}
+//	public static Primitives getDataType(String in) {
+//		return EUtil.nullApplyR(getKeyword(in), k -> k.getPrimitiveType(), Primitives.NULL);
+//	}
 	
 	/**
 	 * Returns the EDataType equivalent if this keyword is a datatype.
 	 */
-	public static Primitives getDataType(ReservedWord in) {
-		return EUtil.nullApplyR(in, k -> k.getPrimitiveType(), Primitives.NULL);
-	}
+//	public static Primitives getDataType(ReservedWord in) {
+//		return EUtil.nullApplyR(in, k -> k.getPrimitiveType(), Primitives.NULL);
+//	}
 	
 	@Override public boolean isOperator() { return false; }
 	@Override public boolean isReservedWord() { return true; }

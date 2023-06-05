@@ -71,7 +71,7 @@ public class ClassConstruct {
 	 * This scope will be given to all created instances.
 	 */
 	private void buildInstanceScope(EnvisionInterpreter interpreter) {
-		interpreter.executeBlock(theClass.getBody(), internalScope);
+		interpreter.executeStatements(theClass.getBody(), internalScope);
 		
 		//extract members from scope
 		fields = internalScope.named_fields();

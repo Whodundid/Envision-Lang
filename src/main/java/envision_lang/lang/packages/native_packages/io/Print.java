@@ -9,7 +9,7 @@ import envision_lang.lang.natives.EnvisionStaticTypes;
 public class Print extends EnvisionFunction {
 	
 	public Print() {
-		super(EnvisionStaticTypes.VOID_TYPE, "print");
+		super(EnvisionStaticTypes.VOID_TYPE, "print_");
 	}
 	
 	@Override

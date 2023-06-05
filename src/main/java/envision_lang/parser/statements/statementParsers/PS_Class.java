@@ -39,6 +39,7 @@ public class PS_Class extends ParserHead {
 		*/
 		
 		Stmt_Class cs = new Stmt_Class(declaration.getStartToken(), name, declaration);
+		if (declaration.isBlockingStatement()) cs.setBlockStatement(true);
 		
 //		if (match(COLON)) {
 //			do {

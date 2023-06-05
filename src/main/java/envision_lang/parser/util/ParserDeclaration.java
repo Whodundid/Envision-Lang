@@ -21,6 +21,7 @@ public class ParserDeclaration {
 	private EList<Expr_Generic> generics;
 	private Token<?> returnType;
 	private Token<?> startToken;
+	private boolean isBlockingStatement;
 	
 	//==============
 	// Constructors
@@ -86,6 +87,7 @@ public class ParserDeclaration {
 	public ParserDeclaration applyGenerics(EList<Expr_Generic> genericsIn) { generics.addAll(genericsIn); return this; }
 	public ParserDeclaration applyReturnType(Token<?> returnTypeIn) { returnType = returnTypeIn; return this; }
 	public ParserDeclaration setDeclarationType(DeclarationType typeIn) { declarationType = typeIn; return this; }
+	public ParserDeclaration setBlockingStatement(boolean val) { isBlockingStatement = val; return this; }
 	
 	public ParserDeclaration setValues(ParserDeclaration in) {
 		DeclarationStage s = in.getStage();
@@ -119,6 +121,7 @@ public class ParserDeclaration {
 	public boolean isPublic() { return vis == EnvisionVisibilityModifier.PUBLIC; }
 	public boolean isPrivate() { return vis == EnvisionVisibilityModifier.PRIVATE; }
 	public boolean isProtected() { return vis == EnvisionVisibilityModifier.PROTECTED; }
+	public boolean isBlockingStatement() { return isBlockingStatement; }
 	
 	public DeclarationStage getStage() { return stage; }
 	public DeclarationType getDeclarationType() { return declarationType; }

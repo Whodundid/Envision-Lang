@@ -99,6 +99,8 @@ public class PS_VarDef extends ParserHead {
 		
 		consumeTerminator();
 		
+		if (declaration != null) varDecStatement.setBlockStatement(declaration.isBlockingStatement());
+		
 		return varDecStatement;
 	}
 	

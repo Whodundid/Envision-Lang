@@ -29,6 +29,8 @@ public abstract class ParsedStatement extends ParsedObject {
 	protected ParsedStatement(Token startingTokenIn, ParserDeclaration declarationIn) {
 		super(startingTokenIn);
 		declaration = declarationIn;
+		
+		if (declaration != null) isBlockingStatement = declaration.isBlockingStatement();
 	}
 	
 	//===========
@@ -57,6 +59,14 @@ public abstract class ParsedStatement extends ParsedObject {
 	
 	public boolean isBlockingStatement() {
 		return isBlockingStatement;
+	}
+	
+	//=========
+	// Setters
+	//=========
+	
+	public void setBlockStatement(boolean val) {
+		isBlockingStatement = val;
 	}
 	
 }

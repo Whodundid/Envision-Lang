@@ -5,6 +5,7 @@ import static envision_lang.tokenizer.KeywordType.*;
 import static envision_lang.tokenizer.Operator.*;
 import static envision_lang.tokenizer.ReservedWord.*;
 
+import envision_lang.EnvisionLang;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.EnvisionVisibilityModifier;
@@ -30,6 +31,9 @@ public class PS_ParseDeclaration extends ParserHead {
 	 */
 	public static ParserDeclaration parseDeclaration() {
 		ParserDeclaration dec = new ParserDeclaration();
+		
+		//parse for blocking statements (if enabled)
+		parseBlockingStatement(dec);
 		
 		//collect each piece of the declaration
 		parseVisibility(dec);
@@ -77,6 +81,19 @@ public class PS_ParseDeclaration extends ParserHead {
 		parseGenerics(declaration);
 		
 		return declaration;
+	}
+	
+	/**
+	 * Attempts to parse for a 'BLOCKING_STATEMENT_TOKEN' if the parsing for them is enabled.
+	 */
+	public static void parseBlockingStatement(ParserDeclaration dec) {
+		if (match(BLOCK_STATEMENT_TOKEN)) {
+			if (!EnvisionLang.enableBlockStatementParsing) {
+				errorPrevious("Parsing error! Block statement parsing not enabled!");
+			}
+			
+			dec.setBlockingStatement(true);
+		}
 	}
 	
 	/**

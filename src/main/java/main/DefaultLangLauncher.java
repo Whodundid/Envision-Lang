@@ -1,11 +1,10 @@
 package main;
 
 import envision_lang.EnvisionLang;
+import envision_lang._launch.EnvisionEnvironmnetSettings.EnvironmentSetting;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
 import envision_lang._launch.EnvisionProgram;
-import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.lang.EnvisionObject;
+import envision_lang._launch.EnvisionProgramRunner;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.sys.TracingPrintStream;
 
@@ -17,17 +16,11 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		TracingPrintStream.enableTracingEmptyLines(true);
 		TracingPrintStream.disableTrace();
 		
-//		long start = System.currentTimeMillis();
-//		for (int i = 0; i < 10000000; i++) {
-//			var a = new Java_Performance_Reference(ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5));
-//			var b = new Java_Performance_Reference(ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4));
-//			
-//			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
-//		}
-//		System.out.println(System.currentTimeMillis() - start);
-		
+		//performanceReference();
 		new DefaultLangLauncher();
 	}
+	
+	//====================================================================================
 	
 	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
@@ -37,45 +30,41 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		EnvisionProgram program = new EnvisionProgram("program");
 		//program.addJavaObjectToProgram(t);
 		
-		//long preStart = System.currentTimeMillis();
-		//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
-		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
-		//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
-		
-		//env.setLaunchSettings(LaunchSetting.TOKENIZE);
-		//EnvisionLang.setLaunchSettings(LaunchSetting.PARSE_STATEMENTS, LaunchSetting.TOKENIZE_IN_DEPTH, LaunchSetting.DEBUG_MODE);
-		//EnvisionLang.runProgram(program);
-		//env.runProgram("program");
-		//env.runProgram("program");
+		EnvisionLang.setLaunchSettings(
+			EnvironmentSetting.ENABLE_BLOCK_STATEMENT_PARSING,
+			EnvironmentSetting.ENABLE_BLOCKING_STATEMENTS
+//			PRELOAD_LANGUAGE
+//			DEBUG_MODE,
+//			LIVE_MODE,
+//			,TOKENIZE
+//			TOKENIZE_IN_DEPTH
+//			,PARSE_STATEMENTS
+//			,DONT_EXECUTE
+		);
 		
 		long start = System.currentTimeMillis();
 		{
-			EnvisionLang.runProgram(program);
-			//env.runProgram("program");
-			//EnvisionVM.compileByteCode(new File("program_compiled\\main.nvisc"));
-			//EnvisionVM.interpretByteCode(new File("program_compiled\\main.nviscc"));
+			var runner = new EnvisionProgramRunner(program);
+			runner.execute();
+			//EnvisionLang.runProgram(program);
 		}
 		System.out.print("END: " + (System.currentTimeMillis() - start) + " ms");
-		//System.out.println(" Total: " + (System.currentTimeMillis() - preStart) + " ms");
-	}
-
-	private void testThing(EnvisionInterpreter interpreter) {
-		TestPoint t = new TestPoint(0, 0);
-		
-		var c = t.getInternalClass();
-		var scope = c.getClassScope();
-		
-		var inst = c.newInstance(interpreter, new EnvisionObject[0]);
 	}
 	
-	@Override
-	public void handleError(EnvisionLangError e) {
-		handleException(e);
-	}
-
-	@Override
-	public void handleException(Exception e) {
-		e.printStackTrace();
+	//====================================================================================
+	
+	@Override public void handleError(EnvisionLangError e) { handleException(e); }
+	@Override public void handleException(Exception e) { e.printStackTrace(); }
+	
+	private void performanceReference() {
+//		long start = System.currentTimeMillis();
+//		for (int i = 0; i < 10000000; i++) {
+//			var a = new Java_Performance_Reference(ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5), ERandomUtil.getRoll(0, 5));
+//			var b = new Java_Performance_Reference(ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4), ERandomUtil.getRoll(0, 4));
+//			
+//			System.out.println(i + " " + a + " | " + b + " | " + (a.add(b)));
+//		}
+//		System.out.println(System.currentTimeMillis() - start);
 	}
 	
 }

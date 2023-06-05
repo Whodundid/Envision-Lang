@@ -86,7 +86,8 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		*/
 		
 		// execute the static members against the class's scope
-		interpreter.executeBlock(staticMembers, classScope);
+		
+		interpreter.executeStatements(staticMembers, classScope);
 		
 		// build constructor functions -- inherently static
 		int conSize = constructors.size();

@@ -1,6 +1,7 @@
 package envision_lang._launch;
 
 import java.io.File;
+import java.io.IOException;
 
 import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
@@ -28,7 +29,7 @@ public class EnvisionProgram {
 	/** The Envision Scripting Language's active program working directory. */
 	private WorkingDirectory dir;
 	/** The settings to run the Envision Scripting Language with. */
-	private EnvisionLaunchSettings settings;
+	private EnvisionEnvironmnetSettings settings;
 	
 	private EList<EnvisionLangPackage> bundledProgramPackages = EList.newList();
 	private EList<EnvisionJavaObject> envisionJavaObjects = EList.newList();
@@ -36,6 +37,15 @@ public class EnvisionProgram {
 	//--------------
 	// Constructors
 	//--------------
+	
+	public EnvisionProgram() {
+		try {
+			File.createTempFile("", "dir");
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Creates a new EnvisionProgram with the given program name.
@@ -161,7 +171,7 @@ public class EnvisionProgram {
 	 * 
 	 * @return The launch settings for this program
 	 */
-	public EnvisionLaunchSettings getLaunchArgs() { return settings; }
+	public EnvisionEnvironmnetSettings getLaunchArgs() { return settings; }
 	
 	public EList<EnvisionLangPackage> getBundledPackages() { return bundledProgramPackages; }
 	public EList<EnvisionJavaObject> getEnvisionJavaObjects() { return envisionJavaObjects; }
@@ -175,7 +185,7 @@ public class EnvisionProgram {
 	 * 
 	 * @param settingsIn The settings to run with this program
 	 */
-	public void setLaunchArgs(EnvisionLaunchSettings settingsIn) {
+	public void setLaunchArgs(EnvisionEnvironmnetSettings settingsIn) {
 		settings = settingsIn;
 	}
 	

@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.EnvisionConsoleOutputReceiver;
 import envision_lang._launch.EnvisionLangErrorCallBack;
-import envision_lang._launch.EnvisionLaunchSettings;
-import envision_lang._launch.EnvisionLaunchSettings.LaunchSetting;
+import envision_lang._launch.EnvisionEnvironmnetSettings;
+import envision_lang._launch.EnvisionEnvironmnetSettings.EnvironmentSetting;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
@@ -19,12 +19,11 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.InterpreterCreationError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.NoMainError;
 import envision_lang.lang.packages.EnvisionLangPackage;
+import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
-import eutil.debug.Experimental;
 import eutil.debug.InDevelopment;
-import eutil.debug.Unused;
 
 /**
  * The Envision Scripting Language - Implemented in Java.
@@ -52,12 +51,23 @@ public class EnvisionLang {
 	public static final String version = "0.0.###";
 	/** The current build's date of the Envision Scripting Language. */
 	public static final String versionDate = "10/9/2022";
+	/** The directory of the loaded program. */
+	public static File programDir = null;
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;
 	/** Enables the ability to 'talk' directly to the interpreter. */
 	private static boolean liveMode = false;
-	/** The directory of the loaded program. */
-	public static File programDir = null;
+	/** Enables the ability for commands to 'block' script execution until manually called for. */
+	public static boolean enableBlockingStatements = false;
+	/**
+	 * Enables the ability to append a '#' at the beginning of a statement
+	 * declaration to mark the next parsed statement as a 'blocking' statement.
+	 * If blocking statements are enabled and one has just finished being
+	 * executed, the Envision interpreter will halt script execution and
+	 * preserve the current memory and instruction stacks and will wait until
+	 * the script is manually restarted.
+	 */
+	public static boolean enableBlockStatementParsing = false;
 	
 	public static final Logger envisionLogger = LoggerFactory.getLogger(EnvisionLang.class);
 	
@@ -86,9 +96,9 @@ public class EnvisionLang {
 	 * can very easily lead to unintended results in code which is why this is false
 	 * by default.
 	 */
-	@Unused
-	@Experimental
-	private static boolean allowClassFileStatements = false;
+	//@Unused
+	//@Experimental
+	//private static boolean allowClassFileStatements = false;
 	
 	/**
 	 * When declaring a class, only specific statements are permitted within the
@@ -132,9 +142,9 @@ public class EnvisionLang {
 	 * 
 	 * </blockquote>
 	 */
-	@Unused
-	@Experimental
-	private static boolean allowClassBodyStatements = false;
+	//@Unused
+	//@Experimental
+	//private static boolean allowClassBodyStatements = false;
 	
 	/**
 	 * Due to the nature of how Java loads programs on a per-class basis, the simple
@@ -200,7 +210,7 @@ public class EnvisionLang {
 	 * Settings which will be applied to the Envision Scripting Language and (or) given to
 	 * programs executing at runtime.
 	 */
-	private static EnvisionLaunchSettings launchSettings = null;
+	private static EnvisionEnvironmnetSettings launchSettings = null;
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
@@ -219,15 +229,20 @@ public class EnvisionLang {
 		
 		for (var arg : launchSettings.getEnvArgs()) {
 			switch (arg) {
-			case PRELOAD_LANGUAGE: preloadLanguage = true; EnvisionLoader.loadLang(); break;
-			case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
-			case CLASS_FILE_STATEMENTS: allowClassFileStatements = true; break;
+			case PRELOAD_LANGUAGE:
+				preloadLanguage = true;
+				for (int i = 0; i < 10; i++) EnvisionLoader.loadLang();
+				break;
+			//case CLASS_BODY_STATEMENTS: allowClassBodyStatements = true; break;
+			//case CLASS_FILE_STATEMENTS: allowClassFileStatements = true; break;
 			case DEBUG_MODE: debugMode = true; break;
 			case LIVE_MODE: liveMode = true; break;
 			case TOKENIZE: tokenize = true; break;
 			case TOKENIZE_IN_DEPTH: tokenize_in_depth = true; break;
 			case PARSE_STATEMENTS: parse_statements = true; break;
 			case DONT_EXECUTE: execute_code = false; break;
+			case ENABLE_BLOCK_STATEMENT_PARSING: enableBlockStatementParsing = true; break;
+			case ENABLE_BLOCKING_STATEMENTS: enableBlockingStatements = true; break;
 			default: break;
 			}
 		}
@@ -237,12 +252,12 @@ public class EnvisionLang {
 		return new EnvisionProgram(pathIn);
 	}
 	
-	public static void runProgram(String pathIn) throws Exception { runProgram(new File(pathIn)); }
-	public static void runProgram(File pathIn) throws Exception { runProgram(new EnvisionProgram(pathIn)); }
-	public static void runProgram(EnvisionProgram in) throws Exception { runProgramI(in); }
+	public static EnvisionInterpreter runProgram(String pathIn) throws Exception { return runProgram(new File(pathIn)); }
+	public static EnvisionInterpreter runProgram(File pathIn) throws Exception { return runProgram(new EnvisionProgram(pathIn)); }
+	public static EnvisionInterpreter runProgram(EnvisionProgram in) throws Exception { return runProgramI(in); }
 	
 	/** Internal run program call. */
-	private static void runProgramI(EnvisionProgram programIn) throws Exception {
+	private static EnvisionInterpreter runProgramI(EnvisionProgram programIn) throws Exception {
 		program = programIn;
 		dir = programIn.getWorkingDir();
 		programDir = dir.getDirFile();
@@ -278,7 +293,7 @@ public class EnvisionLang {
 		}
 		
 		//if disabled, don't continue with program execution
-		if (!execute_code) return;
+		if (!execute_code) return null;
 		
 		//check null main
 		if (main == null) throw new NoMainError(dir);
@@ -307,7 +322,7 @@ public class EnvisionLang {
 			//track program start time
 			start_time = System.currentTimeMillis();
 			//actually execute the built program
-			EnvisionInterpreter.interpret(main, programArgs);
+			return EnvisionInterpreter.interpret(main, programArgs);
 			
 			//do live interpreting
 			//if (liveMode) liveMode(main);
@@ -322,25 +337,41 @@ public class EnvisionLang {
 			//debug log the program's total running time
 			envisionLogger.debug("ENVISION-END: " + (System.currentTimeMillis() - start_time) + " ms");
 		}
+		
+		return null;
 	}
 	
 	@Broken(since="Forever")
 	private static void liveMode(EnvisionCodeFile main) throws Exception {
-//		Scanner reader = new Scanner(System.in);
-//		while (liveMode) {
-//			String line = reader.nextLine();
-//			if (!line.isEmpty()) main.getInterpreter().execute(EnvisionLangParser.parseStatement(line));
-//			reader.reset();
-//		}
-//		reader.close();
+		//get user args
+		var programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<String>();
+		
+		EnvisionInterpreter interpreter = EnvisionInterpreter.build(main, programArgs);
+		
+		while (liveMode) {
+			try {
+				var stmt = EnvisionLangParser.parseStatementLive();
+				if (stmt == null) continue;
+				
+				interpreter.execute(stmt);
+			}
+			catch (EnvisionLangError e) {
+				//e.printStackTrace();
+				errorCallback.handleError(e);
+			}
+			catch (Exception e) {
+				//e.printStackTrace();
+				errorCallback.handleException(e);
+			}
+		}
 	}
 	
-	public static void setLaunchSettings(EnvisionLaunchSettings settingsIn) {
+	public static void setLaunchSettings(EnvisionEnvironmnetSettings settingsIn) {
 		launchSettings = settingsIn;
 	}
 	
-	public static void setLaunchSettings(LaunchSetting... settings) {
-		launchSettings = EnvisionLaunchSettings.of(settings);
+	public static void setLaunchSettings(EnvironmentSetting... settings) {
+		launchSettings = EnvisionEnvironmnetSettings.of(settings);
 	}
 	
 	public static void addBuildPackage(EnvisionLangPackage... pkg) {

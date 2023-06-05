@@ -3,252 +3,302 @@ package envision_lang._launch;
 /** Loads the language ahead of time to speed up program execution times. */
 public class EnvisionLoader {
 	
+	private static ClassLoader loader = EnvisionLoader.class.getClassLoader();
+	private static String curBasePath = "envision_lang.";
+	
+	private static void d(String dir) {
+		curBasePath = "envision_lang." + dir;
+	}
+	
+	private static void l(String path) throws ClassNotFoundException {
+		loader.loadClass(curBasePath + path);
+	}
+	
 	public static void loadLang() throws ClassNotFoundException {
-		ClassLoader loader = EnvisionLoader.class.getClassLoader();
+		d("");
+		l("EnvisionLang");
 		
-		//for (int i = 0; i < 1; i++) {
-			//Object util
-			loader.loadClass("envision.lang.util.EnvisionDataType");
-			loader.loadClass("envision.lang.util.VisibilityType");
-			loader.loadClass("envision.lang.util.data.DataModifier");
-			loader.loadClass("envision.lang.util.data.DataValue");
-			loader.loadClass("envision.lang.util.data.Parameter");
-			loader.loadClass("envision.lang.util.data.ParameterData");
-			loader.loadClass("envision.lang.util.InternalMethod");
-			loader.loadClass("envision.lang.util.InternalConstructor"); //deprecated
-			loader.loadClass("envision.lang.util.structureTypes.CallableObject");
-			loader.loadClass("envision.lang.util.structureTypes.InheritableObject");
-			loader.loadClass("envision.lang.util.structureTypes.InstantiableObject");
-			//Object base
-			loader.loadClass("envision.lang.EnvisionObject");
-			//Variables
-			loader.loadClass("envision.lang.datatypes.EnvisionVariable");
-			loader.loadClass("envision.lang.datatypes.EnvisionNumber");
-			loader.loadClass("envision.lang.datatypes.EnvisionDouble");
-			loader.loadClass("envision.lang.datatypes.EnvisionInt");
-			loader.loadClass("envision.lang.datatypes.EnvisionBoolean");
-			loader.loadClass("envision.lang.datatypes.EnvisionChar");
-			loader.loadClass("envision.lang.datatypes.EnvisionString");
-			//Classes
-			loader.loadClass("envision.lang.classes.EnvisionClass");
-			loader.loadClass("envision.lang.classes.ClassInstance");
-			//Enums
-			loader.loadClass("envision.lang.enums.EnvisionEnum");
-			loader.loadClass("envision.lang.enums.EnumValue");
-			loader.loadClass("envision.lang.enums.EnvisionEnumConstructor");
-			//objects
-			loader.loadClass("envision.lang.objects.EnvisionFunction");
-			loader.loadClass("envision.lang.objects.EnvisionNullObject");
-			loader.loadClass("envision.lang.objects.EnvisionVoidObject");
-			loader.loadClass("envision.lang.objects.EnvisionOperator");
-			loader.loadClass("envision.lang.objects.EnvisionList");
-			loader.loadClass("envision.lang.objects.EnvisionInterface");
-			//packages
-			loader.loadClass("envision.lang.packages.EnvisionPackage");
-			loader.loadClass("envision.lang.packages.EnvisionLangPackage");
-			loader.loadClass("envision.lang.packages.EnvisionDefaultPackages");
-			loader.loadClass("envision.lang.packages.env.EnvPackage");
-			loader.loadClass("envision.lang.packages.env.base.Millis");
-			loader.loadClass("envision.lang.packages.env.base.Nanos");
-			loader.loadClass("envision.lang.packages.env.base.Sleep");
-			loader.loadClass("envision.lang.packages.env.base.SupportsOP");
-			loader.loadClass("envision.lang.packages.env.debug.DebugInfo");
-			loader.loadClass("envision.lang.packages.env.debug.DebugParsed");
-			loader.loadClass("envision.lang.packages.env.debug.DebugScope");
-			loader.loadClass("envision.lang.packages.env.debug.DebugPackage");
-			loader.loadClass("envision.lang.packages.env.file.EnvFile");
-			loader.loadClass("envision.lang.packages.env.file.FilePackage");
-			loader.loadClass("envision.lang.packages.env.io.Print");
-			loader.loadClass("envision.lang.packages.env.io.Println");
-			loader.loadClass("envision.lang.packages.env.io.Read");
-			loader.loadClass("envision.lang.packages.env.io.IOPackage");
-			loader.loadClass("envision.lang.packages.env.math.Ceil");
-			loader.loadClass("envision.lang.packages.env.math.Floor");
-			loader.loadClass("envision.lang.packages.env.math.Log");
-			loader.loadClass("envision.lang.packages.env.math.Pow");
-			loader.loadClass("envision.lang.packages.env.math.RandDouble");
-			loader.loadClass("envision.lang.packages.env.math.RandInt");
-			loader.loadClass("envision.lang.packages.env.math.RandName");
-			loader.loadClass("envision.lang.packages.env.math.RandStr");
-			loader.loadClass("envision.lang.packages.env.math.Sqrt");
-			loader.loadClass("envision.lang.packages.env.math.MathPackage");
-			//Interpreter - creation
-			loader.loadClass("envision.interpreter.util.scope.Scope");
-			loader.loadClass("envision.interpreter.util.TypeManager");
-			loader.loadClass("envision.interpreter.util.EnvisionStringFormatter");
-			loader.loadClass("envision.interpreter.util.creationUtil.ObjectCreator");
-			loader.loadClass("envision.interpreter.util.creationUtil.VariableCreator");
-			loader.loadClass("envision.interpreter.util.CastingUtil");
-			loader.loadClass("envision.interpreter.util.creationUtil.MethodCreator");
-			loader.loadClass("envision.interpreter.util.creationUtil.VariableUtil");
-			loader.loadClass("envision.interpreter.util.creationUtil.OperatorOverloadHandler");
-			//Interpreter - throwables
-			loader.loadClass("envision.interpreter.util.throwables.ReturnValue");
-			loader.loadClass("envision.interpreter.util.throwables.EnvisionException");
-			loader.loadClass("envision.interpreter.util.throwables.Exception_Class");
-			loader.loadClass("envision.interpreter.util.throwables.Break");
-			loader.loadClass("envision.interpreter.util.throwables.Continue");
-			//Interpreter - Base
-			loader.loadClass("envision.interpreter.util.interpreterBase.ExpressionExecutor");
-			loader.loadClass("envision.interpreter.util.interpreterBase.StatementExecutor");
-			loader.loadClass("envision.interpreter.util.interpreterBase.InterpreterExecutor");
-			//Interpreter
-			loader.loadClass("envision.interpreter.EnvisionInterpreter");
-			//Interpreter - Statements
-			loader.loadClass("envision.interpreter.statements.IS_Block");
-			loader.loadClass("envision.interpreter.statements.IS_Case");
-			loader.loadClass("envision.interpreter.statements.IS_Catch");
-			loader.loadClass("envision.interpreter.statements.IS_Enum");
-			loader.loadClass("envision.interpreter.statements.IS_Exception");
-			loader.loadClass("envision.interpreter.statements.IS_Expression");
-			loader.loadClass("envision.interpreter.statements.IS_For");
-			loader.loadClass("envision.interpreter.statements.IS_Generic");
-			loader.loadClass("envision.interpreter.statements.IS_GetSet");
-			loader.loadClass("envision.interpreter.statements.IS_If");
-			loader.loadClass("envision.interpreter.statements.IS_Import");
-			loader.loadClass("envision.interpreter.statements.IS_LambdaFor");
-			loader.loadClass("envision.interpreter.statements.IS_LoopControl");
-			loader.loadClass("envision.interpreter.statements.IS_MethodDeclaration");
-			loader.loadClass("envision.interpreter.statements.IS_ModularMethod");
-			loader.loadClass("envision.interpreter.statements.IS_Package");
-			loader.loadClass("envision.interpreter.statements.IS_RangeFor");
-			loader.loadClass("envision.interpreter.statements.IS_Return");
-			loader.loadClass("envision.interpreter.statements.IS_Switch");
-			loader.loadClass("envision.interpreter.statements.IS_Try");
-			loader.loadClass("envision.interpreter.statements.IS_VarDec");
-			loader.loadClass("envision.interpreter.statements.IS_While");
-			//Interpreter - Expressions
-			loader.loadClass("envision.interpreter.expressions.IE_Assign");
-			loader.loadClass("envision.interpreter.expressions.IE_Binary");
-			loader.loadClass("envision.interpreter.expressions.IE_Compound");
-			loader.loadClass("envision.interpreter.expressions.IE_Domain");
-			loader.loadClass("envision.interpreter.expressions.IE_Enum");
-			loader.loadClass("envision.interpreter.expressions.IE_Generic");
-			loader.loadClass("envision.interpreter.expressions.IE_Get");
-			loader.loadClass("envision.interpreter.expressions.IE_Grouping");
-			loader.loadClass("envision.interpreter.expressions.IE_Import");
-			loader.loadClass("envision.interpreter.expressions.IE_Lambda");
-			loader.loadClass("envision.interpreter.expressions.IE_ListIndex");
-			loader.loadClass("envision.interpreter.expressions.IE_ListIndexSet");
-			loader.loadClass("envision.interpreter.expressions.IE_ListInitializer");
-			loader.loadClass("envision.interpreter.expressions.IE_Literal");
-			loader.loadClass("envision.interpreter.expressions.IE_Logical");
-			loader.loadClass("envision.interpreter.expressions.IE_MethodCall");
-			loader.loadClass("envision.interpreter.expressions.IE_MethodDec");
-			loader.loadClass("envision.interpreter.expressions.IE_Modular");
-			loader.loadClass("envision.interpreter.expressions.IE_Range");
-			loader.loadClass("envision.interpreter.expressions.IE_Set");
-			loader.loadClass("envision.interpreter.expressions.IE_Super");
-			loader.loadClass("envision.interpreter.expressions.IE_Ternary");
-			loader.loadClass("envision.interpreter.expressions.IE_This");
-			loader.loadClass("envision.interpreter.expressions.IE_TypeOf");
-			loader.loadClass("envision.interpreter.expressions.IE_Unary");
-			loader.loadClass("envision.interpreter.expressions.IE_Var");
-			loader.loadClass("envision.interpreter.expressions.IE_VarDec");
-			//Parser
-			loader.loadClass("envision.parser.ParserStage");
-			loader.loadClass("envision.parser.EnvisionParser");
-			//Parser - Expressions
-			loader.loadClass("envision.parser.expressions.Expression");
-			loader.loadClass("envision.parser.expressions.ExpressionHandler");
-			//Parser - Expressions - Stages
-			loader.loadClass("envision.parser.expressions.stages.PE_0_Assignment");
-			loader.loadClass("envision.parser.expressions.stages.PE_1_Logic");
-			loader.loadClass("envision.parser.expressions.stages.PE_2_Arithmetic");
-			loader.loadClass("envision.parser.expressions.stages.PE_3_Lambda");
-			loader.loadClass("envision.parser.expressions.stages.PE_4_Unary");
-			loader.loadClass("envision.parser.expressions.stages.PE_5_Range");
-			loader.loadClass("envision.parser.expressions.stages.PE_6_MethodCall");
-			loader.loadClass("envision.parser.expressions.stages.PE_7_Primary");
-			//Parser - Expressions - Types
-			loader.loadClass("envision.parser.expressions.types.AssignExpression");
-			loader.loadClass("envision.parser.expressions.types.BinaryExpression");
-			loader.loadClass("envision.parser.expressions.types.CompoundExpression");
-			loader.loadClass("envision.parser.expressions.types.DomainExpression");
-			loader.loadClass("envision.parser.expressions.types.EnumExpression");
-			loader.loadClass("envision.parser.expressions.types.EnumTypeExpression");
-			loader.loadClass("envision.parser.expressions.types.GenericExpression");
-			loader.loadClass("envision.parser.expressions.types.GetExpression");
-			loader.loadClass("envision.parser.expressions.types.GroupingExpression");
-			loader.loadClass("envision.parser.expressions.types.ImportExpression");
-			loader.loadClass("envision.parser.expressions.types.LambdaExpression");
-			loader.loadClass("envision.parser.expressions.types.ListIndexExpression");
-			loader.loadClass("envision.parser.expressions.types.ListIndexSetExpression");
-			loader.loadClass("envision.parser.expressions.types.ListInitializerExpression");
-			loader.loadClass("envision.parser.expressions.types.LiteralExpression");
-			loader.loadClass("envision.parser.expressions.types.LogicalExpression");
-			loader.loadClass("envision.parser.expressions.types.MethodCallExpression");
-			loader.loadClass("envision.parser.expressions.types.MethodDeclarationExpression");
-			loader.loadClass("envision.parser.expressions.types.ModularExpression");
-			loader.loadClass("envision.parser.expressions.types.NullExpression");
-			loader.loadClass("envision.parser.expressions.types.RangeExpression");
-			loader.loadClass("envision.parser.expressions.types.SetExpression");
-			loader.loadClass("envision.parser.expressions.types.SuperExpression");
-			loader.loadClass("envision.parser.expressions.types.TernaryExpression");
-			loader.loadClass("envision.parser.expressions.types.ThisConExpression");
-			loader.loadClass("envision.parser.expressions.types.ThisGetExpression");
-			loader.loadClass("envision.parser.expressions.types.TypeOfExpression");
-			loader.loadClass("envision.parser.expressions.types.UnaryExpression");
-			loader.loadClass("envision.parser.expressions.types.VarDecExpression");
-			loader.loadClass("envision.parser.expressions.types.VarExpression");
-			//Parser - Statements
-			loader.loadClass("envision.parser.statements.Statement");
-			loader.loadClass("envision.parser.statements.StatementHandler");
-			//Parser - Statements - StatementUtil
-			loader.loadClass("envision.parser.statements.statementUtil.DeclarationStage");
-			loader.loadClass("envision.parser.statements.statementUtil.ParserDeclaration");
-			loader.loadClass("envision.parser.statements.statementUtil.StatementParameter");
-			loader.loadClass("envision.parser.statements.statementUtil.StatementUtil");
-			loader.loadClass("envision.parser.statements.statementUtil.VariableDeclaration");
-			//Parser - Statements - Stages
-			loader.loadClass("envision.parser.statements.stages.PS_Block");
-			loader.loadClass("envision.parser.statements.stages.PS_Class");
-			loader.loadClass("envision.parser.statements.stages.PS_Enum");
-			loader.loadClass("envision.parser.statements.stages.PS_For");
-			loader.loadClass("envision.parser.statements.stages.PS_GetSet");
-			loader.loadClass("envision.parser.statements.stages.PS_If");
-			loader.loadClass("envision.parser.statements.stages.PS_Import");
-			loader.loadClass("envision.parser.statements.stages.PS_Interface");
-			loader.loadClass("envision.parser.statements.stages.PS_LoopControl");
-			loader.loadClass("envision.parser.statements.stages.PS_Method");
-			loader.loadClass("envision.parser.statements.stages.PS_Package");
-			loader.loadClass("envision.parser.statements.stages.PS_ParseDeclaration");
-			loader.loadClass("envision.parser.statements.stages.PS_Return");
-			loader.loadClass("envision.parser.statements.stages.PS_Switch");
-			loader.loadClass("envision.parser.statements.stages.PS_Try");
-			loader.loadClass("envision.parser.statements.stages.PS_VarDec");
-			loader.loadClass("envision.parser.statements.stages.PS_While");
-			//Parser - Statements - Types
-			loader.loadClass("envision.parser.statements.types.BlockStatement");
-			loader.loadClass("envision.parser.statements.types.CaseStatement");
-			loader.loadClass("envision.parser.statements.types.CatchStatement");
-			loader.loadClass("envision.parser.statements.types.ClassStatement");
-			loader.loadClass("envision.parser.statements.types.LoopControlStatement");
-			loader.loadClass("envision.parser.statements.types.EnumStatement");
-			loader.loadClass("envision.parser.statements.types.ExceptionStatement");
-			loader.loadClass("envision.parser.statements.types.ExpressionStatement");
-			loader.loadClass("envision.parser.statements.types.ForStatement");
-			loader.loadClass("envision.parser.statements.types.GenericStatement");
-			loader.loadClass("envision.parser.statements.types.GetSetStatement");
-			loader.loadClass("envision.parser.statements.types.IfStatement");
-			loader.loadClass("envision.parser.statements.types.ImportStatement");
-			loader.loadClass("envision.parser.statements.types.InterfaceStatement");
-			loader.loadClass("envision.parser.statements.types.LambdaForStatement");
-			loader.loadClass("envision.parser.statements.types.MethodDeclarationStatement");
-			loader.loadClass("envision.parser.statements.types.ModularMethodStatement");
-			loader.loadClass("envision.parser.statements.types.PackageStatement");
-			loader.loadClass("envision.parser.statements.types.RangeForStatement");
-			loader.loadClass("envision.parser.statements.types.ReturnStatement");
-			loader.loadClass("envision.parser.statements.types.SwitchStatement");
-			loader.loadClass("envision.parser.statements.types.TryStatement");
-			loader.loadClass("envision.parser.statements.types.VariableStatement");
-			loader.loadClass("envision.parser.statements.types.WhileStatement");
-			//Tokenizer
-			loader.loadClass("envision.tokenizer.EscapeCode");
-			loader.loadClass("envision.tokenizer.Keyword");
-			loader.loadClass("envision.tokenizer.Token");
-			loader.loadClass("envision.tokenizer.Tokenizer");
-		//}
+		d("_launch.");
+		l("EnvisionCodeFile");
+		l("EnvisionConsoleHandler");
+		l("EnvisionConsoleOutputReceiver");
+		l("EnvisionLangErrorCallBack");
+		l("EnvisionLaunchSettings");
+		l("EnvisionProgram");
+		l("WorkingDirectory");
+		
+		d("debug.");
+		l("DebugParserPrinter");
+		l("DebugTokenPrinter");
+		
+		d("interpreter.");
+		l("AbstractInterpreterExecutor");
+		l("EnvisionInterpreter");
+		
+		d("interpreter.expressions.");
+		l("IE_Assign");
+		l("IE_Binary");
+		l("IE_Compound");
+		l("IE_FunctionCall");
+		l("IE_Get");
+		l("IE_Import");
+		l("IE_Lambda");
+		l("IE_ListIndex");
+		l("IE_ListIndexSet");
+		l("IE_ListInitializer");
+		l("IE_Literal");
+		l("IE_Logical");
+		l("IE_Primitive");
+		l("IE_Range");
+		l("IE_Set");
+		l("IE_Ternary");
+		l("IE_This");
+		l("IE_TypeOf");
+		l("IE_Unary");
+		l("IE_Var");
+		l("IE_VarDec");
+		
+		d("interpreter.statements.");
+		l("IS_Block");
+		l("IS_Case");
+		l("IS_Catch");
+		l("IS_Class");
+		l("IS_Exception");
+		l("IS_Expression");
+		l("IS_For");
+		l("IS_FuncDef");
+		l("IS_If");
+		l("IS_Import");
+		l("IS_LambdaFor");
+		l("IS_LoopControl");
+		l("IS_RangeFor");
+		l("IS_Return");
+		l("IS_Switch");
+		l("IS_Try");
+		l("IS_VarDec");
+		l("IS_While");
+		
+		d("interpreter.util.");
+		l("CastingUtil");
+		l("EnvisionStringFormatter");
+		l("OperatorOverloadHandler");
+		l("UserDefinedTypeManager");
+		
+		d("interpreter.util.creationUtil.");
+		l("FunctionCreator");
+		l("ObjectCreator");
+		
+		d("interpreter.util.scope.");
+		l("IScope");
+		l("Scope");
+		l("ScopeEntry");
+		
+		d("interpreter.util.throwables.");
+		l("Break");
+		l("Continue");
+		l("InternalException");
+		l("LangShutdownCall");
+		l("ReturnValue");
+		
+		d("lang.");
+		l("EnvisionObject");
+		
+		d("lang.classes.");
+		l("ClassConstruct");
+		l("ClassInstance");
+		l("EnvisionClass");
+		
+		d("lang.datatypes.");
+		l("EnvisionBoolean");
+		l("EnvisionBooleanClass");
+		l("EnvisionChar");
+		l("EnvisionCharClass");
+		l("EnvisionDouble");
+		l("EnvisionDoubleClass");
+		l("EnvisionInt");
+		l("EnvisionIntClass");
+		l("EnvisionList");
+		l("EnvisionListClass");
+		l("EnvisionNull");
+		l("EnvisionNumber");
+		l("EnvisionNumberClass");
+		l("EnvisionString");
+		l("EnvisionStringClass");
+		l("EnvisionTuple");
+		l("EnvisionTupleClass");
+		l("EnvisionVariable");
+		l("EnvisionVoid");
+		
+		d("lang.functions.");
+		l("EnvisionFunction");
+		l("EnvisionFunctionClass");
+		l("FunctionPrototype");
+		l("InstanceFunction");
+		l("IPrototype");
+		l("IPrototypeHandler");
+		
+		d("lang.java.");
+		l("BridgeVariable");
+		l("EnvisionBridge");
+		l("EnvisionCodeBlock");
+		l("EnvisionJavaClass");
+		l("EnvisionJavaObject");
+		l("JavaScope");
+		l("NativeClassInstance");
+		l("NativeFunctionWrapper");
+		
+		d("lang.natives.");
+		l("DataModifier");
+		l("DataModifierHandler");
+		l("EnvisionDatatype");
+		l("EnvisionParameter");
+		l("EnvisionStaticTypes");
+		l("EnvisionVisibilityModifier");
+		l("IDatatype");
+		l("InternalJavaObjectWrapper");
+		l("NativeTypeManager");
+		l("ParameterData");
+		l("Primitives");
+		
+		d("lang.packages.");
+		l("Buildable");
+		l("EnvisionLangPackage");
+		
+		d("lang.packages.native_packages.");
+		l("DebugPackage");
+		l("EnvPackage");
+		l("FilePackage");
+		l("ImagePackage");
+		l("IOPackage");
+		l("MathPackage");
+		l("NativePackage");
+		
+		d("lang.packages.native_packages.base.");
+		l("InternalEnvision");
+		l("InternalEnvisionClass");
+		l("Millis");
+		l("Nanos");
+		l("Sleep");
+		l("SupportsOP");
+		
+		d("lang.packages.native_packages.debug.");
+		l("DebugInfo");
+		l("DebugParsed");
+		l("DebugScope");
+		l("DebugScopeFull");
+		
+		d("lang.packages.native_packages.file.");
+		l("EnvisionFile");
+		l("EnvisionFileClass");
+		
+		d("lang.packages.native_packages.image.");
+		l("EnvisionImage");
+		l("EnvisionImageClass");
+		
+		d("lang.packages.native_packages.io.");
+		l("Print");
+		l("Printf");
+		l("Println");
+		l("Read");
+		
+		d("lang.packages.native_packages.math.");
+		l("Ceil");
+		l("Floor");
+		l("Log");
+		l("Pow");
+		l("RandDouble");
+		l("RandInt");
+		l("RandName");
+		l("RandStr");
+		l("Sqrt");
+		
+		d("parser.");
+		l("EnvisionLangParser");
+		l("ParserHead");
+		l("ParsingError");
+		
+		d("parser.expressions.");
+		l("ExpressionHandler");
+		l("ExpressionParser");
+		l("ParsedExpression");
+		
+		d("parser.expressions.expression_types.");
+		l("Expr_Assign");
+		l("Expr_Binary");
+		l("Expr_Compound");
+		l("Expr_FunctionCall");
+		l("Expr_Get");
+		l("Expr_Import");
+		l("Expr_Lambda");
+		l("Expr_ListIndex");
+		l("Expr_ListInitializer");
+		l("Expr_Literal");
+		l("Expr_Logic");
+		l("Expr_Primitive");
+		l("Expr_Range");
+		l("Expr_Set");
+		l("Expr_SetListIndex");
+		l("Expr_Ternary");
+		l("Expr_This");
+		l("Expr_TypeOf");
+		l("Expr_Unary");
+		l("Expr_Var");
+		l("Expr_VarDef");
+		
+		d("parser.statements.");
+		l("ParsedStatement");
+		l("StatementHandler");
+		
+		d("parser.statements.statement_types.");
+		l("Stmt_Block");
+		l("Stmt_Catch");
+		l("Stmt_Class");
+		l("Stmt_Exception");
+		l("Stmt_For");
+		l("Stmt_FuncDef");
+		l("Stmt_Generic");
+		l("Stmt_If");
+		l("Stmt_Import");
+		l("Stmt_LambdaFor");
+		l("Stmt_LoopControl");
+		l("Stmt_RangeFor");
+		l("Stmt_Return");
+		l("Stmt_SwitchCase");
+		l("Stmt_SwitchDef");
+		l("Stmt_Try");
+		l("Stmt_VarDef");
+		l("Stmt_While");
+		
+		d("parser.statements.statementParsers.");
+		l("PS_Class");
+		l("PS_For");
+		l("PS_Function");
+		l("PS_If");
+		l("PS_Import");
+		l("PS_LoopControl");
+		l("PS_ParseDeclaration");
+		l("PS_Return");
+		l("PS_Switch");
+		l("PS_Try");
+		l("PS_VarDef");
+		l("PS_While");
+		
+		d("parser.util.");
+		l("DeclarationStage");
+		l("DeclarationType");
+		l("ParsedObject");
+		l("ParserDeclaration");
+		l("StatementParameter");
+		l("VariableDeclaration");
+		
+		d("tokenizer.");
+		l("EscapeCode");
+		l("IKeyword");
+		l("KeywordType");
+		l("Operator");
+		l("ReservedWord");
+		l("Token");
+		l("Tokenizer");
 	}
 	
 }
