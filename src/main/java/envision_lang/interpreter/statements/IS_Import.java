@@ -20,7 +20,7 @@ public class IS_Import {
 
 	public static void run(EnvisionInterpreter interpreter, Stmt_Import s) {
 		Expr_Import impE = s.imp;
-		Token asName = s.asName;
+		Token<?> asName = s.asName;
 		String path = impE.path.getLexeme();
 		String obj = impE.object.getLexeme();
 		String as = (asName != null) ? asName.getLexeme() : null;

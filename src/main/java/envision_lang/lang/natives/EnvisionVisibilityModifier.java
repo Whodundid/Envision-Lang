@@ -21,7 +21,7 @@ public enum EnvisionVisibilityModifier {
 		lexeme = lexemeIn;
 	}
 	
-	public static EnvisionVisibilityModifier parse(Token t) {
+	public static EnvisionVisibilityModifier parse(Token<?> t) {
 		return parse(t.getKeyword());
 	}
 	

@@ -35,6 +35,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	 * Instead of directly using a string, a StringBuilder is more memory
 	 * efficient when dealing with string concatenation and appending.
 	 */
+	
 	public final StringBuilder string_val;
 	
 	//--------------
@@ -78,6 +79,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	@Override
 	public boolean equals(Object obj) {
+	    if (obj == null) return false;
 		if (!(obj instanceof EnvisionString)) return false;
 		//because 'string_val' is a StringBuilder, must convert to string type first
 		return ((EnvisionString) obj).toString().equals(toString());
@@ -85,7 +87,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	@Override
 	public String toString() {
-		if (string_val == null) return "";
+		if (string_val == null) return null;
 		return string_val.toString();
 	}
 	
@@ -99,8 +101,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	@Override
 	public String convertToJavaObject() {
-		if (string_val == null) return "";
-		return string_val.toString();
+		return get_i();
 	}
 	
 	@Override
@@ -142,7 +143,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 			String obj_toString = null;
 			
 			//convert incoming object to a string representation
-			if (obj instanceof EnvisionVariable env_var) 	obj_toString = env_var.toString();
+			if (obj instanceof EnvisionVariable<?> env_var) obj_toString = env_var.toString();
 			else if (obj instanceof EnvisionList list)		obj_toString = EnvisionStringFormatter.formatPrint(interpreter, list, true);
 			else if (obj instanceof ClassInstance inst) 	obj_toString = EnvisionStringFormatter.formatPrint(interpreter, inst, true);
 			else 											obj_toString = obj.toString();
@@ -150,7 +151,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 			//add operator
 			if (op == Operator.ADD) {
 				if (string_val == null) return EnvisionStringClass.valueOf(obj_toString);
-				return EnvisionStringClass.valueOf(string_val.append(obj_toString));
+				return EnvisionStringClass.valueOf(string_val.toString() + obj_toString);
 			}
 			//add assign operator
 			else {

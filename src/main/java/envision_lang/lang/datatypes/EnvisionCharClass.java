@@ -43,12 +43,13 @@ public final class EnvisionCharClass extends EnvisionClass {
 	 * @author Hunter Bragg
 	 */
 	private static final class EnvisionCharCache {
+	    static final int LENGTH = 127;
 		static final EnvisionChar[] cache;
 		
 		static {
-			EnvisionChar[] c = new EnvisionChar[127];
+			EnvisionChar[] c = new EnvisionChar[LENGTH];
 			int j = 0;
-			for (int i = 0; i < c.length; i++) {
+			for (int i = 0; i < LENGTH; i++) {
 				c[i] = newChar((char) j++);
 			}
 			cache = c;
@@ -105,9 +106,9 @@ public final class EnvisionCharClass extends EnvisionClass {
 	public static EnvisionChar valueOf(EnvisionInt value) { return valueOf((char) value.int_val); }
 	
 	public static EnvisionChar valueOf(char value) {
-		int i = (int) value;
+		int i = value;
 		
-		if (i >= 0 && i <= EnvisionCharCache.cache.length) {
+		if (i >= 0 && i <= EnvisionCharCache.LENGTH) {
 			return EnvisionCharCache.cache[i];
 		}
 		
@@ -166,14 +167,14 @@ public final class EnvisionCharClass extends EnvisionClass {
 	// Instance Member Functions
 	//---------------------------
 	
-	private static class IFunc_toUpperCase<E extends EnvisionChar> extends InstanceFunction<E> {
+	private static class IFunc_toUpperCase extends InstanceFunction<EnvisionChar> {
 		public IFunc_toUpperCase() { super(CHAR, "toUpperCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionCharClass.valueOf(Character.toUpperCase(inst.char_val)));
 		}
 	}
 	
-	private static class IFunc_toLowerCase<E extends EnvisionChar> extends InstanceFunction<E> {
+	private static class IFunc_toLowerCase extends InstanceFunction<EnvisionChar> {
 		public IFunc_toLowerCase() { super(CHAR, "toLowerCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionCharClass.valueOf(Character.toLowerCase(inst.char_val)));

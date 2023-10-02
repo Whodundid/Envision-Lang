@@ -13,10 +13,10 @@ public class IE_Primitive extends AbstractInterpreterExecutor {
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Primitive expression) {
 		Primitives type = Primitives.getPrimitiveType(expression.primitiveType);
 		
-		EnvisionClass classType = NativeTypeManager.getClassTypeOf(type);
+		EnvisionClass classType = NativeTypeManager.getClassTypeFor(type);
 		if (classType != null) return classType;
 		
-		return NativeTypeManager.getClassTypeOf(type);
+		return NativeTypeManager.getClassTypeFor(type);
 	}
 	
 }

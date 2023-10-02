@@ -2,7 +2,7 @@ package envision_lang;
 
 import java.util.Map;
 
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;

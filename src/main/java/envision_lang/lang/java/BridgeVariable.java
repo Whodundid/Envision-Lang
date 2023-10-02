@@ -1,6 +1,6 @@
 package envision_lang.lang.java;
 
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;

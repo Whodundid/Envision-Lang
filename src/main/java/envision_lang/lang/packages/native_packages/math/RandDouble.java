@@ -23,8 +23,8 @@ public class RandDouble extends EnvisionFunction {
 		double high = Double.MAX_VALUE;
 		
 		if (args.length != 0) {
-			low = ((EnvisionNumber) args[0]).doubleVal_i();
-			high = ((EnvisionNumber) args[1]).doubleVal_i();
+			low = ((EnvisionNumber<?>) args[0]).doubleVal_i();
+			high = ((EnvisionNumber<?>) args[1]).doubleVal_i();
 		}
 		
 		double rand = ERandomUtil.getRoll(low, high);

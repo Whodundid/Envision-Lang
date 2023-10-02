@@ -1,6 +1,6 @@
 package envision_lang.lang.packages.native_packages;
 
-import envision_lang.lang.packages.native_packages.file.EnvisionFileClass;
+import envision_lang.lang.file.EnvisionFileClass;
 
 public final class FilePackage extends NativePackage {
 

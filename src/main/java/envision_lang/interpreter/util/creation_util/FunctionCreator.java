@@ -1,4 +1,4 @@
-package envision_lang.interpreter.util.creationUtil;
+package envision_lang.interpreter.util.creation_util;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
@@ -7,7 +7,6 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.ParameterData;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.statement_types.Stmt_FuncDef;
@@ -31,7 +30,7 @@ public class FunctionCreator {
 		
 		//---------------------------------------------------------
 		
-		
+		var typeMan = in.getTypeManager();
 		boolean isConstructor = s.isConstructor;
 		boolean isOperator = s.isOperator;
 		IDatatype function_return_datatype = null;
@@ -41,7 +40,7 @@ public class FunctionCreator {
 		else {
 			var dec_return_type = s.getDeclaration().getReturnType();
 			//wrap the return type if not null
-			if (dec_return_type != null) function_return_datatype = NativeTypeManager.datatypeOf(dec_return_type);
+			if (dec_return_type != null) function_return_datatype = typeMan.getOrCreateDatatypeFor(dec_return_type);
 			//otherwise, assign var as return type
 			else function_return_datatype = EnvisionStaticTypes.VAR_TYPE;
 		}
@@ -111,6 +110,7 @@ public class FunctionCreator {
 	
 	/** Builds the method parameter data from the given method declaration statement. */
 	public static ParameterData buildParameters(EnvisionInterpreter in, EList<StatementParameter> params) {
+	    var typeMan = in.getTypeManager();
 		int size = params.size();
 		var builtParams = new EnvisionParameter[size];
 		
@@ -121,7 +121,7 @@ public class FunctionCreator {
 			Token<?> type = p.type;
 			
 			String theName = name.getLexeme();
-			IDatatype theType = (type != null) ? NativeTypeManager.datatypeOf(type) : EnvisionStaticTypes.VAR_TYPE;
+			IDatatype theType = (type != null) ? typeMan.getOrCreateDatatypeFor(type) : EnvisionStaticTypes.VAR_TYPE;
 			
 			ParsedExpression assign = p.assignment;
 			
@@ -143,7 +143,7 @@ public class FunctionCreator {
 		EnvisionObject o = scopeIn.getLocal(n);
 		
 		//check if a function with that name is already defined
-		if (o instanceof EnvisionFunction) return (EnvisionFunction) o;
+		if (o instanceof EnvisionFunction func) return func;
 		
 		return null;
 	}

@@ -52,7 +52,7 @@ public class EnvisionParameter {
 	
 	/** Compares the datatypes of each parameter, name is irrelevant when comparing. */
 	public boolean compare(EnvisionParameter paramIn) {
-		return (paramIn != null) ? paramIn.datatype.equals(datatype) : false;
+		return paramIn != null && paramIn.datatype.equals(datatype);
 	}
 	
 	public boolean isNumber() {

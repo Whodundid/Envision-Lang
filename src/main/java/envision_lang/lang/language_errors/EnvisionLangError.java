@@ -10,8 +10,12 @@ public class EnvisionLangError extends RuntimeException {
 		super(message);
 	}
 	
-	public EnvisionLangError(Exception e) {
-		super(e.toString());
+	public EnvisionLangError(Throwable e) {
+		super(e);
+	}
+	
+	public EnvisionLangError(String message, Throwable e) {
+	    super(message, e);
 	}
 	
 }

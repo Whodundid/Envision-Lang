@@ -3,10 +3,10 @@ package envision_lang._launch;
 import java.io.File;
 import java.io.IOException;
 
-import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.BadDirError;
 import envision_lang.lang.packages.EnvisionLangPackage;
+import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 import eutil.file.EFileUtil;
 
@@ -32,7 +32,7 @@ public class EnvisionProgram {
 	private EnvisionEnvironmnetSettings settings;
 	
 	private EList<EnvisionLangPackage> bundledProgramPackages = EList.newList();
-	private EList<EnvisionJavaObject> envisionJavaObjects = EList.newList();
+	private BoxList<String, Object> javaObjectsToWrap = BoxList.newList();
 	
 	//--------------
 	// Constructors
@@ -121,8 +121,23 @@ public class EnvisionProgram {
 	// Methods
 	//=========
 	
-	public void addJavaObjectToProgram(EnvisionJavaObject object) {
-		envisionJavaObjects.add(object);
+    /**
+     * Wraps the given java object into an Envision object and creates a
+     * reference of it under the given name in the top level program scope.
+     * <p>
+     * This method will also create a native envision class type for the given
+     * object if one does not already exist.
+     * 
+     * @param fieldName The name to refer to the given wrapped object with
+     * @param object The object to wrap
+     */
+	public void addJavaObjectToProgram(String fieldName, Object object) {
+//	    EnvisionJavaObject envisionJavaObject = null;
+//	    
+//	    if (object instanceof EnvisionJavaObject o) envisionJavaObject = o;
+//	    else envisionJavaObject = EnvisionJavaObject.wrapJavaObject(object);
+//	    
+		javaObjectsToWrap.add(fieldName, object);
 	}
 	
 	//------------------
@@ -134,7 +149,7 @@ public class EnvisionProgram {
 			if (!EFileUtil.fileExists(programDir) && !programDir.mkdirs())
 				throw new RuntimeException("Could not create script dir!");
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			t.printStackTrace();
 			throw new RuntimeException(t);
 		}
@@ -174,7 +189,7 @@ public class EnvisionProgram {
 	public EnvisionEnvironmnetSettings getLaunchArgs() { return settings; }
 	
 	public EList<EnvisionLangPackage> getBundledPackages() { return bundledProgramPackages; }
-	public EList<EnvisionJavaObject> getEnvisionJavaObjects() { return envisionJavaObjects; }
+	public BoxList<String, Object> getJavaObjectsToWrap() { return javaObjectsToWrap; }
 	
 	//---------
 	// Setters

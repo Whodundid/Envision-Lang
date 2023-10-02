@@ -65,10 +65,10 @@ public class Tokenizer {
 		parsedLineTokens = EList.newList();
 		currentLineSource = line.trim();
 		cur = 0;
-		lineIndex = 0;
+		lineIndex = lineNum;
 		
 		//check for basic comment
-		if (currentLineSource.startsWith(COMMENT_SINGLE.typeString)) return parsedLineTokens;
+		if (currentLineSource.startsWith(COMMENT_SINGLE.operatorString)) return parsedLineTokens;
 		
 		while (!atEnd()) {
 			start = cur;
@@ -141,9 +141,10 @@ public class Tokenizer {
 			else addToken((match('=')) ? LTE : LT);									// '<=', '<'
 			break;
 		case '>':
-			if (match('>'))
+			if (match('>')) {
 				if (match('>')) addToken(match('=') ? SHR_AR_ASSIGN : SHR_AR);		// '>>>=', '>>>'
 				else addToken((match('=') ? SHR_ASSIGN : SHR));						// '>>=', '>>'
+			}
 			else addToken((match('=')) ? GTE : GT);									// '>=', '>'
 			break;
 		case '+':
@@ -529,7 +530,7 @@ public class Tokenizer {
 	private void addToken(IKeyword keyword) { addToken(keyword, null); }
 	private <TYPE> void addToken(IKeyword keyword, TYPE literal) {
 		String text = currentLineSource.substring(start, cur);
-		parsedLineTokens.add(new Token<TYPE>(keyword, text, literal, lineNum, start, lineTokenIndex++));
+		parsedLineTokens.add(new Token<>(keyword, text, literal, lineNum, start, lineTokenIndex++));
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------

@@ -34,7 +34,7 @@ public abstract sealed class EnvisionNumber<TYPE extends Number> extends Envisio
 	 * 
 	 * @return The negated value of this number
 	 */
-	public abstract EnvisionNumber negate();
+	public abstract EnvisionNumber<TYPE> negate();
 	
 	/**
 	 * Converts the internal number value, regardless of type, to its

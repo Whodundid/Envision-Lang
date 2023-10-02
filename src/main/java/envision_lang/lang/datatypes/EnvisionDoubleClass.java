@@ -59,7 +59,8 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
 	public static EnvisionDouble newDouble() { return newDouble(0.0D); }
 	public static EnvisionDouble newDouble(boolean value) { return newDouble(value ? 1.0D : 0.0D); }
 	public static EnvisionDouble newDouble(char value) { return newDouble((double) value); }
-	public static EnvisionDouble newDouble(EnvisionNumber num) { return newDouble(num.doubleVal_i()); }
+	public static EnvisionDouble newDouble(EnvisionNumber<?> num) { return newDouble(num.doubleVal_i()); }
+	public static EnvisionDouble newDouble(Number value) { return newDouble(value.doubleValue()); }
 	public static EnvisionDouble newDouble(double value) {
 		EnvisionDouble d = new EnvisionDouble(value);
 		DOUBLE_CLASS.defineScopeMembers(d);
@@ -74,15 +75,25 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
 	public static EnvisionDouble valueOf(EnvisionDouble num) { return num; }
 	public static EnvisionDouble valueOf(boolean value) { return valueOf((value) ? 1.0D : 0.0D); }
 	public static EnvisionDouble valueOf(char value) { return valueOf((double) value); }
-
-	public static EnvisionDouble valueOf(EnvisionNumber num) {
+	public static EnvisionDouble valueOf(Number num) { return valueOf(num.doubleValue()); }
+	
+	/**
+     * Converts the given EnvisionNumber value into an EnvisionDouble.
+     * 
+     * @param value The EnvisionNumber to convert to an EnvisionDouble
+     * @return An EnvisionDouble made from the incoming value
+     */
+	public static EnvisionDouble valueOf(EnvisionNumber<?> num) {
 		// return direct instances
-		if (num instanceof EnvisionDouble d) return d;
-		
-		double double_val = num.doubleVal_i();
-		return valueOf(double_val);
+		return (num instanceof EnvisionDouble d) ? d : valueOf(num.doubleVal_i());
 	}
 	
+    /**
+     * Wraps the given double value within an EnvisionDouble.
+     * 
+     * @param value The double to wrap into an EnvisionDouble
+     * @return An EnvisionDouble made from the incoming value
+     */
 	public static EnvisionDouble valueOf(double num) {
 		// check for edge cases first
 		if (num == Double.MAX_VALUE) return EnvisionDouble.MAX_VALUE;
@@ -124,7 +135,7 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
 			if (arg_val == null) throw new InvalidArgumentError("Passed argument cannot be null!");
 			
 			//check for invalid argument constructor datatypes
-			else if (arg_val instanceof EnvisionNumber n) double_val = n.doubleVal();
+			else if (arg_val instanceof EnvisionNumber<?> n) double_val = n.doubleVal();
 			else if (arg_val instanceof EnvisionBoolean b) double_val = new EnvisionDouble((b.bool_val) ? 1.0 : 0.0);
 			
 			if (double_val == null)
@@ -156,7 +167,7 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
 			setStatic();
 		}
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			if (args[0] instanceof EnvisionNumber env_num) ret(EnvisionDoubleClass.valueOf(env_num));
+			if (args[0] instanceof EnvisionNumber<?> env_num) ret(EnvisionDoubleClass.valueOf(env_num));
 			else throw new EnvisionLangError("Invalid type -- should not have reached here!");
 		}
 	}

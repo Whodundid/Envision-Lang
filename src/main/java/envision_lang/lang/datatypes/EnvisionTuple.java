@@ -48,7 +48,7 @@ public final class EnvisionTuple extends ClassInstance {
 		internal_list = new EArrayList<>(0);
 	}
 	
-	EnvisionTuple(EList listIn) {
+	EnvisionTuple(EList<EnvisionObject> listIn) {
 		super(EnvisionTupleClass.TUPLE_CLASS);
 		internal_list = new EArrayList<>(listIn);
 	}
@@ -112,7 +112,7 @@ public final class EnvisionTuple extends ClassInstance {
 			EnvisionObject toAdd = obj;
 			
 			//attempt to add the incoming object to this list
-			if (obj instanceof EnvisionVariable var) toAdd = var.copy();
+			if (obj instanceof EnvisionVariable<?> v) toAdd = v.copy();
 			
 			EnvisionTuple newTuple = new EnvisionTuple(this);
 			newTuple.internal_list.add(toAdd);

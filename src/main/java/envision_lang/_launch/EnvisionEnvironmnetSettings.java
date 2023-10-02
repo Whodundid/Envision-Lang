@@ -67,7 +67,7 @@ public class EnvisionEnvironmnetSettings {
 	// Launch Arg Enum
 	//-----------------
 	
-	public static enum EnvironmentSetting {
+	public enum EnvironmentSetting {
 		//@Unused
 		//CLASS_FILE_STATEMENTS("allowClassFileStatements"),
 		//@Unused
@@ -96,14 +96,14 @@ public class EnvisionEnvironmnetSettings {
 		//PRINTLN_AS_KEYWORD("println_as_keyword"),
 		;
 		
-		public final String name;
+		public final String settingName;
 		
 		private EnvironmentSetting(String argName) {
-			name = argName;
+			settingName = argName;
 		}
 		
 		public static EnvironmentSetting matchArg(String argNameIn) {
-			for (EnvironmentSetting a : values()) if (a.name.equals(argNameIn)) return a;
+			for (EnvironmentSetting a : values()) if (a.settingName.equals(argNameIn)) return a;
 			return null;
 		}
 	}

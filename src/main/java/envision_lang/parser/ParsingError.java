@@ -9,8 +9,16 @@ import envision_lang.lang.language_errors.EnvisionLangError;
  */
 public class ParsingError extends EnvisionLangError {
 	
+    public ParsingError(String reason) {
+        super("EnvisionLang Parsing Error! " + reason);
+    }
+    
 	public ParsingError(Exception thrownError) {
-		super("Parsing Error: " + thrownError.toString());
+	    super("EnvisionLang Parsing Error!", thrownError);
+	}
+	
+	public ParsingError(String reason, Exception thrownError) {
+	    super("EnvisionLang Parsing Error! " + reason, thrownError);
 	}
 	
 }

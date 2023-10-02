@@ -25,7 +25,8 @@ public class IE_TypeOf extends AbstractInterpreterExecutor {
 		ParsedExpression right = e.right;
 		boolean is = e.is;
 		
-		IDatatype typeA = null, typeB = null;
+		IDatatype typeA = null;
+		IDatatype typeB = null;
 		
 		// convert literals and primitives to their internal datatype
 		if (left instanceof Expr_Literal literal) typeA = literal.literalToken.getPrimitiveDataType();

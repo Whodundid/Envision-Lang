@@ -9,8 +9,8 @@ import envision_lang.lang.language_errors.error_types.NoOverloadError;
 import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
 import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -54,7 +54,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
 		int_val = in.int_val;
 	}
 	
-	EnvisionInt(EnvisionNumber in) {
+	EnvisionInt(EnvisionNumber<?> in) {
 		super(EnvisionIntClass.INT_CLASS);
 		int_val = in.intVal().int_val;
 	}
@@ -85,7 +85,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
 	
 	@Override public Long convertToJavaObject() { return int_val; }
 	@Override public long intVal_i() { return int_val; }
-	@Override public double doubleVal_i() { return (double) int_val; }
+	@Override public double doubleVal_i() { return int_val; }
 	@Override public EnvisionInt intVal() { return this; }
 	@Override public EnvisionDouble doubleVal() { return EnvisionDoubleClass.valueOf(int_val); }
 	
@@ -130,7 +130,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
 		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
 		
 		// convert the incoming binary operation target object into an EnvisionNumber
-		EnvisionNumber numIn = (EnvisionNumber) obj;
+		EnvisionNumber<?> numIn = (EnvisionNumber<?>) obj;
 		
 		switch (op) {
 		case NEGATE:			return negate();

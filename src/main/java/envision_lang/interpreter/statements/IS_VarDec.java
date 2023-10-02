@@ -3,7 +3,6 @@ package envision_lang.interpreter.statements;
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
-import envision_lang.interpreter.util.UserDefinedTypeManager;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
@@ -18,7 +17,7 @@ import envision_lang.lang.language_errors.error_types.UndefinedTypeError;
 import envision_lang.lang.language_errors.error_types.VoidAssignmentError;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
+import envision_lang.lang.natives.UserDefinedTypeManager;
 import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.parser.util.VariableDeclaration;
@@ -33,8 +32,8 @@ public class IS_VarDec extends AbstractInterpreterExecutor {
 		//extract base statement parts
 		ParserDeclaration statement_declaration = s.getDeclaration();
 		EList<VariableDeclaration> unprocessed_var_declarations = s.vars;
-		Token token_returntype = statement_declaration.getReturnType();
-		IDatatype var_dec_datatype = NativeTypeManager.datatypeOf(token_returntype);
+		Token<?> token_returntype = statement_declaration.getReturnType();
+		IDatatype var_dec_datatype = typeMan.getOrCreateDatatypeFor(token_returntype);
 		
 		//---------------------------------------------------------------------------------------------------------------
 		
@@ -78,7 +77,7 @@ public class IS_VarDec extends AbstractInterpreterExecutor {
 				if (assignment_value instanceof EnvisionVoid) throw new VoidAssignmentError(var_name);
 				
 				//convert variable objects to their primitives
-				if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
+				if (assignment_value instanceof EnvisionVariable<?> env_var) assignment_value = env_var.get();
 				
 				//determine the type of the assignment value
 				assignment_value_datatype = IDatatype.dynamicallyDetermineType(assignment_value);
@@ -158,13 +157,12 @@ public class IS_VarDec extends AbstractInterpreterExecutor {
 		}
 	}
 	
-	private static void checkClassType(EnvisionClass typeClass, Object value) {
-		//if typeClass isn't null, check that the types match
-		if (typeClass != null) {
-			if (!typeClass.isInstanceof(value))
-				throw new InvalidDatatypeError("Invalid type: '" + value +
-											   "' expected '" + typeClass.getTypeString() + "'!");
-		}
-	}
+    private static void checkClassType(EnvisionClass typeClass, Object value) {
+        //if typeClass isn't null, check that the types match
+        if (typeClass != null && !typeClass.isInstanceof(value)) {
+            throw new InvalidDatatypeError("Invalid type: '" + value +
+                "' expected '" + typeClass.getTypeString() + "'!");
+        }
+    }
 	
 }

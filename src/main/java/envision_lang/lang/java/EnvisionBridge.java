@@ -8,81 +8,71 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
-import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
-import envision_lang.lang.datatypes.EnvisionNull;
-import envision_lang.lang.functions.EnvisionFunction;
-import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.java.annotations.EConstructor;
 import envision_lang.lang.java.annotations.EField;
 import envision_lang.lang.java.annotations.EFunction;
 import envision_lang.lang.java.annotations.EOperator;
 import envision_lang.lang.natives.DataModifier;
 import envision_lang.lang.natives.EnvisionParameter;
+import envision_lang.lang.natives.EnvisionVisibilityModifier;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
-import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.EnvisionStaticTypes;
-import envision_lang.lang.natives.EnvisionVisibilityModifier;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
-import eutil.datatypes.util.JavaDatatype;
 import eutil.reflection.EModifier;
 import eutil.reflection.EReflectionUtil;
 import eutil.reflection.ObjectVisibility;
 
-abstract class EnvisionBridge {
+class EnvisionBridge {
 	
 	//--------
 	// Fields
 	//--------
 	
+    private final EnvisionJavaClass wrapperClass;
+    private final Class<?> javaObjectClass;
+    
 	private boolean init = false;
 	private EModifier mods;
-		
-	private Class<? extends EnvisionBridge> javaObject;
-	private EnvisionJavaClass classObject;
-	private Object javaObjectInstance;
-	private ClassInstance envisionObjectInstance;
 	
-	private EArrayList<EnvisionFunction> constructors = new EArrayList<>();
+	//private EList<EnvisionFunction> constructors = EList.newList();
 	private IScope nativeInstanceScope;
 	
-	private IPrototypeHandler prototypes = new IPrototypeHandler();
+	//private IPrototypeHandler prototypes = new IPrototypeHandler();
 	
 	//--------------
 	// Constructors
 	//--------------
 	
-	EnvisionBridge() {
-		javaObject = getClass();
+	EnvisionBridge(EnvisionJavaClass wrapperClassIn) {
+	    wrapperClass = wrapperClassIn;
+		javaObjectClass = wrapperClassIn.getWrappedJavaClass();
 	}
 	
-	public void init_bridge() {
+	void init_bridge() {
 		if (init) return;
 		parseJava();
+		init = true;
 	}
 	
 	private void parseJava() {
-		classObject = new EnvisionJavaClass(javaObject.getSimpleName());
-		nativeInstanceScope = new Scope(classObject.getClassScope());
-		classObject.setNativeJavaScope(nativeInstanceScope);
-		mods = EModifier.of(javaObject.getModifiers());
+		//wrapperClass = new EnvisionJavaClass(javaObjectClass);
+		nativeInstanceScope = new Scope(wrapperClass.getClassScope());
+		wrapperClass.setNativeJavaScope(nativeInstanceScope);
+		mods = EModifier.of(javaObjectClass.getModifiers());
 		
-		classObject.setModifier(DataModifier.ABSTRACT, mods.isAbstract());
-		classObject.setModifier(DataModifier.STATIC, mods.isStatic());
+		wrapperClass.setModifier(DataModifier.ABSTRACT, mods.isAbstract());
+		wrapperClass.setModifier(DataModifier.STATIC, mods.isStatic());
 		
-		if (mods.isPublic()) classObject.setPublic();
-		else if (mods.isProtected()) classObject.setProtected();
-		else if (mods.isPrivate()) classObject.setPrivate();
+		if (mods.isPublic()) wrapperClass.setPublic();
+		else if (mods.isProtected()) wrapperClass.setProtected();
+		else if (mods.isPrivate()) wrapperClass.setPrivate();
 		
-		var fieldsToProcess = javaObject.getDeclaredFields();
-		var methodsToProcess = javaObject.getDeclaredMethods();
-		var constructorsToProcess = javaObject.getDeclaredConstructors();
+		var fieldsToProcess = javaObjectClass.getDeclaredFields();
+		var methodsToProcess = javaObjectClass.getDeclaredMethods();
+		var constructorsToProcess = javaObjectClass.getDeclaredConstructors();
 		
 		BoxList<EField, Field> fields = new BoxList<>();
 		BoxList<EConstructor, Constructor<?>> constructors = new BoxList<>();
@@ -122,38 +112,20 @@ abstract class EnvisionBridge {
 	}
 	
 	private void processField(EField descriptor, Field theField) {
-		EModifier mods = EModifier.of(theField);
-		String name = theField.getName();
-		JavaDatatype type = JavaDatatype.of(theField.getType());
-		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.of(ObjectVisibility.of(theField));
-		boolean isFinal = mods.isFinal();
-		boolean isStatic = mods.isStatic();
-		Object value = EReflectionUtil.forceGet(theField, this);
+		NativeField wrappedField = new NativeField(theField);
+		IScope scopeToDefineOn;
 		
-		IDatatype envisionType = Primitives.getPrimitiveType(type).toDatatype();
-		
-		//check if null
-		if (value == null) {
-			value = EnvisionNull.NULL;
-		}
-		//parse var values separately
-		else if (value instanceof BridgeVariable v) {
-			envisionType = EnvisionStaticTypes.VAR_TYPE;
-			value = v.getEnvisionObject();
-		}
-		
-		EnvisionObject obj = ObjectCreator.createObject(envisionType, value);
-		if (isFinal) obj.setFinal();
-		obj.setStrong();
-		obj.setVisibility(visibility);
-		
-		if (isStatic) {
-			obj.setStatic();
-			classObject.getClassScope().define(name, envisionType, obj);
+		if (EModifier.isStatic(theField)) {
+			wrappedField.setStatic();
+			scopeToDefineOn = wrapperClass.getClassScope();
 		}
 		else {
-			nativeInstanceScope.define(name, envisionType, obj);
+		    scopeToDefineOn = nativeInstanceScope;
 		}
+		
+		String name = theField.getName();
+		IDatatype type = wrappedField.getDatatype();
+		scopeToDefineOn.define(name, type, wrappedField);
 	}
 	
 	private void processConstructor(EConstructor descriptor, Constructor<?> theConstructor) {
@@ -165,40 +137,33 @@ abstract class EnvisionBridge {
 		Map<IDatatype, Class<?>> argMapper = new HashMap<>();
 		ParameterData params = convertJavaParameters(theConstructor.getParameters(), argMapper);
 		
-		NativeFunctionWrapper func = new NativeFunctionWrapper(params, this, theConstructor, argMapper);
-		if (isFinal) func.setFinal();
-		func.setVisibility(visibility);
-		func.setStatic();
-		
-		classObject.addConstructor(func);
+//		NativeFunction func = new NativeFunction(params, null, theConstructor, argMapper);
+//		if (isFinal) func.setFinal();
+//		func.setVisibility(visibility);
+//		func.setStatic();
+//		
+//		wrapperClass.addConstructor(func);
 	}
 	
 	private void processFunction(EFunction descriptor, Method theFunction) {
-		EModifier mods = EModifier.of(theFunction);
-		String name = theFunction.getName();
-		EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.of(ObjectVisibility.of(theFunction));
-		boolean isFinal = mods.isFinal();
-		boolean isStatic = mods.isStatic();
-		
-		String rtString = theFunction.getReturnType().getName();
-		IDatatype rt = Primitives.getPrimitiveType(rtString);
-		
-		Map<IDatatype, Class<?>> argMapper = new HashMap<>();
-		ParameterData params = convertJavaParameters(theFunction.getParameters(), argMapper);
-		
-		NativeFunctionWrapper func = new NativeFunctionWrapper(rt, name, params, this, theFunction, argMapper);
-		func.setVisibility(visibility);
-		if (isFinal) func.setFinal();
-		
-		if (isStatic) {
-			func.setStatic();
-			classObject.getClassScope().defineFunction(func);
-		}
-		else nativeInstanceScope.defineFunction(func);
+        NativeFunction wrappedFunction = new NativeFunction(theFunction);
+        IScope scopeToDefineOn;
+        
+        if (EModifier.isStatic(theFunction)) {
+            wrappedFunction.setStatic();
+            scopeToDefineOn = wrapperClass.getClassScope();
+        }
+        else {
+            scopeToDefineOn = nativeInstanceScope;
+        }
+        
+        String name = theFunction.getName();
+        IDatatype type = wrappedFunction.getDatatype();
+        scopeToDefineOn.define(name, type, wrappedFunction);
 	}
 	
 	private void processOperatorOverload(EOperator descriptor, Method theOperator) {
-		
+	    
 	}
 	
 	/**
@@ -240,15 +205,21 @@ abstract class EnvisionBridge {
 	}
 	
 	final <E> E get_class_i(String name) {
-		return (E) classObject.getClassScope().get(name);
+	    System.out.println("GET: " + name);
+	    
+		return (E) wrapperClass.getClassScope().get(name);
 	}
 	
 	//=========
 	// Getters
 	//=========
 	
+	public Class<?> getJavaClass() {
+	    return javaObjectClass;
+	}
+	
 	public EnvisionClass getInternalClass() {
-		return classObject;
+		return wrapperClass;
 	}
 	
 	public boolean isNativeInit() { return init; }

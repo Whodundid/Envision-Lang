@@ -4,7 +4,6 @@ import static envision_lang.lang.natives.Primitives.*;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
-import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.error_types.ArgLengthError;
@@ -57,10 +56,10 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionNumber newNumber() { return EnvisionInt.ZERO; }
-	public static EnvisionNumber newNumber(long val) { return EnvisionIntClass.valueOf(val); }
-	public static EnvisionNumber newNumber(double val) { return EnvisionDoubleClass.valueOf(val); }
-	public static EnvisionNumber newNumber(Number val) {
+	public static EnvisionNumber<?> newNumber() { return EnvisionInt.ZERO; }
+	public static EnvisionNumber<?> newNumber(long val) { return EnvisionIntClass.valueOf(val); }
+	public static EnvisionNumber<?> newNumber(double val) { return EnvisionDoubleClass.valueOf(val); }
+	public static EnvisionNumber<?> newNumber(Number val) {
 		if (val instanceof Float || val instanceof Double) {
 			return EnvisionDoubleClass.valueOf(val.doubleValue());
 		}
@@ -79,7 +78,7 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 	
 	@Override
 	protected EnvisionNumber buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionNumber num = null;
+		EnvisionNumber<?> num = null;
 		
 		//if no args, return double::zero by default
 		if (args.length == 0) num = EnvisionDouble.ZERO;
@@ -95,7 +94,7 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 			//check for valid argument constructor types
 			else if (arg_val instanceof EnvisionInt i)		num = i;
 			else if (arg_val instanceof EnvisionDouble d)	num = d;
-			else if (arg_val instanceof EnvisionNumber n)	num = n;
+			else if (arg_val instanceof EnvisionNumber<?> n)	num = n;
 			
 			//if null, creation failed!
 			if (num == null) {
@@ -104,12 +103,6 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 		}
 		
 		return num;
-	}
-	
-	@Override
-	protected void defineScopeMembers(ClassInstance inst) {
-		//define super object's members
-		super.defineScopeMembers(inst);
 	}
 	
 	//-------------------------

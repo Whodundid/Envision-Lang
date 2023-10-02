@@ -9,19 +9,19 @@ import envision_lang.EnvisionLangTest;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.parser.statements.statement_types.Stmt_For;
 
-public class Test_IS_For extends EnvisionLangTest {
+class Test_IS_For extends EnvisionLangTest {
 	
 	//==================================================
 	
 	@BeforeEach
-	public void setup() {
+	protected void setup() {
 		scope().clear();
 	}
 	
 	//==================================================
 	
 	@Test
-	public void test_infinite() {
+	void test_infinite() {
 		//create for loop
 		Stmt_For stmt_for = stmt("""
 							
@@ -35,7 +35,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_inc_x_to_10() {
+	void test_inc_x_to_10() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -62,7 +62,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_break() {
+	void test_loop_break() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -90,7 +90,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_break_post() {
+	void test_loop_break_post() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -118,7 +118,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_continue() {
+	void test_loop_continue() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -146,7 +146,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_continue_post() {
+	void test_loop_continue_post() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -174,7 +174,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_breakif() {
+	void test_loop_breakif() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -202,7 +202,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_loop_contif() {
+	void test_loop_contif() {
 		//define 'x' ahead of time
 		scope().defInt("x", 0);
 		
@@ -231,7 +231,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_existing_var() {
+	void test_existing_var() {
 		scope().defInt("i", 0);
 		scope().defInt("x", 0);
 		
@@ -264,7 +264,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_existing_var_one() {
+	void test_existing_var_one() {
 		scope().defInt("i", 0);
 		
 		EnvisionInt i = get("i");
@@ -290,7 +290,7 @@ public class Test_IS_For extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_existing_var_one2() {
+	void test_existing_var_one2() {
 		scope().defInt("i", 0);
 		
 		EnvisionInt i = get("i");

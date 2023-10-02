@@ -38,7 +38,7 @@ public class Expr_Binary extends ParsedExpression {
 	@Override
 	public String toString() {
 		String m = (modular) ? "~" : "";
-		return left + " " + m + operator.typeString + " " + right;
+		return left + " " + m + operator.operatorString + " " + right;
 	}
 	
 	@Override

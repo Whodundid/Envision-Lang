@@ -301,13 +301,13 @@ public interface IScope {
 	
 	default Stream<EnvisionObject> objectsAsStream() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .map(b -> b.getObject());
 	}
 	
 	default Stream<ScopeEntry> objectEntriesAsStream() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue());
+								  .map(Entry::getValue);
 	}
 	
 	/**
@@ -316,20 +316,20 @@ public interface IScope {
 	 */
 	default EList<EnvisionObject> objects() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .map(b -> b.getObject())
 								  .collect(EList.toEList());
 	}
 	
 	default EList<ScopeEntry> object_entries() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .collect(EList.toEList());
 	}
 	
 	default EList<EnvisionClass> classes() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .filter(b -> b.isClassType())
 								  .map(b -> b.getObject())
 								  .map(b -> (EnvisionClass) b)
@@ -339,7 +339,7 @@ public interface IScope {
 	default EList<ScopeEntry> class_entries() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isClassType())
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .collect(EList.toEList());
 	}
 	
@@ -349,7 +349,7 @@ public interface IScope {
 	 */
 	default EList<EnvisionObject> fields() {
 		return values().entrySet().stream()
-			                      .map(b -> b.getValue())
+			                      .map(Entry::getValue)
 								  .filter(b -> b.isFieldType())
 								  .map(b -> b.getObject())
 								  .collect(EList.toEList());
@@ -361,7 +361,7 @@ public interface IScope {
 	 */
 	default EList<ScopeEntry> field_entries() {
 		return values().entrySet().stream()
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .filter(b -> b.isFieldType())
 								  .collect(EList.toEList());
 	}
@@ -385,7 +385,7 @@ public interface IScope {
 	default EList<EnvisionFunction> functions() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .map(b -> b.getObject())
 								  .map(b -> (EnvisionFunction) b)
 								  .collect(EList.toEList());
@@ -398,7 +398,7 @@ public interface IScope {
 	default EList<ScopeEntry> function_entries() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .collect(EList.toEList());
 	}
 	
@@ -409,7 +409,7 @@ public interface IScope {
 	default EList<EnvisionFunction> operators() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .map(b -> b.getObject())
 								  .map(b -> (EnvisionFunction) b)
 								  .filter(b -> b.isOperator())
@@ -424,7 +424,7 @@ public interface IScope {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
 								  .filter(b -> ((EnvisionFunction) b.getValue().getObject()).isOperator())
-								  .map(b -> b.getValue())
+								  .map(Entry::getValue)
 								  .collect(EList.toEList());
 	}
 	
@@ -482,7 +482,7 @@ public interface IScope {
 	 * 
 	 * (extracts the lexeme of a Token for the name)
 	 */
-	default ScopeEntry getTyped(Token name) {
+	default ScopeEntry getTyped(Token<?> name) {
 		return getTyped(name.getLexeme());
 	}
 	
@@ -660,20 +660,20 @@ public interface IScope {
 		}
 		else {
 			if (!importedValues.isEmpty()) {
-				out.a("\n   Imported:\n");
+				out.a("\n    Imported:\n");
 				int i = 0;
 				var importsSorted = importedValues.entrySet().stream()
 															 .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
 															 .collect(EList.toEList());
 				
 				for (var o : importsSorted) {
-					out.a("      ", i++, ": ", o.getKey(), " = ", o.getValue(), "\n");
+					out.a("    ", i++, ": ", o.getKey(), " = ", o.getValue(), "\n");
 				}
 			}
 			
 			if (!values.isEmpty()) {
-				String tab = (importedValues.isEmpty()) ? "   " : "      ";
-				out.a((!importedValues.isEmpty()) ? "\n   Local:\n" : "\n");
+				String tab = "    ";
+				out.a((!importedValues.isEmpty()) ? "\n    Local:\n" : "\n");
 				// packages
 				out.a(convertMapping(tab, "Packages",
 						values.entrySet().stream()
@@ -728,8 +728,8 @@ public interface IScope {
 			if (obj instanceof EnvisionString) obj_output.a("\"", obj_output, "\"");
 			else if (obj instanceof EnvisionChar) obj_output.a("'", obj_output, "'");
 			else obj_output.a(obj);
-			String var_actual_type = (EnvisionStaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? (obj != null) ? ", <" + obj.getDatatype() + ">" : "" : "";
-			String objHash = (obj != null) ? ", " + obj.getHexHash() : "";
+			String var_actual_type = (EnvisionStaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? ", <" + obj.getDatatype() + ">" : "";
+			String objHash = ", " + obj.getHexHash();
 			
 			out.a(tab, tab, i, ": ", o.getKey(), " = [", entry.getDatatype(), var_actual_type, objHash, ", ", obj_output, objS, "]\n");
 		}

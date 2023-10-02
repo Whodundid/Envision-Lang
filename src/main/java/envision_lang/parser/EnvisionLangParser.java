@@ -816,7 +816,7 @@ public final class EnvisionLangParser {
 	 * @return The generated error
 	 */
 	EnvisionLangError error(String message) {
-		return new EnvisionLangError("\n\n" + getErrorMessage(message) + "\n");
+		return new ParsingError("\n\n" + getErrorMessage(message) + "\n");
 	}
 	
 	/**

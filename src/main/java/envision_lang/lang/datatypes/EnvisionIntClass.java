@@ -42,19 +42,19 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
 	 * @author Hunter Bragg
 	 */
 	private static final class EnvisionIntegerCache {
-		static final int low = -128;
-		static final int high;
+		static final long LOW = -128L;
+		static final long HIGH;
 		static final EnvisionInt[] cache;
 		
 		static {
-			int h = 127;
+			long h = 127L;
 			// make configurable in Envision VM args
-			high = h;
+			HIGH = h;
 			
-			int size = (high - low) + 1;
+			long size = (HIGH - LOW) + 1;
 			
-			EnvisionInt[] c = new EnvisionInt[size];
-			int j = low;
+			EnvisionInt[] c = new EnvisionInt[(int) size];
+			long j = LOW;
 			for (int i = 0; i < c.length; i++) {
 				c[i] = newInt(j++);
 			}
@@ -93,7 +93,8 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
 	public static EnvisionInt newInt() { return newInt(0); }
 	public static EnvisionInt newInt(boolean value) { return newInt(value ? 1L : 0L); }
 	public static EnvisionInt newInt(char value) { return newInt((long) value); }
-	public static EnvisionInt newInt(EnvisionNumber value) { return newInt(value.intVal_i()); }
+	public static EnvisionInt newInt(EnvisionNumber<?> value) { return newInt(value.intVal_i()); }
+	public static EnvisionInt newInt(Number value) { return newInt(value.longValue()); }
 	public static EnvisionInt newInt(long value) {
 		EnvisionInt i = new EnvisionInt(value);
 		INT_CLASS.defineScopeMembers(i);
@@ -108,38 +109,32 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
 	public static EnvisionInt valueOf(EnvisionInt value) { return value; }
 	public static EnvisionInt valueOf(boolean value) { return valueOf((value) ? 1L : 0L); }
 	public static EnvisionInt valueOf(char value) { return valueOf((long) value); }
-
+	public static EnvisionInt valueOf(Number value) { return valueOf(value.longValue()); }
+	
 	/**
 	 * Converts the given EnvisionNumber value into an EnvisionInt.
 	 * 
 	 * @param value The EnvisionNumber to convert to an EnvisionInt
-	 * 
 	 * @return An EnvisionInt made from the incoming value
 	 */
-	public static EnvisionInt valueOf(EnvisionNumber value) {
+	public static EnvisionInt valueOf(EnvisionNumber<?> value) {
 		// return direct instances
-		if (value instanceof EnvisionInt i) return i;
-		
-		long int_val = value.intVal_i();
-		return valueOf(int_val);
+		return (value instanceof EnvisionInt i) ? i : valueOf(value.intVal_i());
 	}
 	
 	/**
 	 * Wraps the given long value within an EnvisionInt.
 	 * 
 	 * @param value The long to wrap into an EnvisionInt
-	 * 
 	 * @return An EnvisionInt made from the incoming value
 	 */
 	public static EnvisionInt valueOf(long value) {
-		if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+		if (value > Long.MAX_VALUE || value < Long.MIN_VALUE) {
 			return newInt(value);
 		}
 		
-		int i = (int) value;
-		
-		if (i >= EnvisionIntegerCache.low && i <= EnvisionIntegerCache.high) {
-			return EnvisionIntegerCache.cache[i + (-EnvisionIntegerCache.low)];
+		if (value >= EnvisionIntegerCache.LOW && value <= EnvisionIntegerCache.HIGH) {
+			return EnvisionIntegerCache.cache[(int) (value + (-EnvisionIntegerCache.LOW))];
 		}
 		
 		return newInt(value);

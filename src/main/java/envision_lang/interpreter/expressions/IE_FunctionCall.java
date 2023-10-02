@@ -49,7 +49,7 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 			
 			// determine the type
 			if (o instanceof EnvisionCodeFile env_code) return importCall(interpreter, name, args, env_code);
-			if (o instanceof EnvisionFunction env_func) return functionCall(interpreter, name, args, env_func);
+			if (o instanceof EnvisionFunction env_func) return functionCall(interpreter, args, env_func);
 			if (o instanceof EnvisionClass env_class) return classCall(interpreter, name, args, env_class);
 			if (o instanceof ClassInstance env_inst) return instanceCall(interpreter, name, args, env_inst);
 		}
@@ -68,7 +68,7 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 		
 		if (env_obj == null) throw new UndefinedValueError(name);
 		if (env_obj instanceof EnvisionClass env_class) return classCall(interpreter, name, args, env_class);
-		if (env_obj instanceof EnvisionFunction env_func) return functionCall(interpreter, name, args, env_func);
+		if (env_obj instanceof EnvisionFunction env_func) return functionCall(interpreter, args, env_func);
 		
 		return null;
 	}
@@ -118,7 +118,6 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	
 	// handle standard function calls
 	private static EnvisionObject functionCall(EnvisionInterpreter interpreter,
-		 									   String name,
 		 									   EnvisionObject[] args,
 		 									   EnvisionFunction f)
 	{

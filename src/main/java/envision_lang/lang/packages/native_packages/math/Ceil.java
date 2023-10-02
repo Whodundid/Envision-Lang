@@ -16,7 +16,7 @@ public class Ceil extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionNumber num = (EnvisionNumber) args[0];
+		EnvisionNumber<?> num = (EnvisionNumber<?>) args[0];
 		double ceil = Math.ceil(num.doubleVal_i());
 		EnvisionInt r = EnvisionIntClass.valueOf((long) ceil);
 		ret(r);

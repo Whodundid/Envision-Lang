@@ -50,10 +50,8 @@ public class IE_ListIndexSet extends AbstractInterpreterExecutor {
 		EnvisionObject existingObject = env_list.get(i);
 		
 		// check if class instance and that it supports the given operator overload
-		if (existingObject instanceof ClassInstance env_class) {
-			if (env_class.supportsOperator(operator)) {
-				return OperatorOverloadHandler.handleOverload(interpreter, null, operator, env_class, assign_value);
-			}
+		if (existingObject instanceof ClassInstance env_class && env_class.supportsOperator(operator)) {
+			return OperatorOverloadHandler.handleOverload(interpreter, null, operator, env_class, assign_value);
 		}
 		
 		// do normal assign

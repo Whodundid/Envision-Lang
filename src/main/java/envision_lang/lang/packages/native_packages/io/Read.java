@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
@@ -26,7 +26,7 @@ public class Read extends EnvisionFunction {
 		reader.reset();
 		String input = reader.next();
 		
-		Object rVal = input;
+		Object rVal;
 		
 		switch (JavaDatatype.getStringDataType(input)) {
 		case NULL: rVal = null; break;

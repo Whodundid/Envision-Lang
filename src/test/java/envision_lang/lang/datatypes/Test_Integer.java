@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import envision_lang.EnvisionLangTest;
 import eutil.random.ERandomUtil;
 
-public class Test_Integer extends EnvisionLangTest {
+class Test_Integer extends EnvisionLangTest {
 	
 	//==================================================
 	
 	@BeforeEach
-	public void setup() {
+    protected void setup() {
 		scope().clear();
 	}
 	
@@ -23,7 +23,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * Tests that a new int defaults to zero.
 	 */
 	@Test
-	public void test_zero_new() {
+	void test_zero_new() {
 		EnvisionInt i = EnvisionIntClass.newInt();
 		
 		assertNotNull(i);
@@ -36,7 +36,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * Tests that the value of '0' defaults to zero.
 	 */
 	@Test
-	public void test_zero_valueOf() {
+	void test_zero_valueOf() {
 		EnvisionInt i = EnvisionIntClass.valueOf(0);
 		
 		assertNotNull(i);
@@ -50,7 +50,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * int.
 	 */
 	@Test
-	public void test_random_new() {
+	void test_random_new() {
 		long randomLong = ERandomUtil.getRoll(Long.MIN_VALUE, Long.MAX_VALUE);
 		EnvisionInt i = EnvisionIntClass.newInt(randomLong);
 		
@@ -65,7 +65,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * assigned to an int.
 	 */
 	@Test
-	public void test_random_valueOf() {
+	void test_random_valueOf() {
 		long randomLong = ERandomUtil.getRoll(Long.MIN_VALUE, Long.MAX_VALUE);
 		EnvisionInt i = EnvisionIntClass.valueOf(randomLong);
 		
@@ -80,7 +80,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * same numeric value in both but a different hash code in each.
 	 */
 	@Test
-	public void test_new_different() {
+	void test_new_different() {
 		EnvisionInt a = EnvisionIntClass.newInt(5);
 		EnvisionInt b = EnvisionIntClass.newInt(5);
 		
@@ -99,7 +99,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * produces the same numeric value but with the same hash code in each.
 	 */
 	@Test
-	public void test_valueOf_same() {
+	void test_valueOf_same() {
 		EnvisionInt a = EnvisionIntClass.valueOf(5);
 		EnvisionInt b = EnvisionIntClass.valueOf(5);
 		
@@ -125,7 +125,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * 		c = 0
 	 */
 	@Test
-	public void test_add_zero_typed() {
+	void test_add_zero_typed() {
 		scope().defInt("a", 0);
 		scope().defInt("b", 0);
 		
@@ -180,7 +180,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * 		c = 3
 	 */
 	@Test
-	public void test_add_three_typed() {
+	void test_add_three_typed() {
 		scope().defInt("a", 1);
 		scope().defInt("b", 2);
 		
@@ -235,7 +235,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * 		c = 0
 	 */
 	@Test
-	public void test_add_zero_typeless() {
+	void test_add_zero_typeless() {
 		scope().defInt("a", 0);
 		scope().defInt("b", 0);
 		
@@ -290,7 +290,7 @@ public class Test_Integer extends EnvisionLangTest {
 	 * 		c = 3
 	 */
 	@Test
-	public void test_add_three_typeless() {
+	void test_add_three_typeless() {
 		scope().defInt("a", 1);
 		scope().defInt("b", 2);
 		
@@ -334,7 +334,7 @@ public class Test_Integer extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_getMaxValue() {
+	void test_getMaxValue() {
 		execute("int max = int.MAX_VALUE");
 		
 		var max = get_i("max");
@@ -345,7 +345,7 @@ public class Test_Integer extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_getMinValue() {
+	void test_getMinValue() {
 		execute("int min = int.MIN_VALUE");
 		
 		var min = get_i("min");
@@ -356,7 +356,7 @@ public class Test_Integer extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_maxValue_minus_1() {
+	void test_maxValue_minus_1() {
 		execute("""
 				
 				int max = int.MAX_VALUE
@@ -372,7 +372,7 @@ public class Test_Integer extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_maxValue_plus_1() {
+	void test_maxValue_plus_1() {
 		execute("""
 				
 				int max = int.MAX_VALUE

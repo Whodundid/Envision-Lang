@@ -2,17 +2,21 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.List;
 
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.functions.InstanceFunction;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionListClass extends EnvisionClass {
 
@@ -83,13 +87,31 @@ public final class EnvisionListClass extends EnvisionClass {
 	// Static Constructors
 	//---------------------
 	
-	public static EnvisionList newList() { return newList(EnvisionStaticTypes.VAR_TYPE); }
+	/**
+	 * 
+	 * @return
+	 */
+	public static EnvisionList newList() {
+	    return newList(EnvisionStaticTypes.VAR_TYPE);
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static EnvisionList newList(IDatatype type) {
 		EnvisionList list = new EnvisionList(type);
 		LIST_CLASS.defineScopeMembers(list);
 		return list;
 	}
 	
+	/**
+	 * 
+	 * @param type
+	 * @param data
+	 * @return
+	 */
 	public static EnvisionList newList(IDatatype type, List<? extends EnvisionObject> data) {
 		EnvisionList list = newList(type);
 		list.getInternalList().ensureCapacity(data.size());
@@ -97,10 +119,82 @@ public final class EnvisionListClass extends EnvisionClass {
 		return list;
 	}
 	
+	/**
+	 * 
+	 * @param initialSize
+	 * @return
+	 */
 	public static EnvisionList newList(int initialSize) {
 		EnvisionList list = new EnvisionList(initialSize);
 		LIST_CLASS.defineScopeMembers(list);
 		return list;
+	}
+	
+    /**
+     * Attempts to create a new EnvisionList using the given 'data'
+     * argument as its initial values.
+     * 
+     * @param dataIn
+     * 
+     * @return An EnvisionList populated with the given 'data'
+     */
+    public static EnvisionList newList(Object dataIn) {
+        if (dataIn == null) throw new NullPointerException("Error! Cannot create EnvisionList from Java::NULL!");
+        
+        // collection path
+        if (dataIn instanceof Collection<?> c) return newListFromCollection(c);
+        // array path
+        else if (dataIn.getClass().isArray()) return newListFromArray(dataIn);
+        
+        // object wrap path
+        EnvisionList list = new EnvisionList();
+        list.add(ObjectCreator.wrap(dataIn));
+        LIST_CLASS.defineScopeMembers(list);
+        return list;
+    }
+	
+    /**
+     * 
+     * @param collectionIn
+     * @return
+     */
+	public static EnvisionList newListFromCollection(Collection<?> collectionIn) {
+	    EnvisionList list = newList(collectionIn.size());
+        var it = collectionIn.iterator();
+        while (it.hasNext()) {
+            var value = it.next();
+            IDatatype type = IDatatype.dynamicallyDetermineType(value);
+            list.add(ObjectCreator.createObject(type, value));
+        }
+        
+        LIST_CLASS.defineScopeMembers(list);
+        return list;
+	}
+	
+	/**
+	 * 
+	 * @param arrayObject
+	 * @return
+	 */
+	public static EnvisionList newListFromArray(Object arrayObject) {
+	    if (arrayObject == null || !arrayObject.getClass().isArray()) {
+	        throw new EnvisionLangError("Error! Cannot create an EnvisionList from a Java::NULL or non-array object!");
+	    }
+	    
+	    final int length = Array.getLength(arrayObject);
+	    EnvisionList list = newList(length);
+	    
+	    Class<?> arrayClass = arrayObject.getClass();
+	    Class<?> arrayComponentType = arrayClass.componentType();
+	    
+	    IDatatype type = IDatatype.fromJavaClass(arrayComponentType);
+	    for (int i = 0; i < length; i++) {
+	        Object value = Array.get(arrayObject, i);
+	        list.add(ObjectCreator.createObject(type, value, true));
+	    }
+	    
+        LIST_CLASS.defineScopeMembers(list);
+        return list;
 	}
 	
 	//-----------
@@ -139,7 +233,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	// Instance Member Functions
 	//---------------------------
 	
-	public static class IFunc_toString<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_toString extends InstanceFunction<EnvisionList> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var toString = inst.convertToString(interpreter);
@@ -155,7 +249,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return true if successful
 	 */
-	public static class IFunc_add<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_add extends InstanceFunction<EnvisionList> {
 		public IFunc_add() { super(BOOLEAN, "add", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.add(args[0]));
@@ -170,7 +264,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return the given object
 	 */
-	public static class IFunc_addR<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_addR extends InstanceFunction<EnvisionList> {
 		public IFunc_addR() { super(VAR, "addR", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.addR(args[0]));
@@ -185,7 +279,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return the list being added to
 	 */
-	public static class IFunc_addRT<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_addRT extends InstanceFunction<EnvisionList> {
 		public IFunc_addRT() { super(LIST, "addRT", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.addRT(args[0]));
@@ -198,7 +292,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return the current list instance
 	 */
-	public static class IFunc_clear<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_clear extends InstanceFunction<EnvisionList> {
 		public IFunc_clear() { super(LIST, "clear"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.clear());
@@ -213,7 +307,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return boolean true if contains
 	 */
-	public static class IFunc_contains<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_contains extends InstanceFunction<EnvisionList> {
 		public IFunc_contains() { super(BOOLEAN, "contains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.contains(args[0]));
@@ -228,7 +322,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return boolean true if not contains
 	 */
-	public static class IFunc_notContains<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_notContains extends InstanceFunction<EnvisionList> {
 		public IFunc_notContains() { super(BOOLEAN, "notContains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.notContains(args[0]));
@@ -241,14 +335,14 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the shallow list copy
 	 */
-	public static class IFunc_copy<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_copy extends InstanceFunction<EnvisionList> {
 		public IFunc_copy() { super(LIST, "copy"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(new EnvisionList(inst));
 		}
 	}
 	
-	public static class IFunc_fill<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_fill extends InstanceFunction<EnvisionList> {
 		public IFunc_fill() { super(LIST, "fill", VAR_A); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			inst.fill(args);
@@ -262,7 +356,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the list with elements in reversed order
 	 */
-	public static class IFunc_reverse<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_reverse extends InstanceFunction<EnvisionList> {
 		public IFunc_reverse() { super(LIST, "reverse"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.reverse());
@@ -277,7 +371,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object at the given index
 	 */
-	public static class IFunc_get<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_get extends InstanceFunction<EnvisionList> {
 		public IFunc_get() { super(VAR, "get", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.get((EnvisionInt) args[0]));
@@ -290,7 +384,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object in the last index
 	 */
-	public static class IFunc_getFirst<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_getFirst extends InstanceFunction<EnvisionList> {
 		public IFunc_getFirst() { super(VAR, "getFirst"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getFirst());
@@ -303,14 +397,14 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object in the last index
 	 */
-	public static class IFunc_getLast<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_getLast extends InstanceFunction<EnvisionList> {
 		public IFunc_getLast() { super(VAR, "getLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getLast());
 		}
 	}
 	
-	public static class IFunc_getListType<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_getListType extends InstanceFunction<EnvisionList> {
 		public IFunc_getListType() { super(STRING, "getListType"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getListTypeString());
@@ -322,7 +416,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list has one element
 	 */
-	public static class IFunc_hasOne<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_hasOne extends InstanceFunction<EnvisionList> {
 		public IFunc_hasOne() { super(BOOLEAN, "hasOne"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.hasOne());
@@ -334,7 +428,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list is empty
 	 */
-	public static class IFunc_isEmpty<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_isEmpty extends InstanceFunction<EnvisionList> {
 		public IFunc_isEmpty() { super(BOOLEAN, "isEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isEmpty());
@@ -346,35 +440,35 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list is not empty
 	 */
-	public static class IFunc_isNotEmpty<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_isNotEmpty extends InstanceFunction<EnvisionList> {
 		public IFunc_isNotEmpty() { super(BOOLEAN, "isNotEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isNotEmpty());
 		}
 	}
 	
-	public static class IFunc_isSizeLocked<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_isSizeLocked extends InstanceFunction<EnvisionList> {
 		public IFunc_isSizeLocked() { super(BOOLEAN, "isSizeLocked"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isSizeLocked());
 		}
 	}
 	
-	public static class IFunc_lockSize<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_lockSize extends InstanceFunction<EnvisionList> {
 		public IFunc_lockSize() { super(LIST, "lockSize", BOOLEAN); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setSizeLocked((EnvisionBoolean) args[0]));
 		}
 	}
 	
-	public static class IFunc_push<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_push extends InstanceFunction<EnvisionList> {
 		public IFunc_push() { super(LIST, "push", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.push(args[0]));
 		}
 	}
 	
-	public static class IFunc_pop<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_pop extends InstanceFunction<EnvisionList> {
 		public IFunc_pop() { super(VAR, "pop"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.pop());
@@ -386,56 +480,56 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return Random element in this list
 	 */
-	public static class IFunc_random<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_random extends InstanceFunction<EnvisionList> {
 		public IFunc_random() { super(VAR, "random"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.random());
 		}
 	}
 	
-	public static class IFunc_remove<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_remove extends InstanceFunction<EnvisionList> {
 		public IFunc_remove() { super(VAR, "remove", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.remove((EnvisionInt) args[0]));
 		}
 	}
 	
-	public static class IFunc_removeFirst<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_removeFirst extends InstanceFunction<EnvisionList> {
 		public IFunc_removeFirst() { super(VAR, "removeFirst"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.removeFirst());
 		}
 	}
 	
-	public static class IFunc_removeLast<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_removeLast extends InstanceFunction<EnvisionList> {
 		public IFunc_removeLast() { super(VAR, "removeLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.removeLast());
 		}
 	}
 	
-	public static class IFunc_set<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_set extends InstanceFunction<EnvisionList> {
 		public IFunc_set() { super(VAR, "set", INT, VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.set((EnvisionInt) args[0], args[1]));
 		}
 	}
 	
-	public static class IFunc_setFirst<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_setFirst extends InstanceFunction<EnvisionList> {
 		public IFunc_setFirst() { super(VAR, "setFirst", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setFirst(args[0]));
 		}
 	}
 	
-	public static class IFunc_setLast<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_setLast extends InstanceFunction<EnvisionList> {
 		public IFunc_setLast() { super(VAR, "setLast", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.setLast(args[0]));
 		}
 	}
 	
-	public static class IFunc_setSize<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_setSize extends InstanceFunction<EnvisionList> {
 		public IFunc_setSize() {
 			super(LIST, "setSize", INT);
 			//allow setSize with default object value
@@ -454,7 +548,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the current list instance
 	 */
-	public static class IFunc_shiftLeft<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_shiftLeft extends InstanceFunction<EnvisionList> {
 		public IFunc_shiftLeft() {
 			super(VAR, "shiftLeft");
 			//allow shiftLeft(int amount)
@@ -474,7 +568,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the current list instance
 	 */
-	public static class IFunc_shiftRight<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_shiftRight extends InstanceFunction<EnvisionList> {
 		public IFunc_shiftRight() {
 			super(VAR, "shiftRight");
 			//allow shiftLeft(int amount)
@@ -492,7 +586,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList a shuffled list
 	 */
-	public static class IFunc_shuffle<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_shuffle extends InstanceFunction<EnvisionList> {
 		public IFunc_shuffle() { super(LIST, "shuffle"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.shuffle());
@@ -504,7 +598,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return the size of the list
 	 */
-	public static class IFunc_size<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_size extends InstanceFunction<EnvisionList> {
 		public IFunc_size() { super(INT, "size"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.size());
@@ -520,7 +614,7 @@ public final class EnvisionListClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionList the list being modified
 	 */
-	public static class IFunc_swap<E extends EnvisionList> extends InstanceFunction<E> {
+	public static class IFunc_swap extends InstanceFunction<EnvisionList> {
 		public IFunc_swap() { super(LIST, "swap", INT, INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.swap((EnvisionInt) args[0], (EnvisionInt) args[1]));

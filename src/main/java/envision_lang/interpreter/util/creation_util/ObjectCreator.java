@@ -1,4 +1,4 @@
-package envision_lang.interpreter.util.creationUtil;
+package envision_lang.interpreter.util.creation_util;
 
 import java.util.List;
 
@@ -13,10 +13,12 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionStringClass;
+import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.datatypes.EnvisionTupleClass;
 import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
-import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.datatypes.util.EList;
 import eutil.debug.PotentiallyBroken;
 import eutil.math.ENumUtil;
@@ -94,66 +96,42 @@ public class ObjectCreator {
 			else if (valueIn instanceof ClassInstance ci && typeIn.compare(ci.getDatatype())) {
 				return ci;
 			}
+			else throw new EnvisionLangError("Invalid datatype '" + typeIn + "'! Envision ObjectCreator can only be used to create primitive types!");
 		}
 		
-		// !??!   What is this doing   !??!
-		if (p_type.isPassByValue()) {
-			if (defaultIn) {
-				switch (p_type) {
-				case BOOLEAN: return EnvisionBooleanClass.defaultValue();
-				case CHAR: return EnvisionCharClass.defaultValue();
-				case INT: return EnvisionIntClass.defaultValue();
-				case NUMBER:
-				case DOUBLE: return EnvisionDoubleClass.defaultValue();
-				case STRING: return EnvisionStringClass.defaultValue();
-//				case LIST:
-//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
-//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
-//					return new_list;
-				default: throw new EnvisionLangError("Invalid Datatype: '" + p_type + "'! This should not be possible!");
-				}
-			}
-			else {
-				switch (p_type) {
-				case BOOLEAN: obj = EnvisionBooleanClass.valueOf((boolean) valueIn); break;
-				case CHAR: obj = EnvisionCharClass.valueOf(charify(valueIn)); break; //charify the input
-				case INT: obj = EnvisionIntClass.valueOf((long) valueIn); break;
-				case DOUBLE: obj = EnvisionDoubleClass.valueOf((double) valueIn); break;
-				case STRING: obj = EnvisionStringClass.valueOf(stringify(valueIn)); break;
-				case NUMBER:
-					if (ENumUtil.isInteger(valueIn)) obj = EnvisionIntClass.valueOf((long) valueIn);
-					else obj = EnvisionDoubleClass.valueOf((double) valueIn);
-					break;
-//				case LIST:
-//					EnvisionList new_list = EnvisionListClass.newList(typeIn);
-//					if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
-//					return new_list;
-				default:
-					throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
-				}
-			}
-		}
+		if (defaultIn) {
+            obj = switch (p_type) {
+            case BOOLEAN            -> EnvisionBooleanClass.defaultValue();
+            case CHAR               -> EnvisionCharClass.defaultValue();
+            case STRING             -> EnvisionStringClass.defaultValue();
+            case INT                -> EnvisionIntClass.defaultValue();
+            case DOUBLE, NUMBER     -> EnvisionDoubleClass.defaultValue();
+            case LIST               -> EnvisionListClass.newList();
+            case TUPLE              -> EnvisionTupleClass.newTuple();
+            
+            default                 -> throw new EnvisionLangError("Invalid primitive type: '" + p_type + "'!");
+            };
+            
+            //assign name and strong attribute
+            if (obj != null && !(obj instanceof EnvisionNull) &&  (strongIn)) obj.setStrong();
+        }
 		else {
-			//check for other valid primitive types
-			switch (p_type) {
-			case LIST:
-				EnvisionList new_list = EnvisionListClass.newList(typeIn);
-				if (valueIn instanceof EnvisionList env_list) new_list.addAll(env_list);
-				obj = new_list;
-				break;
-				
-			case NULL:
-				obj = EnvisionNull.NULL;
-				break;
-				
-			default: break;
-			}
+		    obj = switch (p_type) {
+	        case BOOLEAN   -> EnvisionBooleanClass.valueOf((boolean) valueIn);
+	        case CHAR      -> EnvisionCharClass.valueOf(charify(valueIn));
+	        case STRING    -> EnvisionStringClass.valueOf(stringify(valueIn));
+	        case INT       -> EnvisionIntClass.valueOf((Number) valueIn);
+	        case DOUBLE    -> EnvisionDoubleClass.valueOf((Number) valueIn);
+	        case NUMBER    -> (ENumUtil.isInteger(valueIn)) ? EnvisionIntClass.valueOf((Number) valueIn)
+	                                                        : EnvisionDoubleClass.valueOf((Number) valueIn);
+	        case LIST      -> createList(valueIn);
+	        case TUPLE     -> createTuple(valueIn);
+	        default        -> throw new EnvisionLangError("Invalid Datatype! This should not be possible!");
+	        };
 		}
 		
 		//assign name and strong attribute
-		if (obj != null && !(obj instanceof EnvisionNull)) {
-			if (strongIn) obj.setStrong();
-		}
+		if (obj != null && !(obj instanceof EnvisionNull) && strongIn) obj.setStrong();
 		
 		//return the created object
 		return obj;
@@ -163,7 +141,12 @@ public class ObjectCreator {
 	
 	public static EnvisionList createList() { return EnvisionListClass.newList(); }
 	public static EnvisionList createList(IDatatype listType) { return EnvisionListClass.newList(listType); }
-	public static EnvisionList createList(IDatatype listType, List data) { return EnvisionListClass.newList(listType).addAll(data); }
+	public static EnvisionList createList(IDatatype listType, List<EnvisionObject> data) { return EnvisionListClass.newList(listType).addAll(data); }
+	public static EnvisionList createList(Object value) { return EnvisionListClass.newList(value); }
+	
+	public static EnvisionTuple createTuple() { return EnvisionTupleClass.newTuple(); }
+    public static EnvisionTuple createTuple(List<EnvisionObject> data) { return EnvisionTupleClass.newTuple(data); }
+    public static EnvisionTuple createTuple(Object value) { return EnvisionTupleClass.newTuple(value); }
 	
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
@@ -196,9 +179,7 @@ public class ObjectCreator {
 	 * @return The converted string result of the given input
 	 */
 	public static String stringify(Object input) {
-		if (input == null) return null;
-		var s_input = String.valueOf(input);
-		return s_input;
+		return (input != null) ? String.valueOf(input) : null;
 	}
 	
 }

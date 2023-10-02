@@ -47,7 +47,7 @@ public class EnvisionDatatype implements IDatatype {
 	//-----------
 	
 	@Override public String toString() { return type; }
-	@Override public boolean equals(Object o) { return (o instanceof IDatatype t) ? compare(t) : false; }
+	@Override public boolean equals(Object o) { return (o instanceof IDatatype t) && compare(t); }
 	
 	@Override public Primitives getPrimitive() { return primitive_type; }
 	@Override public EnvisionDatatype toDatatype() { return this; }

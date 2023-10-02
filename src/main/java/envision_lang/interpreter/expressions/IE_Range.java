@@ -4,9 +4,9 @@ import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.expression_types.Expr_Range;
-import eutil.debug.PotentiallyUnused;
+import eutil.debug.PotentiallyUnnecessary;
 
-@PotentiallyUnused(reason="I don't think range expressions are ever actually called directly")
+@PotentiallyUnnecessary(reason="I don't think range expressions are ever actually called directly")
 public class IE_Range extends AbstractInterpreterExecutor {
 	
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Range expression) {

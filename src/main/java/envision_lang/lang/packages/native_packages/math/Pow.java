@@ -16,8 +16,8 @@ public class Pow extends EnvisionFunction {
 	
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		double numA = ((EnvisionNumber) args[0]).doubleVal_i();
-		double numB = ((EnvisionNumber) args[1]).doubleVal_i();
+		double numA = ((EnvisionNumber<?>) args[0]).doubleVal_i();
+		double numB = ((EnvisionNumber<?>) args[1]).doubleVal_i();
 		double pow = Math.pow(numA, numB);
 		EnvisionDouble d = EnvisionDoubleClass.valueOf(pow);
 		ret(d);

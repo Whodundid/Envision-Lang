@@ -6,7 +6,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.CastingUtil;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.interpreter.util.OperatorOverloadHandler;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
@@ -53,7 +53,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Assign expression) {
-		Token name_token = expression.name;
+		Token<?> name_token = expression.name;
 		String name = (name_token != null) ? name_token.getLexeme() : null;
 		EnvisionObject value = interpreter.evaluate(expression.value);
 		Operator op = expression.operator;
@@ -75,10 +75,8 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 		
 		// if the given object is a class instance and supports
 		// the given operator, run the operator overload
-		if (obj instanceof ClassInstance env_class) {
-			if (env_class.supportsOperator(op)) {
-				return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
-			}
+		if (obj instanceof ClassInstance env_class && env_class.supportsOperator(op)) {
+			return OperatorOverloadHandler.handleOverload(interpreter, name, op, env_class, value);
 		}
 		
 		// otherwise, handle default assignment
@@ -123,7 +121,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 		//---------------------------------------------------------
 		
 		// handle specific assignment_value types
-		if (assignment_value instanceof EnvisionVariable env_var) assignment_value = env_var.get();
+		if (assignment_value instanceof EnvisionVariable<?> env_var) assignment_value = env_var.get();
 		
 		// grab datatype
 		var_datatype = assignment_value.getDatatype();

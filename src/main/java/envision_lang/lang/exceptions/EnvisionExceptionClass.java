@@ -27,7 +27,7 @@ public final class EnvisionExceptionClass extends EnvisionClass {
 	 * Private internal constructor used to create the DEFAULT_EXCEPTION_CLASS instance.
 	 */
 	private EnvisionExceptionClass() {
-		super(EnvisionStaticTypes.EXCEPTION_TYPE.getStringValue());
+		super(EnvisionStaticTypes.EXCEPTION_TYPE);
 	}
 	
 	/**
@@ -35,9 +35,9 @@ public final class EnvisionExceptionClass extends EnvisionClass {
 	 * 
 	 * @param exceptionClassNameIn The name for this exception class
 	 */
-	public EnvisionExceptionClass(String exceptionClassNameIn) {
-		super(exceptionClassNameIn);
-	}
+//	public EnvisionExceptionClass(String exceptionClassNameIn) {
+//		super(exceptionClassNameIn);
+//	}
 	
 	//============================
 	// Default Exception Creation

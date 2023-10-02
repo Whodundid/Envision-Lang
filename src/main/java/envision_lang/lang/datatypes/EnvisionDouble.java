@@ -9,8 +9,8 @@ import envision_lang.lang.language_errors.error_types.NoOverloadError;
 import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
 import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 
 /**
@@ -62,7 +62,7 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
 		double_val = in.double_val;
 	}
 	
-	EnvisionDouble(EnvisionNumber in) {
+	EnvisionDouble(EnvisionNumber<?> in) {
 		super(EnvisionDoubleClass.DOUBLE_CLASS);
 		double_val = in.doubleVal().double_val;
 	}
@@ -135,7 +135,7 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
 		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
 		
 		// convert the incoming binary operation target object into an EnvisionNumber
-		EnvisionNumber numIn = (EnvisionNumber) obj;
+		EnvisionNumber<?> numIn = (EnvisionNumber<?>) obj;
 		
 		switch (op) {
 		case NEGATE:			return negate();

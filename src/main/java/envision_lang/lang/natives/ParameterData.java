@@ -55,11 +55,18 @@ public class ParameterData {
 		}
 	}
 	
-	private ParameterData(EnvisionParameter[] paramsIn) {
-		params = (paramsIn != null) ? paramsIn : new EnvisionParameter[0];
-		parameterNames = new String[params.length];
-		parameterTypes = new IDatatype[params.length];
-	}
+    private ParameterData(EnvisionParameter[] paramsIn) {
+        params = (paramsIn != null) ? paramsIn : new EnvisionParameter[0];
+        parameterNames = new String[params.length];
+        parameterTypes = new IDatatype[params.length];
+        
+        for (int i = 0; i < params.length; i++) {
+            EnvisionParameter p = params[i];
+            
+            parameterNames[i] = p.name;
+            parameterTypes[i] = p.datatype;
+        }
+    }
 	
 	private ParameterData(IDatatype... typesIn) {
 		int size = typesIn.length;

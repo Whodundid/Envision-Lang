@@ -37,12 +37,11 @@ public class IE_Unary extends AbstractInterpreterExecutor {
 			
 			// check for class level operator overloading
 			if (l instanceof ClassInstance class_inst) {
-				EnvisionObject obj = OperatorOverloadHandler.handleOverload(interpreter,
-															  				scopeName,
-															  				Operator.makePost(op),
-															  				class_inst,
-															  				null);
-				return obj;
+				return OperatorOverloadHandler.handleOverload(interpreter,
+                                                              scopeName,
+                                                              Operator.makePost(op),
+                                                              class_inst,
+                                                              null);
 			}
 		}
 		else if (left instanceof Expr_Compound ce) {

@@ -1,5 +1,7 @@
 package envision_lang.lang.natives;
 
+import eutil.strings.EStringBuilder;
+
 public class DataModifierHandler {
 	
 	private int modifiers;
@@ -14,7 +16,13 @@ public class DataModifierHandler {
 	//-----------
 	
 	public String toString() {
-		return String.format("MODS_[0b%8s]", Integer.toBinaryString(modifiers)).replace(" ", "0");
+	    var sb = new EStringBuilder();
+	    sb.println(String.format("MODS_[0b%8s]", Integer.toBinaryString(modifiers)).replace(" ", "0"));
+	    sb.println("\tabstract: ", isAbstract());
+	    sb.println("\tfinal: ", isFinal());
+	    sb.println("\tstrong: ", isStrong());
+	    sb.println("\tstatic: ", isStatic());
+		return sb.toString();
 	}
 	
 	//---------
@@ -25,7 +33,7 @@ public class DataModifierHandler {
 	 * Returns true if this object has the given data modifier.
 	 */
 	public boolean hasModifier(DataModifier mod) {
-		return ((modifiers & (1L << mod.byteVal))) != 0;
+		return (modifiers & mod.byteVal) == 1;
 	}
 	
 	/**

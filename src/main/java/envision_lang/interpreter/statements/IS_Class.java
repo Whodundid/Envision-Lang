@@ -2,16 +2,16 @@ package envision_lang.interpreter.statements;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.FunctionCreator;
+import envision_lang.interpreter.util.creation_util.FunctionCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.classes.ClassConstruct;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.error_types.classErrors.InvalidClassStatement;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
+import envision_lang.lang.natives.EnvisionDatatype;
 import envision_lang.lang.natives.Primitives;
+import envision_lang.lang.natives.UserDefinedTypeManager;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.parser.statements.statement_types.Stmt_Block;
 import envision_lang.parser.statements.statement_types.Stmt_Class;
@@ -25,8 +25,9 @@ public class IS_Class extends AbstractInterpreterExecutor {
 	
 	public static void run(EnvisionInterpreter interpreter, Stmt_Class statement) {
 		ParserDeclaration dec = statement.getDeclaration();
-		
-		IDatatype name = NativeTypeManager.datatypeOf(statement.name.getLexeme());
+		UserDefinedTypeManager typeMan = interpreter.getTypeManager();
+		String className = statement.name.getLexeme();
+		EnvisionDatatype userType = typeMan.getOrCreateDatatypeFor(className);
 		
 		//EArrayList<Expr_Var> supers = statement.parentclasses;
 		EList<ParsedStatement> body = statement.body;
@@ -34,13 +35,13 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		EList<Stmt_FuncDef> constructors = statement.initializers;
 		
 		// create the class framework
-		EnvisionClass theClass = new EnvisionClass(name.getStringValue());
-		IScope classScope = new Scope(interpreter.scope());
+		EnvisionClass theClass = new EnvisionClass(userType);
 		
 		// set body and scope
+		IScope classScope = new Scope(interpreter.scope());
 		theClass.setScope(classScope);
-		//theClass.setStatics(staticMembers);
 		theClass.setBody(body);
+		//theClass.setStatics(staticMembers);
 		//theClass.setConstructors(constructors);
 		
 		// check that each stated super class is valid
@@ -100,8 +101,8 @@ public class IS_Class extends AbstractInterpreterExecutor {
 		}
 		
 		// define it
-		interpreter.scope().define(name.getStringValue(), name, theClass);
-		interpreter.getTypeManager().defineType(name, theClass);
+		interpreter.scope().define(className, userType, theClass);
+		typeMan.defineUserClass(theClass);
 		theClass.assignConstruct(new ClassConstruct(interpreter, theClass));
 	}
 	

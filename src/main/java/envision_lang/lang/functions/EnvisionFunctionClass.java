@@ -12,7 +12,6 @@ import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.language_errors.EnvisionLangError;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 
 /**
@@ -110,9 +109,9 @@ public class EnvisionFunctionClass extends EnvisionClass {
 	 * @return The result of the invoked function's execution (could be
 	 *         something, could be void)
 	 */
-	private static class IFunc_invoke<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_invoke(E instIn) {
-			super(instIn.getReturnType(), "invoke", instIn.params);
+	private static class IFunc_invoke extends InstanceFunction<EnvisionFunction> {
+		public IFunc_invoke(EnvisionFunction instIn) {
+			super(instIn.getReturnType(), "invoke", instIn.parameters);
 			//account for overload invokes
 			for (var overload : instIn.overloads) addOverload(overload);
 		}
@@ -121,16 +120,16 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_hasOverloads<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_hasOverloads(E instIn) { super(BOOLEAN, "hasOverloads"); }
+	private static class IFunc_hasOverloads extends InstanceFunction<EnvisionFunction> {
+		public IFunc_hasOverloads() { super(BOOLEAN, "hasOverloads"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (inst.overloads.isNotEmpty()) ret(EnvisionBoolean.TRUE);
 			ret(EnvisionBoolean.FALSE);
 		}
 	}
 	
-	private static class IFunc_getOverloads<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_getOverloads(E instIn) { super(LIST, "getOverloads"); }
+	private static class IFunc_getOverloads extends InstanceFunction<EnvisionFunction> {
+		public IFunc_getOverloads() { super(LIST, "getOverloads"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList l = EnvisionListClass.newList();
 			for (var overload : inst.getOverloads()) l.add(overload);
@@ -138,16 +137,16 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_getReturnType<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_getReturnType(E instIn) { super(STRING, "getReturnType"); }
+	private static class IFunc_getReturnType extends InstanceFunction<EnvisionFunction> {
+		public IFunc_getReturnType() { super(STRING, "getReturnType"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionString rt = EnvisionStringClass.valueOf(inst.returnType);
 			ret(rt);
 		}
 	}
 	
-	private static class IFunc_getParamTypes<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_getParamTypes(E instIn) { super(LIST, "getParamTypes"); }
+	private static class IFunc_getParamTypes extends InstanceFunction<EnvisionFunction> {
+		public IFunc_getParamTypes() { super(LIST, "getParamTypes"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList types = EnvisionListClass.newList();
 			for (var p : inst.getParamTypes()) types.add(EnvisionStringClass.valueOf(p.getStringValue()));
@@ -155,8 +154,8 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_getParamNames<E extends EnvisionFunction> extends InstanceFunction<E> {
-		public IFunc_getParamNames(E instIn) { super(LIST, "getParamNames"); }
+	private static class IFunc_getParamNames extends InstanceFunction<EnvisionFunction> {
+		public IFunc_getParamNames() { super(LIST, "getParamNames"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList names = EnvisionListClass.newList();
 			for (var p : inst.getParamNames()) names.add(EnvisionStringClass.valueOf(p));

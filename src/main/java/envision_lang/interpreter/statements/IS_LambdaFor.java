@@ -173,7 +173,7 @@ public class IS_LambdaFor extends AbstractInterpreterExecutor {
 				EnvisionObject cur_obj = iterable.get(i);
 				EnvisionObject created_obj = null;
 				
-				if (cur_obj instanceof EnvisionVariable env_var) {
+				if (cur_obj instanceof EnvisionVariable<?> env_var) {
 					created_obj = env_var.copy();
 				}
 				else created_obj = cur_obj;

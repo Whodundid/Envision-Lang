@@ -11,7 +11,7 @@ public interface IKeyword {
 	boolean isReservedWord();
 	
 	default String typeString() {
-		if (isOperator()) return asOperator().typeString;
+		if (isOperator()) return asOperator().operatorString;
 		else return asReservedWord().typeString;
 	}
 	

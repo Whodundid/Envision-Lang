@@ -25,10 +25,12 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 	public DefaultLangLauncher() throws Exception {
 		//Thread.sleep(20000);
 		EnvisionLang.setErrorCallback(this);
+		EnvisionLang.getInstance();
 		
-		//TestPoint t = new TestPoint(0, 0);
+//		TestPoint t = new TestPoint(10, 5);
+//		System.out.println("JAVA: " + t);
 		EnvisionProgram program = new EnvisionProgram("program");
-		//program.addJavaObjectToProgram(t);
+//		program.addJavaObjectToProgram("t", t);
 		
 		EnvisionLang.setLaunchSettings(
 			EnvironmentSetting.ENABLE_BLOCK_STATEMENT_PARSING,
@@ -48,7 +50,13 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 			runner.execute();
 			//EnvisionLang.runProgram(program);
 		}
-		System.out.print("END: " + (System.currentTimeMillis() - start) + " ms");
+		System.out.println("END: " + (System.currentTimeMillis() - start) + " ms");
+//		System.out.println("JAVA: " + t);
+		
+//		var runner = new EnvisionProgramRunner(program);
+//        runner.execute();
+//        
+//        System.out.println("JAVA: " + t);
 	}
 	
 	//====================================================================================

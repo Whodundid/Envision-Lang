@@ -27,7 +27,7 @@ public abstract class EnvisionObject {
 	 * The EnvisionClass for which this is an instance of.
 	 * This <u><b>MUST</b></u> be assigned during class creation.
 	 */
-	public EnvisionClass internalClass;
+	protected EnvisionClass internalClass;
 	
 	/**
 	 * The underlying datatype of this object instance.
@@ -79,7 +79,7 @@ public abstract class EnvisionObject {
 		
 		//assign primitive flag
 		isPrimitive = internalTypeIn.isNativePrimitiveType();
-		isPassByValue = (isPrimitive) ? internalType.getPrimitive().isPassByValue() : false;
+		isPassByValue = isPrimitive && internalType.getPrimitive().isPassByValue();
 	}
 	
 	//-----------

@@ -156,13 +156,8 @@ public abstract class EnvisionLangTest {
 	}
 	
 	protected static void execute(String statement) {
-		try {
-			stmt(statement);
-			interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+	    stmt(statement);
+        interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
 	}
 	
 	protected static void execute(ParsedStatement statement) {
@@ -174,6 +169,26 @@ public abstract class EnvisionLangTest {
 		codeFile.getLineTokens().clearThenAddAll(t.getLineTokens());
 		codeFile.getTokens().clearThenAddAll(t.getTokens());
 		codeFile.getLines().clearThenAddAll(t.getLines());
+	}
+	
+	protected static EnvisionInterpreter code(String codeToInject) {
+	    buildCodeFile(codeToInject);
+	    var stmts = EnvisionLangParser.parse(codeFile);
+        codeFile.getStatements().clearThenAddAll(stmts);
+        return interpreter;
+	}
+	
+	protected static void execute() {
+	    interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
+	}
+	
+	protected static void executeCode(String codeToExecute) {
+	    code(codeToExecute);
+	    interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
+	}
+	
+	protected static void injectJavaObject(String asName, Object objectToInject) {
+	    interpreter.injectJavaObject(asName, objectToInject);
 	}
 	
 	protected static <E extends ParsedStatement> E stmt(String line) { return stmt(line, 0); }

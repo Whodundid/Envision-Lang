@@ -1,10 +1,6 @@
 package envision_lang.lang.packages.native_packages;
 
-import envision_lang.lang.packages.native_packages.debug.DebugInfo;
-import envision_lang.lang.packages.native_packages.debug.DebugParsed;
-import envision_lang.lang.packages.native_packages.debug.DebugScope;
-import envision_lang.lang.packages.native_packages.debug.DebugScopeFull;
-import envision_lang.lang.packages.native_packages.debug.DebugStackFrames;
+import envision_lang.lang.packages.native_packages.debug.*;
 
 public final class DebugPackage extends NativePackage {
 	
@@ -14,6 +10,12 @@ public final class DebugPackage extends NativePackage {
 
 	@Override
 	public void buildFunctions() {
+	    define(new AssertEquals());
+	    define(new AssertFalse());
+	    define(new AssertNotEquals());
+	    define(new AssertNotNull());
+	    define(new AssertNull());
+	    define(new AssertTrue());
 		define(new DebugScope());
 		define(new DebugScopeFull());
 		define(new DebugInfo());

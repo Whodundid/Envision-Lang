@@ -32,11 +32,13 @@ public class EnvisionStringClass extends EnvisionClass {
 	static {
 		STRING_PROTOS.define("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
 		STRING_PROTOS.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
+		STRING_PROTOS.define("charAt", CHAR, INT).assignDynamicClass(IFunc_charAt.class);
 		STRING_PROTOS.define("toList", LIST).assignDynamicClass(IFunc_toList.class);
 		STRING_PROTOS.define("length", INT).assignDynamicClass(IFunc_length.class);
 		STRING_PROTOS.define("isEmpty", BOOLEAN).assignDynamicClass(IFunc_isEmpty.class);
 		STRING_PROTOS.define("isNotEmpty", BOOLEAN).assignDynamicClass(IFunc_isNotEmpty.class);
 		STRING_PROTOS.define("isChar", BOOLEAN).assignDynamicClass(IFunc_isChar.class);
+		STRING_PROTOS.define("ascii", INT).assignDynamicClass(IFunc_ascii.class);
 		STRING_PROTOS.define("reverse", STRING).assignDynamicClass(IFunc_reverse.class);
 		STRING_PROTOS.define("toUpperCase", STRING).assignDynamicClass(IFunc_toUpperCase.class);
 		STRING_PROTOS.define("toLowerCase", STRING).assignDynamicClass(IFunc_toLowerCase.class);
@@ -226,7 +228,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	/**
 	 * Override equals to account for internal string value.
 	 */
-	public static class IFunc_equals<E extends EnvisionString> extends InstanceFunction<E> {
+	public static class IFunc_equals extends InstanceFunction<EnvisionString> {
 		public IFunc_equals() { super(BOOLEAN, "equals", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionObject obj = args[0];
@@ -240,14 +242,14 @@ public class EnvisionStringClass extends EnvisionClass {
 	/**
 	 * Override toString to account for internal string value.
 	 */
-	public static class IFunc_toString<E extends EnvisionString> extends InstanceFunction<E> {
+	public static class IFunc_toString extends InstanceFunction<EnvisionString> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst);
 		}
 	}
 	
-	private static class IFunc_charAt<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_charAt extends InstanceFunction<EnvisionString> {
 		public IFunc_charAt() { super(CHAR, "charAt", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			int pos = (int) ((EnvisionInt) args[0]).int_val;
@@ -255,70 +257,70 @@ public class EnvisionStringClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_toList<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_toList extends InstanceFunction<EnvisionString> {
 		public IFunc_toList() { super(LIST, "toList"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.toList());
 		}
 	}
 	
-	private static class IFunc_length<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_length extends InstanceFunction<EnvisionString> {
 		public IFunc_length() { super(INT, "length"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.length());
 		}
 	}
 	
-	private static class IFunc_isEmpty<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_isEmpty extends InstanceFunction<EnvisionString> {
 		public IFunc_isEmpty() { super(BOOLEAN, "isEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isEmpty());
 		}
 	}
 	
-	private static class IFunc_isNotEmpty<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_isNotEmpty extends InstanceFunction<EnvisionString> {
 		public IFunc_isNotEmpty() { super(BOOLEAN, "isNotEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isNotEmpty());
 		}
 	}
 	
-	private static class IFunc_isChar<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_isChar extends InstanceFunction<EnvisionString> {
 		public IFunc_isChar() { super(BOOLEAN, "isChar"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isChar());
 		}
 	}
 	
-	private static class IFunc_ascii<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_ascii extends InstanceFunction<EnvisionString> {
 		public IFunc_ascii() { super(INT, "ascii"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.ascii());
 		}
 	}
 	
-	private static class IFunc_toLowerCase<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_toLowerCase extends InstanceFunction<EnvisionString> {
 		public IFunc_toLowerCase() { super(STRING, "toLowerCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.toLowerCase());
 		}
 	}
 	
-	private static class IFunc_toUpperCase<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_toUpperCase extends InstanceFunction<EnvisionString> {
 		public IFunc_toUpperCase() { super(STRING, "toUpperCase"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.toUpperCase());
 		}
 	}
 	
-	private static class IFunc_reverse<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_reverse extends InstanceFunction<EnvisionString> {
 		public IFunc_reverse() { super(STRING, "reverse"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.reverse());
 		}
 	}
 	
-	private static class IFunc_substring<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_substring extends InstanceFunction<EnvisionString> {
 		public IFunc_substring() {
 			super(STRING, "set", INT);
 			addOverload(STRING, INT, INT);
@@ -330,7 +332,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_compareTo<E extends EnvisionString> extends InstanceFunction<E> {
+	private static class IFunc_compareTo extends InstanceFunction<EnvisionString> {
 		public IFunc_compareTo() { super(INT, "compareTo", STRING); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.compareTo((EnvisionString) args[0]));

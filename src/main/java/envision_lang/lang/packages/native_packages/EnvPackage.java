@@ -11,7 +11,7 @@ import envision_lang.lang.packages.native_packages.base.SupportsOP;
  */
 public final class EnvPackage extends NativePackage {
 	
-	public static final String packageName = "env";
+	public static final String PACKAGE_NAME = "env";
 	public static final EnvPackage ENV_PACKAGE = new EnvPackage();
 	
 	//--------------
@@ -19,7 +19,7 @@ public final class EnvPackage extends NativePackage {
 	//--------------
 	
 	private EnvPackage() {
-		super(packageName);
+		super(PACKAGE_NAME);
 	}
 
 	@Override

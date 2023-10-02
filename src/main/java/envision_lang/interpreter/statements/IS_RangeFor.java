@@ -61,7 +61,7 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 			
 			try {
 				//check left value
-				if (left instanceof EnvisionVariable env_var) {
+				if (left instanceof EnvisionVariable<?> env_var) {
 					//ensure that the variable being used is an integer
 					if (!(env_var instanceof EnvisionInt)) {
 						throw new InvalidDatatypeError("Expected an int for range for start bound!");
@@ -181,8 +181,8 @@ public class IS_RangeFor extends AbstractInterpreterExecutor {
 	private static boolean checkLessOne(IncNumber num) { return num.checkLessOne(); }
 	
 	private static EnvisionObject handleLeft(EnvisionInterpreter interpreter, ParsedExpression left) {
-		if (left instanceof Expr_Var var) {
-			return interpreter.defineIfNot(var.getName(), EnvisionStaticTypes.INT_TYPE, EnvisionInt.ZERO);
+		if (left instanceof Expr_Var evar) {
+			return interpreter.defineIfNot(evar.getName(), EnvisionStaticTypes.INT_TYPE, EnvisionInt.ZERO);
 		}
 		return interpreter.evaluate(left);
 	}

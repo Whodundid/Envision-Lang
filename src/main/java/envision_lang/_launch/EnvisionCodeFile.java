@@ -6,6 +6,7 @@ import java.io.IOException;
 import envision_lang.debug.DebugParserPrinter;
 import envision_lang.debug.DebugTokenPrinter;
 import envision_lang.interpreter.util.scope.IScope;
+import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.InvalidCodeFileError;
@@ -55,7 +56,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** True if this file has been successfully tokenized. */
 	private boolean isTokenized = false;
 	/** The Interpreter associated with this specific code file. */
-	private IScope codeFileScope;
+	private IScope codeFileScope = new Scope();
 	/** The Tokenizer associated with this specific code file. */
 	private Tokenizer tokenizer;
 	/** The paired WorkingDirectory for this CodeFile. */
@@ -70,14 +71,15 @@ public class EnvisionCodeFile extends EnvisionObject {
 		super(Primitives.CODE_FILE.toDatatype());
 		theFile = in;
 		
-		if (isValid = checkFile()) {
+		isValid = checkFile();
+		if (isValid) {
 			fullFileName = EStringUtil.subStringAfter(theFile.getPath().replace("\\", "."), ".").replace(".nvis", "");
 		}
 		else {
 			fullFileName = "NO_NAME";
 		}
 		
-		isMain = theFile.getName().toLowerCase().equals("main.nvis");
+		isMain = theFile.getName().equalsIgnoreCase("main.nvis");
 		fileName = theFile.getName().replace(".nvis", "");
 	}
 	

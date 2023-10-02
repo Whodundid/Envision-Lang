@@ -11,6 +11,8 @@ import eutil.strings.EStringUtil;
 
 public class DebugTokenPrinter {
 	
+    private DebugTokenPrinter() {}
+    
 	public static void printTokensBasic(EnvisionCodeFile codeFile) {
 		printTokensBasic(codeFile.getFileName(), codeFile.getLines(), codeFile.getLineTokens());
 	}
@@ -52,12 +54,12 @@ public class DebugTokenPrinter {
 	public static void printTokensInDepth(String fileName, EList<Token<?>> tokens) {
 		class Longest {
 			String longestToken() { return EStringUtil.getLongest(tokens); }
-			String longestKeyword() { return EStringUtil.getLongest(tokens.map(o -> o.getKeyword())); }
-			String longestLexeme() { return EStringUtil.getLongest(tokens.map(o -> o.getLexeme())); }
-			String longestLiteral() { return EStringUtil.getLongest(tokens.map(o -> o.getLiteral())); }
-			String longestLineNum() { return EStringUtil.getLongest(tokens.map(o -> o.getLineNum())); }
-			String longestLineIndex() { return EStringUtil.getLongest(tokens.map(o -> o.getLineIndex())); }
-			String longestLineTokenIndex() { return EStringUtil.getLongest(tokens.map(o -> o.getLineTokenIndex())); }
+			String longestKeyword() { return EStringUtil.getLongest(tokens.map(Token::getKeyword)); }
+			String longestLexeme() { return EStringUtil.getLongest(tokens.map(Token::getLexeme)); }
+			String longestLiteral() { return EStringUtil.getLongest(tokens.map(Token::getLiteral)); }
+			String longestLineNum() { return EStringUtil.getLongest(tokens.map(Token::getLineNum)); }
+			String longestLineIndex() { return EStringUtil.getLongest(tokens.map(Token::getLineIndex)); }
+			String longestLineTokenIndex() { return EStringUtil.getLongest(tokens.map(Token::getLineTokenIndex)); }
 		}
 		
 		var TLen = new Longest();
@@ -65,7 +67,7 @@ public class DebugTokenPrinter {
 		var sb = new EStringBuilder();
 		sb.println("'", fileName, "' Tokens:");
 		
-		int longestIndex = EStringUtil.getLongestLength("  i=" + String.valueOf(tokens.size()), "Index");
+		int longestIndex = EStringUtil.getLongestLength("  i=" + tokens.size(), "Index");
 		int longestLine = EStringUtil.getLongestLength(TLen.longestLineNum(), "Line");
 		int longestToken = EStringUtil.getLongestLength(TLen.longestToken(), "Token");
 		int longestKeyword = EStringUtil.getLongestLength(TLen.longestKeyword(), "Keyword");

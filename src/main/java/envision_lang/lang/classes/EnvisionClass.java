@@ -18,7 +18,6 @@ import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.language_errors.error_types.classErrors.NotAConstructorError;
 import envision_lang.lang.language_errors.error_types.classErrors.UndefinedConstructorError;
 import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.statements.ParsedStatement;
 import eutil.datatypes.EArrayList;
@@ -127,7 +126,7 @@ public class EnvisionClass extends EnvisionObject {
 		OBJ_PROTOS.define("isStatic", BOOLEAN).assignDynamicClass(IFunc_isStatic.class);
 		OBJ_PROTOS.define("isFinal", BOOLEAN).assignDynamicClass(IFunc_isFinal.class);
 		OBJ_PROTOS.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
-		OBJ_PROTOS.define("type", STRING).assignDynamicClass(IFunc_type.class);
+		OBJ_PROTOS.define("type", CLASS).assignDynamicClass(IFunc_type.class);
 		OBJ_PROTOS.define("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
 		OBJ_PROTOS.define("members", LIST).assignDynamicClass(IFunc_members.class);
 	}
@@ -135,6 +134,10 @@ public class EnvisionClass extends EnvisionObject {
 	//--------------
 	// Constructors
 	//--------------
+	
+	public EnvisionClass(String typeNameIn) {
+	    this(IDatatype.of(typeNameIn));
+	}
 	
 	/**
 	 * Creates a new EnvisionClass with the given class name.
@@ -144,11 +147,11 @@ public class EnvisionClass extends EnvisionObject {
 	 * 
 	 * @param classNameIn
 	 */
-	public EnvisionClass(String classNameIn) {
-		super(NativeTypeManager.datatypeOf(classNameIn));
+	public EnvisionClass(IDatatype typeIn) {
+		super(typeIn);
 		
 		//assign class name
-		className = classNameIn;
+		className = typeIn.getStringValue();
 		//assign default empty primitive class scope
 		staticScope = new Scope();
 		//assign native class object
@@ -191,7 +194,9 @@ public class EnvisionClass extends EnvisionObject {
 	 * outside of the internal construction phase. This approach prevents
 	 * an infinite instantiation loop.
 	 */
-	protected void registerStaticNatives() {}
+	protected void registerStaticNatives() {
+	    // intended to be overridden by children, does nothing by default
+	}
 	
 	/**
 	 * Adds a specific constructor to this object.
@@ -459,14 +464,14 @@ public class EnvisionClass extends EnvisionObject {
 	// Instance Member Functions
 	//---------------------------
 	
-	public static class IFunc_equals<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_equals extends InstanceFunction<ClassInstance> {
 		public IFunc_equals() { super(BOOLEAN, "equals", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.equals(args[0])));
 		}
 	}
 	
-	public static class IFunc_hash<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_hash extends InstanceFunction<ClassInstance> {
 		public IFunc_hash() { super(INT, "hash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hash = inst.getObjectHash();
@@ -474,7 +479,7 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_hexHash<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_hexHash extends InstanceFunction<ClassInstance> {
 		public IFunc_hexHash() { super(STRING, "hexHash"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var hexHash = inst.getHexHash();
@@ -482,7 +487,7 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_isStatic<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_isStatic extends InstanceFunction<ClassInstance> {
 		public IFunc_isStatic() { super(BOOLEAN, "isStatic"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isStatic = inst.isStatic();
@@ -490,7 +495,7 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_isFinal<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_isFinal extends InstanceFunction<ClassInstance> {
 		public IFunc_isFinal() { super(BOOLEAN, "isFinal"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var isFinal = inst.isFinal();
@@ -498,7 +503,7 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_toString<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_toString extends InstanceFunction<ClassInstance> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var toString = inst.toString();
@@ -506,15 +511,14 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_type<E extends ClassInstance> extends InstanceFunction<E> {
-		public IFunc_type() { super(STRING, "type"); }
+	public static class IFunc_type extends InstanceFunction<ClassInstance> {
+		public IFunc_type() { super(CLASS, "type"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			var type = inst.getDatatype().getStringValue();
-			ret(EnvisionStringClass.valueOf(type));
+			ret(inst.getEClass());
 		}
 	}
 	
-	public static class IFunc_typeString<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_typeString extends InstanceFunction<ClassInstance> {
 		public IFunc_typeString() { super(STRING, "typeString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var typeString = inst.getDatatype().getStringValue() + "_" + inst.getHexHash();
@@ -522,7 +526,7 @@ public class EnvisionClass extends EnvisionObject {
 		}
 	}
 	
-	public static class IFunc_members<E extends ClassInstance> extends InstanceFunction<E> {
+	public static class IFunc_members extends InstanceFunction<ClassInstance> {
 		public IFunc_members() { super(LIST, "members"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList members = EnvisionListClass.newList();

@@ -146,12 +146,12 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
 		case AND:				return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
 		case OR:				return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
 		//bit-wise operators
-		case BW_AND:			return EnvisionBooleanClass.valueOf(bool_val & in.bool_val);
-		case BW_OR:				return EnvisionBooleanClass.valueOf(bool_val | in.bool_val);
+		case BW_AND:			return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+		case BW_OR:				return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
 		case BW_XOR:			return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
 		//bit-wise assignment operators
-		case BW_AND_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val & in.bool_val);
-		case BW_OR_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val | in.bool_val);
+		case BW_AND_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+		case BW_OR_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
 		case BW_XOR_ASSIGN:		return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
 			
 		//throw error if this point is reached

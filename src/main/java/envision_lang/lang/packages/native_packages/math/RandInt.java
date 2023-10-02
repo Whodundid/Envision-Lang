@@ -1,5 +1,7 @@
 package envision_lang.lang.packages.native_packages.math;
 
+import static envision_lang.lang.natives.Primitives.*;
+
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.datatypes.EnvisionInt;
@@ -8,19 +10,18 @@ import envision_lang.lang.datatypes.EnvisionList;
 import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.EnvisionLangError;
-import envision_lang.lang.natives.Primitives;
 import eutil.random.ERandomUtil;
 
 public class RandInt extends EnvisionFunction {
 	
 	public RandInt() {
-		super(Primitives.INT, "randInt");
+		super(INT, "randInt");
 		//support min and max range
-		addOverload(Primitives.INT, Primitives.INT, Primitives.INT);
+		addOverload(INT, INT, INT);
 		//support producing 'n' number of random ints
-		addOverload(Primitives.INT, Primitives.INT);
+		addOverload(INT, INT);
 		//support producing 'n' number of random ints with min and max range
-		addOverload(Primitives.INT, Primitives.INT, Primitives.INT, Primitives.INT);
+		addOverload(INT, INT, INT, INT);
 	}
 	
 	@Override
@@ -66,7 +67,6 @@ public class RandInt extends EnvisionFunction {
 			}
 			ret(ints);
 		}
-		
 		
 		throw new EnvisionLangError("Impossible function state!");
 	}

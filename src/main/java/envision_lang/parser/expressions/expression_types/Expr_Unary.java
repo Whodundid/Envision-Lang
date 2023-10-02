@@ -32,7 +32,7 @@ public class Expr_Unary extends ParsedExpression {
 	
 	@Override
 	public String toString() {
-		String r = (right != null) ? operator.typeString + right : left + operator.typeString;
+		String r = (right != null) ? operator.operatorString + right : left + operator.operatorString;
 		return r;
 	}
 	

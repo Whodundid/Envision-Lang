@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang._launch.EnvisionConsoleOutputReceiver;
-import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionEnvironmnetSettings;
 import envision_lang._launch.EnvisionEnvironmnetSettings.EnvironmentSetting;
+import envision_lang._launch.EnvisionLangErrorCallBack;
 import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
@@ -18,6 +18,7 @@ import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.InterpreterCreationError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.NoMainError;
+import envision_lang.lang.natives.NativeTypeManager;
 import envision_lang.lang.packages.EnvisionLangPackage;
 import envision_lang.parser.EnvisionLangParser;
 import eutil.datatypes.EArrayList;
@@ -48,9 +49,9 @@ import eutil.debug.InDevelopment;
 public class EnvisionLang {
 	
 	/** The current build of the Envision Scripting Language. */
-	public static final String version = "0.0.###";
+	public static final String VERSION = "0.0.###";
 	/** The current build's date of the Envision Scripting Language. */
-	public static final String versionDate = "10/9/2022";
+	public static final String VERSION_DATE = "10/9/2022";
 	/** The directory of the loaded program. */
 	public static File programDir = null;
 	/** Global debug value -- if true, debug outputs will be enabled. */
@@ -79,7 +80,8 @@ public class EnvisionLang {
 	
 	public static EnvisionLang getInstance() {
 		if (langInstance != null) return langInstance;
-		return (langInstance = new EnvisionLang());
+		langInstance = new EnvisionLang();
+		return langInstance;
 	}
 	
 	//--------------
@@ -87,7 +89,9 @@ public class EnvisionLang {
 	//--------------
 	
 	/** Creates a new Envision workspace with standard launch settings. */
-	private EnvisionLang() {}
+	private EnvisionLang() {
+	    NativeTypeManager.init();
+	}
 	
 	//----------------------------------------------------------------------------------------------------------------
 	
@@ -248,7 +252,7 @@ public class EnvisionLang {
 		}
 	}
 	
-	public static EnvisionProgram buildProgram(String pathIn) throws Exception {
+	public static EnvisionProgram buildProgram(String pathIn) {
 		return new EnvisionProgram(pathIn);
 	}
 	
@@ -309,20 +313,21 @@ public class EnvisionLang {
 			//throw interpret error if the file could not be loaded
 			if (!main.load(dir)) throw new InterpreterCreationError();
 			
-			//load any program bundled envision java objects into the main's interpreter scope
-			var mainScope = dir.getMain().scope();
-			for (EnvisionJavaObject obj : program.getEnvisionJavaObjects()) {
-				var name = obj.getClass().getSimpleName();
-				var type = obj.getInternalClass().getDatatype();
-				var classObj = obj.getInternalClass();
-				
-				mainScope.defineIfNotPresent(name, type, classObj);
-			}
-			
 			//track program start time
 			start_time = System.currentTimeMillis();
+			
 			//actually execute the built program
-			return EnvisionInterpreter.interpret(main, programArgs);
+			EnvisionInterpreter interpreter = EnvisionInterpreter.build(main, programArgs);
+	         // load any program bundled envision java objects into the main's interpreter scope
+            for (var box : program.getJavaObjectsToWrap()) {
+                String name = box.getA();
+                Object obj = box.getB();
+                interpreter.injectJavaObject(name, obj);
+            }
+			
+            interpreter.executeNext();
+            
+			return interpreter;
 			
 			//do live interpreting
 			//if (liveMode) liveMode(main);
@@ -335,7 +340,7 @@ public class EnvisionLang {
 		}
 		finally {
 			//debug log the program's total running time
-			envisionLogger.debug("ENVISION-END: " + (System.currentTimeMillis() - start_time) + " ms");
+			envisionLogger.debug("ENVISION-END: {} ms", (System.currentTimeMillis() - start_time));
 		}
 		
 		return null;
@@ -375,7 +380,7 @@ public class EnvisionLang {
 	}
 	
 	public static void addBuildPackage(EnvisionLangPackage... pkg) {
-		for (var p : pkg) packages.add(p);
+	    packages.addA(pkg);
 	}
 	
 	/**
@@ -407,7 +412,7 @@ public class EnvisionLang {
 	}
 	
 	public static String getVersionString() {
-		return "Envision Scripting Language: v" + version + " - " + versionDate;
+		return "Envision Scripting Language: v" + VERSION + " - " + VERSION_DATE;
 	}
 	
 }

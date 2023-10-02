@@ -1,7 +1,6 @@
 package envision_lang._launch;
 
 import java.io.File;
-import java.io.IOException;
 
 import envision_lang.lang.language_errors.error_types.workingDirectory.InvalidCodeFileError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.MultipleMainsError;
@@ -116,7 +115,7 @@ public class WorkingDirectory {
 	 * This will print out the tokenized version of each code file without actually
 	 * executing any code.
 	 */
-	public void debugTokenize() throws IOException {
+	public void debugTokenize() {
 		for (EnvisionCodeFile f : codeFiles) f.displayTokens();
 	}
 	
@@ -124,7 +123,7 @@ public class WorkingDirectory {
 	 * This will print out the tokenized version of each code file without actually
 	 * executing any code. This will also show the metadata of each token.
 	 */
-	public void debugTokenizeInDepth() throws IOException {
+	public void debugTokenizeInDepth() {
 		for (EnvisionCodeFile f : codeFiles) f.displayTokensInDepth();
 	}
 	

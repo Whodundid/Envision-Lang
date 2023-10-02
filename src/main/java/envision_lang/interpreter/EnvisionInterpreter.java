@@ -42,8 +42,7 @@ import envision_lang.interpreter.statements.IS_Switch;
 import envision_lang.interpreter.statements.IS_Try;
 import envision_lang.interpreter.statements.IS_VarDec;
 import envision_lang.interpreter.statements.IS_While;
-import envision_lang.interpreter.util.UserDefinedTypeManager;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
@@ -55,6 +54,7 @@ import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionNull;
+import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.ExpressionError;
 import envision_lang.lang.language_errors.error_types.InvalidDatatypeError;
@@ -62,6 +62,7 @@ import envision_lang.lang.language_errors.error_types.NullVariableError;
 import envision_lang.lang.language_errors.error_types.StatementError;
 import envision_lang.lang.language_errors.error_types.UndefinedValueError;
 import envision_lang.lang.natives.IDatatype;
+import envision_lang.lang.natives.UserDefinedTypeManager;
 import envision_lang.lang.packages.native_packages.EnvPackage;
 import envision_lang.lang.packages.native_packages.base.InternalEnvision;
 import envision_lang.parser.expressions.ExpressionHandler;
@@ -203,19 +204,35 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		
 		WorkingDirectory dirIn = startingFile.getWorkingDir();
 		
+		// it may be a bad idea to do this... too bad!
+		internalScope.values().putAll(codeFileIn.scope().values());
+		
 		if (topDir == null) topDir = dirIn;
 		active_dir = dirIn;
 		
 		EnvPackage.ENV_PACKAGE.defineOn(this);
 	}
 	
-	public void setup(EList<String> userArgs) {
+	public void setup() {
+	    setupWithUserArguments(EList.newList());
+	}
+	
+	public void setupWithUserArguments(EList<String> userArgs) {
 		InternalEnvision.init(EnvisionLang.getInstance(), internalScope, userArgs);
 		statements = startingFile.getStatements();
 		if (statements.isNotEmpty()) {
 			frames.push(new StackFrame(statements));			
 		}
 		hasError = false;
+	}
+	
+	public void injectJavaObject(String asName, Object objectToInject) {
+	    EnvisionJavaObject wrapped;
+	    
+	    if (objectToInject instanceof EnvisionJavaObject ejo) wrapped = ejo;
+	    else wrapped = EnvisionJavaObject.wrapJavaObject(this, objectToInject);
+	    
+	    scope().define(asName, wrapped);
 	}
 	
 	public void executeNext() {
@@ -305,14 +322,14 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		
 		EnvPackage.ENV_PACKAGE.defineOn(interpreter);
 		InternalEnvision.init(EnvisionLang.getInstance(), interpreter.internalScope, userArgs);
-		interpreter.setup(userArgs);
+		interpreter.setupWithUserArguments(userArgs);
 		
 		return interpreter;
 	}
 	
 	public static EnvisionInterpreter interpret(EnvisionCodeFile codeFileIn, EList<String> userArgs) throws Exception {
 		var interpreter = new EnvisionInterpreter(codeFileIn);
-		interpreter.setup(userArgs);
+		interpreter.setupWithUserArguments(userArgs);
 		interpreter.executeNext();
 		return interpreter;
 	}

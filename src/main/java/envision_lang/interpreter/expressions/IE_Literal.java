@@ -2,7 +2,7 @@ package envision_lang.interpreter.expressions;
 
 import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.interpreter.util.creationUtil.ObjectCreator;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.expression_types.Expr_Literal;
 

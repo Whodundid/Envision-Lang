@@ -23,7 +23,6 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.Operator;
-import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 public class EnvisionFunction extends ClassInstance {
@@ -41,14 +40,14 @@ public class EnvisionFunction extends ClassInstance {
 	/**
 	 * The parameter datatypes that this function accepts.
 	 */
-	protected ParameterData params = ParameterData.EMPTY_PARAMS;
+	protected ParameterData parameters = ParameterData.EMPTY_PARAMS;
 	
 	/**
 	 * The entire list of statements encapsulated within this function.
 	 * Every time the function is invoked, this list of statements is
 	 * executed.
 	 */
-	protected EList<ParsedStatement> statements = new EArrayList();
+	protected EList<ParsedStatement> statements = EList.newList();
 	
 	/**
 	 * The scope that this function was derived from.
@@ -78,7 +77,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * functions with the same name will be given to this base function as
 	 * an overload.
 	 */
-	protected EList<EnvisionFunction> overloads = new EArrayList();
+	protected EList<EnvisionFunction> overloads = EList.newList();
 	
 	/**
 	 * If this is an operator overload function, this is the operator that
@@ -109,6 +108,13 @@ public class EnvisionFunction extends ClassInstance {
 	//--------------
 	// Constructors
 	//--------------
+	
+	/**
+	 * No argument constructor intended for purely internal use!
+	 */
+	protected EnvisionFunction() {
+	    super(EnvisionFunctionClass.FUNC_CLASS);
+	}
 	
 	/**
 	 * Creates a new EnvisionFunction with the given name. This function
@@ -192,7 +198,7 @@ public class EnvisionFunction extends ClassInstance {
 	public EnvisionFunction(Operator operatorIn, ParameterData paramsIn) {
 		super(EnvisionFunctionClass.FUNC_CLASS);
 		setParams(paramsIn);
-		functionName = "OPERATOR_" + operatorIn.typeString;
+		functionName = "OPERATOR_" + operatorIn.operatorString;
 		operatorOverload = operatorIn;
 		isOperatorOverload = true;
 	}
@@ -208,7 +214,7 @@ public class EnvisionFunction extends ClassInstance {
 		functionName = toCopy.functionName;
 		statements = toCopy.statements;
 		returnType = toCopy.returnType;
-		setParams(toCopy.params);
+		setParams(toCopy.parameters);
 		isConstructor = toCopy.isConstructor;
 		isOperatorOverload = toCopy.isOperatorOverload;
 		operatorOverload = toCopy.operatorOverload;
@@ -225,7 +231,7 @@ public class EnvisionFunction extends ClassInstance {
 	
 	@Override
 	public String toString() {
-		return functionName + params + getHexHash();
+		return functionName + parameters + getHexHash();
 	}
 	
 	@Override
@@ -239,7 +245,7 @@ public class EnvisionFunction extends ClassInstance {
 		
 		EnvisionFunction m = (EnvisionFunction) in;
 		return m.functionName.equals(functionName) &&
-			   m.params.compare(params) &&
+			   m.parameters.compare(parameters) &&
 			   m.isConstructor == isConstructor &&
 			   m.isOperatorOverload == isOperatorOverload;
 	}
@@ -339,8 +345,8 @@ public class EnvisionFunction extends ClassInstance {
 			throw new InvalidTargetError("The given function: " + overload
 										 + " is not valid as an overload function of" + this + "!");
 		//don't allow if already existing overloads
-		if (hasOverload(overload.params))
-			throw new DuplicateOverloadError(functionName, overload.params);
+		if (hasOverload(overload.parameters))
+			throw new DuplicateOverloadError(functionName, overload.parameters);
 		
 		//add the overload
 		overloads.add(overload);
@@ -366,7 +372,7 @@ public class EnvisionFunction extends ClassInstance {
 		ParameterData callParams = (args != null) ? ParameterData.from(args) : ParameterData.EMPTY_PARAMS;
 		
 		//check if the base method parameters match the given arguments
-		if (params.compare(callParams)) return this;
+		if (parameters.compare(callParams)) return this;
 		
 		//if not, check for any overloads
 		EnvisionFunction m = null;
@@ -384,8 +390,8 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction getOverload(ParameterData dataIn) {
 		for (EnvisionFunction overload : overloads) {
-			if (overload.params.length() != dataIn.length()) continue;
-			if (!overload.params.compare(dataIn)) continue;
+			if (overload.parameters.length() != dataIn.length()) continue;
+			if (!overload.parameters.compare(dataIn)) continue;
 			return overload;
 		}
 		return null;
@@ -415,7 +421,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return True if matching
 	 */
 	public boolean compare(String funcName, ParameterData params) {
-		return this.functionName.equals(funcName) && this.params.compare(params);
+		return this.functionName.equals(funcName) && this.parameters.compare(params);
 	}
 	
 	/**
@@ -423,7 +429,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * max.
 	 */
 	public int argLength() {
-		return params.length();
+		return parameters.length();
 	}
 	
 	/**
@@ -505,15 +511,15 @@ public class EnvisionFunction extends ClassInstance {
 	/**
 	 * Checks for argument size and invalid argument vs. parameter type errors.
 	 */
-	protected void checkArgs(EnvisionObject[] incoming_args) {
+	protected void checkArgs(EnvisionObject[] args) {
 		int arg_length = argLength();
 		ParameterData types = argTypes();
 		
+		EnvisionObject[] incoming_args = args;
+		if (incoming_args == null) incoming_args = new EnvisionObject[0];
+		
 		// ensure that the expected number of arguments is possible
 		if (arg_length < 0) throw new NegativeArgumentLengthError(this, arg_length);
-		
-		// if the incoming args are null -- ensure that the argSize is 0 -- otherwise error
-		if (incoming_args == null && arg_length > 0) throw new ArgLengthError(this, arg_length, 0);
 		
 		// ensure that the expected number of arguments is not larger than the maximum allowed
 		if (arg_length > 255) throw new ArgLengthError(this, arg_length, 255);
@@ -523,21 +529,21 @@ public class EnvisionFunction extends ClassInstance {
 		if (types == null) return;
 		
 		// perform type checking and verification across each incoming argument vs. each expected parameter type
-		ParameterData args = ParameterData.from(incoming_args);
+		ParameterData parsedArgs = ParameterData.from(incoming_args);
 		
 		// compare each parameter to ensure that they are compatible matches
 		for (int i = 0, j = 0; i < incoming_args.length; i++) {
 			EnvisionParameter type = types.get(j);
-			EnvisionParameter obj = args.get(i);
+			EnvisionParameter obj = parsedArgs.get(i);
 			
 			// if they're not compatible, throw error
 			if (!type.compare(obj)) throw new InvalidDatatypeError(type, obj);
 		}
 		
 		// ensure that there is a valid function overload to support the given arguments
-		EnvisionFunction overload = getOverload(args);
+		EnvisionFunction overload = getOverload(parsedArgs);
 		// if there are no overloads with matching parameters -- throw an error
-		if (overload == null) throw new NoOverloadError(this, args);
+		if (overload == null) throw new NoOverloadError(this, parsedArgs);
 	}
 	
 	/**
@@ -550,8 +556,8 @@ public class EnvisionFunction extends ClassInstance {
 		EnvisionFunction m = getOverloadFromArgs(args);
 		
 		// define parameter values within the current scope
-		String[] parameterNames = m.params.getNames();
-		for (int i = 0; i < m.params.length(); i++) {
+		String[] parameterNames = m.parameters.getNames();
+		for (int i = 0; i < m.parameters.length(); i++) {
 			String n = parameterNames[i];
 			scope.define(n, args[i]);
 		}
@@ -603,12 +609,12 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return The name of this function
 	 */
 	public String getFunctionName() { return functionName; }
-	public ParameterData getParams() { return params; }
+	public ParameterData getParams() { return parameters; }
 	public EList<ParsedStatement> getStatements() { return statements; }
 	public EList<EnvisionFunction> getOverloads() { return overloads; }
 	public EList<ParsedStatement> getBody() { return statements; }
-	public IDatatype[] getParamTypes() { return params.getDataTypes(); }
-	public String[] getParamNames() { return params.getNames(); }
+	public IDatatype[] getParamTypes() { return parameters.getDataTypes(); }
+	public String[] getParamNames() { return parameters.getNames(); }
 	public EnvisionFunction getSuper() { return superFunction; }
 	
 	public boolean isVoid() { return returnType.isVoid(); }
@@ -629,7 +635,7 @@ public class EnvisionFunction extends ClassInstance {
 	}
 	
 	public EnvisionFunction setParams(ParameterData dataIn) {
-		params = ParameterData.from(dataIn);
+		parameters = ParameterData.from(dataIn);
 		return this;
 	}
 	

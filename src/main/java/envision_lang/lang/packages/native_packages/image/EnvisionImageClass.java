@@ -10,15 +10,13 @@ import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionString;
+import envision_lang.lang.file.EnvisionFile;
 import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.packages.native_packages.file.EnvisionFile;
 
 public class EnvisionImageClass extends EnvisionClass {
 
-	public static final IDatatype IMAGE_DATATYPE = NativeTypeManager.datatypeOf("Image");
+	//public static final IDatatype IMAGE_DATATYPE = NativeTypeManager.datatypeOf("Image");
 	public static final EnvisionImageClass IMAGE_CLASS = new EnvisionImageClass();
 	
 	/**
@@ -31,7 +29,7 @@ public class EnvisionImageClass extends EnvisionClass {
 		IMAGE_PROTOS.define("width", INT).assignDynamicClass(null);
 		IMAGE_PROTOS.define("height", INT).assignDynamicClass(null);
 		IMAGE_PROTOS.define("getPixel", INT, INT, INT).assignDynamicClass(null);
-		IMAGE_PROTOS.define("setPixel", IMAGE_DATATYPE, INT, INT, INT).assignDynamicClass(null);
+		//IMAGE_PROTOS.define("setPixel", IMAGE_DATATYPE, INT, INT, INT).assignDynamicClass(null);
 	}
 	
 	//--------------
@@ -39,7 +37,8 @@ public class EnvisionImageClass extends EnvisionClass {
 	//--------------
 	
 	private EnvisionImageClass() {
-		super(IMAGE_DATATYPE.getStringValue());
+	    super(NULL);
+		//super(IMAGE_DATATYPE.getStringValue());
 	}
 	
 	/**

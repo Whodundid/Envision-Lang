@@ -11,7 +11,7 @@ abstract sealed class NativePackage extends EnvisionLangPackage implements Build
 	permits DebugPackage, EnvPackage, FilePackage, ImagePackage, IOPackage, MathPackage
 {
 	
-	public NativePackage(String nameIn) {
+	protected NativePackage(String nameIn) {
 		super(nameIn);
 		
 		build();

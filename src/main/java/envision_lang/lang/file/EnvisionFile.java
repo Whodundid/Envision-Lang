@@ -1,4 +1,4 @@
-package envision_lang.lang.packages.native_packages.file;
+package envision_lang.lang.file;
 
 import java.io.File;
 import java.util.Objects;
@@ -107,7 +107,7 @@ public class EnvisionFile extends ClassInstance {
 	 * @return True if the given object is an EnvisionFile
 	 */
 	public static boolean isFile(Object in) {
-		return (in instanceof ClassInstance ci) ? isFile(ci) : false;
+		return in instanceof ClassInstance ci && isFile(ci);
 	}
 	
 	/**

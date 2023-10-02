@@ -141,11 +141,11 @@ public enum Operator implements IKeyword {
 	
 	;
 	
-	public final String typeString;
+	public final String operatorString;
 	private final int types;
 	
 	private Operator(String keywordIn, KeywordType... typeIn) {
-		typeString = keywordIn;
+		operatorString = keywordIn;
 
 		int m = 0b00000000;
 		for (var t : typeIn) m |= t.byte_val;
@@ -157,7 +157,7 @@ public enum Operator implements IKeyword {
 	private static Map<String, Operator> operators = new HashMap<>();
 	
 	static {
-		for (var o : values()) operators.put(o.typeString, o);
+		for (var o : values()) operators.put(o.operatorString, o);
 	}
 	
 	/** Returns a keyword from the given input String. If no keywords match, null is returned instead. */

@@ -1,4 +1,4 @@
-package envision_lang.lang.packages.native_packages.file;
+package envision_lang.lang.file;
 
 import static envision_lang.lang.natives.Primitives.*;
 
@@ -24,18 +24,11 @@ import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 import eutil.EUtil;
 import eutil.file.EFileUtil;
 
 public class EnvisionFileClass extends EnvisionClass {
-
-	/**
-	 * Constant file datatype reference. Use throughout.
-	 * Do not redefine.
-	 */
-	public static final IDatatype FILE_DATATYPE = NativeTypeManager.datatypeOf("File");
 	
 	public static final EnvisionFileClass FILE_CLASS = new EnvisionFileClass();
 	
@@ -50,7 +43,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		prototypes.define("create", BOOLEAN).assignDynamicClass(IFunc_create.class);
 		prototypes.define("getName", STRING).assignDynamicClass(IFunc_getName.class);
 		prototypes.define("getParent", STRING).assignDynamicClass(IFunc_getParent.class);
-		prototypes.define("getParentFile", EnvisionFileClass.FILE_DATATYPE).assignDynamicClass(IFunc_getParentFile.class);
+		prototypes.define("getParentFile", FILE).assignDynamicClass(IFunc_getParentFile.class);
 		prototypes.define("getPath", STRING).assignDynamicClass(IFunc_getPath.class);
 		prototypes.define("canRead", BOOLEAN).assignDynamicClass(IFunc_canRead.class);
 		prototypes.define("canWrite", BOOLEAN).assignDynamicClass(IFunc_canWrite.class);
@@ -77,7 +70,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	//--------------
 	
 	private EnvisionFileClass() {
-		super(FILE_DATATYPE.getStringValue());
+		super(EnvisionStaticTypes.FILE_TYPE);
 	}
 
 	/**
@@ -133,7 +126,7 @@ public class EnvisionFileClass extends EnvisionClass {
 			
 			if (first instanceof EnvisionFile f) file = new EnvisionFile(f.iFile, child);
 			else if (first instanceof EnvisionString s) file = new EnvisionFile(s.get_i(), child);
-			else throw InvalidArgumentError.conversionError(second, FILE_DATATYPE);
+			else throw InvalidArgumentError.conversionError(second, FILE);
 		}
 		else {
 			EnvisionObject first = args[0];
@@ -175,7 +168,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Creates the necessary directories required in order to make the
 	 * requested file/directory creation possible.
 	 */
-	private static class IFunc_toString<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_toString extends InstanceFunction<EnvisionFile> {
 		public IFunc_toString() { super(STRING, "toString"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionStringClass.valueOf(inst.iFile.getPath().replace("\\", "\\\\")));
@@ -186,9 +179,9 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Attempts to create a file under the same path/name as this file
 	 * object.
 	 */
-	private class IFunc_create<E extends EnvisionFile> extends InstanceFunction<E> {
+	private class IFunc_create extends InstanceFunction<EnvisionFile> {
 		public IFunc_create() { super(BOOLEAN, "create"); }
-		public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			boolean r = false;
 			
 			try {
@@ -205,7 +198,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns the immediate name of this file.
 	 */
-	private static class IFunc_getName<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_getName extends InstanceFunction<EnvisionFile> {
 		public IFunc_getName() { super(STRING, "getName"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionStringClass.valueOf(inst.iFile.getName()));
@@ -215,7 +208,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns the name of the parent directory.
 	 */
-	private static class IFunc_getParent<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_getParent extends InstanceFunction<EnvisionFile> {
 		public IFunc_getParent() { super(STRING, "getParent"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionStringClass.valueOf(inst.iFile.getParentFile()));
@@ -225,8 +218,8 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns the parent directory as a file object.
 	 */
-	private static class IFunc_getParentFile<E extends EnvisionFile> extends InstanceFunction<E> {
-		public IFunc_getParentFile() { super(EnvisionFileClass.FILE_DATATYPE, "getParentFile"); }
+	private static class IFunc_getParentFile extends InstanceFunction<EnvisionFile> {
+		public IFunc_getParentFile() { super(FILE, "getParentFile"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionFileClass.newFile(inst.iFile.getParentFile()));
 		}
@@ -235,7 +228,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns the string system path to this file on this computer.
 	 */
-	private static class IFunc_getPath<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_getPath extends InstanceFunction<EnvisionFile> {
 		public IFunc_getPath() { super(STRING, "getPath"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionStringClass.valueOf(inst.iFile.getPath().replace("\\", "\\\\")));
@@ -245,7 +238,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns true if this file can be read from.
 	 */
-	private static class IFunc_canRead<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_canRead extends InstanceFunction<EnvisionFile> {
 		public IFunc_canRead() { super(BOOLEAN, "canRead"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.canRead()));
@@ -255,7 +248,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns true if this file can be written to.
 	 */
-	private static class IFunc_canWrite<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_canWrite extends InstanceFunction<EnvisionFile> {
 		public IFunc_canWrite() { super(BOOLEAN, "canWrite"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.canWrite()));
@@ -266,7 +259,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Returns true if this path actually exists on the given computer's
 	 * file system.
 	 */
-	private static class IFunc_exists<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_exists extends InstanceFunction<EnvisionFile> {
 		public IFunc_exists() { super(BOOLEAN, "exists"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.exists()));
@@ -277,7 +270,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Returns true if this path represents a directory (folder) instead
 	 * of a singular file object.
 	 */
-	private static class IFunc_isDirectory<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_isDirectory extends InstanceFunction<EnvisionFile> {
 		public IFunc_isDirectory() { super(BOOLEAN, "isDirectory"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.isDirectory()));
@@ -288,7 +281,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Returns true if this path represents a file object vs. a directory
 	 * object.
 	 */
-	private static class IFunc_isFile<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_isFile extends InstanceFunction<EnvisionFile> {
 		public IFunc_isFile() { super(BOOLEAN, "isFile"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.isFile()));
@@ -298,7 +291,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Attempts to delete this file.
 	 */
-	private static class IFunc_delete<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_delete extends InstanceFunction<EnvisionFile> {
 		public IFunc_delete() { super(BOOLEAN, "delete"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.delete()));
@@ -308,7 +301,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns a list of file names visible within this directory.
 	 */
-	private static class IFunc_lsn<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_lsn extends InstanceFunction<EnvisionFile> {
 		public IFunc_lsn() { super(LIST, "lsn"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList names = EnvisionListClass.newList(STRING);
@@ -321,11 +314,11 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Returns a list of file objects representing this directory's
 	 * visible files.
 	 */
-	private static class IFunc_ls<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_ls extends InstanceFunction<EnvisionFile> {
 		public IFunc_ls() { super(LIST, "ls"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			var files = EUtil.mapList(inst.iFile.listFiles(), f -> newFile(f));
-			ret(EnvisionListClass.newList(FILE_DATATYPE, files));
+			ret(EnvisionListClass.newList(FILE, files));
 		}
 	}
 	
@@ -333,7 +326,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * If this file represents a directory path, this will create the
 	 * directory if it does not already exist.
 	 */
-	private static class IFunc_mkdir<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_mkdir extends InstanceFunction<EnvisionFile> {
 		public IFunc_mkdir() { super(BOOLEAN, "mkdir"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.mkdir()));
@@ -344,7 +337,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Creates the necessary directories required in order to make the
 	 * requested file/directory creation possible.
 	 */
-	private static class IFunc_mkdirs<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_mkdirs extends InstanceFunction<EnvisionFile> {
 		public IFunc_mkdirs() { super(BOOLEAN, "mkdirs"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(EnvisionBooleanClass.valueOf(inst.iFile.mkdirs()));
@@ -354,7 +347,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Renames this file to a new name. Operates based on file paths.
 	 */
-	private static class IFunc_rename<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_rename extends InstanceFunction<EnvisionFile> {
 		public IFunc_rename() { super(BOOLEAN, "rename", STRING); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			if (args.length == 0) ret(EnvisionBoolean.FALSE);
@@ -394,7 +387,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * Attempts to remove the contents of this file, returns true if
 	 * successful.
 	 */
-	private static class IFunc_clear<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_clear extends InstanceFunction<EnvisionFile> {
 		public IFunc_clear() { super(BOOLEAN, "clear"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
@@ -417,14 +410,16 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Returns all of the lines within the file as a list.
 	 */
-	private static class IFunc_lines<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_lines extends InstanceFunction<EnvisionFile> {
 		public IFunc_lines() { super(LIST, "lines"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionList lines = EnvisionListClass.newList(STRING);
 			
 			try {
 				File f = inst.gfe();
-				Files.lines(f.toPath()).forEach(EnvisionStringClass::valueOf);
+				try (var parsedLines = Files.lines(f.toPath())) {
+				    parsedLines.forEach(EnvisionStringClass::valueOf);
+				}
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -437,7 +432,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Writes the given object to the file, does not add a new line.
 	 */
-	private static class IFunc_write<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_write extends InstanceFunction<EnvisionFile> {
 		public IFunc_write() { super(BOOLEAN, "write"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
@@ -459,7 +454,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Writes the given object to the file, adds a new line.
 	 */
-	private static class IFunc_writeln<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_writeln extends InstanceFunction<EnvisionFile> {
 		public IFunc_writeln() { super(BOOLEAN, "writeln"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
@@ -482,7 +477,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	/**
 	 * Takes in a list and writes each value to the file line by line.
 	 */
-	private static class IFunc_writeLines<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_writeLines extends InstanceFunction<EnvisionFile> {
 		public IFunc_writeLines() { super(BOOLEAN, "writeLines"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
@@ -490,9 +485,7 @@ public class EnvisionFileClass extends EnvisionClass {
 			//prevent writes if this is not a file
 			if (!f.isFile()) ret(EnvisionBoolean.FALSE);
 			
-			if (args.length > 0 && args[0] instanceof EnvisionList) {
-				EnvisionList list = (EnvisionList) args[0];
-				
+			if (args.length > 0 && args[0] instanceof EnvisionList list) {
 				for (Object o : list.getInternalList()) {
 					String s = o.toString();
 					s += "\n";
@@ -506,7 +499,7 @@ public class EnvisionFileClass extends EnvisionClass {
 		}
 	}
 	
-	private static class IFunc_flush<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_flush extends InstanceFunction<EnvisionFile> {
 		public IFunc_flush() { super(BOOLEAN, "flush", STRING); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			File f = inst.iFile;
@@ -541,7 +534,7 @@ public class EnvisionFileClass extends EnvisionClass {
 	 * <p>
 	 * If the file only has one line, that one line is always returned.
 	 */
-	private static class IFunc_randomLine<E extends EnvisionFile> extends InstanceFunction<E> {
+	private static class IFunc_randomLine extends InstanceFunction<EnvisionFile> {
 		public IFunc_randomLine() { super(STRING, "randomLine"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			String randLine = EFileUtil.randomLine(inst.gfe());

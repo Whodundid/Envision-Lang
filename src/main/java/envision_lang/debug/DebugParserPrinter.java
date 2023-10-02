@@ -8,6 +8,8 @@ import eutil.strings.EStringBuilder;
 
 public class DebugParserPrinter {
 	
+    private DebugParserPrinter() {}
+    
 	public static void displayParsedStatements(EnvisionCodeFile codeFile) {
 		displayParsedStatements(codeFile.getFileName(), codeFile.getStatements());
 	}

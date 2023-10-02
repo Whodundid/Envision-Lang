@@ -2,14 +2,19 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.List;
 
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.functions.InstanceFunction;
+import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 
 public final class EnvisionTupleClass extends EnvisionClass {
@@ -73,6 +78,73 @@ public final class EnvisionTupleClass extends EnvisionClass {
 		return tuple;
 	}
 	
+    /**
+     * Attempts to create a new EnvisionTuple using the given 'data'
+     * argument as its initial values.
+     * 
+     * @param dataIn
+     * 
+     * @return An EnvisionTuple populated with the given 'data'
+     */
+    public static EnvisionTuple newTuple(Object dataIn) {
+        if (dataIn == null) throw new NullPointerException("Error! Cannot create EnvisionTuple from Java::NULL!");
+        
+        // collection path
+        if (dataIn instanceof Collection<?> c) return newTupleFromCollection(c);
+        // array path
+        else if (dataIn.getClass().isArray()) return newTupleFromArray(dataIn);
+        
+        // object wrap path
+        EnvisionTuple tuple = new EnvisionTuple();
+        tuple.add(ObjectCreator.wrap(dataIn));
+        TUPLE_CLASS.defineScopeMembers(tuple);
+        return tuple;
+    }
+	
+    /**
+     * 
+     * @param collectionIn
+     * @return
+     */
+    public static EnvisionTuple newTupleFromCollection(Collection<?> collectionIn) {
+        EnvisionTuple tuple = newTuple();
+        var it = collectionIn.iterator();
+        while (it.hasNext()) {
+            var value = it.next();
+            IDatatype type = IDatatype.dynamicallyDetermineType(value);
+            tuple.add(ObjectCreator.createObject(type, value));
+        }
+        
+        TUPLE_CLASS.defineScopeMembers(tuple);
+        return tuple;
+    }
+    
+    /**
+     * 
+     * @param arrayObject
+     * @return
+     */
+    public static EnvisionTuple newTupleFromArray(Object arrayObject) {
+        if (arrayObject == null || !arrayObject.getClass().isArray()) {
+            throw new EnvisionLangError("Error! Cannot create an EnvisionList from a Java::NULL or non-array object!");
+        }
+        
+        final int length = Array.getLength(arrayObject);
+        EnvisionTuple tuple = newTuple();
+        
+        Class<?> arrayClass = arrayObject.getClass();
+        Class<?> arrayComponentType = arrayClass.componentType();
+        
+        IDatatype type = IDatatype.fromJavaClass(arrayComponentType);
+        for (int i = 0; i < length; i++) {
+            Object value = Array.get(arrayObject, i);
+            tuple.add(ObjectCreator.createObject(type, value, true));
+        }
+        
+        TUPLE_CLASS.defineScopeMembers(tuple);
+        return tuple;
+    }
+    
 	//-----------
 	// Overrides
 	//-----------
@@ -91,7 +163,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 		var list = tuple.getInternalList();
 		
 		//load any args
-		for (var a : args) list.add(a);
+		list.addA(args);
 		
 		//define scope members
 		defineScopeMembers(tuple);
@@ -120,7 +192,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return boolean true if contains
 	 */
-	public static class IFunc_contains<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_contains extends InstanceFunction<EnvisionTuple> {
 		public IFunc_contains() { super(BOOLEAN, "contains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.contains(args[0]));
@@ -135,7 +207,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return boolean true if not contains
 	 */
-	public static class IFunc_notContains<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_notContains extends InstanceFunction<EnvisionTuple> {
 		public IFunc_notContains() { super(BOOLEAN, "notContains", VAR); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.notContains(args[0]));
@@ -148,7 +220,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionTuple the shallow list copy
 	 */
-	public static class IFunc_copy<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_copy extends InstanceFunction<EnvisionTuple> {
 		public IFunc_copy() { super(LIST, "copy"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(new EnvisionTuple(inst));
@@ -161,7 +233,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionTuple the list with elements in reversed order
 	 */
-	public static class IFunc_flip<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_flip extends InstanceFunction<EnvisionTuple> {
 		public IFunc_flip() { super(LIST, "flip"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.flip());
@@ -176,7 +248,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object at the given index
 	 */
-	public static class IFunc_get<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_get extends InstanceFunction<EnvisionTuple> {
 		public IFunc_get() { super(VAR, "get", INT); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.get((EnvisionInt) args[0]));
@@ -189,7 +261,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object in the last index
 	 */
-	public static class IFunc_getFirst<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_getFirst extends InstanceFunction<EnvisionTuple> {
 		public IFunc_getFirst() { super(VAR, "getFirst"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getFirst());
@@ -202,7 +274,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionObject the object in the last index
 	 */
-	public static class IFunc_getLast<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_getLast extends InstanceFunction<EnvisionTuple> {
 		public IFunc_getLast() { super(VAR, "getLast"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.getLast());
@@ -214,7 +286,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list has one element
 	 */
-	public static class IFunc_hasOne<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_hasOne extends InstanceFunction<EnvisionTuple> {
 		public IFunc_hasOne() { super(BOOLEAN, "hasOne"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.hasOne());
@@ -226,7 +298,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list is empty
 	 */
-	public static class IFunc_isEmpty<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_isEmpty extends InstanceFunction<EnvisionTuple> {
 		public IFunc_isEmpty() { super(BOOLEAN, "isEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isEmpty());
@@ -238,7 +310,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionBoolean true if the list is not empty
 	 */
-	public static class IFunc_isNotEmpty<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_isNotEmpty extends InstanceFunction<EnvisionTuple> {
 		public IFunc_isNotEmpty() { super(BOOLEAN, "isNotEmpty"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.isNotEmpty());
@@ -250,7 +322,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return Random element in this tuple
 	 */
-	public static class IFunc_random<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_random extends InstanceFunction<EnvisionTuple> {
 		public IFunc_random() { super(VAR, "random"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.random());
@@ -263,7 +335,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return EnvisionTuple a shuffled list
 	 */
-	public static class IFunc_shuffle<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_shuffle extends InstanceFunction<EnvisionTuple> {
 		public IFunc_shuffle() { super(LIST, "shuffle"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.shuffle());
@@ -275,7 +347,7 @@ public final class EnvisionTupleClass extends EnvisionClass {
 	 * 
 	 * @return the size of the list
 	 */
-	public static class IFunc_size<E extends EnvisionTuple> extends InstanceFunction<E> {
+	public static class IFunc_size extends InstanceFunction<EnvisionTuple> {
 		public IFunc_size() { super(INT, "size"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			ret(inst.size());

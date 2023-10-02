@@ -8,10 +8,11 @@ import org.junit.jupiter.api.TestInfo;
 
 import envision_lang.EnvisionLangTest;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.parser.expressions.expression_types.Expr_Assign;
 import envision_lang.parser.expressions.expression_types.Expr_TypeOf;
 
-public class Test_IE_TypeOf extends EnvisionLangTest {
+class Test_IE_TypeOf extends EnvisionLangTest {
 	
 	//======================================================================================================
 	
@@ -19,13 +20,14 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	protected void setup() {
 		scope().clear();
 		// custom class to test typeof on random class types
-		scope().def("A", new EnvisionClass("A"));
+		IDatatype aType = IDatatype.of("A");
+		scope().def("A", new EnvisionClass(aType));
 	}
 	
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_null(TestInfo testInfo) {
+	void test_typeOf_null(TestInfo testInfo) {
 		assertTypeOf("b = (null typeof boolean)", 	false);
 		assertTypeOf("b = (null typeof char)", 		false);
 		assertTypeOf("b = (null typeof double)", 	false);
@@ -56,7 +58,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_void(TestInfo testInfo) {
+	void test_typeOf_void(TestInfo testInfo) {
 		assertTypeOf("b = (void typeof boolean)", 	false);
 		assertTypeOf("b = (void typeof char)", 		false);
 		assertTypeOf("b = (void typeof double)", 	false);
@@ -87,7 +89,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_char(TestInfo testInfo) {
+	void test_typeOf_char(TestInfo testInfo) {
  		assertTypeOf("b = ('a' typeof boolean)", 	false);
 		assertTypeOf("b = ('a' typeof char)", 		true); // char == char
 		assertTypeOf("b = ('a' typeof double)", 	false);
@@ -118,7 +120,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_boolean_true(TestInfo testInfo) {
+	void test_typeOf_boolean_true(TestInfo testInfo) {
 		assertTypeOf("b = (true typeof boolean)", 		true); // boolean == boolean
 		assertTypeOf("b = (true typeof char)", 			false);
 		assertTypeOf("b = (true typeof double)", 		false);
@@ -149,7 +151,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_boolean_false(TestInfo testInfo) {
+	void test_typeOf_boolean_false(TestInfo testInfo) {
 		assertTypeOf("b = (false typeof boolean)", 		true); // boolean == boolean
 		assertTypeOf("b = (false typeof char)", 		false);
 		assertTypeOf("b = (false typeof double)", 		false);
@@ -180,7 +182,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_int(TestInfo testInfo) {
+	void test_typeOf_int(TestInfo testInfo) {
 		assertTypeOf("b = (10 typeof boolean)", 	false);
 		assertTypeOf("b = (10 typeof char)", 		false);
 		assertTypeOf("b = (10 typeof double)", 		false);
@@ -211,7 +213,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_double(TestInfo testInfo) {
+	void test_typeOf_double(TestInfo testInfo) {
 		assertTypeOf("b = (10.0 typeof boolean)", 		false);
 		assertTypeOf("b = (10.0 typeof char)", 			false);
 		assertTypeOf("b = (10.0 typeof double)", 		true); // double == double
@@ -242,7 +244,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_number_int(TestInfo testInfo) {
+	void test_typeOf_number_int(TestInfo testInfo) {
 		execute("number n = 10");
 		
 		assertTypeOf("b = (n typeof boolean)", 		false);
@@ -275,7 +277,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_number_double(TestInfo testInfo) {
+	void test_typeOf_number_double(TestInfo testInfo) {
 		execute("number n = 10.0");
 		
 		assertTypeOf("b = (n typeof boolean)", 		false);
@@ -308,7 +310,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_string(TestInfo testInfo) {
+	void test_typeOf_string(TestInfo testInfo) {
 		assertTypeOf("b = (\"s\" typeof boolean)", 		false);
 		assertTypeOf("b = (\"s\" typeof char)", 		false);
 		assertTypeOf("b = (\"s\" typeof double)", 		false);
@@ -339,7 +341,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_list(TestInfo testInfo) {
+	void test_typeOf_list(TestInfo testInfo) {
 		// create list in scope
 		execute("l = []");
 		
@@ -373,7 +375,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_tuple(TestInfo testInfo) {
+	void test_typeOf_tuple(TestInfo testInfo) {
 		// create tuple in scope
 		execute("t = tuple()");
 		
@@ -407,7 +409,7 @@ public class Test_IE_TypeOf extends EnvisionLangTest {
 	//======================================================================================================
 	
 	@Test
-	public void test_typeOf_object(TestInfo testInfo) {
+	void test_typeOf_object(TestInfo testInfo) {
 		// add an instance of 'A' to the scope
 		execute("a = A()");
 		

@@ -12,15 +12,15 @@ public abstract class InstanceFunction<E extends EnvisionObject> extends Envisio
 	// Constructors
 	//--------------
 	
-	public InstanceFunction(IDatatype rt, String nameIn) {
+	protected InstanceFunction(IDatatype rt, String nameIn) {
 		super(rt, nameIn, ParameterData.EMPTY_PARAMS);
 	}
 	
-	public InstanceFunction(IDatatype rt, String name, IDatatype... params) {
+	protected InstanceFunction(IDatatype rt, String name, IDatatype... params) {
 		super(rt, name, ParameterData.from(params));
 	}
 	
-	public InstanceFunction(IDatatype rt, String nameIn, ParameterData paramsIn) {
+	protected InstanceFunction(IDatatype rt, String nameIn, ParameterData paramsIn) {
 		super(rt, nameIn, paramsIn);
 	}
 	

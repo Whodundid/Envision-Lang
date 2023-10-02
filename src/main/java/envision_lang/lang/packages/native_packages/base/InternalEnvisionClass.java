@@ -9,24 +9,17 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.datatypes.EnvisionList;
+import envision_lang.lang.file.EnvisionFile;
+import envision_lang.lang.file.EnvisionFileClass;
 import envision_lang.lang.functions.IPrototypeHandler;
 import envision_lang.lang.functions.InstanceFunction;
 import envision_lang.lang.language_errors.EnvisionLangError;
-import envision_lang.lang.natives.IDatatype;
-import envision_lang.lang.natives.NativeTypeManager;
-import envision_lang.lang.packages.native_packages.file.EnvisionFile;
-import envision_lang.lang.packages.native_packages.file.EnvisionFileClass;
+import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class InternalEnvisionClass extends EnvisionClass {
 	
 	/** The lang-wrapped program user arguments. */
 	private static EnvisionList userArgs;
-	
-	/**
-	 * Constant file datatype reference. Use throughout.
-	 * Do not redefine.
-	 */
-	public static final IDatatype ENVISION_DATATYPE = NativeTypeManager.datatypeOf("Envision");
 	
 	public static final InternalEnvisionClass ENVISION_CLASS = new InternalEnvisionClass();
 	
@@ -46,7 +39,7 @@ public class InternalEnvisionClass extends EnvisionClass {
 	//--------------
 	
 	private InternalEnvisionClass() {
-		super(ENVISION_DATATYPE.getStringValue());
+		super(EnvisionStaticTypes.ENVISION_TYPE);
 	}
 	
 	//-----------
@@ -78,15 +71,15 @@ public class InternalEnvisionClass extends EnvisionClass {
 	// Static Envision Class Functions
 	//---------------------------------
 	
-	private static class IFunc_shutdown<E extends InternalEnvision> extends InstanceFunction<E> {
+	private static class IFunc_shutdown extends InstanceFunction<InternalEnvision> {
 		public IFunc_shutdown() { super(VOID, "shutdown"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			throw new LangShutdownCall();
 		}
 	}
 	
-	private static class IFunc_dir<E extends InternalEnvision> extends InstanceFunction<E> {
-		public IFunc_dir() { super(EnvisionFileClass.FILE_DATATYPE, "dir"); }
+	private static class IFunc_dir extends InstanceFunction<InternalEnvision> {
+		public IFunc_dir() { super(FILE, "dir"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionFile dirFile = EnvisionFileClass.newFile(EnvisionLang.programDir);
 			ret(dirFile);

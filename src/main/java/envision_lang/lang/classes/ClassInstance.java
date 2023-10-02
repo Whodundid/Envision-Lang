@@ -1,6 +1,6 @@
 package envision_lang.lang.classes;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import envision_lang.interpreter.EnvisionInterpreter;
@@ -44,11 +44,11 @@ public class ClassInstance extends EnvisionObject {
 	 * specific methods detailing operator functionality, the operators which
 	 * have been overloaded will be statically referenced here.
 	 */
-	protected Map<Operator, EnvisionFunction> operators = new HashMap<>();
+	protected Map<Operator, EnvisionFunction> operators = new EnumMap<>(Operator.class);
 	
-	//--------------
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
 	public ClassInstance(EnvisionClass derivingClassIn, IScope instanceScopeIn) {
 		super(derivingClassIn.getDatatype());
@@ -69,9 +69,9 @@ public class ClassInstance extends EnvisionObject {
 		instanceScope = new Scope(derivingClassIn.staticScope);
 	}
 	
-	//-----------
+	//===========
 	// Overrides
-	//-----------
+	//===========
 	
 	@Override
 	public String getTypeString() {
@@ -83,9 +83,9 @@ public class ClassInstance extends EnvisionObject {
 		return getDatatype() + "_#" + Integer.toHexString(hashCode());
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
 	/**
 	 * Used to natively handle operator overloads within class instances.
@@ -374,9 +374,9 @@ public class ClassInstance extends EnvisionObject {
 		return executeEquals(interpreter, args).get_i();
 	}
 	
-	//---------
+	//=========
 	// Getters
-	//---------
+	//=========
 	
 	/**
 	 * Returns the scope of this class instance.
@@ -403,9 +403,9 @@ public class ClassInstance extends EnvisionObject {
 		return internalClass;
 	}
 	
-	//---------
+	//=========
 	// Setters
-	//---------
+	//=========
 	
 	public void setScope(IScope in) {
 		instanceScope = in;
@@ -472,7 +472,7 @@ public class ClassInstance extends EnvisionObject {
 	 * overload.
 	 */
 	public boolean supportsOperator(Operator op) {
-		return (op != null) ? operators.containsKey(op) : false;
+		return op != null && operators.containsKey(op);
 	}
 	
 }

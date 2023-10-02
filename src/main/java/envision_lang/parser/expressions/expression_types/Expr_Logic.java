@@ -31,7 +31,7 @@ public class Expr_Logic extends ParsedExpression {
 	
 	@Override
 	public String toString() {
-		return left + " " + operator.typeString + " " + right;
+		return left + " " + operator.operatorString + " " + right;
 	}
 	
 	@Override

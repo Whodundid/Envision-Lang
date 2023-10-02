@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 import envision_lang.EnvisionLangTest;
 
-public class Test_Double extends EnvisionLangTest {
+class Test_Double extends EnvisionLangTest {
 	
 	//==================================================
 	
 	@BeforeEach
-	public void setup() {
+	protected void setup() {
 		scope().clear();
 	}
 	
@@ -22,7 +22,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * Tests that a new int defaults to zero.
 	 */
 	@Test
-	public void test_zero_new() {
+	void test_zero_new() {
 		EnvisionDouble i = EnvisionDoubleClass.newDouble();
 		
 		assertNotNull(i);
@@ -35,7 +35,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * Tests that the value of '0' defaults to zero.
 	 */
 	@Test
-	public void test_zero_valueOf() {
+	void test_zero_valueOf() {
 		EnvisionDouble i = EnvisionDoubleClass.valueOf(0);
 		
 		assertNotNull(i);
@@ -49,7 +49,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * same numeric value in both but a different hash code in each.
 	 */
 	@Test
-	public void test_new_different() {
+	void test_new_different() {
 		EnvisionDouble a = EnvisionDoubleClass.newDouble(5);
 		EnvisionDouble b = EnvisionDoubleClass.newDouble(5);
 		
@@ -75,7 +75,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * 		c = 0
 	 */
 	@Test
-	public void test_add_zero_typed() {
+	void test_add_zero_typed() {
 		scope().defDouble("a", 0);
 		scope().defDouble("b", 0);
 		
@@ -130,7 +130,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * 		c = 3
 	 */
 	@Test
-	public void test_add_three_typed() {
+	void test_add_three_typed() {
 		scope().defDouble("a", 1.0);
 		scope().defDouble("b", 2.0);
 		
@@ -185,7 +185,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * 		c = 0
 	 */
 	@Test
-	public void test_add_zero_typeless() {
+	void test_add_zero_typeless() {
 		scope().defDouble("a", 0.0);
 		scope().defDouble("b", 0.0);
 		
@@ -240,7 +240,7 @@ public class Test_Double extends EnvisionLangTest {
 	 * 		c = 3
 	 */
 	@Test
-	public void test_add_three_typeless() {
+	void test_add_three_typeless() {
 		scope().defDouble("a", 1);
 		scope().defDouble("b", 2);
 		
@@ -284,7 +284,7 @@ public class Test_Double extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_getMaxValue() {
+	void test_getMaxValue() {
 		execute("double max = double.MAX_VALUE");
 		
 		var max = get_i("max");
@@ -295,7 +295,7 @@ public class Test_Double extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_getMinValue() {
+	void test_getMinValue() {
 		execute("double min = double.MIN_VALUE");
 		
 		var min = get_i("min");
@@ -306,7 +306,7 @@ public class Test_Double extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_maxValue_minus_1() {
+	void test_maxValue_minus_1() {
 		execute("""
 				
 				double max = double.MAX_VALUE
@@ -322,7 +322,7 @@ public class Test_Double extends EnvisionLangTest {
 	//=========================================================================================
 	
 	@Test
-	public void test_maxValue_plus_1() {
+	void test_maxValue_plus_1() {
 		execute("""
 				
 				double max = double.MAX_VALUE

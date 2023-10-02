@@ -9,7 +9,7 @@ import envision_lang.EnvisionLangTest;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.parser.statements.statement_types.Stmt_If;
 
-public class Test_IS_If extends EnvisionLangTest {
+class Test_IS_If extends EnvisionLangTest {
 	
 	protected DebugStatement then_branch, else_branch;
 	
@@ -26,7 +26,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	//==================================================
 	
 	@Test
-	public void test_thenBranch_noThen() {
+	void test_thenBranch_noThen() {
 		var if_stmt = stmt_if(literal(true), null, null);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -35,7 +35,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_thenBranch() {
+	void test_thenBranch() {
 		var if_stmt = stmt_if(literal(true), then_branch, null);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -44,7 +44,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_elseBranch_noElse() {
+	void test_elseBranch_noElse() {
 		var if_stmt = stmt_if(literal(false), then_branch, null);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -53,7 +53,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_elseBranch() {
+	void test_elseBranch() {
 		var if_stmt = stmt_if(literal(false), null, else_branch);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -62,7 +62,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_thenBranch_withElse() {
+	void test_thenBranch_withElse() {
 		var if_stmt = stmt_if(literal(true), then_branch, else_branch);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -71,7 +71,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_elseBranch_withElse() {
+	void test_elseBranch_withElse() {
 		var if_stmt = stmt_if(literal(false), then_branch, else_branch);
 		
 		IS_If.run(interpreter, if_stmt);
@@ -80,7 +80,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_elseIf() {
+	void test_elseIf() {
 		scope().defInt("x", 0);
 		
 		EnvisionInt x = get("x");
@@ -106,7 +106,7 @@ public class Test_IS_If extends EnvisionLangTest {
 	}
 	
 	@Test
-	public void test_elseIf_else() {
+	void test_elseIf_else() {
 		scope().defInt("x", 5);
 		
 		EnvisionInt x = get("x");

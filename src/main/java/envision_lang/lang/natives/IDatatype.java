@@ -1,5 +1,8 @@
 package envision_lang.lang.natives;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+
 import envision_lang.lang.EnvisionObject;
 import eutil.datatypes.util.JavaDatatype;
 
@@ -113,7 +116,7 @@ public interface IDatatype {
 	 */
 	public default boolean isField() {
 		var p = getPrimitive();
-		return (p != null) ? p.isField() : true;
+		return p != null && p.isField();
 	}
 	
 	/**
@@ -127,8 +130,7 @@ public interface IDatatype {
 	 */
 	public default boolean isClass() {
 		var p = getPrimitive();
-		if (p == null || p == Primitives.CLASS || p == Primitives.CLASS_INSTANCE) return true;
-		return false;
+		return (p == null || p == Primitives.CLASS || p == Primitives.CLASS_INSTANCE);
 	}
 	
 	/**
@@ -183,7 +185,7 @@ public interface IDatatype {
 	 */
 	public default boolean isNativePrimitiveType() {
 		var p = getPrimitive();
-		return (p != null) ? p.isNativeType() : false;
+		return p != null && p.isNativeType();
 	}
 	
 	/**
@@ -214,7 +216,7 @@ public interface IDatatype {
 	//--------
 	
 	public static boolean isNumber(IDatatype type) { 
-		return (type != null) ? type.isNumber() : false;
+		return type != null && type.isNumber();
 	}
 	
 	/**
@@ -240,15 +242,25 @@ public interface IDatatype {
 		IDatatype parsedType = null;
 		
 		parsedType = switch (lower) {
+		case "var" -> EnvisionStaticTypes.VAR_TYPE;
+		case "null" -> EnvisionStaticTypes.NULL_TYPE;
+		case "void" -> EnvisionStaticTypes.VOID_TYPE;
 		case "boolean" -> EnvisionStaticTypes.BOOL_TYPE;
+		case "char", "character" -> EnvisionStaticTypes.CHAR_TYPE;
 		case "byte", "short", "int", "integer", "long" -> EnvisionStaticTypes.INT_TYPE;
 		case "float", "double", "number" -> EnvisionStaticTypes.DOUBLE_TYPE;
-		case "char", "character" -> EnvisionStaticTypes.CHAR_TYPE;
 		case "string" -> EnvisionStaticTypes.STRING_TYPE;
+		case "list" -> EnvisionStaticTypes.LIST_TYPE;
+		case "tuple" -> EnvisionStaticTypes.TUPLE_TYPE;
+		case "class" -> EnvisionStaticTypes.CLASS_TYPE;
+		case "func", "function" -> EnvisionStaticTypes.FUNC_TYPE;
+		case "execption" -> EnvisionStaticTypes.EXCEPTION_TYPE;
+		case "package" -> EnvisionStaticTypes.PACKAGE_TYPE;
+		case "codefile" -> EnvisionStaticTypes.CODE_FILE;
 		default -> null;
 		};
 		
-		if (parsedType == null) return NativeTypeManager.datatypeOf(typeName);
+		if (parsedType == null) return new EnvisionDatatype(typeName);
 		return parsedType;
 	}
 	
@@ -275,6 +287,53 @@ public interface IDatatype {
 		case CLASS -> EnvisionStaticTypes.CLASS_TYPE;
 		default -> null;
 		};
+	}
+	
+    /**
+     * Attempts to parse a valid Envision Datatype from the given Java class.
+     * <p>
+     * Note: only a handful of Java types can be directly mapped to Envision types.
+     * Java types that do not have a valid Envision mapping will return Java::NULL.
+     * 
+     * @param type The Java class
+     * @return The mapped Envision type or Java::NULL if not valid
+     */
+	public static IDatatype fromJavaClass(Class<?> type) {
+	    if (type == null) return Primitives.NULL;
+	    if (type == Object.class) return Primitives.VAR;
+	    if (type == Enum.class) return Primitives.ENUM;
+	    if (type == Method.class) return Primitives.FUNCTION;
+	    if (type == Void.class) return Primitives.VOID;
+	    if (type == String.class) return Primitives.STRING;
+	    if (Collection.class.isAssignableFrom(type)) return Primitives.LIST;
+	    if (type == Number.class || type.isAssignableFrom(Number.class)) return Primitives.NUMBER;
+	    if (type == Boolean.class || type == boolean.class) return Primitives.BOOLEAN;
+	    if (type == Character.class || type == char.class) return Primitives.CHAR;
+	    if (type == Byte.class || type == byte.class) return Primitives.INT;
+	    if (type == Short.class || type == short.class) return Primitives.INT;
+	    if (type == Integer.class || type == int.class) return Primitives.INT;
+	    if (type == Long.class || type == long.class) return Primitives.INT;
+	    if (type == Float.class || type == float.class) return Primitives.DOUBLE;
+	    if (type == Double.class || type == double.class) return Primitives.DOUBLE;
+	    
+	    if (type.isArray()) {
+	        return Primitives.LIST;
+//	        Class<?> arrType = type.getComponentType();
+//	        
+//	        if (arrType == Object.class) return Primitives.VAR_A;
+//	        if (arrType == String.class) return Primitives.STRING_A;
+//	        if (arrType == Number.class || arrType.isAssignableFrom(Number.class)) return Primitives.NUMBER_A;
+//	        if (arrType == Boolean.class || arrType == boolean.class) return Primitives.BOOLEAN_A;
+//	        if (arrType == Character.class || arrType == char.class) return Primitives.CHAR_A;
+//	        if (arrType == Byte.class || arrType == byte.class) return Primitives.INT_A;
+//	        if (arrType == Short.class || arrType == short.class) return Primitives.INT_A;
+//	        if (arrType == Integer.class || arrType == int.class) return Primitives.INT_A;
+//	        if (arrType == Long.class || arrType == long.class) return Primitives.INT_A;
+//	        if (arrType == Float.class || arrType == float.class) return Primitives.DOUBLE_A;
+//	        if (arrType == Double.class || arrType == double.class) return Primitives.DOUBLE_A;
+	    }
+	    
+	    return new EnvisionDatatype(type.getSimpleName());
 	}
 	
 }

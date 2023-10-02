@@ -6,6 +6,8 @@ public class EnvisionLoader {
 	private static ClassLoader loader = EnvisionLoader.class.getClassLoader();
 	private static String curBasePath = "envision_lang.";
 	
+	private EnvisionLoader() {}
+	
 	private static void d(String dir) {
 		curBasePath = "envision_lang." + dir;
 	}

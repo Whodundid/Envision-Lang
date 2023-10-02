@@ -1,13 +1,14 @@
 package envision_lang.lang.functions;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
-import eutil.datatypes.EArrayList;
+import eutil.datatypes.util.EList;
 
 /**
  * A low-level function placeholder that is intended to be handled
@@ -56,9 +57,9 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Stores overloads in the form of 'return type', '[ParameterData]*'.
 	 * Note: Parameter data can be empty -- hence *.
 	 */
-	private final HashMap<IDatatype, EArrayList<ParameterData>> overloads = new HashMap();
+	private final Map<IDatatype, EList<ParameterData>> overloads = new HashMap<>();
 	
-	private final EArrayList<ParameterData> overload_params = new EArrayList();
+	private final EList<ParameterData> overload_params = EList.newList();
 	
 	/**
 	 * Even internal functions must be bound by some pre-declared Java class in and
@@ -93,7 +94,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * Note: this backing class can be intentionally left null in order to prevent
 	 * specific function extractions for internally protected members.
 	 */
-	private Class<? extends InstanceFunction> func_class;
+	private Class<? extends InstanceFunction<? extends EnvisionObject>> func_class;
 	
 	/**
 	 * Just as a specific object's member function's directly pertain to the object
@@ -176,11 +177,11 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @param interpreter
 	 * @return The built function
 	 */
-	public InstanceFunction build(EnvisionObject instIn) {
+	public InstanceFunction<? extends EnvisionObject> build(EnvisionObject instIn) {
 		//NOTE: building needs to take into account the scope that it is coming from
 		
 		//check if already built and return built_func
-		if (built) return built_func;
+		if (built) return built_func.setInst(instIn);
 		
 		//check if there is even a dynamic class to build from
 		if (func_class == null) {
@@ -223,10 +224,11 @@ public class FunctionPrototype extends EnvisionObject {
 	
 	public FunctionPrototype addOverload(IDatatype rType, ParameterData params) {
 		//check if there is a bucket made for the given return type
-		EArrayList<ParameterData> bucket = overloads.get(rType);
+		EList<ParameterData> bucket = overloads.get(rType);
 		//if there is no bucket, make one first
 		if (bucket == null) {
-			overloads.put(rType, bucket = new EArrayList());
+		    bucket = EList.newList();
+			overloads.put(rType, bucket);
 		}
 		bucket.add(params);
 		overload_params.add(params);
@@ -250,7 +252,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 * @return True if there is an overload with the same return type and parameters
 	 */
 	public boolean hasOverload(IDatatype rType, ParameterData params) {
-		EArrayList<ParameterData> bucket = overloads.get(rType);
+		EList<ParameterData> bucket = overloads.get(rType);
 		//if there's no bucket, then there's no overload -- return false
 		if (bucket == null) return false;
 		
@@ -286,8 +288,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 */
 	public boolean hasOverload(EnvisionObject[] argsIn) {
 		//convert args to parameterData
-		ParameterData params = ParameterData.from(argsIn);
-		return hasOverload(params);
+		return hasOverload(ParameterData.from(argsIn));
 	}
 	
 	//---------
@@ -349,7 +350,7 @@ public class FunctionPrototype extends EnvisionObject {
 	 *                primitive object's member function within Envision.
 	 * @return This prototype
 	 */
-	public FunctionPrototype assignDynamicClass(Class<? extends InstanceFunction> classIn) {
+	public FunctionPrototype assignDynamicClass(Class<? extends InstanceFunction<? extends EnvisionObject>> classIn) {
 		func_class = classIn;
 		return this;
 	}

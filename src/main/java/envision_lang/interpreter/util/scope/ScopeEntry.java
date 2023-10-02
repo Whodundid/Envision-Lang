@@ -149,15 +149,10 @@ public class ScopeEntry {
 		IDatatype incoming = objectIn.getDatatype();
 		boolean compare = EnvisionStaticTypes.NULL_TYPE.compare(incoming);
 		
-		if (strong) {
-			if (!compare) throw new StrongVarReassignmentError(datatype, incoming);
-		}
-		else {
-			// this is probably not complete
-			object = objectIn;
-		}
+		if (strong && !compare) throw new StrongVarReassignmentError(datatype, incoming);
 		
-		
+		// this is probably not complete
+		object = objectIn;
 	}
 	
 	public EnvisionObject setR(EnvisionObject objectIn) {

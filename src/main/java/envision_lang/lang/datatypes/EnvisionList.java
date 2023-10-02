@@ -41,12 +41,12 @@ public final class EnvisionList extends ClassInstance {
 	/**
 	 * Internal Array list.
 	 */
-	public final EList<EnvisionObject> internal_list;
+	public final EList<EnvisionObject> internalList;
 	
 	/**
 	 * If parameterized to hold a specific datatype, this is that type.
 	 */
-	private final IDatatype list_type;
+	private final IDatatype listComponentType;
 	
 	/**
 	 * Prevents size modifications to this list.
@@ -60,38 +60,38 @@ public final class EnvisionList extends ClassInstance {
 	EnvisionList() { this(EnvisionStaticTypes.VAR_TYPE); }
 	EnvisionList(IDatatype typeIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = typeIn;
-		internal_list = new EArrayList<>();
+		listComponentType = typeIn;
+		internalList = new EArrayList<>();
 	}
 	
-	EnvisionList(IDatatype typeIn, EList listIn) {
+	EnvisionList(IDatatype typeIn, EList<EnvisionObject> listIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = typeIn;
-		internal_list = new EArrayList<>(listIn);
+		listComponentType = typeIn;
+		internalList = new EArrayList<>(listIn);
 	}
 	
 	EnvisionList(EnvisionList in) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = in.list_type;
-		internal_list = new EArrayList<>(in.internal_list);
+		listComponentType = in.listComponentType;
+		internalList = new EArrayList<>(in.internalList);
 	}
 	
-	EnvisionList(EnvisionList in, EList listIn) {
+	EnvisionList(EnvisionList in, EList<EnvisionObject> listIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = in.list_type;
-		internal_list = new EArrayList<>(listIn);
+		listComponentType = in.listComponentType;
+		internalList = new EArrayList<>(listIn);
 	}
 	
 	EnvisionList(EnvisionTuple tupleIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = EnvisionStaticTypes.VAR_TYPE;
-		internal_list = new EArrayList<>(tupleIn.getInternalList());
+		listComponentType = EnvisionStaticTypes.VAR_TYPE;
+		internalList = new EArrayList<>(tupleIn.getInternalList());
 	}
 	
 	EnvisionList(int initialSizeIn) {
 		super(EnvisionListClass.LIST_CLASS);
-		list_type = EnvisionStaticTypes.VAR_TYPE;
-		internal_list = new EArrayList<>(initialSizeIn);
+		listComponentType = EnvisionStaticTypes.VAR_TYPE;
+		internalList = new EArrayList<>(initialSizeIn);
 	}
 	
 	//-----------
@@ -100,14 +100,14 @@ public final class EnvisionList extends ClassInstance {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof EnvisionList env_list && env_list.internal_list == internal_list);
+		return (obj instanceof EnvisionList env_list && env_list.internalList == internalList);
 	}
 	
 	@Override
 	public EnvisionList copy() {
 		//shallow copy
-		var l = EnvisionListClass.newList(list_type);
-		for (var o : internal_list) {
+		var l = EnvisionListClass.newList(listComponentType);
+		for (var o : internalList) {
 			if (o.isPrimitive()) l.add(o.copy());
 			else l.add(o);
 		}
@@ -116,18 +116,18 @@ public final class EnvisionList extends ClassInstance {
 	
 	@Override
 	public String toString() {
-		return "[" + EStringUtil.combineAll(internal_list, ", ") + "]";
+		return "[" + EStringUtil.combineAll(internalList, ", ") + "]";
 	}
 	
 	public String convertToString(EnvisionInterpreter interpreter) {
 		var sb = new EStringBuilder("[");
 		int i = 0;
-		for (EnvisionObject o : internal_list) {
+		for (EnvisionObject o : internalList) {
 			if (o instanceof ClassInstance ci) {
 				System.out.println(ci.getScope());
 			}
 			sb.a(EnvisionStringFormatter.formatPrint(interpreter, o), true);
-			if (i < internal_list.size()) sb.a(", ");
+			if (i < internalList.size()) sb.a(", ");
 			i++;
 		}
 		sb.a("]");
@@ -154,7 +154,7 @@ public final class EnvisionList extends ClassInstance {
 		//support '+=' operator
 		if (op == Operator.ADD_ASSIGN) {
 			//attempt to add the incoming object to this list
-			if (obj instanceof EnvisionVariable var) add(var.copy());
+			if (obj instanceof EnvisionVariable<?> v) add(v.copy());
 			else add(obj);
 			
 			return this;
@@ -168,19 +168,19 @@ public final class EnvisionList extends ClassInstance {
 				throw new InvalidArgumentError("Expected an integer greater than or equal to '1' here!");
 			}
 			
-			EList<EnvisionObject> toCopy = new EArrayList<>(internal_list.size());
-			for (var o : internal_list) toCopy.add(o);
+			EList<EnvisionObject> toCopy = new EArrayList<>(internalList.size());
+			for (var o : internalList) toCopy.add(o);
 			
-			if (internal_list.isEmpty()) {
+			if (internalList.isEmpty()) {
 				for (int i = 0; i < byAmount; i++) {
-					internal_list.add(EnvisionNull.NULL);
+					internalList.add(EnvisionNull.NULL);
 				}
 			}
 			else {
 				for (int i = 0; i < (byAmount - 1); i++) {
 					for (var o : toCopy) {
-						if (o.isPrimitive()) internal_list.add(o.copy());
-						else internal_list.add(o);
+						if (o.isPrimitive()) internalList.add(o.copy());
+						else internalList.add(o);
 					}
 				}
 			}
@@ -241,19 +241,19 @@ public final class EnvisionList extends ClassInstance {
 	// Methods
 	//---------
 	
-	public EList<EnvisionObject> getInternalList() { return internal_list; }
+	public EList<EnvisionObject> getInternalList() { return internalList; }
 	
-	public EnvisionInt size() { return EnvisionIntClass.valueOf(internal_list.size()); }
-	public long size_i() { return internal_list.size(); }
-	public boolean isEmpty_i() { return internal_list.isEmpty(); }
-	public EnvisionBoolean isEmpty() { return (internal_list.isEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean hasOne() { return (internal_list.hasOne()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean isNotEmpty() { return (internal_list.isNotEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public EnvisionInt size() { return EnvisionIntClass.valueOf(internalList.size()); }
+	public long size_i() { return internalList.size(); }
+	public boolean isEmpty_i() { return internalList.isEmpty(); }
+	public EnvisionBoolean isEmpty() { return (internalList.isEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public EnvisionBoolean hasOne() { return (internalList.hasOne()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public EnvisionBoolean isNotEmpty() { return (internalList.isNotEmpty()) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	
-	public IDatatype getListType() { return list_type; }
-	public EnvisionString getListTypeString() { return EnvisionStringClass.valueOf(list_type); }
-	public EnvisionBoolean contains(EnvisionObject o) { return (internal_list.contains(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
-	public EnvisionBoolean notContains(EnvisionObject o) { return internal_list.notContains(o) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public IDatatype getListType() { return listComponentType; }
+	public EnvisionString getListTypeString() { return EnvisionStringClass.valueOf(listComponentType); }
+	public EnvisionBoolean contains(EnvisionObject o) { return (internalList.contains(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
+	public EnvisionBoolean notContains(EnvisionObject o) { return internalList.notContains(o) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	
 	//------------------
 	// List Add Methods
@@ -261,35 +261,35 @@ public final class EnvisionList extends ClassInstance {
 	
 	public EnvisionList add(EnvisionObject... val) {
 		if (sizeLocked) throw lockedError();
-		internal_list.addA(val);
+		internalList.addA(val);
 		return this;
 	}
 	
 	public EnvisionList addAll(List<EnvisionObject> vals) {
 		if (sizeLocked) throw lockedError();
-		internal_list.addAll(vals);
+		internalList.addAll(vals);
 		return this;
 	}
 	
 	public EnvisionList addAll(EnvisionList listIn) {
 		if (sizeLocked) throw lockedError();
-		internal_list.addAll(listIn.internal_list);
+		internalList.addAll(listIn.internalList);
 		return this;
 	}
 	
 	public EnvisionBoolean add(EnvisionObject o) {
 		if (sizeLocked) throw lockedError();
-		return (internal_list.add(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
+		return (internalList.add(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
 	}
 	
 	public EnvisionObject addR(EnvisionObject o) {
 		if (sizeLocked) throw lockedError();
-		return internal_list.addR(o);
+		return internalList.addR(o);
 	}
 	
 	public EnvisionList addRT(EnvisionObject o) {
 		if (sizeLocked) throw lockedError();
-		internal_list.addR(o);
+		internalList.addR(o);
 		return this;
 	}
 	
@@ -299,10 +299,10 @@ public final class EnvisionList extends ClassInstance {
 	
 	public EnvisionObject get(EnvisionInt index) { return get((int) index.int_val); }
 	public EnvisionObject get(long index) { return get((int) index); }
-	public EnvisionObject get(int index) { return internal_list.get(checkEmpty(checkIndex(index))); }
+	public EnvisionObject get(int index) { return internalList.get(checkEmpty(checkIndex(index))); }
 	
-	public EnvisionObject getFirst() { checkEmpty(); return internal_list.getFirst(); }
-	public EnvisionObject getLast() { checkEmpty(); return internal_list.getLast(); }
+	public EnvisionObject getFirst() { checkEmpty(); return internalList.getFirst(); }
+	public EnvisionObject getLast() { checkEmpty(); return internalList.getLast(); }
 	
 	//---------------------
 	// List Remove Methods
@@ -312,23 +312,23 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionObject remove(long index) { return remove((int) index); }
 	public EnvisionObject remove(int index) {
 		if (sizeLocked) throw lockedError();
-		return internal_list.remove(checkEmpty(checkIndex(index)));
+		return internalList.remove(checkEmpty(checkIndex(index)));
 	}
 	
 	public EnvisionObject removeFirst() {
 		if (sizeLocked) throw lockedError();
-		return internal_list.remove(checkEmpty(0));
+		return internalList.remove(checkEmpty(0));
 	}
 	
 	public EnvisionObject removeLast() {
 		if (sizeLocked) throw lockedError();
-		return internal_list.remove(checkEmpty(internal_list.size() - 1));
+		return internalList.remove(checkEmpty(internalList.size() - 1));
 	}
 	
 	public EnvisionObject removeRandom() {
 		if (sizeLocked) throw lockedError();
-		if (internal_list.isEmpty()) return EnvisionNull.NULL;
-		return internal_list.removeRandom();
+		if (internalList.isEmpty()) return EnvisionNull.NULL;
+		return internalList.removeRandom();
 	}
 	
 	//------------------
@@ -336,27 +336,27 @@ public final class EnvisionList extends ClassInstance {
 	//------------------
 	
 	public EnvisionObject set(EnvisionInt index, EnvisionObject obj) {
-		return internal_list.set(checkIndex((int) index.int_val), obj);
+		return internalList.set(checkIndex((int) index.int_val), obj);
 	}
 	
 	public EnvisionObject set(long index, EnvisionObject obj) {
-		return internal_list.set(checkIndex((int) index), obj);
+		return internalList.set(checkIndex((int) index), obj);
 	}
 	
 	public EnvisionObject set(int index, EnvisionObject obj) {
-		return internal_list.set(checkIndex(index), obj);
+		return internalList.set(checkIndex(index), obj);
 	}
 	
 	public void setFast(int index, EnvisionObject obj) {
-		internal_list.set(index, obj);
+		internalList.set(index, obj);
 	}
 	
 	public EnvisionObject setFirst(EnvisionObject obj) {
-		return internal_list.set(checkEmpty(0), obj);
+		return internalList.set(checkEmpty(0), obj);
 	}
 	
 	public EnvisionObject setLast(EnvisionObject obj) {
-		return internal_list.set(checkEmpty(internal_list.size() - 1), obj);
+		return internalList.set(checkEmpty(internalList.size() - 1), obj);
 	}
 	
 	//-------------------
@@ -378,8 +378,8 @@ public final class EnvisionList extends ClassInstance {
 	
 	public EnvisionList setSize(long size, EnvisionObject defaultValue) {
 		if (sizeLocked) throw lockedError();
-		internal_list.clear();
-		for (int i = 0; i < size; i++) internal_list.add(defaultValue);
+		internalList.clear();
+		for (int i = 0; i < size; i++) internalList.add(defaultValue);
 		return this;
 	}
 	
@@ -403,16 +403,16 @@ public final class EnvisionList extends ClassInstance {
 	
 	public EnvisionList clear() {
 		if (sizeLocked) throw lockedError();
-		internal_list.clear();
+		internalList.clear();
 		return this;
 	}
 	
 	public EnvisionList reverse() {
-		return new EnvisionList(list_type, internal_list.reverse());
+		return new EnvisionList(listComponentType, internalList.reverse());
 	}
 	
 	public EnvisionList shuffle() {
-		EList<EnvisionObject> l = new EArrayList<>(internal_list);
+		EList<EnvisionObject> l = new EArrayList<>(internalList);
 		Collections.shuffle(l);
 		return new EnvisionList(this, l);
 	}
@@ -421,7 +421,7 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionList swap(long indexA, long indexB) { return swap((int) indexA, (int) indexB); }
 	public EnvisionList swap(int indexA, int indexB) {
 		checkEmpty();
-		internal_list.swap(checkIndex(indexA), checkIndex(indexB));
+		internalList.swap(checkIndex(indexA), checkIndex(indexB));
 		return this;
 	}
 	
@@ -434,7 +434,7 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionList shiftLeft(EnvisionInt intIn) { return shiftLeft((int) intIn.int_val); }
 	public EnvisionList shiftLeft(long amount) { return shiftLeft((int) amount); }
 	public EnvisionList shiftLeft(int amount) {
-		return new EnvisionList(this, internal_list.shiftLeft(amount));
+		return new EnvisionList(this, internalList.shiftLeft(amount));
 	}
 	
 	public EnvisionList shiftRight(EnvisionObject[] args) {
@@ -446,12 +446,12 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionList shiftRight(EnvisionInt intIn) { return shiftRight((int) intIn.int_val); }
 	public EnvisionList shiftRight(long amount) { return shiftRight((int) amount); }
 	public EnvisionList shiftRight(int amount) {
-		return new EnvisionList(this, internal_list.shiftRight(amount));
+		return new EnvisionList(this, internalList.shiftRight(amount));
 	}
 	
 	public EnvisionObject random() {
 		if (isEmpty_i()) return EnvisionNull.NULL;
-		return internal_list.getRandom();
+		return internalList.getRandom();
 	}
 	
 	/**
@@ -461,20 +461,20 @@ public final class EnvisionList extends ClassInstance {
 	 */
 	public EnvisionList fill(EnvisionObject[] args) {
 		if (args.length != 1) throw new ArgLengthError("List::fill", 1, args.length);
-		for (int i = 0; i < internal_list.size(); i++) {
-			internal_list.set(i, args[0]);
+		for (int i = 0; i < internalList.size(); i++) {
+			internalList.set(i, args[0]);
 		}
 		return this;
 	}
 	
 	public EnvisionObject pop() {
 		if (sizeLocked) throw lockedError();
-		return internal_list.pop();
+		return internalList.pop();
 	}
 	
 	public EnvisionList push(EnvisionObject o) {
 		if (sizeLocked) throw lockedError();
-		internal_list.push(o);
+		internalList.push(o);
 		return this;
 	}
 	
@@ -484,12 +484,12 @@ public final class EnvisionList extends ClassInstance {
 	
 	private void checkEmpty() { checkEmpty(0); }
 	private int checkEmpty(int index) {
-		if (internal_list.isEmpty()) throw new EmptyListError(this);
+		if (internalList.isEmpty()) throw new EmptyListError(this);
 		return index;
 	}
 	
 	private int checkIndex(int index) {
-		if (index < 0 || index >= internal_list.size()) throw new IndexOutOfBoundsError(index, this);
+		if (index < 0 || index >= internalList.size()) throw new IndexOutOfBoundsError(index, this);
 		return index;
 	}
 	

@@ -57,12 +57,12 @@ public class Token<TYPE> {
 			lineTokenIndex = -1;
 		}
 		
-		isReservedWord = keyword.isReservedWord();
+		isReservedWord = keyword != null && keyword.isReservedWord();
 	}
 	
 	//---------------------------------------------------------------------------
 	
-	private ReservedWord getTokenKeyword(String tokenIn) {
+	public ReservedWord getTokenKeyword(String tokenIn) {
 		return ReservedWord.getKeyword(tokenIn);
 	}
 	
@@ -94,7 +94,7 @@ public class Token<TYPE> {
 	public boolean isDatatype() { return (keyword != null && keyword.isDataType()); }
 	public boolean isReservedWord() { return isReservedWord; }
 	
-	public boolean compareLexeme(Token t) { return lexeme.equals(t.lexeme); }
+	public boolean compareLexeme(Token<?> t) { return lexeme.equals(t.lexeme); }
 	
 	public String getLexeme() { return lexeme; }
 	public TYPE getLiteral() { return literal; }

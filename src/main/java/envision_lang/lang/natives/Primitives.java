@@ -1,5 +1,6 @@
 package envision_lang.lang.natives;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,6 +39,9 @@ import eutil.datatypes.util.JavaDatatype;
 public enum Primitives implements IDatatype {
 	
 	// native language types
+    
+    /** Native internal envision type. */
+    ENVISION("//envision"),
 	
 	VOID("//void"),
 	NULL("//_null_"),
@@ -45,21 +49,22 @@ public enum Primitives implements IDatatype {
 	CLASS_INSTANCE("//class_inst"),
 	INTERFACE("//interface"),
 	PACKAGE("//package"),
+	FILE("//file"),
 	CODE_FILE("//code_file"),
 	FUNCTION("//function"),
-	//OPERATOR("operator"),
-	EXCEPTION("exception"),
+	//OPERATOR("//operator"),
+	EXCEPTION("//exception"),
 	
 	// basic types
 	
-	BOOLEAN("//boolean"),
-	CHAR("//char"),
-	INT("//int"),
-	DOUBLE("//double"),
-	NUMBER("//number"),
-	STRING("//string"),
-	LIST("//list"),
-	TUPLE("//tuple"),
+	BOOLEAN("boolean"),
+	CHAR("char"),
+	INT("int"),
+	DOUBLE("double"),
+	NUMBER("number"),
+	STRING("string"),
+	LIST("list"),
+	TUPLE("tuple"),
 	
 	// dynamic object types
 	
@@ -112,7 +117,7 @@ public enum Primitives implements IDatatype {
 	/** Maps envision IKeyword types directly to primitive types. */
 	private static final Map<IKeyword, Primitives> keywordToPrimitiveMap = new HashMap<>();
 	/** Maps Java datatypes directly to an envision datatype (if applicable). */
-	private static final Map<JavaDatatype, Primitives> javaDatatypeToPrimitiveMap = new HashMap<>();
+	private static final Map<JavaDatatype, Primitives> javaDatatypeToPrimitiveMap = new EnumMap<>(JavaDatatype.class);
 	
 	/** A set of all primitives that can have parameters. */
 	private static final Set<Primitives> primitivesThatCanBeParameterized = new HashSet<>();
@@ -186,6 +191,7 @@ public enum Primitives implements IDatatype {
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.NUMBER, NUMBER);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.OBJECT, VAR);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.ARRAY, LIST);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.LIST, LIST);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.INTERFACE, INTERFACE);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.CONSTRUCTOR, FUNCTION);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.METHOD, FUNCTION);
@@ -289,6 +295,7 @@ public enum Primitives implements IDatatype {
 	 * Returns true if this primitive type is a number type.
 	 * I.E. int, double, number.
 	 */
+	@Override
 	public boolean isNumber() {
 		return numberPrimitives.contains(this);
 	}
@@ -296,6 +303,7 @@ public enum Primitives implements IDatatype {
 	/**
 	 * Returns true if this primitive type could be used as a field.
 	 */
+	@Override
 	public boolean isField() {
 		return fieldPrimitives.contains(this);
 	}
@@ -310,6 +318,7 @@ public enum Primitives implements IDatatype {
 	/**
 	 * Returns true if this primitive type represents a function.
 	 */
+	@Override
 	public boolean isFunction() {
 		return this == FUNCTION;
 	}
@@ -317,6 +326,7 @@ public enum Primitives implements IDatatype {
 	/**
 	 * Returns true if this datatype is a variable argument type.
 	 */
+	@Override
 	public boolean isArrayType() {
 		return is_array_type;
 	}
@@ -338,7 +348,7 @@ public enum Primitives implements IDatatype {
 	 * @return
 	 */
 	public static boolean isArrayType(Primitives t) {
-		return (t != null) ? t.is_array_type : false;
+		return t != null && t.is_array_type;
 	}
 	
 	public static boolean isNumber(Primitives t) {
@@ -357,7 +367,7 @@ public enum Primitives implements IDatatype {
 		return primitivesThatCanHaveGenerics.contains(typeIn);
 	}
 	
-	public static Primitives getPrimitiveType(Token token) {
+	public static Primitives getPrimitiveType(Token<?> token) {
 		return getPrimitiveType(token.getKeyword());
 	}
 	
@@ -377,7 +387,7 @@ public enum Primitives implements IDatatype {
 	}
 	
 	public static Primitives getPrimitiveType(EnvisionObject obj) {
-		if (obj instanceof EnvisionVariable env_var) return env_var.getPrimitiveType();
+		if (obj instanceof EnvisionVariable<?> env_var) return env_var.getPrimitiveType();
 		if (obj instanceof EnvisionList) return LIST;
 		if (obj instanceof EnvisionFunction) return FUNCTION;
 		if (obj instanceof EnvisionClass) return CLASS;
