@@ -4,7 +4,7 @@
 	
 	<groupId>whodundid</groupId>
 	<artifactId>Envision-Lang</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>Envision-Lang</name>
 	<packaging>jar</packaging>
 
@@ -12,15 +12,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.7.36</slf4j.version>
+		<jdk-version>21</jdk-version>
 	</properties>
 
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.10.1</version>
 				<configuration>
-					<release>18</release>
+					<release>${jdk-version}</release>
 					<parameters>true</parameters>
 					<testCompilerArgument>-parameters</testCompilerArgument>
 				</configuration>
@@ -28,7 +29,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M7</version>
+				<version>3.1.2</version>
 				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
