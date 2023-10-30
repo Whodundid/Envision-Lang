@@ -8,10 +8,12 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
+import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.UserDefinedTypeManager;
 import eutil.reflection.EModifier;
 
@@ -151,7 +153,7 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
         
         IDatatype envisionReturnType = mapperToUse.getEnvisionReturnType();
         UserDefinedTypeManager typeMan = interpreter.getTypeManager();
-        EnvisionObject toReturn;
+        EnvisionObject toReturn = EnvisionNull.NULL;
         
         if (typeMan.isTypeDefined(envisionReturnType)) {
             EnvisionClass typeClass = typeMan.getTypeClass(envisionReturnType);
@@ -165,14 +167,25 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
                 //toReturn = jclass.buildInstance(interpreter, javaObjectInstance)
                 toReturn = null;
             }
-            else {
+            else if (typeClass.isPrimitive()) {
                 toReturn = ObjectCreator.wrap(result);
-                //toReturn = typeClass.newInstance(interpreter, args);
+            }
+            else {
+                //System.out.println(result);
+                toReturn = typeClass.newInstance(interpreter, args);
             }
         }
-        else {
-            toReturn = mapperToUse.mapReturnTypeToEnvision(result);                
+        else if (result != null) {
+            // try to define the type on the fly
+            EnvisionJavaObject.wrapJavaObject(interpreter, result);
+            EnvisionClass typeClass = typeMan.getTypeClass(envisionReturnType);
+            if (typeClass instanceof EnvisionJavaClass jclass) {
+                System.out.println(jclass);
+            }
         }
+        //else {
+            //toReturn = mapperToUse.mapReturnTypeToEnvision(result);
+        //}
         
         ret(toReturn);
     }

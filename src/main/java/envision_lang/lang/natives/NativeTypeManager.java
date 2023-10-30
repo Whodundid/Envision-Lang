@@ -10,6 +10,7 @@ import envision_lang.lang.datatypes.EnvisionCharClass;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
 import envision_lang.lang.datatypes.EnvisionIntClass;
 import envision_lang.lang.datatypes.EnvisionListClass;
+import envision_lang.lang.datatypes.EnvisionMapClass;
 import envision_lang.lang.datatypes.EnvisionNumberClass;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionTupleClass;
@@ -65,6 +66,7 @@ public final class NativeTypeManager {
         native_classes.put(Primitives.STRING, EnvisionStringClass.STRING_CLASS);
         native_classes.put(Primitives.LIST, EnvisionListClass.LIST_CLASS);
         native_classes.put(Primitives.TUPLE, EnvisionTupleClass.TUPLE_CLASS);
+        native_classes.put(Primitives.MAP, EnvisionMapClass.MAP_CLASS);
         
         //load static natives on each native class
         for (EnvisionClass c : native_classes.values()) { c.initClassNatives(); }

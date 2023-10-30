@@ -107,6 +107,7 @@ public enum ReservedWord implements IKeyword {
 	ENUM("enum", KeywordType.DATATYPE),
 	LIST("list", KeywordType.DATATYPE),
 	TUPLE("tuple", KeywordType.DATATYPE),
+	MAP("map", KeywordType.DATATYPE),
 	
 	//-------
 	// loops

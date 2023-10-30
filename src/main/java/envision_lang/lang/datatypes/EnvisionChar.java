@@ -60,7 +60,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 	
 	@Override
 	public String toString() {
-		return String.valueOf(char_val);
+		return "'" + String.valueOf(char_val) + "'";
 	}
 	
 	/**

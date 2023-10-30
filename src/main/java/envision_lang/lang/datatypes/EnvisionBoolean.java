@@ -188,4 +188,12 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
 	
 	public EnvisionBoolean negate() { return EnvisionBooleanClass.valueOf(!bool_val); }
 	
+	//=======================
+	// Static Helper Methods
+	//=======================
+	
+	public static EnvisionBoolean of(boolean value) {
+	    return (value) ? TRUE : FALSE;
+	}
+	
 }

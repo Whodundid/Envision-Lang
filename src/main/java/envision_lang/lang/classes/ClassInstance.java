@@ -300,7 +300,7 @@ public class ClassInstance extends EnvisionObject {
 	}
 	
 	protected EnvisionObject handlePrototype(FunctionPrototype proto, EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		if (isPrimitive) return handlePrimitive(proto, args);
+		//if (isPrimitive) return handlePrimitive(proto, args);
 		return proto.build(this).invoke_r(interpreter, args);
 	}
 	

@@ -2,6 +2,9 @@ package envision_lang.lang.datatypes;
 
 import static envision_lang.lang.natives.Primitives.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
 import envision_lang.lang.EnvisionObject;
@@ -46,6 +49,8 @@ public class EnvisionStringClass extends EnvisionClass {
 		STRING_PROTOS.define("compareTo", INT, STRING).assignDynamicClass(IFunc_compareTo.class);
 	}
 	
+	private static final Map<String, EnvisionString> cache = new HashMap<>();
+	
 	//--------------
 	// Constructors
 	//--------------
@@ -82,7 +87,7 @@ public class EnvisionStringClass extends EnvisionClass {
 		return str;
 	}
 	
-	public static EnvisionString newStrting(EnvisionObject value) {
+	public static EnvisionString newString(EnvisionObject value) {
 		String str_val = null;
 		if (value == null) str_val = EnvisionNull.NULL.getTypeString();
 		else str_val = value.getTypeString();
@@ -106,23 +111,54 @@ public class EnvisionStringClass extends EnvisionClass {
 	 */
 	public static EnvisionString valueOf(EnvisionObject value) {
 		if (value instanceof EnvisionString s) return s;
-		return newString(value);
+		
+		String toString = String.valueOf(value);
+		EnvisionString str = cache.get(toString);
+		if (str == null) {
+		    str = newString(value);
+		    cache.put(toString, str);
+		}
+		
+		return str;
 	}
 	
-	public static EnvisionString valueOf(StringBuilder value) {
-		if (value == null || value.isEmpty()) return EnvisionString.EMPTY_STRING;
-		return newString(value);
-	}
-	
-	public static EnvisionString valueOf(String value) {
-		if (value.isEmpty()) return EnvisionString.EMPTY_STRING;
-		return newString(value);
-	}
-	
-	public static EnvisionString valueOf(Object value) {
-		if (value instanceof String s && s.isEmpty()) return EnvisionString.EMPTY_STRING;
-		return newString(value);
-	}
+    public static EnvisionString valueOf(StringBuilder value) {
+        if (value == null || value.isEmpty()) return EnvisionString.EMPTY_STRING;
+        
+        String toString = String.valueOf(value);
+        EnvisionString str = cache.get(toString);
+        if (str == null) {
+            str = newString(value);
+            cache.put(toString, str);
+        }
+        
+        return str;
+    }
+    
+    public static EnvisionString valueOf(String value) {
+        if (value.isEmpty()) return EnvisionString.EMPTY_STRING;
+        
+        EnvisionString str = cache.get(value);
+        if (str == null) {
+            str = newString(value);
+            cache.put(value, str);
+        }
+        
+        return str;
+    }
+    
+    public static EnvisionString valueOf(Object value) {
+        if (value instanceof String s && s.isEmpty()) return EnvisionString.EMPTY_STRING;
+        
+        String toString = String.valueOf(value);
+        EnvisionString str = cache.get(toString);
+        if (str == null) {
+            str = newString(value);
+            cache.put(toString, str);
+        }
+        
+        return newString(value);
+    }
 	
 	/**
 	 * Joins the values of each EnvisionString into a single

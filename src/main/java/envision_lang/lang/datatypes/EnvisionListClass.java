@@ -107,12 +107,25 @@ public final class EnvisionListClass extends EnvisionClass {
 	}
 	
 	/**
+     * 
+     * @param type
+     * @param data
+     * @return
+     */
+    public static EnvisionList newList(Collection<? extends EnvisionObject> data) {
+        EnvisionList list = newList();
+        list.getInternalList().ensureCapacity(data.size());
+        for (var o : data) list.add(o);
+        return list;
+    }
+	
+	/**
 	 * 
 	 * @param type
 	 * @param data
 	 * @return
 	 */
-	public static EnvisionList newList(IDatatype type, List<? extends EnvisionObject> data) {
+	public static EnvisionList newList(IDatatype type, Collection<? extends EnvisionObject> data) {
 		EnvisionList list = newList(type);
 		list.getInternalList().ensureCapacity(data.size());
 		for (var o : data) list.add(o);

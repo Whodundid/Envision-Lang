@@ -30,7 +30,11 @@ public class Expr_Literal extends ParsedExpression {
 	
 	@Override
 	public String toString() {
-		return value + "";
+	    String str;
+	    if (value instanceof String) str = "\"" + value + "\"";
+	    else if (value instanceof Character) str = "'" + value + "'";
+	    else str = String.valueOf(value);
+		return str;
 	}
 	
 	@Override

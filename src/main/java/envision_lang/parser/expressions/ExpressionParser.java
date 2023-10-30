@@ -234,7 +234,7 @@ public class ExpressionParser extends ParserHead {
 			//check if accessing member object
 			else if (match(PERIOD)) {
 				//grab the name of the member being accessed
-				Token<?> name = consume("Expected property name after '.'!", IDENTIFIER);
+				Token<?> name = consume("Expected property name after '.'!", IDENTIFIER, GET, SET);
 				
 				//check if member function call
 				if (check(PAREN_L)) e = new Expr_FunctionCall(e, name, collectFuncArgs());

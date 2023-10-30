@@ -65,6 +65,7 @@ public enum Primitives implements IDatatype {
 	STRING("string"),
 	LIST("list"),
 	TUPLE("tuple"),
+	MAP("map"),
 	
 	// dynamic object types
 	
@@ -155,6 +156,7 @@ public enum Primitives implements IDatatype {
 		stringValueToPrimitiveMap.put(ReservedWord.ENUM.typeString, ENUM);
 		stringValueToPrimitiveMap.put(ReservedWord.LIST.typeString, LIST);
 		stringValueToPrimitiveMap.put(ReservedWord.TUPLE.typeString, TUPLE);
+		stringValueToPrimitiveMap.put(ReservedWord.MAP.typeString, MAP);
 		
 		keywordToPrimitiveMap.put(ReservedWord.TRUE, BOOLEAN);
 		keywordToPrimitiveMap.put(ReservedWord.FALSE, BOOLEAN);
@@ -172,6 +174,7 @@ public enum Primitives implements IDatatype {
 		keywordToPrimitiveMap.put(ReservedWord.NUMBER, NUMBER);
 		keywordToPrimitiveMap.put(ReservedWord.LIST, LIST);
 		keywordToPrimitiveMap.put(ReservedWord.TUPLE, TUPLE);
+		keywordToPrimitiveMap.put(ReservedWord.MAP, MAP);
 		keywordToPrimitiveMap.put(ReservedWord.VAR, VAR);
 		keywordToPrimitiveMap.put(ReservedWord.ENUM, ENUM);
 		keywordToPrimitiveMap.put(ReservedWord.CHAR_LITERAL, CHAR);
@@ -192,6 +195,7 @@ public enum Primitives implements IDatatype {
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.OBJECT, VAR);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.ARRAY, LIST);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.LIST, LIST);
+		javaDatatypeToPrimitiveMap.put(JavaDatatype.MAP, MAP);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.INTERFACE, INTERFACE);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.CONSTRUCTOR, FUNCTION);
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.METHOD, FUNCTION);
@@ -201,6 +205,7 @@ public enum Primitives implements IDatatype {
 		javaDatatypeToPrimitiveMap.put(JavaDatatype.NULL, NULL);
 		
 		primitivesThatCanBeParameterized.add(LIST);
+		primitivesThatCanBeParameterized.add(MAP);
 		primitivesThatCanBeParameterized.add(FUNCTION);
 		primitivesThatCanBeParameterized.add(CLASS);
 		
@@ -218,6 +223,7 @@ public enum Primitives implements IDatatype {
 		fieldPrimitives.add(NUMBER);
 		fieldPrimitives.add(STRING);
 		fieldPrimitives.add(LIST);
+		fieldPrimitives.add(MAP);
 		fieldPrimitives.add(TUPLE);
 		fieldPrimitives.add(VAR);
 		fieldPrimitives.add(CLASS);
@@ -245,6 +251,7 @@ public enum Primitives implements IDatatype {
 		nativePrimitiveTypes.add(STRING);
 		nativePrimitiveTypes.add(LIST);
 		nativePrimitiveTypes.add(TUPLE);
+		nativePrimitiveTypes.add(MAP);
 	}
 	
 	//-----------
