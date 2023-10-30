@@ -14,7 +14,6 @@ import envision_lang._launch.EnvisionLoader;
 import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.interpreter.EnvisionInterpreter;
-import envision_lang.lang.java.EnvisionJavaObject;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.InterpreterCreationError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.NoMainError;

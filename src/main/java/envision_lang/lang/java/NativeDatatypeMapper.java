@@ -205,7 +205,7 @@ public class NativeDatatypeMapper {
         // hard fail on passed a null array
         if (arguments == null) throw new IllegalArgumentException("Error! Passed Java arguments cannot be null!");
         // throw error if this mapper does not actually possess any types to map to
-        if (toEnvision.length == 0) throw NativeMappingError.noMappingError();
+        if (toJava.length > 0 && toEnvision.length == 0) throw NativeMappingError.noMappingError();
         // throw error if the given number of arguments to map does not match this mapper's expected amount
         if (arguments.length != toEnvision.length) throw NativeMappingError.invalidAmount(toEnvision.length, arguments.length);
         
@@ -244,7 +244,7 @@ public class NativeDatatypeMapper {
         if (!isMethod) throw new NativeMappingError("Error! Cannot map a return type value because this mapper does not wrap a Java Method!");
         // throw error if this mapper doesn't have an actual type to map to
         if (javaReturnType == null) throw new NativeMappingError("Error! Cannot map return type value because the Envision return type is Java::NULL!");
-    
+        
         try {
             return ObjectCreator.createObject(envisionReturnType, value, true);
         }
@@ -290,7 +290,7 @@ public class NativeDatatypeMapper {
         // hard fail on passed a null array
         if (arguments == null) throw new IllegalArgumentException("Error! Passed Java arguments cannot be null!");
         // throw error if this mapper does not actually possess any types to map to
-        if (toJava.length == 0) throw NativeMappingError.noMappingError();
+        if (toEnvision.length > 0 && toJava.length == 0) throw NativeMappingError.noMappingError();
         // throw error if the given number of arguments to map does not match this mapper's expected amount
         if (arguments.length != toJava.length) throw NativeMappingError.invalidAmount(toJava.length, arguments.length);
         

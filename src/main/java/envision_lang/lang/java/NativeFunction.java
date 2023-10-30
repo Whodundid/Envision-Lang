@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import envision_lang.interpreter.EnvisionInterpreter;
+import envision_lang.interpreter.util.creation_util.ObjectCreator;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.EnvisionFunction;
@@ -165,7 +166,8 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
                 toReturn = null;
             }
             else {
-                toReturn = typeClass.newInstance(interpreter, args);                
+                toReturn = ObjectCreator.wrap(result);
+                //toReturn = typeClass.newInstance(interpreter, args);
             }
         }
         else {
