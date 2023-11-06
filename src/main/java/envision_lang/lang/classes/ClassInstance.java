@@ -285,7 +285,7 @@ public class ClassInstance extends EnvisionObject {
 		(String funcName, EnvisionInterpreter interpreter, EnvisionObject[] args)
 			throws UndefinedFunctionError, NotAFunctionError
 	{
-		//attempt to get function with given name from scope
+		// attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);
 		
 		if (obj == null) {
@@ -294,7 +294,7 @@ public class ClassInstance extends EnvisionObject {
 		else if (obj instanceof FunctionPrototype iproto) return (E) handlePrototype(iproto, interpreter, args);
 		else if (!(obj instanceof EnvisionFunction)) throw new NotAFunctionError(obj);
 		
-		//execute and return function result -- even if void
+		// execute and return function result -- even if void
 		EnvisionFunction func = (EnvisionFunction) obj;
 		return func.invoke_r(interpreter, args);
 	}

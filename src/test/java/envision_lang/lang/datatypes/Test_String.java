@@ -63,11 +63,8 @@ class Test_String extends EnvisionLangTest {
      */
     @Test
     void test_concatenation_with_string() {
-        scope().defString("base", "BASE");
-        scope().defString("target", "_TARGET");
-        
-        EnvisionString base = get("base");
-        EnvisionString target = get("target");
+        EnvisionString base = defString("base", "BASE");
+        EnvisionString target = defString("target", "_TARGET");
         EnvisionString result = get("result");
         
         assertNotNull(base);
@@ -79,13 +76,11 @@ class Test_String extends EnvisionLangTest {
         assertEquals("BASE", base.toString());
         assertEquals("_TARGET", target.toString());
         
-        var add_stmt = stmt("""
-                            
-                            string result = base + target
-                            
-                            """);
-        
-        interpreter.execute(add_stmt);
+        execute("""
+                
+                string result = base + target
+                
+                """);
         
         
         base = get("base");
@@ -110,29 +105,19 @@ class Test_String extends EnvisionLangTest {
      */
     @Test
     void test_concatenation_with_boolean() {
-        scope().defString("base", "BASE");
-        scope().defBool("target", true);
-        
-        EnvisionString base = get("base");
-        EnvisionBoolean target = get("target");
+        EnvisionString base = defString("base", "BASE");
+        EnvisionBoolean target = defBool("target", true);
         EnvisionString result = get("result");
         
         assertNotNull(base);
         assertNotNull(target);
         assertNull(result);
         
-        assertNotNull(base.string_val);
         assertEquals("BASE", base.toString());
         assertEquals(true, target.bool_val);
+        assertNotNull(base.string_val);
         
-        var add_stmt = stmt("""
-                            
-                            string result = base + target
-                            
-                            """);
-        
-        interpreter.execute(add_stmt);
-        
+        execute("string result = base + target");
         
         base = get("base");
         target = get("target");
@@ -143,6 +128,7 @@ class Test_String extends EnvisionLangTest {
         assertNotNull(result);
         assertNotNull(base.string_val);
         assertNotNull(result.string_val);
+        
         assertEquals("BASE", base.toString());
         assertEquals(true, target.bool_val);
         assertEquals("BASEtrue", result.toString());

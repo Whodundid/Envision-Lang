@@ -377,6 +377,8 @@ public class NativeDatatypeMapper {
         else if (object instanceof EnvisionList l) valueToCast = translateFromEnvisionList(l.getInternalList(), asType);
         // tuples require more work to breakdown and translate
         else if (object instanceof EnvisionTuple t) valueToCast = translateFromEnvisionList(t.getInternalList(), asType);
+        // map native java objects to their internal java object
+        else if (object instanceof EnvisionJavaObject o) valueToCast = o.getJavaObjectInstance();
         // if the given object is somehow NONE of the already checked types, error out
         else {
             throw NativeMappingError.invalidJavaMapping(object, asType);

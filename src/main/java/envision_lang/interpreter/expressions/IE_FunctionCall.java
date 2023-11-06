@@ -16,8 +16,9 @@ import envision_lang.lang.language_errors.error_types.objects.AbstractInstantiat
 import envision_lang.lang.language_errors.error_types.objects.UnsupportedInstantiationError;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_FunctionCall;
-import eutil.debug.InDevelopment;
+import envision_lang.parser.expressions.expression_types.Expr_Literal;
 import eutil.debug.Inefficient;
+import eutil.debug.PotentiallyUnnecessary;
 
 /**
  * Performs function calls on valid function expression targets.
@@ -25,9 +26,9 @@ import eutil.debug.Inefficient;
  * @author Hunter Bragg
  */
 public class IE_FunctionCall extends AbstractInterpreterExecutor {
-	
+    
 	@Inefficient(reason="Pass-by-value --> 'obj.copy' is very slow!")
-	@InDevelopment("Copying should only occur on already existing objects -- Not ones that were potentially just created!")
+	//@InDevelopment("Copying should only occur on already existing objects -- Not ones that were potentially just created!")
 	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_FunctionCall expression) {
 		EnvisionObject o = interpreter.evaluate(expression.callee);
 		String name = (expression.name != null) ? expression.name.getLexeme() : null;
@@ -41,17 +42,22 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 			for (int i = 0; i < args.length; i++) {
 				ParsedExpression arg = expression.args.get(i);
 				EnvisionObject obj = interpreter.evaluate(arg);
-				//-------------------------------------------------------
-				if (obj.isPassByValue()) obj = obj.copy();
-				//-------------------------------------------------------
+				//-----------------------------------------------------------
+				// if the overhead expression was a literal, there's no
+				// reason to copy as it was only just created.
+				//-----------------------------------------------------------
+				if (!(arg instanceof Expr_Literal) && obj.isPassByValue()) {
+				    obj = obj.copy();
+				}
+				//-----------------------------------------------------------
 				args[i] = obj;
 			}
 			
 			// determine the type
-			if (o instanceof EnvisionCodeFile env_code) return importCall(interpreter, name, args, env_code);
-			if (o instanceof EnvisionFunction env_func) return functionCall(interpreter, args, env_func);
-			if (o instanceof EnvisionClass env_class) return classCall(interpreter, name, args, env_class);
-			if (o instanceof ClassInstance env_inst) return instanceCall(interpreter, name, args, env_inst);
+			if (o instanceof EnvisionCodeFile env_code) return importCall(interpreter, name, env_code, args);
+			if (o instanceof EnvisionFunction env_func) return functionCall(interpreter, env_func, args);
+			if (o instanceof EnvisionClass env_class) return classCall(interpreter, name, env_class, args);
+			if (o instanceof ClassInstance env_inst) return instanceCall(interpreter, name, env_inst, args);
 		}
 		
 		throw new EnvisionLangError("Invalid function call expression! " + expression + " : " + o);
@@ -59,16 +65,16 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	
 	//=================================================================================================================
 	
-	private static EnvisionObject importCall(EnvisionInterpreter interpreter,
-											 String name,
-											 EnvisionObject[] args,
-											 EnvisionCodeFile code)
+	public static EnvisionObject importCall(EnvisionInterpreter interpreter,
+											String name,
+											EnvisionCodeFile code,
+											EnvisionObject... args)
 	{
 		EnvisionObject env_obj = code.getValue(name);
 		
 		if (env_obj == null) throw new UndefinedValueError(name);
-		if (env_obj instanceof EnvisionClass env_class) return classCall(interpreter, name, args, env_class);
-		if (env_obj instanceof EnvisionFunction env_func) return functionCall(interpreter, args, env_func);
+		if (env_obj instanceof EnvisionClass env_class) return classCall(interpreter, name, env_class, args);
+		if (env_obj instanceof EnvisionFunction env_func) return functionCall(interpreter, env_func, args);
 		
 		return null;
 	}
@@ -76,10 +82,10 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	//=================================================================================================================
 	
 	// handle class instances
-	private static EnvisionObject instanceCall(EnvisionInterpreter interpreter,
-		 							    	   String name,
-		 							    	   EnvisionObject[] args,
-		 							    	   ClassInstance ci)
+	public static EnvisionObject instanceCall(EnvisionInterpreter interpreter,
+		 							    	  String name,
+		 							    	  ClassInstance ci,
+		 							    	  EnvisionObject... args)
 	{
 		return ci.executeFunction(name, interpreter, args);
 	}
@@ -87,10 +93,11 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	//=================================================================================================================
 	
 	// handle classes
-	private static EnvisionObject classCall(EnvisionInterpreter interpreter,
-		 							 		String name,
-		 							 		EnvisionObject[] args,
-		 							 		EnvisionClass c)
+	@PotentiallyUnnecessary(reason="I have no idea what the point of 'name' is here")
+	public static EnvisionObject classCall(EnvisionInterpreter interpreter,
+		 							 	   String name,
+		 							 	   EnvisionClass c,
+		 							 	   EnvisionObject... args)
 	{
 		try {
 			if (c.isAbstract()) throw new AbstractInstantiationError(c);
@@ -117,9 +124,9 @@ public class IE_FunctionCall extends AbstractInterpreterExecutor {
 	//=================================================================================================================
 	
 	// handle standard function calls
-	private static EnvisionObject functionCall(EnvisionInterpreter interpreter,
-		 									   EnvisionObject[] args,
-		 									   EnvisionFunction f)
+	public static EnvisionObject functionCall(EnvisionInterpreter interpreter,
+		 									  EnvisionFunction f,
+		 									  EnvisionObject... args)
 	{
 		return f.invoke_r(interpreter, args);
 	}

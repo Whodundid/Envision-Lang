@@ -237,9 +237,9 @@ public final class EnvisionList extends ClassInstance {
 		};
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
 	public EList<EnvisionObject> getInternalList() { return internalList; }
 	
@@ -255,9 +255,18 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionBoolean contains(EnvisionObject o) { return (internalList.contains(o)) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	public EnvisionBoolean notContains(EnvisionObject o) { return internalList.notContains(o) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE; }
 	
-	//------------------
+	public EnvisionObject[] toArray() {
+	    int size = (int) size_i();
+	    EnvisionObject[] arr = new EnvisionObject[size];
+	    for (int i = 0; i < size && i < Integer.MAX_VALUE; i++) {
+	        arr[i] = internalList.get(i);
+	    }
+	    return arr;
+	}
+	
+	//==================
 	// List Add Methods
-	//------------------
+	//==================
 	
 	public EnvisionList add(EnvisionObject... val) {
 		if (sizeLocked) throw lockedError();

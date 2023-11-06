@@ -3,6 +3,7 @@ package envision_lang._launch;
 import java.io.File;
 import java.io.IOException;
 
+import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.workingDirectory.BadDirError;
 import envision_lang.lang.packages.EnvisionLangPackage;
@@ -18,10 +19,11 @@ import eutil.file.EFileUtil;
  */
 public class EnvisionProgram {
 	
-	//--------
+	//========
 	// Fields
-	//--------
+	//========
 	
+    private String programName;
 	/** The physical location of this program on the file system. */
 	private File programDir;
 	/** The location of the main file to be used. */
@@ -31,12 +33,18 @@ public class EnvisionProgram {
 	/** The settings to run the Envision Scripting Language with. */
 	private EnvisionEnvironmnetSettings settings;
 	
+	private final EList<String> lines = EList.newList();
+	
 	private EList<EnvisionLangPackage> bundledProgramPackages = EList.newList();
 	private BoxList<String, Object> javaObjectsToWrap = BoxList.newList();
 	
-	//--------------
+	private IScope programScope;
+	
+	private boolean isRunning = false;
+	
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
 	public EnvisionProgram() {
 		try {
@@ -45,6 +53,16 @@ public class EnvisionProgram {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public EnvisionProgram(String programNameIn, EList<String> lines) {
+	    programName = programNameIn;
+	    lines.addAll(lines);
+	    
+	    // build directory around user.dir
+	    dir = new WorkingDirectory();
+	    
+	    
 	}
 	
 	/**
@@ -57,7 +75,7 @@ public class EnvisionProgram {
 	 * @param programNameIn The name for the program
 	 */
 	public EnvisionProgram(String programNameIn) {
-		//use Java program dir as default dir path
+		// use Java program dir as default dir path
 		this(new File(System.getProperty("user.dir"), programNameIn));
 	}
 	
@@ -91,17 +109,17 @@ public class EnvisionProgram {
 		programDir = programDirIn;
 		bundledProgramPackages.addAll(buildPackages);
 		
-		//if null -- error on invalid program path
+		// if null -- error on invalid program path
 		if (programDir == null) throw new EnvisionLangError("Invalid Envision program path!");
 		
-		//assign default program dir and main path to Java's working dir
+		// assign default program dir and main path to Java's working dir
 		if (!EFileUtil.fileExists(programDir)) createDir();
 		
-		//wrap the program dir and parse
+		// wrap the program dir and parse
 		dir = new WorkingDirectory(programDir);
 		dir.discoverFiles();
 		
-		//create default main if one is not found within the program dir
+		// create default main if one is not found within the program dir
 		if (dir.getMain() == null) {
 			mainFile = new File(programDir, "main.nvis");
 			try {
@@ -113,7 +131,7 @@ public class EnvisionProgram {
 			}
 		}
 		
-		//attempt to check if the working dir is actually valid
+		// attempt to check if the working dir is actually valid
 		if (!dir.isValid()) throw new BadDirError(dir);
 	}
 	
@@ -132,17 +150,34 @@ public class EnvisionProgram {
      * @param object The object to wrap
      */
 	public void addJavaObjectToProgram(String fieldName, Object object) {
-//	    EnvisionJavaObject envisionJavaObject = null;
-//	    
-//	    if (object instanceof EnvisionJavaObject o) envisionJavaObject = o;
-//	    else envisionJavaObject = EnvisionJavaObject.wrapJavaObject(object);
-//	    
 		javaObjectsToWrap.add(fieldName, object);
 	}
 	
-	//------------------
+	public IScope getProgramScope() {
+	    return null;
+	}
+	
+	/**
+	 * Call an EnvisionFunction that resides somewhere within this program's scope.
+	 * <p>
+	 * This method will attempt to both find and execute the target function
+	 * within the Envision language itself.
+	 * <p>
+	 * Given Java parameter values will be converted into Envision equivalents.
+	 * <p>
+	 * Any value returned by the executed EnvisionFunction will be returned as
+	 * the equivalent Java object representation.
+	 * 
+	 * @param funcName
+	 * @param args
+	 */
+	public void callEnvisionFunction(String funcName, Object... args) {
+	    
+	}
+	
+	//==================
 	// Internal Methods
-	//------------------
+	//==================
 	
 	private void createDir() {
 		try {
@@ -155,9 +190,13 @@ public class EnvisionProgram {
 		}
 	}
 	
-	//---------
+	private EnvisionCodeFile wrapLinesIntoCodeFile(EList<String> linesToWrap) {
+	    return new EnvisionCodeFile(linesToWrap);
+	}
+	
+	//=========
 	// Getters
-	//---------
+	//=========
 	
 	/**
 	 * @return The Java File path of this script's main.
@@ -191,9 +230,12 @@ public class EnvisionProgram {
 	public EList<EnvisionLangPackage> getBundledPackages() { return bundledProgramPackages; }
 	public BoxList<String, Object> getJavaObjectsToWrap() { return javaObjectsToWrap; }
 	
-	//---------
+	public String getProgramName() { return programName; }
+	public EList<String> getLines() { return lines; }
+	
+	//=========
 	// Setters
-	//---------
+	//=========
 	
 	/**
 	 * Sets the launch arguments to run the Envision Scripting Language with.

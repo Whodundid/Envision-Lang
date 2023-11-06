@@ -226,9 +226,9 @@ public enum Primitives implements IDatatype {
 		fieldPrimitives.add(MAP);
 		fieldPrimitives.add(TUPLE);
 		fieldPrimitives.add(VAR);
-		fieldPrimitives.add(CLASS);
+		//fieldPrimitives.add(CLASS);
 		fieldPrimitives.add(CODE_FILE);
-		fieldPrimitives.add(FUNCTION);
+		//fieldPrimitives.add(FUNCTION);
 		fieldPrimitives.add(ENUM);
 		fieldPrimitives.add(CLASS_INSTANCE);
 		//fieldPrimitives.add(INTERFACE);
@@ -254,9 +254,9 @@ public enum Primitives implements IDatatype {
 		nativePrimitiveTypes.add(MAP);
 	}
 	
-	//-----------
+	//===========
 	// Overrides
-	//-----------
+	//===========
 	
 	@Override public Primitives getPrimitive() { return this; }
 	@Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(this); }

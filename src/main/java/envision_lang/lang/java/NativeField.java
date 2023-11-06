@@ -87,7 +87,7 @@ public class NativeField extends EnvisionObject implements INativeEnvision {
     
     @Override
     public String toString() {
-        return String.valueOf(getFieldValue_Envision());
+        return String.valueOf(wrappedObject);
     }
     
     @Override
@@ -125,7 +125,7 @@ public class NativeField extends EnvisionObject implements INativeEnvision {
         synchronized (wrappedField) {
             try {
                 if (isJavaPrivate) stripPrivate(wrappedField);
-                toReturn = wrappedField.get(wrappedObject.javaObject);
+                toReturn = wrappedField.get(wrappedObject.getJavaObjectInstance());
             }
             catch (Exception e) {
                 throw new EnvisionLangError(e);
@@ -161,7 +161,7 @@ public class NativeField extends EnvisionObject implements INativeEnvision {
             try {
                 if (isJavaPrivate) stripPrivate(wrappedField);
                 var mapped = mapper.mapToJava(object);
-                wrappedField.set(wrappedObject.javaObject, mapped);
+                wrappedField.set(wrappedObject.getJavaObjectInstance(), mapped);
             }
             catch (Exception e) {
                 throw new EnvisionLangError("Error! Failure to set field value from EnvisionObject!", e);
@@ -190,7 +190,7 @@ public class NativeField extends EnvisionObject implements INativeEnvision {
         synchronized (wrappedField) {
             try {
                 if (isJavaPrivate) stripPrivate(wrappedField);
-                wrappedField.set(wrappedObject.javaObject, object);
+                wrappedField.set(wrappedObject.getJavaObjectInstance(), object);
             }
             catch (Exception e) {
                 e.printStackTrace();

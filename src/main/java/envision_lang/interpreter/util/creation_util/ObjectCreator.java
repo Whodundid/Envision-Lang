@@ -15,12 +15,12 @@ import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionStringClass;
 import envision_lang.lang.datatypes.EnvisionTuple;
 import envision_lang.lang.datatypes.EnvisionTupleClass;
+import envision_lang.lang.datatypes.EnvisionVoid;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 import eutil.datatypes.util.EList;
-import eutil.debug.PotentiallyBroken;
 import eutil.math.ENumUtil;
 
 /** Utility class designed to help with general object creation. */
@@ -76,10 +76,15 @@ public class ObjectCreator {
 		return createObject(typeIn, valueIn, strongIn, false);
 	}
 	
-	@PotentiallyBroken("I have no idea what the 'passByValue' check is doing..")
 	public static EnvisionObject createObject(IDatatype typeIn, Object valueIn, boolean strongIn, boolean defaultIn) {
-		if (typeIn == null || EnvisionStaticTypes.NULL_TYPE.compare(typeIn) || valueIn == EnvisionNull.NULL) {
+		// NULL -> NULL
+	    if (typeIn == null || valueIn == EnvisionNull.NULL || EnvisionStaticTypes.NULL_TYPE.compare(typeIn)) {
 			return EnvisionNull.NULL;
+		}
+		
+	    // VOID -> VOID
+		if (valueIn == EnvisionVoid.VOID || EnvisionStaticTypes.VOID_TYPE.compare(typeIn)) {
+		    return EnvisionVoid.VOID;
 		}
 		
 		//format incomming arguments
@@ -93,6 +98,7 @@ public class ObjectCreator {
 		//if not primitive, check for default value and furthermore matching datatype
 		if (p_type == null) {
 			if (valueIn == null) return EnvisionNull.NULL;
+			else if (valueIn == EnvisionVoid.VOID) return EnvisionVoid.VOID;
 			else if (valueIn instanceof ClassInstance ci && typeIn.compare(ci.getDatatype())) {
 				return ci;
 			}

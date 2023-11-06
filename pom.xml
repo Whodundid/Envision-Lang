@@ -4,7 +4,7 @@
 	
 	<groupId>whodundid</groupId>
 	<artifactId>Envision-Lang</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<name>Envision-Lang</name>
 	<packaging>jar</packaging>
 
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.4.0</version>
+			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

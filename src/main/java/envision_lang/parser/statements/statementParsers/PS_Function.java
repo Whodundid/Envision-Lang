@@ -90,7 +90,10 @@ public class PS_Function extends ParserHead {
 	//--------------------------------------------------
 	
 	public static ParsedStatement functionDeclaration(boolean init, boolean operator, ParserDeclaration declaration) {
-		if (declaration == null) declaration = new ParserDeclaration();
+        // increment the method definition depth
+        ParserHead.pushMethodDef();
+	    
+	    if (declaration == null) declaration = new ParserDeclaration();
 		checkDeclaration(declaration);
 		
 		//variables used to build the function statement
@@ -127,15 +130,18 @@ public class PS_Function extends ParserHead {
 		//attempt to parse function body
 		EList<ParsedStatement> body = getFunctionBody(constructor);
 		
+		// pop this current method definition off of the stack
+		ParserHead.popMethodDef();
+		
 		return new Stmt_FuncDef(declaration.getStartToken(), name, op, parameters, body, declaration, constructor, operator);
 	}
 	
 	
 	
 	
-	//-----------------------
+	//=======================
 	// Static Helper Methods
-	//-----------------------
+	//=======================
 	
 	
 	
@@ -269,7 +275,7 @@ public class PS_Function extends ParserHead {
 				body.add(PS_Return.returnStatement());
 			}
 			else if (match(CURLY_L)) {
-				body = getBlock(true);
+				body = getBlock();
 			}
 			else {
 				(body = new EArrayList<>()).addIfNotNull(declaration());
@@ -282,7 +288,7 @@ public class PS_Function extends ParserHead {
 		}
 		// EX: 'func test() { return 5 }'
 		else if (match(CURLY_L)) {
-			body = getBlock(true);
+			body = getBlock();
 		}
 		
 		return body;

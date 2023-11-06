@@ -27,6 +27,10 @@ import eutil.datatypes.util.EList;
 
 public class EnvisionFunction extends ClassInstance {
 	
+    //========
+    // Fields
+    //========
+    
 	/**
 	 * The name of this function.
 	 */
@@ -105,9 +109,9 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	protected EnvisionFunction superFunction = null;
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * No argument constructor intended for purely internal use!
@@ -221,17 +225,17 @@ public class EnvisionFunction extends ClassInstance {
 		instanceScope = toCopy.instanceScope;
 		
 		for (EnvisionFunction overload : toCopy.overloads) {
-			overloads.add(copy(overload));
+			overloads.add(overload.copy());
 		}
 	}
 	
-	//-----------
-	// Overrides
-	//-----------
+	//===========
+    // Overrides
+    //===========
 	
 	@Override
 	public String toString() {
-		return functionName + parameters + getHexHash();
+		return functionName + "(" + parameters + ")" + getHexHash();
 	}
 	
 	@Override
@@ -250,9 +254,9 @@ public class EnvisionFunction extends ClassInstance {
 			   m.isOperatorOverload == isOperatorOverload;
 	}
 	
-	//-------------------
+	//===================
 	// Overload Handling
-	//-------------------
+	//===================
 	
 	/**
 	 * Adds a new function overload with the given return type and
@@ -397,9 +401,9 @@ public class EnvisionFunction extends ClassInstance {
 		return null;
 	}
 	
-	//---------
-	// Methods
-	//---------
+	//=========
+    // Methods
+    //=========
 	
 	/**
 	 * Compares the incoming function name against this function's name.
@@ -601,9 +605,9 @@ public class EnvisionFunction extends ClassInstance {
 		if (isConstructor) ret(scope.get("this"));
 	}
 	
-	//---------
-	// Getters
-	//---------
+	//=========
+    // Getters
+    //=========
 	
 	/**
 	 * @return The name of this function
@@ -624,9 +628,9 @@ public class EnvisionFunction extends ClassInstance {
 	public IDatatype getReturnType() { return returnType; }
 	public Operator getOperator() { return operatorOverload; }
 	
-	//---------
-	// Setters
-	//---------
+	//=========
+    // Setters
+    //=========
 	
 	public EnvisionFunction setBody(EList<ParsedStatement> in) {
 		statements.clear();
@@ -652,9 +656,9 @@ public class EnvisionFunction extends ClassInstance {
 		return statements.addR(statementIn, this);
 	}
 	
-	//----------------
-	// Static Methods
-	//----------------
+	//================
+    // Static Methods
+    //================
 	
 	public static EnvisionFunction copy(EnvisionFunction m) {
 		return new EnvisionFunction(m);

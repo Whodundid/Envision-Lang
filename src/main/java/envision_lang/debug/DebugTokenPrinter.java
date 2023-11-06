@@ -67,7 +67,7 @@ public class DebugTokenPrinter {
 		var sb = new EStringBuilder();
 		sb.println("'", fileName, "' Tokens:");
 		
-		int longestIndex = EStringUtil.getLongestLength("  i=" + tokens.size(), "Index");
+		int longestIndex = EStringUtil.getLongestLength("i=" + tokens.size(), "Index");
 		int longestLine = EStringUtil.getLongestLength(TLen.longestLineNum(), "Line");
 		int longestToken = EStringUtil.getLongestLength(TLen.longestToken(), "Token");
 		int longestKeyword = EStringUtil.getLongestLength(TLen.longestKeyword(), "Keyword");
@@ -76,7 +76,7 @@ public class DebugTokenPrinter {
 		int longestTokenIndex = EStringUtil.getLongestLength(TLen.longestLineIndex(), "Line Index");
 		int longestLineTokenIndex = EStringUtil.getLongestLength(TLen.longestLineTokenIndex(), "Line Token Index");
 		
-		String indexFormat = "%-" + longestIndex + "s  | ";
+		String indexFormat = "%-" + longestIndex + "s | ";
 		String lineFormat = "%-" + longestLine + "s | ";
 		String tokenFormat = "%-" + longestToken + "s | ";
 		String keywordFormat = "%-" + longestKeyword + "s | ";
@@ -96,7 +96,7 @@ public class DebugTokenPrinter {
 		
 		var header = new EStringBuilder();
 		header.a(hIndex, hLine, hToken, hKeyword, hLexeme, hLiteral, hLineIndex, hLineTokenIndex);
-		var dashes = "\t|" + EStringUtil.repeatString("-", header.length() - 3) + "|";
+		var dashes = "\t+" + EStringUtil.repeatString("-", header.length() - 3) + "+";
 		sb.println(dashes);
 		sb.println(header);
 		sb.println(dashes);

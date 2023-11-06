@@ -17,28 +17,24 @@ import eutil.datatypes.util.EList;
 public class EnvisionJavaObject extends ClassInstance {
     
     /** The wrapped Java class. */
-    EnvisionJavaClass classObject;
-    /** The class of the Java object. */
-    Class<?> javaObjectClass;
+    private EnvisionJavaClass classObject;
     /** The object in Java. */
-    Object javaObject;
+    private Object javaObject;
     
     //==============
     // Constructors
     //==============
     
-    public EnvisionJavaObject(EnvisionJavaClass wrappedClass, Class<?> javaClass) {
+    public EnvisionJavaObject(EnvisionJavaClass wrappedClass) {
         super(wrappedClass);
         
         classObject = wrappedClass;
-        javaObjectClass = javaClass;
     }
     
-    public EnvisionJavaObject(EnvisionJavaClass wrappedClass, Class<?> javaClass, Object javaInstance) {
+    public EnvisionJavaObject(EnvisionJavaClass wrappedClass, Object javaInstance) {
         super(wrappedClass);
         
         classObject = wrappedClass;
-        javaObjectClass = javaClass;
         javaObject = javaInstance;
     }
     
@@ -62,6 +58,11 @@ public class EnvisionJavaObject extends ClassInstance {
     @Override
     public EnvisionObject handleObjectCasts(IDatatype castType) throws ClassCastError {
         throw new ClassCastError("Wrapped Java objects cannot be cast!");
+    }
+    
+    @Override
+    public Object convertToJavaObject() {
+        return javaObject;
     }
     
     /**
@@ -158,6 +159,19 @@ public class EnvisionJavaObject extends ClassInstance {
         }
     }
 	
+    //=========
+    // Getters
+    //=========
+    
+    public Object getJavaObjectInstance() { return javaObject; }
+    
+    //=========
+    // Setters
+    //=========
+    
+    // there should probably be some more checks going on to ensure type compatibility but ya know~
+    public void setJavaObjectInstance(Object instance) { javaObject = instance; }
+    
 	//=================
 	// Static Builders
 	//=================

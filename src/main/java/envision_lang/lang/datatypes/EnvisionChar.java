@@ -91,7 +91,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 		return switch (op) {
 		case EQUALS, NOT_EQUALS -> true;
 		case ADD, MUL -> true;
-		//don't accept any other operator types
+		// don't accept any other operator types
 		default -> false;
 		};
 	}
@@ -101,66 +101,72 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
 		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
 			throws UnsupportedOverloadError
 	{
-		//don't allow null expression objects
+		// don't allow null expression objects
 		if (obj == null) throw new NullVariableError();
 		
-		//only accept if an EnvisionVariable type
+		// only accept if an EnvisionVariable type
 		if (!(obj instanceof EnvisionVariable))
 			throw new InvalidDatatypeError("Expected a variable but got '" + obj.getDatatype() + "' instead!");
 		
-		//extract incoming object datatype
+		// extract incoming object datatype
 		IDatatype obj_type = obj.getDatatype();
 		
-		//only natively support '+' and '*'
+		// only natively support '+' and '*'
 		switch (op) {
 		case ADD:
 		{
-			//due to the fact that char additions require the datatype being
-			//upgraded to a string, check for strong char and error if true
-			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			// due to the fact that char additions require the datatype being
+			// upgraded to a string, check for strong char and error if true
+			// if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
-			//only accept char or string objects
+			// only accept char or string objects
 			if (!EnvisionStaticTypes.CHAR_TYPE.compare(obj_type) && !EnvisionStaticTypes.STRING_TYPE.compare(obj_type))
 				throw new InvalidDatatypeError(EnvisionStaticTypes.STRING_TYPE, obj_type);
 			
-			//char additions require the char to be upgraded to a string
+			// char additions require the char to be upgraded to a string
 			String new_val = String.valueOf(char_val);
 			if (obj instanceof EnvisionChar env_char) new_val += env_char.char_val;
 			if (obj instanceof EnvisionString env_str) new_val += env_str.string_val;
 			
-			//to upgrade the datatype from char -> string requires creating new string object
+			// to upgrade the datatype from char -> string requires creating new string object
 			EnvisionString new_obj = EnvisionStringClass.valueOf(new_val);
 			
-			//assign new value to vars and immediately return created object
-			interpreter.scope().setFast(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
+			// assign new value to existing vars
+			if (scopeName != null) {
+			    interpreter.scope().setFast(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
+			}
+			
 			return new_obj;
 		}
 		
 		case MUL:
 		{
-			//due to the fact that char mul_additions require the datatype being
-			//upgraded to a string, check for strong char and error if true
-			//if (isStrong()) throw new StrongVarReassignmentError(this, "");
+			// due to the fact that char mul_additions require the datatype being
+			// upgraded to a string, check for strong char and error if true
+			// if (isStrong()) throw new StrongVarReassignmentError(this, "");
 			
-			//only accept int objects
+			// only accept int objects
 			if (!EnvisionStaticTypes.INT_TYPE.compare(obj_type))
 				throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, obj_type);
 			
-			//char mul_additions require the char to be upgraded to a string
+			// char mul_additions require the char to be upgraded to a string
 			StringBuilder new_val = new StringBuilder();
 			long multiply_val = ((EnvisionInt) obj).int_val;
 			for (int i = 0; i < multiply_val; i++) new_val.append(char_val);
 			
-			//to upgrade the datatype from char -> string requires creating new string object
+			// to upgrade the datatype from char -> string requires creating new string object
 			EnvisionString new_obj = EnvisionStringClass.valueOf(new_val);
 			
-			//assign new value to vars and immediately return created object
-			interpreter.scope().setFast(scopeName, new_obj.getDatatype(), new_obj);
-			return new_obj;
+            // assign new value to existing vars
+            if (scopeName != null) {
+                interpreter.scope().setFast(scopeName, EnvisionStaticTypes.STRING_TYPE, new_obj);
+            }
+            
+            return new_obj;
 		}
 		
-		//throw error if this point is reached
-		//default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+		// throw error if this point is reached
+		// default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
 		default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
 		}
 	}

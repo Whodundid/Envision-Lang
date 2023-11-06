@@ -7,13 +7,18 @@ import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
+import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
+import envision_lang.lang.datatypes.EnvisionChar;
 import envision_lang.lang.datatypes.EnvisionCharClass;
+import envision_lang.lang.datatypes.EnvisionDouble;
 import envision_lang.lang.datatypes.EnvisionDoubleClass;
+import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionIntClass;
+import envision_lang.lang.datatypes.EnvisionString;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 
 public class ScopeManager implements IScope {
 	
@@ -23,17 +28,24 @@ public class ScopeManager implements IScope {
 	public ScopeManager(IScope scopeIn) { scope = scopeIn; }
 	@Override public String toString() { return scope.toString(); }
 
-	public ScopeManager def(String name, EnvisionObject o) { scope.define(name, o); return this; }
-	public ScopeManager defBool(String name, boolean val) { return def(name, EnvisionBooleanClass.valueOf(val)); } 
-	public ScopeManager defChar(String name, char val) { return def(name, EnvisionCharClass.valueOf(val)); }
-	public ScopeManager defInt(String name, long val) { return def(name, EnvisionIntClass.valueOf(val)); }
-	public ScopeManager defDouble(String name, double val) { return def(name, EnvisionDoubleClass.valueOf(val)); }
-	public ScopeManager defString(String name, String val) { return def(name, EnvisionStringClass.valueOf(val)); }
+	public <T extends EnvisionObject> T def(String name, EnvisionObject o) {
+	    return (T) scope.define(name, o);
+	}
 	
-	public ScopeManager defVar(String name, Object val) {
+	public EnvisionBoolean defBool(String name, boolean val) {
+	    return def(name, EnvisionBooleanClass.valueOf(val));
+	}
+	
+	public EnvisionChar defChar(String name, char val) { return def(name, EnvisionCharClass.valueOf(val)); }
+	public EnvisionInt defInt(String name, long val) { return def(name, EnvisionIntClass.valueOf(val)); }
+	public EnvisionDouble defDouble(String name, double val) { return def(name, EnvisionDoubleClass.valueOf(val)); }
+	public EnvisionString defString(String name, String val) { return def(name, EnvisionStringClass.valueOf(val)); }
+	
+	public EnvisionObject defVar(String name, Object val) {
 		IDatatype type = IDatatype.dynamicallyDetermineType(val);
-		define(name, EnvisionStaticTypes.VAR_TYPE, ObjectCreator.createObject(type, val));
-		return this;
+		var object = ObjectCreator.createObject(type, val);
+		define(name, EnvisionStaticTypes.VAR_TYPE, object);
+		return object;
 	}
 
 	@Override public Map<String, ScopeEntry> values() { return scope.values(); }

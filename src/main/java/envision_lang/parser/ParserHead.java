@@ -47,6 +47,21 @@ public abstract class ParserHead {
 	//public static BoxHolder<Token, Token> modularValues = null;
 	/** Assigned when a class is currently being parsed. Will only not be null while within a class declaration. */
 	//public static Token curClassName = null;
+    
+    private static volatile int methodDepth = 0;
+    private static volatile int classDepth = 0;
+    
+    public static boolean inMethod() { return methodDepth > 0; }
+    public static boolean inClass() { return classDepth > 0; }
+    
+    public static void pushMethodDef() { methodDepth++; }
+    public static void pushClassDef() { classDepth++; }
+    
+    public static void popMethodDef() { methodDepth--; }
+    public static void popClassDef() { classDepth--; }
+    
+    public static int methodDepth() { return methodDepth; }
+    public static int classDepth() { return classDepth; }
 	
 	//-----------------------------------------------------------------------------------------------------
 	
@@ -68,9 +83,8 @@ public abstract class ParserHead {
 	// token -- These are any tokens which signify the beginning of a language level declaration.
 	//-----------------------------------------------------------------------------------------------------
 	
-	public static ParsedStatement declaration() { return declaration(false); }
-	public static ParsedStatement declaration(boolean inMethod) {
-		//consume any new line characters or semicolons first -- these by themselves are to be ignored
+	public static ParsedStatement declaration() {
+		// consume any new line characters or semicolons first -- these by themselves are to be ignored
 		ignoreTerminators();
 		
 		if (EnvisionLang.debugMode) {
@@ -93,7 +107,7 @@ public abstract class ParserHead {
 		//prevent invalid statement declarations inside of methods
 		//these restrictions are in place due to the fact that the resulting statement declaration
 		//would simply not make sense being declared inside of a method
-		if (inMethod) {
+		if (inMethod()) {
 			errorIf(checkType(VISIBILITY_MODIFIER), "Statements with visibility modifiers cannot be defined inside of a method!");
 			//errorIf(check(CLASS), "Classes cannot be declared inside of methods!");
 			//errorIf(check(ENUM), "Enums cannot be declared inside of methods!");
@@ -113,7 +127,7 @@ public abstract class ParserHead {
 		//determine next path
 		switch (dec.getDeclarationType()) {
 		
-		case EXPR:				parsedStatement = expressionStatement(dec); 							break;
+		case EXPR:				parsedStatement = expressionStatement(dec);                             break;
 		case CLASS_DEF: 		parsedStatement = PS_Class.classDeclaration(dec); 						break;
 //		case ENUM_DEF: 			parsedStatement = PS_Enum.enumDeclaration(dec); 						break;
 		case FUNC_DEF: 			parsedStatement = PS_Function.functionDeclaration(false, false, dec); 	break;
@@ -191,14 +205,14 @@ public abstract class ParserHead {
 	 * Collects the statements inside of a { } block.
 	 * @return EList<ParsedStatement>
 	 */
-	public static EList<ParsedStatement> getBlock() { return getBlock(false); }
-	public static EList<ParsedStatement> getBlock(boolean inMethod) {
+	public static EList<ParsedStatement> getBlock() {
 		EList<ParsedStatement> statements = EList.newList();
 		
+		ignoreTerminators();
+		
 		while (!check(CURLY_R) && !atEnd()) {
-			ParsedStatement s = declaration(inMethod);
+			ParsedStatement s = declaration();
 			if (s != null) statements.add(s);
-			//ignoreTerminators();
 		}
 		
 		consume(CURLY_R, "Expected '}' after block!");

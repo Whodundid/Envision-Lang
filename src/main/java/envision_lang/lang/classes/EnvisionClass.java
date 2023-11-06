@@ -239,9 +239,9 @@ public class EnvisionClass extends EnvisionObject {
 		return false;
 	}
 	
-	//-------------------
+	//===================
 	// Protected Methods
-	//-------------------
+	//===================
 	
 	/**
 	 * Creates a new instance of this object.

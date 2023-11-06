@@ -110,6 +110,7 @@ import envision_lang.parser.statements.statement_types.Stmt_VarDef;
 import envision_lang.parser.statements.statement_types.Stmt_While;
 import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
+import eutil.strings.EStringBuilder;
 
 /**
  * The primary class responsible for executing parsed Envision script
@@ -191,12 +192,20 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 			statementStack = EList.of(in);
 		}
 		
-		@Override public String toString() { return "" + statementStack; }
+		@Override
+		public String toString() {
+		    var sb = new EStringBuilder();
+		    int i = 0;
+		    for (var s : statementStack) {
+		        sb.println(i++, ": ", s);
+		    }
+		    return sb.toString();
+		}
 	}
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	public EnvisionInterpreter(EnvisionCodeFile codeFileIn) {
 		startingFile = codeFileIn;
@@ -843,9 +852,9 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 		return o;
 	}
 	
-	//------------
+	//============
 	// Statements
-	//------------
+	//============
 	
 	@Override public void handleBlockStatement(Stmt_Block s) { IS_Block.run(this, s); }
 	@Override public void handleLoopControlStatement(Stmt_LoopControl s) { IS_LoopControl.run(this, s); }
@@ -871,9 +880,9 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
 	@Override public void handleVariableStatement(Stmt_VarDef s) { IS_VarDec.run(this, s); }
 	@Override public void handleWhileStatement(Stmt_While s) { IS_While.run(this, s); }
 	
-	//-------------
+	//=============
 	// Expressions
-	//-------------
+	//=============
 	
 	@Override public EnvisionObject handleAssign_E(Expr_Assign e) { return IE_Assign.run(this, e); }
 	@Override public EnvisionObject handleBinary_E(Expr_Binary e) { return IE_Binary.run(this, e); }

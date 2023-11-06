@@ -30,7 +30,8 @@ public class IE_Binary extends AbstractInterpreterExecutor {
 			return OperatorOverloadHandler.handleOverload(interpreter, null, op, inst, b);
 		}
 		
-		// otherwise, throw error
-		throw new ArithmeticError("Cannot perform the operation '" + op + "' on the given object! '" + a + "' and '" + b + "'");
+        // otherwise, throw error
+        throw new ArithmeticError("Cannot perform the operation '" + op + "' on the given object! '"
+                                  + a + "' and '" + b + "'");
 	}
 }

@@ -13,7 +13,6 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.ParameterData;
-import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.UserDefinedTypeManager;
 import eutil.reflection.EModifier;
 
@@ -26,6 +25,7 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     private final NativeDatatypeMapper mapper;
     private final Constructor<?> javaConstructorTarget;
     private final Method javaMethodTarget;
+    private EnvisionJavaClass wrapperClass;
     private EnvisionJavaObject wrappedObject;
     private EModifier methodMods;
     
@@ -33,11 +33,12 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     // Constructors
     //==============
     
-    public NativeFunction(Constructor<?> constructorIn) {
-        this(null, constructorIn);
+    public NativeFunction(EnvisionJavaClass wrapperClassIn, Constructor<?> constructorIn) {
+        this(wrapperClassIn, null, constructorIn);
     }
     
-    public NativeFunction(EnvisionJavaObject wrappedObjectIn, Constructor<?> constructorIn) {
+    public NativeFunction(EnvisionJavaClass wrapperClassIn, EnvisionJavaObject wrappedObjectIn, Constructor<?> constructorIn) {
+        wrapperClass = wrapperClassIn;
         wrappedObject = wrappedObjectIn;
         javaConstructorTarget = constructorIn;
         javaMethodTarget = null;
@@ -62,11 +63,12 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
         if (methodMods.isPrivate()) modifierHandler.setPrivate();
     }
     
-    public NativeFunction(Method methodIn) {
-        this(null, methodIn);
+    public NativeFunction(EnvisionJavaClass wrapperClassIn, Method methodIn) {
+        this(wrapperClassIn, null, methodIn);
     }
     
-    public NativeFunction(EnvisionJavaObject wrappedObjectIn, Method methodIn) {
+    public NativeFunction(EnvisionJavaClass wrapperClassIn, EnvisionJavaObject wrappedObjectIn, Method methodIn) {
+        wrapperClass = wrapperClassIn;
         wrappedObject = wrappedObjectIn;
         javaConstructorTarget = null;
         javaMethodTarget = methodIn;
@@ -98,8 +100,23 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     
     @Override
     public NativeFunction copy() {
-        if (javaConstructorTarget != null) return new NativeFunction(wrappedObject, javaConstructorTarget);
-        else return new NativeFunction(wrappedObject, javaMethodTarget);
+        NativeFunction copy;
+        
+        if (javaConstructorTarget != null) {
+            copy = new NativeFunction(wrapperClass, wrappedObject, javaConstructorTarget);
+        }
+        else {
+            copy = new NativeFunction(wrapperClass, wrappedObject, javaMethodTarget);
+        }
+
+        copy.instanceScope = instanceScope;
+        
+        for (EnvisionFunction overload : overloads) {
+            var overloadCopy = overload.copy();
+            copy.overloads.add(overloadCopy);
+        }
+        
+        return copy;
     }
     
     @Override
@@ -110,7 +127,7 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     @Override
     public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
         
-        if (javaConstructorTarget != null) executeConstructor(interpreter, args);
+        if (javaConstructorTarget != null) executeConstructor(interpreter, null, args);
         else if (javaMethodTarget != null) executeMethod(interpreter, args);
     }
     
@@ -118,7 +135,13 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     // Internal Methods
     //==================
     
-    protected void executeConstructor(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+    /**
+     * 
+     * @param interpreter
+     * @param instance The new object instance being build
+     * @param args
+     */
+    protected void executeConstructor(EnvisionInterpreter interpreter, EnvisionJavaObject instance, EnvisionObject[] args) {
         try {
             NativeFunction m = (NativeFunction) getOverloadFromArgs(args);
             m.checkArgs(args);
@@ -127,7 +150,9 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
             NativeDatatypeMapper mapperToUse = m.mapper;
             
             Object[] mappedArguments = mapperToUse.mapToJava(args);
-            wrappedObject.javaObject = constructor.newInstance(mappedArguments);
+            
+            Object newJavaObject = constructor.newInstance(mappedArguments);
+            instance.setJavaObjectInstance(newJavaObject);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -145,7 +170,7 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
         Object result;
         
         try {
-            result = method.invoke(wrappedObject.javaObject, mappedArguments);
+            result = method.invoke(wrappedObject.getJavaObjectInstance(), mappedArguments);
         }
         catch (Exception e) {
             throw new EnvisionLangError("Failed to invoke native function!", e);
@@ -157,35 +182,39 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
         
         if (typeMan.isTypeDefined(envisionReturnType)) {
             EnvisionClass typeClass = typeMan.getTypeClass(envisionReturnType);
+            // if the type class is a native java wrapper class, refer to the
+            // wrapper class on what object to return
             if (typeClass instanceof EnvisionJavaClass jclass) {
-                // I actually have no idea how to handle this situation right now
-                // ~
-                // The invoked method in question: 'Java:TestPoint:add' produces
-                // a new TestPoint as a result. How on earth do I go about wrapping
-                // that produced instance?
-                
-                //toReturn = jclass.buildInstance(interpreter, javaObjectInstance)
-                toReturn = null;
+                // use the EnvisionJavaClass to either return an already existing
+                // wrapper instance or create a new one altogether
+                toReturn = jclass.buildInstance(interpreter, result);
             }
+            // if the type is a primitive, simply use the ObjectCreator
             else if (typeClass.isPrimitive()) {
                 toReturn = ObjectCreator.wrap(result);
             }
+            // otherwise, create a new Envision class instance from the found type
             else {
-                //System.out.println(result);
                 toReturn = typeClass.newInstance(interpreter, args);
             }
         }
+        // in the event that we don't already have an Envision mapped type for the
+        // given Java returned object, attempt to create a mapping for it on the fly
         else if (result != null) {
-            // try to define the type on the fly
+            // wrap the object and then grab its built class from the interpreter's type manager
             EnvisionJavaObject.wrapJavaObject(interpreter, result);
             EnvisionClass typeClass = typeMan.getTypeClass(envisionReturnType);
+            
             if (typeClass instanceof EnvisionJavaClass jclass) {
-                System.out.println(jclass);
+                // use the EnvisionJavaClass to either return an already existing
+                // wrapper instance or create a new one altogether
+                toReturn = jclass.buildInstance(interpreter, result);
+            }
+            else {
+                throw new IllegalStateException("On-The-Fly native type definition somehow" +
+                                                "returned a non-wrapper class type!");
             }
         }
-        //else {
-            //toReturn = mapperToUse.mapReturnTypeToEnvision(result);
-        //}
         
         ret(toReturn);
     }

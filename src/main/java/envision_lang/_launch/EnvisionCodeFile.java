@@ -17,6 +17,7 @@ import envision_lang.tokenizer.Token;
 import envision_lang.tokenizer.Tokenizer;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
+import eutil.file.EFileUtil;
 import eutil.strings.EStringUtil;
 
 /**
@@ -32,11 +33,11 @@ public class EnvisionCodeFile extends EnvisionObject {
 	//========
 	
 	/** The name of the code file itself. */
-	private final String fileName;
+	private String fileName;
 	/** The full qualified name of this code file. */
-	private final String fullFileName;
+	private String fullFileName;
 	/** The physical File object pointing back to the actual file on the system. */
-	private final File theFile;
+	private File theFile;
 	/** Each line of the file. */
 	private EList<String> lines = EList.newList();
 	/** The tokenized version of the file. */
@@ -46,7 +47,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The parsed Statements from the code file. */
 	private EList<ParsedStatement> statements = EList.newList();
 	/** True if this file is actually a proper Envision code file. */
-	private final boolean isValid;
+	private boolean isValid;
 	/** True if this file has already been parsed by the Envision Parser. */
 	private boolean isParsed = false;
 	/** True if this file has been loaded by the Envision Interpreter. */
@@ -62,13 +63,28 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The paired WorkingDirectory for this CodeFile. */
 	private WorkingDirectory workingDir;
 	
-	//--------------
+	//==============
 	// Constructors
-	//--------------
+	//==============
+	
+    /**
+     * Convenience constructor used to directly create a 'file-less' in-place
+     * script. This constructor can be used to directly wrap code to be run
+     * through an EnvisionInterpreter without needing to create a full on file
+     * on the host system just to achieve the same result.
+     * 
+     * @param scriptLines
+     */
+	public EnvisionCodeFile(EList<String> scriptLines) {
+	    super(Primitives.CODE_FILE);
+	    
+	    // tokenize lines directly
+	    tokenizer = new Tokenizer(this);
+	}
 	
 	public EnvisionCodeFile(String fileName) { this(new File(fileName)); }
 	public EnvisionCodeFile(File in) {
-		super(Primitives.CODE_FILE.toDatatype());
+		super(Primitives.CODE_FILE);
 		theFile = in;
 		
 		isValid = checkFile();
@@ -94,18 +110,18 @@ public class EnvisionCodeFile extends EnvisionObject {
 		return theFile.getName().endsWith(".nvis");
 	}
 	
-	//-----------
+	//===========
 	// Overrides
-	//-----------
+	//===========
 	
 	@Override
 	public String toString() {
 		return fileName;
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
 	private void tokenizeFileSafe() {
 		try {
@@ -196,6 +212,24 @@ public class EnvisionCodeFile extends EnvisionObject {
 	
 	/** Returns the scope of this code file's interpreter scope. */
 	public IScope scope() { return codeFileScope; }
+	
+    /**
+     * In the context of scripting, an EnvisionCodeFile may not necessarily
+     * actually refer back to an actual file on the host operating system. This
+     * is especially true if this code file is being used to pass on-the-fly
+     * script code directly to an interpreter.
+     * 
+     * @return true if there is actually a system file that this code file
+     *         refers back to
+     */
+	public boolean isActuallyAFile() { return EFileUtil.fileExists(theFile); }
+	
+	//=========
+	// Setters
+	//=========
+	
+	public void setMain(boolean value) { isMain = value; }
+	public void forceValid() { isValid = true; }
 	
 	//-----------------------------------------------------
 	

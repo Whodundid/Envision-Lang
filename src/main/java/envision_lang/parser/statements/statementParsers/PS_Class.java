@@ -25,7 +25,10 @@ public class PS_Class extends ParserHead {
 	 */
 	public static ParsedStatement classDeclaration() { return classDeclaration(new ParserDeclaration()); }
 	public static ParsedStatement classDeclaration(ParserDeclaration declaration) {
-		declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
+	    // increment the class definition depth
+	    ParserHead.pushClassDef();
+	    
+	    declaration = (declaration != null) ? declaration : new ParserDeclaration().setStage(DeclarationStage.TYPE);
 		Token<?> name = consume(IDENTIFIER, "Expected a valid class name!");
 		
 		//removing class parameter parsing for now
@@ -52,10 +55,10 @@ public class PS_Class extends ParserHead {
 //		}
 		
 		
-		//read in class body
+		// read in class body
 		consume(CURLY_L, "Expected '{' after class declaration!");
 		
-		//get the base class body then proceed to isolate static members and constructors
+		// get the base class body then proceed to isolate static members and constructors
 		EList<ParsedStatement> body = getBlock();
 		EList<ParsedStatement> staticMembers = EList.newList();
 		EList<Stmt_FuncDef> constructors = EList.newList();
@@ -114,6 +117,9 @@ public class PS_Class extends ParserHead {
 		cs.setBody(body);
 		cs.setStaticMembers(staticMembers);
 		cs.setInitializers(constructors);
+		
+        // pop this current class definition off of the stack
+        ParserHead.popClassDef();
 		
 		return cs;
 	}

@@ -65,9 +65,9 @@ public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
 	
 	public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * Native variable types do not have any discernible instance scope
@@ -80,9 +80,9 @@ public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
 		super(parentClass);
 	}
 	
-	//---------
-	// Getters
-	//---------
+	//=========
+    // Getters
+    //=========
 	
 	/**
 	 * Returns the Envision Object wrapping some underlying Java object.

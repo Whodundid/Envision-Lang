@@ -17,6 +17,7 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.ArgLengthError;
 import envision_lang.lang.language_errors.error_types.InvalidArgumentError;
 import envision_lang.lang.natives.Primitives;
+import eutil.EUtil;
 
 public class EnvisionStringClass extends EnvisionClass {
 
@@ -34,6 +35,7 @@ public class EnvisionStringClass extends EnvisionClass {
 	//statically define function prototypes
 	static {
 		STRING_PROTOS.define("equals", BOOLEAN, VAR).assignDynamicClass(IFunc_equals.class);
+		STRING_PROTOS.define("format", STRING, VAR_A).assignDynamicClass(IFunc_format.class);
 		STRING_PROTOS.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
 		STRING_PROTOS.define("charAt", CHAR, INT).assignDynamicClass(IFunc_charAt.class);
 		STRING_PROTOS.define("toList", LIST).assignDynamicClass(IFunc_toList.class);
@@ -169,12 +171,12 @@ public class EnvisionStringClass extends EnvisionClass {
 	 * @return A joined version of each string's contents
 	 */
 	public static EnvisionString concatenate(EnvisionString a, EnvisionString b) {
-		return valueOf(a.string_val.append(b.string_val));
+		return valueOf(String.valueOf(a.string_val) + String.valueOf(b.string_val));
 	}
 	
 	public static EnvisionString concatenate(EnvisionInterpreter interpreter, EnvisionObject a, EnvisionObject b) {
-		var a_str = EnvisionStringFormatter.formatPrint(interpreter, a, true);
-		var b_str = EnvisionStringFormatter.formatPrint(interpreter, b, true);
+		String a_str = EnvisionStringFormatter.formatPrint(interpreter, a, true);
+		String b_str = EnvisionStringFormatter.formatPrint(interpreter, b, true);
 		return valueOf(a_str + b_str);
 	}
 	
@@ -269,11 +271,22 @@ public class EnvisionStringClass extends EnvisionClass {
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 			EnvisionObject obj = args[0];
 			boolean eq = false;
-			if (obj instanceof EnvisionString env_str) eq = inst.string_val.equals(env_str.string_val);
+			if (obj instanceof EnvisionString env_str) eq = EUtil.isEqual(inst.string_val, env_str.string_val);
 			EnvisionBoolean eq_obj = EnvisionBooleanClass.valueOf(eq);
 			ret(eq_obj);
 		}
 	}
+	
+	/**
+     * Override equals to account for internal string value.
+     */
+    public static class IFunc_format extends InstanceFunction<EnvisionString> {
+        public IFunc_format() { super(STRING, "format", VAR_A); }
+        @Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+            //TODO
+            ret(EnvisionString.EMPTY_STRING);
+        }
+    }
 	
 	/**
 	 * Override toString to account for internal string value.

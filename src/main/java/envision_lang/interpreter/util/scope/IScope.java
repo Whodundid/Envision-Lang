@@ -725,8 +725,8 @@ public interface IScope {
 			}
 			
 			EStringBuilder obj_output = EStringBuilder.of(obj.getVisibility().lexeme);
-			if (obj instanceof EnvisionString) obj_output.a("\"", obj_output, "\"");
-			else if (obj instanceof EnvisionChar) obj_output.a("'", obj_output, "'");
+			if (obj instanceof EnvisionString) obj_output.a("\"", obj, "\"");
+			else if (obj instanceof EnvisionChar) obj_output.a(obj);
 			else obj_output.a(obj);
 			String var_actual_type = (EnvisionStaticTypes.VAR_TYPE.compare(entry.getDatatype())) ? ", <" + obj.getDatatype() + ">" : "";
 			String objHash = ", " + obj.getHexHash();

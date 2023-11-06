@@ -4,9 +4,9 @@ public class EnvisionStaticTypes {
 
 	private EnvisionStaticTypes() {}
 	
-	//------------------------------------
+	//====================================
 	// Statically Wrapped Primitive Types
-	//------------------------------------
+	//====================================
 	
 	public static final EnvisionDatatype ENVISION_TYPE      =   NativeTypeManager.datatypeOf(Primitives.ENVISION);
 	public static final EnvisionDatatype VAR_TYPE 			= 	NativeTypeManager.datatypeOf(Primitives.VAR);

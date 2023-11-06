@@ -23,9 +23,9 @@ public class WorkingDirectory {
 	/** Packages to be added to the interpreters at run time. */
 	private EList<EnvisionLangPackage> packages = EList.newList();
 	
-	//--------------
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
 	/** Creates a new WorkingDirectory from this directory. */
 	public WorkingDirectory() { this(new File(System.getProperty("user.dir"))); }
@@ -42,9 +42,9 @@ public class WorkingDirectory {
 		dir = in;
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
 	/**
 	 * Searches through top and child directories for envision code files.
@@ -60,11 +60,11 @@ public class WorkingDirectory {
 		EList<File> directories = EList.newList();
 		EList<File> workList = EList.newList();
 		
-		//add all envision code files to be found
+		// add all envision code files to be found
 		found.addAll(start.filter(f -> f.getName().endsWith(".nvis")));
-		//gather all directories from the top level directory
+		// gather all directories from the top level directory
 		directories.addAll(start.filter(f -> !f.getName().endsWith(".nvis")));
-		//load the work list with every file found on each directory
+		// load the work list with every file found on each directory
 		directories.filterForEach(f -> f.list() != null, f -> workList.addA(f.listFiles()));
 		
 		while (workList.isNotEmpty()) {
@@ -77,7 +77,7 @@ public class WorkingDirectory {
 			directories.forEach(f -> workList.addA(f.listFiles()));
 		}
 		
-		//wrap each found file within an EnvisionCodeFile object
+		// wrap each found file within an EnvisionCodeFile object
 		for (File f : found) wrapFile(f);
 	}
 	
@@ -88,7 +88,7 @@ public class WorkingDirectory {
 		EnvisionCodeFile codeFile = new EnvisionCodeFile(in);
 		if (!codeFile.isValid()) throw new InvalidCodeFileError(codeFile);
 		if (codeFile.isMain()) {
-			//if there is already a main, throw an error
+			// if there is already a main, throw an error
 			if (main != null) throw new MultipleMainsError(this);
 			main = codeFile;
 		}
@@ -135,9 +135,9 @@ public class WorkingDirectory {
 		for (EnvisionCodeFile f : codeFiles) f.displayParsedStatements();
 	}
 	
-	//---------
+	//=========
 	// Getters
-	//---------
+	//=========
 	
 	/** Returns true if this WorkingDirectory's parent file is not null and actually exists. */
 	public boolean isValid() { return isValid; }
@@ -149,5 +149,11 @@ public class WorkingDirectory {
 	public EList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
 	/** Returns all packages to be added at program start. */
 	public EList<EnvisionLangPackage> getBuildPackages() { return packages; }
+	
+	//=========
+	// Setters
+	//=========
+	
+	public void setMainFile(EnvisionCodeFile fileIn) { main = fileIn; }
 	
 }

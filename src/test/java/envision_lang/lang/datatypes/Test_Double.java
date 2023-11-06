@@ -45,7 +45,7 @@ class Test_Double extends EnvisionLangTest {
 	//=========================================================================================
 	
 	/**
-	 * Verifies that creating two new ints with the same value produces the
+	 * Verifies that creating two new doubles with the same value produces the
 	 * same numeric value in both but a different hash code in each.
 	 */
 	@Test

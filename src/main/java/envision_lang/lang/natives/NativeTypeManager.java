@@ -49,7 +49,7 @@ public final class NativeTypeManager {
     // Static Initialization
     //=======================
     
-    //register each native Envision class
+    // register each native Envision class
     public static void init() {
         if (nativesRegistered) return;
         
@@ -57,6 +57,7 @@ public final class NativeTypeManager {
             p.toDatatype();
         }
         
+        // non-array types
         native_classes.put(Primitives.FUNCTION, EnvisionFunctionClass.FUNC_CLASS);
         native_classes.put(Primitives.BOOLEAN, EnvisionBooleanClass.BOOLEAN_CLASS);
         native_classes.put(Primitives.CHAR, EnvisionCharClass.CHAR_CLASS);
@@ -68,7 +69,16 @@ public final class NativeTypeManager {
         native_classes.put(Primitives.TUPLE, EnvisionTupleClass.TUPLE_CLASS);
         native_classes.put(Primitives.MAP, EnvisionMapClass.MAP_CLASS);
         
-        //load static natives on each native class
+        // array types
+        native_classes.put(Primitives.BOOLEAN_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.CHAR_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.DOUBLE_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.INT_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.NUMBER_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.STRING_A, EnvisionListClass.LIST_CLASS);
+        native_classes.put(Primitives.VAR_A, EnvisionListClass.LIST_CLASS);
+        
+        // load static natives on each native class
         for (EnvisionClass c : native_classes.values()) { c.initClassNatives(); }
         
         nativesRegistered = true;
@@ -91,9 +101,9 @@ public final class NativeTypeManager {
     
     public static EnvisionDatatype datatypeOf(Primitives type) {
         var t = native_types.get(type.string_value);
-        //return singleton instance if it exists
+        // return singleton instance if it exists
         if (t != null) return t;
-        //create new singleton
+        // create new singleton
         t = new EnvisionDatatype(type);
         native_types.put(type.string_value, t);
         return t;

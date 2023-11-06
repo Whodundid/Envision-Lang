@@ -2,7 +2,6 @@ package envision_lang.lang.datatypes;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.EnvisionStringFormatter;
-import envision_lang.interpreter.util.scope.ScopeEntry;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
 import envision_lang.lang.functions.FunctionPrototype;
@@ -17,7 +16,6 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.tokenizer.Operator;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
-import eutil.debug.Broken;
 
 /**
  * A script variable representing a list of characters.
@@ -30,17 +28,11 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	public static final EnvisionString EMPTY_STRING = EnvisionStringClass.newString();
 	
-	/**
-	 * The internal StringBuilder for which all strings are built from.
-	 * Instead of directly using a string, a StringBuilder is more memory
-	 * efficient when dealing with string concatenation and appending.
-	 */
+	public final String string_val;
 	
-	public final StringBuilder string_val;
-	
-	//--------------
+	//==============
 	// Constructors
-	//--------------
+	//==============
 	
 	EnvisionString() {
 		super(EnvisionStringClass.STRING_CLASS);
@@ -50,7 +42,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	EnvisionString(String valueIn) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = new StringBuilder(valueIn);
+		string_val = valueIn;
 	}
 	
 	EnvisionString(EnvisionString in) {
@@ -60,17 +52,17 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	EnvisionString(EnvisionObject in) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = new StringBuilder(String.valueOf(in));
+		string_val = String.valueOf(in);
 	}
 	
 	EnvisionString(StringBuilder in) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = in;
+		string_val = in.toString();
 	}
 	
 	EnvisionString(Object in) {
 		super(EnvisionStringClass.STRING_CLASS);
-		string_val = new StringBuilder(String.valueOf(in));
+		string_val = String.valueOf(in);
 	}
 	
 	//-----------
@@ -87,8 +79,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	@Override
 	public String toString() {
-		if (string_val == null) return null;
-		return string_val.toString();
+		return string_val;
 	}
 	
 	/**
@@ -111,64 +102,51 @@ public final class EnvisionString extends EnvisionVariable<String> {
 	
 	@Override
 	public String get_i() {
-		if (string_val == null) return "";
-		return string_val.toString();
+		return string_val;
 	}
 	
 	@Override
 	public boolean supportsOperator(Operator op) {
 		return switch (op) {
 		case ADD, MUL -> true;
-		case ADD_ASSIGN, MUL_ASSIGN -> true;
 		default -> false;
 		};
 	}
 	
 	@Override
-	@Broken(reason="Strings should be immutable and lines 157 and 183 breaks this entirely!")
 	public EnvisionObject handleOperatorOverloads
 		(EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
 			throws UnsupportedOverloadError
 	{
-		//reject null object values
+		// reject null object values
 		if (obj == null) throw new NullVariableError();
 		
-		//only support '+', '+=', '*', '*='
+		// only support '+', '*'
 		
-		// extract this variable's direct scope entry so that assignment operations can effectively update the value
-		ScopeEntry scopeEntry = interpreter.scope().getTyped(scopeName);
-		
-		//addition operators
-		if (op == Operator.ADD || op == Operator.ADD_ASSIGN) {
+		// addition operators
+		if (op == Operator.ADD) {
 			String obj_toString = null;
 			
-			//convert incoming object to a string representation
+			// convert incoming object to a string representation
 			if (obj instanceof EnvisionVariable<?> env_var) obj_toString = env_var.toString();
 			else if (obj instanceof EnvisionList list)		obj_toString = EnvisionStringFormatter.formatPrint(interpreter, list, true);
 			else if (obj instanceof ClassInstance inst) 	obj_toString = EnvisionStringFormatter.formatPrint(interpreter, inst, true);
 			else 											obj_toString = obj.toString();
 			
-			//add operator
-			if (op == Operator.ADD) {
-				if (string_val == null) return EnvisionStringClass.valueOf(obj_toString);
-				return EnvisionStringClass.valueOf(string_val.toString() + obj_toString);
-			}
-			//add assign operator
-			else {
-				string_val.append(obj_toString);
-				return this;
-			}
+			// add operator
+			if (string_val == null) return EnvisionStringClass.valueOf(obj_toString);
+            return EnvisionStringClass.valueOf(string_val + obj_toString);
 		}
 		
-		//mul_addition operators
-		if (op == Operator.MUL || op == Operator.MUL_ASSIGN) {
+		// mul_addition operators
+		if (op == Operator.MUL) {
 			long multiply_val = 0;
 			
-			//convert incoming object to an integer representation
+			// convert incoming object to an integer representation
 			if (obj instanceof EnvisionInt env_int) multiply_val = env_int.int_val;
 			else throw new InvalidDatatypeError(EnvisionStaticTypes.INT_TYPE, obj.getDatatype());
 			
-			//repeat current string 'x' number of times
+			// repeat current string 'x' number of times
 			StringBuilder new_val = null;
 			
 			if (string_val == null) new_val = null;
@@ -180,10 +158,8 @@ public final class EnvisionString extends EnvisionVariable<String> {
 				new_val.append(string_val);
 			}
 			
-			//mul operator
-			if (op == Operator.MUL) return EnvisionStringClass.valueOf(new_val);
-			//mul assign operator
-			else return scopeEntry.setR(EnvisionStringClass.valueOf(new_val));
+			// mul operator
+			return EnvisionStringClass.valueOf(new_val);
 		}
 		
 		return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
