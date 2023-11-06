@@ -39,7 +39,7 @@ public class PS_VarDef extends ParserHead {
 		Token<?> type = null;
 		Token<?> name = null;
 		
-		//try to consume a datatype
+		// try to consume a datatype
 		if (checkType(DATATYPE)) {
 			type = consumeType(DATATYPE, "Expected a valid datatype!");
 		}
@@ -47,7 +47,7 @@ public class PS_VarDef extends ParserHead {
 			type = getAdvance();
 		}
 		
-		//check for list-set-expression
+		// check for list-set-expression
 		if (check(BRACKET_L)) {
 			decrementParsingIndex();
 			ParsedExpression listIndexSet = ExpressionParser.parseExpression();
@@ -57,41 +57,41 @@ public class PS_VarDef extends ParserHead {
 		
 		Primitives checkType = (type != null) ? type.getPrimitiveDataType() : Primitives.VAR;
 		
-		//check for valid variable datatypes
+		// check for valid variable datatypes
 		errorPreviousIf(checkType == Primitives.VOID, 2, "Variable types cannot be void!");
 		errorPreviousIf(checkType == Primitives.NULL, 2, "Variable types cannot be null!");
 		
-		//check for invalid variable data modifiers
+		// check for invalid variable data modifiers
 		if (!DataModifier.isValid_varDec(declaration)) {
 			error("Invalid variable data modifiers for '" + type.getLexeme() + "'! " + declaration.getMods());
 		}
 		
-		//collect any get/set modifiers
+		// collect any get/set modifiers
 //		Stmt_GetSet getset = null;
 //		if (checkType(VISIBILITY_MODIFIER) || check(GET, SET)) getset = PS_GetSet.parseGetSetVis();
 		
-		//check for type-less variable creation
-		if (check(ASSIGN)) {
+		// check for type-less variable creation
+		if (check(ASSIGN, LAMBDA)) {
 			setPreviousNonNL();
 			ParsedExpression typeless_varDec = ExpressionParser.parseExpression();
 			consumeTerminator();
 			return new Stmt_Expression(typeless_varDec);
 		}
 		
-		//define the actual variable statement
+		// define the actual variable statement
 		Stmt_VarDef varDecStatement = new Stmt_VarDef(declaration.getStartToken(), declaration/*, getset*/);
 		
-		//parse for declared variables
+		// parse for declared variables
 		do {
 			name = (name == null) ? consume(IDENTIFIER, "Expected a variable name!") : name;
 			
-			//parse for initializer (if there is one)
+			// parse for initializer (if there is one)
 			ParsedExpression initializer = null;
 			if (match(ASSIGN)) {
 				initializer = ExpressionParser.parseExpression();
 			}
 			
-			//add variable to statement
+			// add variable to statement
 			varDecStatement.addVar(name, initializer);
 			name = null;
 		}

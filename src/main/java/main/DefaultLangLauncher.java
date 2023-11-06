@@ -39,10 +39,12 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 //			DEBUG_MODE,
 //			LIVE_MODE,
 //			,TOKENIZE
-//			TOKENIZE_IN_DEPTH
+//			,EnvironmentSetting.TOKENIZE_IN_DEPTH
 //			,PARSE_STATEMENTS
 //			,DONT_EXECUTE
 		);
+		
+		//EnvisionLang.debugMode = true;
 		
 		long start = System.currentTimeMillis();
 		{

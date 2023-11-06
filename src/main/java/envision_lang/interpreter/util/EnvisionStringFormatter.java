@@ -297,9 +297,41 @@ public class EnvisionStringFormatter {
         
         // process each variable input and attempt to inject it into the result string
         for (var input : inputs) {
-            var result = injectVariable(interpreter, targetString, input, true);
-            
-            sb.append(result);
+            // check for lists/tuples separately because they can have several 
+            // layers 'toString' argument formatting and variable inserts.
+            if (input instanceof EnvisionList list) {
+                int cur = 0;
+                var l = list.getInternalList();
+                sb.append("[");
+                for (var listObj : l) {
+                    sb.append(formatPrint(interpreter, listObj, true));
+                    if (++cur < l.size()) sb.append(", ");
+                }
+                sb.append("]");
+            }
+            else if (input instanceof EnvisionTuple tuple) {
+                int cur = 0;
+                var l = tuple.getInternalList();
+                sb.append("(");
+                for (var listObj : l) {
+                    sb.append(formatPrint(interpreter, listObj, true));
+                    if (++cur < l.size()) sb.append(", ");
+                }
+                sb.append(")");
+            }
+            // test for toString overload
+            else if (input instanceof ClassInstance inst) {
+                ClassInstance to_pass = null;
+                if (!inst.isPrimitive()) to_pass = inst;
+                
+                String varsInjected = injectVariable(interpreter, targetString, to_pass, true);
+                sb.append(varsInjected);
+            }
+            else {
+                String parsedEscapes = handleEscapes(targetString);
+                String varsInjected = injectVariable(interpreter, parsedEscapes, input, true);
+                sb.append(varsInjected);
+            }
         }
         
         return sb.toString();

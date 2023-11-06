@@ -17,6 +17,7 @@ import envision_lang.lang.language_errors.error_types.InvalidTargetError;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
+import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
 
 public class IE_Lambda extends AbstractInterpreterExecutor {
@@ -149,7 +150,7 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
     }
     
     private static EList<EnvisionObject> processAllTargets(EnvisionInterpreter interpreter, Expr_Compound targets) {
-        EList<EnvisionObject> r = EList.newList();
+        EList<EnvisionObject> r = new EArrayList<>(targets.size());
         for (var expr : targets.expressions) {
             r.add(processTarget(interpreter, expr));
         }
@@ -157,7 +158,7 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
     }
     
     private static EList<EnvisionObject[]> processAllInputs(EnvisionInterpreter interpreter, Expr_Compound inputs) {
-        EList<EnvisionObject[]> r = EList.newList();
+        EList<EnvisionObject[]> r = new EArrayList<>(inputs.size());
         for (var expr : inputs.expressions) {
             r.add(processInput(interpreter, expr));
         }

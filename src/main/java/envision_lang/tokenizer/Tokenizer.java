@@ -263,7 +263,7 @@ public class Tokenizer {
             if (isDigit(c)) number();												// number literals
             else if (isLetter(c)) identifier();										// variable/object names
             else throw new EnvisionLangError("Envision: Tokenization failed -> unexpected character! -> Line: " +
-                                             lineNum + " + '" + c + "'");
+                                             lineNum + " pos: " + cur + " => char: " + c);
         }
     }
     

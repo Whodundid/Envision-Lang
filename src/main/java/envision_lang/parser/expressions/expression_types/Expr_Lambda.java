@@ -3,39 +3,78 @@ package envision_lang.parser.expressions.expression_types;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.ExpressionHandler;
 import envision_lang.parser.expressions.ParsedExpression;
-import envision_lang.tokenizer.Token;
 
 public class Expr_Lambda extends ParsedExpression {
-	
-	//========
-	// Fields
-	//========
-	
-	public final Expr_Compound inputs;
-	public final Expr_Compound production;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Expr_Lambda(Token<?> start, ParsedExpression inputsIn, ParsedExpression productionIn) {
-		super(start);
-		inputs = Expr_Compound.wrap(start, inputsIn);
-		production = Expr_Compound.wrap(start, productionIn);
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public String toString() {
-		return "(" + inputs + ") -> (" + production + ")";
-	}
-	
-	@Override
-	public EnvisionObject evaluate(ExpressionHandler handler) {
-		return handler.handleLambda_E(this);
-	}
-	
+    
+    //========
+    // Fields
+    //========
+    
+    public ParsedExpression callee;
+    public Expr_Compound inputs;
+    public Expr_Compound production;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    //	public Expr_Lambda(ParsedExpression calleeIn, ParsedExpression inputsIn, ParsedExpression productionIn) {
+    //		super(calleeIn.getStartingToken());
+    //		callee = calleeIn;
+    //		inputs = Expr_Compound.wrap(inputsIn.getStartingToken(), inputsIn);
+    //		production = Expr_Compound.wrap(productionIn.getStartingToken(), productionIn);
+    //	}
+    
+    public Expr_Lambda(ParsedExpression inputsIn) {
+        super(inputsIn);
+        inputs = Expr_Compound.wrap(inputsIn.getStartingToken(), inputsIn);
+    }
+    
+    public Expr_Lambda(ParsedExpression inputsIn, ParsedExpression productionIn) {
+        super(inputsIn.getStartingToken());
+        inputs = Expr_Compound.wrap(inputsIn.getStartingToken(), inputsIn);
+        production = Expr_Compound.wrap(productionIn.getStartingToken(), productionIn);
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        //	    String inputs_str = (inputs.hasOne()) ? String.valueOf(inputs.getFirst()) : "(" + inputs + ")";
+        //	    String prods_str = (production.hasOne()) ? String.valueOf(production.getFirst()) : "(" + production + ")";
+        //		return inputs_str + " -> " + prods_str;
+        
+        String is;
+        if (inputs == null) is = String.valueOf(inputs);
+        else if (inputs.isEmpty() || inputs.size() > 1 || inputs.getFirst() instanceof Expr_Lambda) {
+            is = "(" + inputs + ")";
+        }
+        else is = String.valueOf(inputs.getFirst());
+        
+        String ps;
+        if (production == null) ps = String.valueOf(production);
+        else if (production.isEmpty() || production.size() > 1 || production.getFirst() instanceof Expr_Lambda) {
+            ps = "(" + production + ")";
+        }
+        else ps = String.valueOf(production.getFirst());
+        
+        return is + " -> " + ps;
+        //return "(" + inputs + ") -> (" + production + ")";
+    }
+    
+    @Override
+    public EnvisionObject evaluate(ExpressionHandler handler) {
+        return handler.handleLambda_E(this);
+    }
+    
+    //=========
+    // Setters
+    //=========
+    
+    public void setProduction(ParsedExpression productionIn) {
+        production = Expr_Compound.wrap(productionIn.getStartingToken(), productionIn);
+    }
+    
 }

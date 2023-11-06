@@ -133,7 +133,7 @@ public class ExpressionParser extends ParserHead {
 		ParsedExpression e = arithmetic();
 		
 		while (match(LAMBDA)) {
-			e = new Expr_Lambda(previousNonTerminator(), e, parseExpression());
+		    e = new Expr_Lambda(e, arithmetic());
 		}
 		
 		return e;
