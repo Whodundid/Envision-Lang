@@ -62,6 +62,7 @@ class EnvisionJavaBridge {
         //wrapperClass = new EnvisionJavaClass(javaObjectClass);
         nativeInstanceScope = new Scope(wrapperClass.getClassScope());
         wrapperClass.setNativeJavaScope(nativeInstanceScope);
+        wrapperClass.setScope(nativeInstanceScope);
         mods = EModifier.of(javaObjectClass.getModifiers());
         
         wrapperClass.setModifier(DataModifier.ABSTRACT, mods.isAbstract());

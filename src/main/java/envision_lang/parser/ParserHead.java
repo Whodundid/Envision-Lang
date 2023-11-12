@@ -472,4 +472,7 @@ public abstract class ParserHead {
 		consumeType(TERMINATOR, msg);
 	}
 	
+	public static boolean areBlockStatementsEnabled() {
+        return parser.areBlockStatementsEnabled();
+    }
 }

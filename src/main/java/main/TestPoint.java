@@ -36,21 +36,21 @@ public class TestPoint {
 	//===========
 	
 	public TestPoint add(int x, int y) {
-		System.out.println("RUNNING ADD: " + x + " : " + y);
+		//System.out.println("RUNNING ADD: " + x + " : " + y);
 		return new TestPoint(this.x + x, this.y + y);
 	}
 	
 	public TestPoint add(TestPoint p) {
-	    System.out.println("RUNNING ADD: " + p);
+	    //System.out.println("RUNNING ADD: " + p);
 	    return new TestPoint(x + p.x, y + p.y);
 	}
 	
 	public TestPoint sub(int x, int y) {
-		System.out.println("RUNNING SUB: " + x + " : " + y);
+		//System.out.println("RUNNING SUB: " + x + " : " + y);
 		return new TestPoint(this.x - x, this.y - y);
 	}
 	
-	public void cat(byte b, float f, String s ) {
+	public void cat(byte b, float f, String s) {
 		System.out.println("FROM TestPoint 'cat' HOI! [" + b + ", " + f + ", " + s + "]");
 	}
 	

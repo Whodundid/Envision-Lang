@@ -42,10 +42,6 @@ public class Expr_Lambda extends ParsedExpression {
     
     @Override
     public String toString() {
-        //	    String inputs_str = (inputs.hasOne()) ? String.valueOf(inputs.getFirst()) : "(" + inputs + ")";
-        //	    String prods_str = (production.hasOne()) ? String.valueOf(production.getFirst()) : "(" + production + ")";
-        //		return inputs_str + " -> " + prods_str;
-        
         String is;
         if (inputs == null) is = String.valueOf(inputs);
         else if (inputs.isEmpty() || inputs.size() > 1 || inputs.getFirst() instanceof Expr_Lambda) {
@@ -61,7 +57,6 @@ public class Expr_Lambda extends ParsedExpression {
         else ps = String.valueOf(production.getFirst());
         
         return is + " -> " + ps;
-        //return "(" + inputs + ") -> (" + production + ")";
     }
     
     @Override

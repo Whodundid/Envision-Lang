@@ -2,7 +2,6 @@ package envision_lang.lang.packages.native_packages.base;
 
 import static envision_lang.lang.natives.Primitives.*;
 
-import envision_lang.EnvisionLang;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.throwables.LangShutdownCall;
 import envision_lang.lang.EnvisionObject;
@@ -81,7 +80,8 @@ public class InternalEnvisionClass extends EnvisionClass {
 	private static class IFunc_dir extends InstanceFunction<InternalEnvision> {
 		public IFunc_dir() { super(FILE, "dir"); }
 		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			EnvisionFile dirFile = EnvisionFileClass.newFile(EnvisionLang.programDir);
+		    var dir = interpreter.program().getWorkingDir().getDirFile();
+			EnvisionFile dirFile = EnvisionFileClass.newFile(dir);
 			ret(dirFile);
 		}
 	}

@@ -16,7 +16,7 @@ import envision_lang.lang.natives.ParameterData;
 import envision_lang.lang.natives.UserDefinedTypeManager;
 import eutil.reflection.EModifier;
 
-final class NativeFunction extends EnvisionFunction implements INativeEnvision {
+public final class NativeFunction extends EnvisionFunction implements INativeEnvision {
     
     //========
     // Fields
@@ -218,5 +218,12 @@ final class NativeFunction extends EnvisionFunction implements INativeEnvision {
         
         ret(toReturn);
     }
+    
+    //=========
+    // Getters
+    //=========
+    
+    public NativeDatatypeMapper getDatatypeMapper() { return mapper; }
+    
     
 }

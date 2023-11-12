@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import envision_lang.EnvisionLang;
 import envision_lang._launch.EnvisionCodeFile;
 import envision_lang.lang.language_errors.EnvisionLangError;
 import eutil.datatypes.boxes.BoxList;
@@ -60,9 +59,16 @@ public class Tokenizer {
     /** The (active) set of tokens currently being parsed for a given line. */
     private EList<Token<?>> parsedLineTokens;
     
+    /** Flag to indicate if block statements can be tokenized. */
+    private boolean areBlockStatementsEnabled = false;
+    
     //==============
     // Constructors
     //==============
+    
+    public Tokenizer() {
+        // do nothing
+    }
     
     public Tokenizer(EnvisionCodeFile codeFileIn) {
         theFile = codeFileIn.getSystemFile();
@@ -73,14 +79,13 @@ public class Tokenizer {
     }
     
     public Tokenizer(String line) {
-        theFile = null;
         tokenizeLine(line);
     }
     
     public Tokenizer(Iterable<String> lines) {
-        theFile = null;
         tokenizeLines(lines);
     }
+
     
     //================
     // Static Methods
@@ -160,7 +165,7 @@ public class Tokenizer {
             break;
         
         case '#':																	// '#'
-            if (EnvisionLang.enableBlockStatementParsing) addToken(BLOCK_STATEMENT_TOKEN);
+            if (areBlockStatementsEnabled) addToken(BLOCK_STATEMENT_TOKEN);
             else throw new EnvisionLangError("Block statement parsing not enabled!");
             break;
         
@@ -621,6 +626,15 @@ public class Tokenizer {
     public EList<String> getLines() { return lines; }
     public EList<Token<?>> getCommentTokens() { return commentTokens; }
     public boolean hasFile() { return theFile != null; }
+    public boolean areBlockStatementsEnabled() { return areBlockStatementsEnabled; }
+    
+    //=========
+    // Setters
+    //=========
+    
+    public void setEnableBlockStatementParsing(boolean val) {
+        areBlockStatementsEnabled = val;
+    }
     
     //--------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------

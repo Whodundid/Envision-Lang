@@ -7,6 +7,7 @@ import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.FunctionPrototype;
 import envision_lang.lang.language_errors.EnvisionLangError;
+import envision_lang.lang.language_errors.error_types.RestrictedAccessError;
 import envision_lang.lang.language_errors.error_types.objects.ClassCastError;
 import envision_lang.lang.language_errors.error_types.objects.UnsupportedOverloadError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
@@ -87,6 +88,10 @@ public class EnvisionJavaObject extends ClassInstance {
         EnvisionObject instanceMember = instanceScope.get(name);
         
         if (instanceMember instanceof NativeField f) f.setFieldValue(in);
+        // don't allow modification to any of the natively mapped functions
+        else if (instanceMember instanceof NativeFunction f) {
+            throw new RestrictedAccessError(f);
+        }
         else instanceScope.set(name, in);
         
         return in;

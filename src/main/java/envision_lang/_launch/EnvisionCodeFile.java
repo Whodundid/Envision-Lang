@@ -3,6 +3,7 @@ package envision_lang._launch;
 import java.io.File;
 import java.io.IOException;
 
+import envision_lang.EnvisionLang;
 import envision_lang.debug.DebugParserPrinter;
 import envision_lang.debug.DebugTokenPrinter;
 import envision_lang.interpreter.util.scope.IScope;
@@ -63,6 +64,8 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The paired WorkingDirectory for this CodeFile. */
 	private WorkingDirectory workingDir;
 	
+	private EList<String> directScriptLines;
+	
 	//==============
 	// Constructors
 	//==============
@@ -78,8 +81,8 @@ public class EnvisionCodeFile extends EnvisionObject {
 	public EnvisionCodeFile(EList<String> scriptLines) {
 	    super(Primitives.CODE_FILE);
 	    
-	    // tokenize lines directly
-	    tokenizer = new Tokenizer(this);
+	    directScriptLines = scriptLines;
+	    fileName = "BUILT-IN";
 	}
 	
 	public EnvisionCodeFile(String fileName) { this(new File(fileName)); }
@@ -124,28 +127,64 @@ public class EnvisionCodeFile extends EnvisionObject {
 	//=========
 	
 	private void tokenizeFileSafe() {
-		try {
-			tokenizeFile();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		tokenizeFileSafe(false);
 	}
+    
+    private void tokenizeFileSafe(boolean enableBlockStatements) {
+        try {
+            tokenizeFile(enableBlockStatements);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 	
-	public void tokenizeFile() throws Exception {
-		if (tokenizer == null) tokenizer = new Tokenizer(this);
+    public void tokenizeFile() throws Exception {
+        tokenizeFile(false);
+    }
+    
+	public void tokenizeFile(boolean enableBlockStatements) throws Exception {
+		if (tokenizer == null) {
+		    tokenizer = new Tokenizer();
+		    tokenizer.setEnableBlockStatementParsing(enableBlockStatements);
+		}
+		
+		// check if there is an actual file backing the tokenizer
 		if (tokenizer.hasFile()) {
 			tokenizer.tokenizeFile();
-			lineTokens = tokenizer.getLineTokens();
-			tokens = tokenizer.getTokens();
-			lines = tokenizer.getLines();
-			isTokenized = true;
 		}
+		else if (directScriptLines != null) {
+		    tokenizer.tokenizeLines(directScriptLines);
+		}
+		
+		lineTokens = tokenizer.getLineTokens();
+        tokens = tokenizer.getTokens();
+        lines = tokenizer.getLines();
+        isTokenized = true;
 	}
 	
 	public void parseFile() {
-		statements = EnvisionLangParser.parse(this);
-		isParsed = true;
+		parseFile(false);
+	}
+	
+	public void parseFile(boolean enableBlockStatements) {
+	    statements = EnvisionLangParser.parse(this, enableBlockStatements);
+        isParsed = true;
+	}
+	
+	/**
+     * Builds a new EnvisionInterpreter on this specific code file around the given working directory.
+     * The working directory cannot be null!
+     * 
+     * @param dir a valid working directory
+     * @param enableBlockingStatements determines if blocking statements are enabled during parsing
+     * 
+     * @return true if successfully loaded
+     * 
+     * @throws Exception
+     */
+	public boolean load(WorkingDirectory dir) {
+	    return load(dir, false);
 	}
 	
 	/**
@@ -153,16 +192,19 @@ public class EnvisionCodeFile extends EnvisionObject {
 	 * The working directory cannot be null!
 	 * 
 	 * @param dir a valid working directory
+	 * @param enableBlockingStatements determines if blocking statements are enabled during parsing
+	 * 
 	 * @return true if successfully loaded
+	 * 
 	 * @throws Exception
 	 */
-	public boolean load(WorkingDirectory dir) {
+	public boolean load(WorkingDirectory dir, boolean enableBlockingStatements) {
 		isLoaded = false;
 		
 		try {
 			//if not tokenized, attempt to tokenize
-			if (!isTokenized) tokenizeFile();
-			if (!isParsed) parseFile();
+			if (!isTokenized) tokenizeFile(enableBlockingStatements);
+			if (!isParsed) parseFile(enableBlockingStatements);
 		
 			//if (isLoaded) throw new InvalidCodeFileError(fileName, "Is already loaded and cannot be loaded again!");
 			if (dir == null) throw new InvalidCodeFileError(fileName, "There is no paired working directory!");
@@ -170,7 +212,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 			if (!isParsed) throw new InvalidCodeFileError(fileName, "Has not been successfully parsed!");
 			if (statements == null) throw new InvalidCodeFileError(fileName, "Has somehow been parsed but does not have a valid statement list!");
 		
-			//if (EnvisionLang.debugMode) debugOutput();
+			if (EnvisionLang.debugMode) debugOutput();
 		
 			workingDir = dir;
 			dir.getBuildPackages().forEach(p -> p.defineOn(codeFileScope));

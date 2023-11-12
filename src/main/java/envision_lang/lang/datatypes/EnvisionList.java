@@ -313,6 +313,12 @@ public final class EnvisionList extends ClassInstance {
 	public EnvisionObject getFirst() { checkEmpty(); return internalList.getFirst(); }
 	public EnvisionObject getLast() { checkEmpty(); return internalList.getLast(); }
 	
+	public EnvisionTuple elements() {
+	    EnvisionTuple t = new EnvisionTuple();
+	    for (var o : internalList) t.add(o);
+	    return t;
+	}
+	
 	//---------------------
 	// List Remove Methods
 	//---------------------

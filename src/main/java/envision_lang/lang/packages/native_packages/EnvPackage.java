@@ -1,7 +1,10 @@
 package envision_lang.lang.packages.native_packages;
 
+import envision_lang.lang.packages.native_packages.base.AddAttribute;
+import envision_lang.lang.packages.native_packages.base.HasAttribute;
 import envision_lang.lang.packages.native_packages.base.Millis;
 import envision_lang.lang.packages.native_packages.base.Nanos;
+import envision_lang.lang.packages.native_packages.base.RemoveAttribute;
 import envision_lang.lang.packages.native_packages.base.Sleep;
 import envision_lang.lang.packages.native_packages.base.SupportsOP;
 
@@ -14,9 +17,9 @@ public final class EnvPackage extends NativePackage {
 	public static final String PACKAGE_NAME = "env";
 	public static final EnvPackage ENV_PACKAGE = new EnvPackage();
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	private EnvPackage() {
 		super(PACKAGE_NAME);
@@ -28,6 +31,9 @@ public final class EnvPackage extends NativePackage {
 		define(new Nanos());
 		define(new Sleep());
 		define(new SupportsOP());
+		define(new AddAttribute());
+		define(new HasAttribute());
+		define(new RemoveAttribute());
 	}
 	
 	@Override

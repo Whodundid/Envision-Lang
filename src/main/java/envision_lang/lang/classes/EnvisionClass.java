@@ -51,6 +51,10 @@ import eutil.datatypes.util.EList;
  */
 public class EnvisionClass extends EnvisionObject {
 	
+    //========
+    // Fields
+    //========
+    
 	/**
 	 * Denotes whether or not the the natives for this class have been constructed.
 	 */
@@ -131,9 +135,9 @@ public class EnvisionClass extends EnvisionObject {
 		OBJ_PROTOS.define("members", LIST).assignDynamicClass(IFunc_members.class);
 	}
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	public EnvisionClass(String typeNameIn) {
 	    this(IDatatype.of(typeNameIn));
@@ -178,9 +182,9 @@ public class EnvisionClass extends EnvisionObject {
 		internalClass = this;
 	}
 	
-	//---------
-	// Methods
-	//---------
+	//=========
+    // Methods
+    //=========
 	
 	public void initClassNatives() {
 		//prevent re-registration
@@ -311,9 +315,9 @@ public class EnvisionClass extends EnvisionObject {
 		OBJ_PROTOS.defineOn(inst);
 	}
 	
-	//---------
-	// Getters
-	//---------
+	//=========
+    // Getters
+    //=========
 	
 	/**
 	 * Abstract classes cannot be directly instantiated and require
@@ -393,9 +397,9 @@ public class EnvisionClass extends EnvisionObject {
 		return classConstruct;
 	}
 	
-	//---------
-	// Setters
-	//---------
+	//=========
+    // Setters
+    //=========
 	
 	/**
 	 * Used to manually set whether or not this object should be instantiable.
@@ -460,9 +464,9 @@ public class EnvisionClass extends EnvisionObject {
 	
 	//---------------------------------------------------------------------------
 	
-	//---------------------------
+	//===========================
 	// Instance Member Functions
-	//---------------------------
+	//===========================
 	
 	public static class IFunc_equals extends InstanceFunction<ClassInstance> {
 		public IFunc_equals() { super(BOOLEAN, "equals", VAR); }

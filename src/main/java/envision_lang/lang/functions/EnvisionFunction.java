@@ -269,7 +269,7 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction addOverload(IDatatype rt, IDatatype... paramsIn) {
 		ParameterData params = ParameterData.from(paramsIn);
-		if (hasOverload(params)) throw new DuplicateOverloadError(functionName, params);
+		if (hasNestedOverload(params)) throw new DuplicateOverloadError(functionName, params);
 		overloads.add(makeOverload(rt, params, statements));
 		return this;
 	}
@@ -312,7 +312,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return The new overload function
 	 */
 	public EnvisionFunction addOverload(IDatatype rt, ParameterData paramsIn, EList<ParsedStatement> bodyIn) {
-		if (hasOverload(paramsIn)) throw new DuplicateOverloadError(functionName, paramsIn);
+		if (hasNestedOverload(paramsIn)) throw new DuplicateOverloadError(functionName, paramsIn);
 		overloads.add(makeOverload(rt, paramsIn, bodyIn));
 		return this;
 	}
@@ -349,12 +349,16 @@ public class EnvisionFunction extends ClassInstance {
 			throw new InvalidTargetError("The given function: " + overload
 										 + " is not valid as an overload function of" + this + "!");
 		//don't allow if already existing overloads
-		if (hasOverload(overload.parameters))
+		if (hasNestedOverload(overload.parameters))
 			throw new DuplicateOverloadError(functionName, overload.parameters);
 		
 		//add the overload
 		overloads.add(overload);
 		return this;
+	}
+	
+	public boolean hasNestedOverload(ParameterData dataIn) {
+	    return getOverload(dataIn) != null;
 	}
 	
 	/**
@@ -365,7 +369,12 @@ public class EnvisionFunction extends ClassInstance {
 	 * @return True if an overload with the given parameters exists
 	 */
 	public boolean hasOverload(ParameterData dataIn) {
-		return getOverload(dataIn) != null;
+	    if (parameters.compare(dataIn)) return true;
+		return hasNestedOverload(dataIn);
+	}
+	
+	public EnvisionFunction getOverloadFromArgs(EList<EnvisionObject> args) {
+	    return getOverloadFromArgs(args.toArray(new EnvisionObject[0]));
 	}
 	
 	/**
@@ -394,6 +403,7 @@ public class EnvisionFunction extends ClassInstance {
 	 */
 	public EnvisionFunction getOverload(ParameterData dataIn) {
 		for (EnvisionFunction overload : overloads) {
+		    if (overload.parameters.length() > 0 && overload.parameters.get(0).isVarA) return overload;
 			if (overload.parameters.length() != dataIn.length()) continue;
 			if (!overload.parameters.compare(dataIn)) continue;
 			return overload;

@@ -23,16 +23,18 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 	//====================================================================================
 	
 	public DefaultLangLauncher() throws Exception {
+	    
+	    EnvisionProgram program = new EnvisionProgram("program");
+	    
 		//Thread.sleep(20000);
-		EnvisionLang.setErrorCallback(this);
+		program.setErrorCallback(this);
 		EnvisionLang.getInstance();
 		
 		TestPoint t = new TestPoint(10, 5);
 //		System.out.println("JAVA: " + t);
-		EnvisionProgram program = new EnvisionProgram("program");
 		program.addJavaObjectToProgram("t", t);
 		
-		EnvisionLang.setLaunchSettings(
+		program.setLaunchSettings(
 			EnvironmentSetting.ENABLE_BLOCK_STATEMENT_PARSING,
 			EnvironmentSetting.ENABLE_BLOCKING_STATEMENTS
 //			PRELOAD_LANGUAGE
@@ -49,7 +51,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		long start = System.currentTimeMillis();
 		{
 			var runner = new EnvisionProgramRunner(program);
-			runner.execute();
+			runner.start();
 			//EnvisionLang.runProgram(program);
 		}
 		System.out.println("END: " + (System.currentTimeMillis() - start) + " ms");
@@ -63,8 +65,8 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 	
 	//====================================================================================
 	
-	@Override public void handleError(EnvisionLangError e) { handleException(e); }
-	@Override public void handleException(Exception e) { e.printStackTrace(); }
+	@Override public void onEnvisionError(EnvisionLangError e) { onJavaException(e); }
+	@Override public void onJavaException(Exception e) { e.printStackTrace(); }
 	
 	private void performanceReference() {
 //		long start = System.currentTimeMillis();

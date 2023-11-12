@@ -4,7 +4,6 @@ import static envision_lang.lang.natives.Primitives.*;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.List;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.creation_util.ObjectCreator;

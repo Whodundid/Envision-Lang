@@ -122,9 +122,9 @@ public interface IScope {
 		return c;
 	}
 	
-	//---------
+	//=========
 	// Methods
-	//---------
+	//=========
 	
 	/**
 	 * Returns true if a value under the given name is present.
@@ -146,9 +146,9 @@ public interface IScope {
 		return values().containsKey(name);
 	}
 	
-	//----------------------
+	//======================
 	// Variable Definitions
-	//----------------------
+	//======================
 	
 	default void defineVar(String name) {
 		define(name, EnvisionVariable.VAR_TYPE, EnvisionNull.NULL);
@@ -163,18 +163,18 @@ public interface IScope {
 	}
 	
 	default EnvisionObject define(String name, EnvisionObject object) {
-		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.NULL_TYPE;
+		var type = (object != null) ? object.getDatatype() : EnvisionStaticTypes.VAR_TYPE;
 		return define(name, type, object);
 	}
 	
 	default EnvisionObject define(String name, IDatatype typeIn, EnvisionObject obj) {
-		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.VAR_TYPE;
 		var entry = new ScopeEntry(type, obj);
 		return define(name, entry);
 	}
 	
 	default ScopeEntry defineRT(String name, IDatatype typeIn, EnvisionObject obj) {
-		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.NULL_TYPE;
+		var type = (typeIn != null) ? typeIn : EnvisionStaticTypes.VAR_TYPE;
 		var entry = new ScopeEntry(type, obj);
 		define(name, entry);
 		return entry;
@@ -295,9 +295,9 @@ public interface IScope {
 		return defineImportVal_i(name, entry);
 	}
 	
-	//----------------
+	//================
 	// Mapped Getters
-	//----------------
+	//================
 	
 	default Stream<EnvisionObject> objectsAsStream() {
 		return values().entrySet().stream()
@@ -449,9 +449,9 @@ public interface IScope {
 		}
 	}
 	
-	//---------
+	//=========
 	// Getters
-	//---------
+	//=========
 	
 	/**
 	 * Returns a value associated with the given name identifier.
@@ -551,9 +551,9 @@ public interface IScope {
 		return values().get(name);
 	}
 	
-	//---------
+	//=========
 	// Setters
-	//---------
+	//=========
 	
 	/**
 	 * Modifies the value of an already existing object within this scope.
@@ -593,9 +593,9 @@ public interface IScope {
 		return newValue;
 	}
 	
-	//-------------------
+	//===================
 	// Utility Functions
-	//-------------------
+	//===================
 	
 	public static String printFullStack(IScope scopeIn) {
 		if (scopeIn == null) return null;

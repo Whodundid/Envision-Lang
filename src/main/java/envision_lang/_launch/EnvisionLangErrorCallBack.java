@@ -13,7 +13,7 @@ public interface EnvisionLangErrorCallBack {
 	 * 
 	 * @param e The EnvisionError that was thrown
 	 */
-	public void handleError(EnvisionLangError e);
+	public void onEnvisionError(EnvisionLangError e);
 
 	/**
 	 * Called whenever a Java Exception was thrown at any point during Envision's
@@ -23,6 +23,6 @@ public interface EnvisionLangErrorCallBack {
 	 * 
 	 * @param e The Java Exception that was thrown
 	 */
-	public void handleException(Exception e);
+	public void onJavaException(Exception e);
 	
 }

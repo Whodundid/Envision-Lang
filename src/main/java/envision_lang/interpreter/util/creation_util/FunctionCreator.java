@@ -4,6 +4,7 @@ import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.functions.EnvisionFunction;
+import envision_lang.lang.functions.EnvisionFunctionClass;
 import envision_lang.lang.natives.EnvisionParameter;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
@@ -73,6 +74,8 @@ public class FunctionCreator {
 		}
 		
 		if (s.body != null) f.setBody(s.body);
+		
+		EnvisionFunctionClass.FUNC_CLASS.defineFunctionScopeMembers(f);
 		
 		return f;
 	}

@@ -211,6 +211,12 @@ public final class EnvisionTuple extends ClassInstance {
     public EnvisionObject getFirst() { checkEmpty(); return internalList.getFirst(); }
     public EnvisionObject getLast() { checkEmpty(); return internalList.getLast(); }
     
+    public EnvisionTuple elements() {
+        EnvisionTuple t = new EnvisionTuple();
+        for (var o : internalList) t.add(o);
+        return t;
+    }
+    
     //---------------
     // Tuple Methods
     //---------------

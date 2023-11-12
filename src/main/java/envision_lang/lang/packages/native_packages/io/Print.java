@@ -15,7 +15,7 @@ public class Print extends EnvisionFunction {
 	@Override
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
-		System.out.print(l);
+		interpreter.printToConsoleReceiver(l, false);
 	}
 	
 }

@@ -2,6 +2,7 @@ package envision_lang.lang;
 
 import envision_lang.interpreter.util.throwables.ReturnValue;
 import envision_lang.lang.classes.EnvisionClass;
+import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionVariable;
 import envision_lang.lang.language_errors.error_types.objects.CopyNotSupportedError;
 import envision_lang.lang.natives.DataModifier;
@@ -226,6 +227,15 @@ public abstract class EnvisionObject {
 	 */
 	protected static void ret(EnvisionObject obj) {
 		throw ReturnValue.wrap(obj);
+	}
+	
+	/**
+	 * An internal means for propagating a boolean through Envision scopes.
+	 * 
+	 * @param value The boolean value to return
+	 */
+	protected static void retBool(boolean value) {
+	    throw ReturnValue.wrap(EnvisionBoolean.of(value));
 	}
 	
 }

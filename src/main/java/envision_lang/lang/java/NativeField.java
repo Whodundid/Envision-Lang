@@ -13,7 +13,7 @@ import eutil.reflection.EModifier;
  * 
  * @author Hunter Bragg
  */
-public class NativeField extends EnvisionObject implements INativeEnvision {
+public final class NativeField extends EnvisionObject implements INativeEnvision {
 
     //========
     // Fields

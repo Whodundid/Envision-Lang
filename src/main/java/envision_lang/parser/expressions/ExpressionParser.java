@@ -397,7 +397,7 @@ public class ExpressionParser extends ParserHead {
 	
 	private static ParsedExpression checkObject() {
 		if (match(THIS)) {
-		    errorPreviousIf(!ParserHead.inClass(), "'" + THIS + "' cannot be used outside of a class scope!");
+		    //errorPreviousIf(!ParserHead.inClass(), "'" + THIS + "' cannot be used outside of a class scope!");
 		    
 			Token<?> start = previous();
 			if (match(PAREN_L)) {

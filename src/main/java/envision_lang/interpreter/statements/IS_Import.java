@@ -1,6 +1,7 @@
 package envision_lang.interpreter.statements;
 
 import envision_lang._launch.EnvisionCodeFile;
+import envision_lang._launch.EnvisionProgram;
 import envision_lang._launch.WorkingDirectory;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
@@ -33,13 +34,14 @@ public class IS_Import {
 		//check for self importing -- causes infinite recursion
 		if (interpreter.fileName.equals(path)) throw new SelfImportError(interpreter.codeFile());
 		
+		EnvisionProgram program = interpreter.program();
 		WorkingDirectory dir = interpreter.workingDir();
 		EnvisionCodeFile imp = dir.getFile(path);
 		
 		try {
 			if (!imp.isLoaded()) {
 				imp.load(dir);
-				EnvisionInterpreter.interpret(imp, null);
+				EnvisionInterpreter.interpret(program, imp, null);
 			}
 			
 			IScope impScope = imp.scope();

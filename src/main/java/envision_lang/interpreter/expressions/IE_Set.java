@@ -5,8 +5,11 @@ import envision_lang.interpreter.AbstractInterpreterExecutor;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
+import envision_lang.lang.classes.EnvisionClass;
 import envision_lang.lang.language_errors.error_types.InvalidTargetError;
+import envision_lang.lang.language_errors.error_types.NotVisibleError;
 import envision_lang.lang.language_errors.error_types.NullVariableError;
+import envision_lang.lang.language_errors.error_types.UndefinedValueError;
 import envision_lang.parser.expressions.expression_types.Expr_Set;
 
 public class IE_Set extends AbstractInterpreterExecutor {
@@ -26,27 +29,73 @@ public class IE_Set extends AbstractInterpreterExecutor {
 		if (value.isPassByValue()) value = value.copy();
 		
 		// check for acceptable target types
-		if (baseObject instanceof ClassInstance inst) return setValue_CI(inst, name, value);
-		if (baseObject instanceof EnvisionCodeFile cf) return setValue_CF(cf, name, value);
+		if (baseObject instanceof EnvisionClass c) return setValue_C(interpreter, c, name, value);
+		if (baseObject instanceof ClassInstance inst) return setValue_CI(interpreter, inst, name, value);
+		if (baseObject instanceof EnvisionCodeFile cf) return setValue_CF(interpreter, cf, name, value);
 		
 		// error on non-accepted types
 		throw new InvalidTargetError(baseObject + " cannot have values on it modified!");
 	}
 	
-	private static EnvisionObject setValue_CI(ClassInstance inst, String name, EnvisionObject value) {
+	private static EnvisionObject setValue_C(EnvisionInterpreter interpreter, EnvisionClass theClass,
+                                              String name, EnvisionObject value)
+	{
+	       //check if the object is actually visible
+        if (theClass.isPrivate()) {
+            // if the current scope is not the class the Class's scope, throw an error
+            if (interpreter.scope() != theClass.getClassScope()) throw new NotVisibleError(theClass);
+        }
+        
+        // TODO:
+        // usually there would be some type checking going on here -- but not yet..
+        
+        var scope = theClass.getClassScope();
+        boolean exists = scope.exists(name);
+        
+        // if the value exists, attempt to set the value to the existing space
+        if (exists) {
+            theClass.set(name, value);
+        }
+        // otherwise, define it as a var on the object directly
+        else {
+            //scope.define(name, EnvisionStaticTypes.VAR_TYPE, value);
+            throw new UndefinedValueError(name);
+        }
+        
+        return value;
+	}
+	
+	private static EnvisionObject setValue_CI(EnvisionInterpreter interpreter, ClassInstance inst,
+	                                          String name, EnvisionObject value)
+	{
 		//check if the object is actually visible
-		//if (object.isPrivate()) {
-			//if the current scope is not the class instance's scope, throw an error
-		//	if (scope() != inst.getScope()) throw new NotVisibleError(object);
-		//}
+		if (inst.isPrivate()) {
+			// if the current scope is not the class instance's scope, throw an error
+			if (interpreter.scope() != inst.getScope()) throw new NotVisibleError(inst);
+		}
 		
-		//usually there would be some type checking going on here -- but not yet..
+		// TODO:
+		// usually there would be some type checking going on here -- but not yet..
 		
-		inst.set(name, value);
+	    var scope = inst.getScope();
+	    boolean exists = scope.exists(name);
+	    
+	    // if the value exists, attempt to set the value to the existing space
+	    if (exists) {
+	        inst.set(name, value);
+	    }
+	    // otherwise, define it as a var on the object directly
+	    else {
+	        //scope.define(name, EnvisionStaticTypes.VAR_TYPE, value);
+	        throw new UndefinedValueError(name);
+	    }
+		
 		return value;
 	}
 	
-	private static EnvisionObject setValue_CF(EnvisionCodeFile cf, String name, EnvisionObject value) {
+	private static EnvisionObject setValue_CF(EnvisionInterpreter interpreter, EnvisionCodeFile cf,
+	                                          String name, EnvisionObject value)
+	{
 		cf.scope().set(name, value);
 		return value;
 	}

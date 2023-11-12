@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 
 import envision_lang._launch.EnvisionCodeFile;
+import envision_lang._launch.EnvisionProgram;
 import envision_lang.debug.DebugTokenPrinter;
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
@@ -37,6 +38,7 @@ import eutil.strings.EStringBuilder;
 
 public abstract class EnvisionLangTest {
     
+    protected static EnvisionProgram program;
     protected static EnvisionCodeFile codeFile;
     protected static EnvisionInterpreter interpreter;
     protected static boolean debugOutput;
@@ -46,16 +48,30 @@ public abstract class EnvisionLangTest {
         NativeTypeManager.init();
         
         codeFile = new EnvisionCodeFile(new File(UUID.randomUUID().toString()));
-        interpreter = new EnvisionInterpreter(codeFile);
+        program = new EnvisionProgram("envision_test_program", codeFile);
         
-        try {
-            var validField = codeFile.getClass().getDeclaredField("isValid");
-            validField.setAccessible(true);
-            validField.set(codeFile, true);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        // force the code file to be valid because our test 'file' doesn't actually exist
+        codeFile.forceValid();
+        
+//        try {
+//            // hack the program's working dir and main file fields to our test ones
+//            var workingDirField = program.getClass().getDeclaredField("dir");
+//            workingDirField.setAccessible(true);
+//            workingDirField.set(program, codeFile.getWorkingDir());
+//            
+//            var mainFileField = program.getClass().getDeclaredField("mainCodeFile");
+//            mainFileField.setAccessible(true);
+//            mainFileField.set(program, codeFile);
+//            
+//            var mainScopeField = program.getClass().getDeclaredField("mainFileScope");
+//            mainScopeField.setAccessible(true);
+//            mainScopeField.set(program, codeFile.scope());
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        
+        interpreter = new EnvisionInterpreter(program, codeFile);
     }
     
     protected static class DebugStatement extends ParsedStatement {

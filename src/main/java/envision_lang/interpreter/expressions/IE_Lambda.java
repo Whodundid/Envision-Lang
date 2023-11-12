@@ -14,6 +14,7 @@ import envision_lang.lang.datatypes.EnvisionTuple;
 import envision_lang.lang.datatypes.EnvisionTupleClass;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.language_errors.error_types.InvalidTargetError;
+import envision_lang.lang.natives.ParameterData;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
@@ -31,18 +32,12 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
         
         EnvisionObject rVal = EnvisionNull.NULL;
         
-        // push scope to isolate input expressions
-        interpreter.pushScope();
-        try {
-            EList<String> inputNames = inputs.expressions.map(p -> p.toString());
-            EList<EnvisionObject[]> processedInputs = processAllInputs(interpreter, inputs);
-            EList<EnvisionObject> processedTargets = processAllTargets(interpreter, targets);
-            
-            rVal = executeTargets(interpreter, inputNames, processedInputs, processedTargets);
-        }
-        finally {
-            interpreter.popScope();
-        }
+        EList<String> inputNames = inputs.expressions.map(p -> p.toString());
+        EList<EnvisionObject> processedTargets = processAllTargets(interpreter, targets);
+        // determine the inputs based on the target
+        EList<EnvisionObject[]> processedInputs = processAllInputs(interpreter, inputs, processedTargets);
+        
+        rVal = executeTargets(interpreter, inputNames, processedInputs, processedTargets);
         
         return rVal;
     }
@@ -157,10 +152,44 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
         return r;
     }
     
-    private static EList<EnvisionObject[]> processAllInputs(EnvisionInterpreter interpreter, Expr_Compound inputs) {
-        EList<EnvisionObject[]> r = new EArrayList<>(inputs.size());
+    private static EList<EnvisionObject[]> processAllInputs(EnvisionInterpreter interpreter,
+                                                            Expr_Compound inputs,
+                                                            EList<EnvisionObject> targets)
+    {
+        EList<EnvisionObject> processedInputs = new EArrayList<>(inputs.size());
         for (var expr : inputs.expressions) {
-            r.add(processInput(interpreter, expr));
+            processedInputs.add(processInput(interpreter, expr));
+        }
+        
+        EList<EnvisionObject[]> r = new EArrayList<>(processedInputs.size());
+        for (var target : targets) {
+            boolean expand = true;
+            
+            if (target instanceof EnvisionFunction f) {
+                var inputParams = ParameterData.fromObjects(processedInputs);
+                expand = !f.hasOverload(inputParams);
+            }
+            else if (target instanceof EnvisionClass c) {
+                var con = c.getConstructor();
+                if (con == null) expand = true;
+                else {
+                    var inputParams = ParameterData.fromObjects(processedInputs);
+                    expand = !con.hasOverload(inputParams);
+                }
+            }
+            else {
+                // I have no idea :shrug:
+            }
+            
+            if (expand) {
+                for (var i : processedInputs) {
+                    r.add(expandArgs(i));
+                }
+            }
+            else {
+                r.add(processedInputs.toArray(new EnvisionObject[0]));
+            }
+            
         }
         return r;
     }
@@ -170,9 +199,8 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
         return result;
     }
     
-    private static EnvisionObject[] processInput(EnvisionInterpreter interpreter, ParsedExpression input) {
-        EnvisionObject result = interpreter.evaluate(input);
-        return expandArgs(result);
+    private static EnvisionObject processInput(EnvisionInterpreter interpreter, ParsedExpression input) {
+        return interpreter.evaluate(input);
     }
     
     private static EnvisionObject[] expandArgs(EnvisionObject result) {

@@ -26,7 +26,9 @@ import eutil.strings.EStringUtil;
  */
 public final class EnvisionLangParser {
 	
-	//-------------------------------------------------------------------------------------------
+	//========
+    // Fields
+    //========
 	
 	/** The tokens of each line, line by line. Used to generate error messages. */
 	private BoxList<Integer, EList<Token<?>>> tokenLines;
@@ -38,14 +40,42 @@ public final class EnvisionLangParser {
 	/** A counter to keep track of the current token index as parsing continues. */
 	private int currentTokenIndex = 0;
 	
-	//-------------------------------------------------------------------------------------------
+    /**
+     * Enables the ability to append a '#' at the beginning of a statement
+     * declaration to mark the next parsed statement as a 'blocking' statement.
+     * If blocking statements are enabled and one has just finished being
+     * executed, the Envision interpreter will halt script execution and
+     * preserve the current memory and instruction stacks and will wait until
+     * the script is manually restarted.
+     */
+    private boolean enableBlockStatementParsing = false;
+	
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * Private so as to force use of static factory methods.
 	 */
 	private EnvisionLangParser() {}
 	
-	//-------------------------------------------------------------------------------------------
+	//================
+	// Static Parsers
+	//================
+	
+	/**
+     * Attempts to parse a list of valid statements from
+     * the tokens within the given code file.
+     * <p>
+     * Invalid or incomplete statements are caught and displayed.
+     * 
+     * @param codeFile The code file to be parsed
+     * @return The list of parsed statements
+     * @throws Exception
+     */
+    public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) {
+        return parse(codeFile, false);
+    }
 	
 	/**
 	 * Attempts to parse a list of valid statements from
@@ -57,12 +87,13 @@ public final class EnvisionLangParser {
 	 * @return The list of parsed statements
 	 * @throws Exception
 	 */
-	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile) {
+	public static EList<ParsedStatement> parse(EnvisionCodeFile codeFile, boolean enableBlockStatements) {
 		// error on invalid code files
 		if (!codeFile.isValid()) throw new EnvisionLangError("Invalid CodeFile! Cannot parse!");
 		
 		// create a new isolated parser instance
 		EnvisionLangParser p = new EnvisionLangParser();
+		p.enableBlockStatementParsing = enableBlockStatements;
 		
 		// unpack the code file's tokenized values
 		EList<ParsedStatement> statements = new EArrayList<>();
@@ -800,6 +831,14 @@ public final class EnvisionLangParser {
 	void incrementParsingIndex() {
 		if (atEnd()) return;
 		currentTokenIndex++;
+	}
+	
+	//=========
+	// Getters
+	//=========
+	
+	public boolean areBlockStatementsEnabled() {
+	    return enableBlockStatementParsing;
 	}
 	
 	//==================================

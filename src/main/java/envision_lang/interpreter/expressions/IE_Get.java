@@ -31,7 +31,9 @@ public class IE_Get extends AbstractInterpreterExecutor {
 		EnvisionObject object = in.get(expression.name.getLexeme());
 		
 		// first check if the object even exists
-		if (object == null) throw new UndefinedValueError(expression.name.getLexeme());
+		if (object == null) {
+		    throw new UndefinedValueError(expression.name.getLexeme());
+		}
 		
 		// check if restricted
 		if (object.isRestricted()) {
