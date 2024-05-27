@@ -2,6 +2,7 @@ package envision_lang._launch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import envision_lang.EnvisionLang;
 import envision_lang.debug.DebugParserPrinter;
@@ -64,7 +65,7 @@ public class EnvisionCodeFile extends EnvisionObject {
 	/** The paired WorkingDirectory for this CodeFile. */
 	private WorkingDirectory workingDir;
 	
-	private EList<String> directScriptLines;
+	private List<String> directScriptLines;
 	
 	//==============
 	// Constructors
@@ -78,7 +79,7 @@ public class EnvisionCodeFile extends EnvisionObject {
      * 
      * @param scriptLines
      */
-	public EnvisionCodeFile(EList<String> scriptLines) {
+	public EnvisionCodeFile(List<String> scriptLines) {
 	    super(Primitives.CODE_FILE);
 	    
 	    directScriptLines = scriptLines;

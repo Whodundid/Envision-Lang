@@ -25,6 +25,7 @@ public class OperatorOverloadHandler {
 	 * @param a
 	 * @param obj
 	 * @return
+	 * @throws Exception 
 	 */
 	public static EnvisionObject handleOverload(EnvisionInterpreter interpreter,
 												String a_scopeName,

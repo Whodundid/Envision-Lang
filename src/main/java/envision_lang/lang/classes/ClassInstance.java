@@ -273,17 +273,10 @@ public class ClassInstance extends EnvisionObject {
 	 * @param <E>         The expected return type of the function
 	 * 
 	 * @return The result of the function's execution, could be void
-	 * 
-	 * @throws UndefinedFunctionError Thrown if there is no function with
-	 *                                the given name in this scope
-	 * 								
-	 * @throws NotAFunctionError      Thrown if there is an object with
-	 *                                the given name, but it's not a
-	 *                                function
+	 * @throws Exception 
 	 */
 	public <E extends EnvisionObject> E executeFunction
 		(String funcName, EnvisionInterpreter interpreter, EnvisionObject[] args)
-			throws UndefinedFunctionError, NotAFunctionError
 	{
 		// attempt to get function with given name from scope
 		EnvisionObject obj = instanceScope.get(funcName);

@@ -497,7 +497,7 @@ public class EnvisionFunction extends ClassInstance {
 	 * 
 	 * @param interpreter The interpreter to execute the function with
 	 */
-	public void invoke(EnvisionInterpreter interpreter) {
+	public void invoke(EnvisionInterpreter interpreter) throws Exception {
 		invoke(interpreter, new EnvisionObject[0]);
 	}
 	

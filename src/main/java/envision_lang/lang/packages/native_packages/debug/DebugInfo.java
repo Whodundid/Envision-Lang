@@ -50,7 +50,7 @@ public class DebugInfo extends EnvisionFunction {
 		
 		out += "----------------------------------------------------------------\n";
 		
-		System.out.println(out);
+		interpreter.printToConsoleReceiver(out, true);
 	}
 	
 }

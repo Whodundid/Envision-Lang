@@ -298,17 +298,18 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
         try {
             executeNext_i();
         }
-        //exit silently on shutdown call
+        // exit silently on shutdown call
         catch (LangShutdownCall shutdownCall) {}
-        //report error on statement execution error
+        // report error on statement execution error
         catch (Exception error) {
             hasError = true;
             errorObject = error;
             //such professional error handler
             System.out.println("(" + startingFile.getSystemFile() + ") error at: " + frames.getFirst());
+            System.out.println(error);
             printStackFrames();
-            //error.printStackTrace();
-            throw error;
+            error.printStackTrace();
+            //throw error;
         }
     }
     
@@ -359,7 +360,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
         }
         
         // pop off the stack frame
-        frames.pop();
+        if (frames.isNotEmpty()) frames.pop();
     }
     
     public boolean hasError() { return hasError; }
@@ -400,20 +401,20 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
     }
     
     public void printStackFrames() {
-        System.out.println("\nSTACK FRAMES:");
+        printToConsoleReceiver("\nSTACK FRAMES:", true);
         final int fsize = frames.size();
         for (int i = 0; i < fsize; i++) {
-            System.out.println("\t" + (fsize - i - 1) + " FRAME:");
+            printToConsoleReceiver("\t" + (fsize - i - 1) + " FRAME:", true);
             
             var s = frames.get(i).statementStack;
             final int size = s.size();
             
             for (int j = 0; j < size; j++) {
-                System.out.println("\t\t" + (size - j - 1) + ": '" + s.get(j) + "'");
+                printToConsoleReceiver("\t\t" + (size - j - 1) + ": '" + s.get(j) + "'", true);
             }
             
         }
-        System.out.println();
+        printToConsoleReceiver("", true);
     }
     
     /**

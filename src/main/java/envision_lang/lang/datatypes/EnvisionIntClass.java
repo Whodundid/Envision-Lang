@@ -168,6 +168,7 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
 			//check for invalid argument constructor datatypes
 			else if (arg_val instanceof EnvisionNumber n) int_val = n.intVal();
 			else if (arg_val instanceof EnvisionBoolean b) int_val = new EnvisionInt((b.bool_val) ? 1l : 0l);
+			else if (arg_val instanceof EnvisionString s) int_val = new EnvisionInt(Long.parseLong(s.string_val));
 			
 			if (int_val == null)
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");

@@ -100,6 +100,7 @@ public class IE_Assign extends AbstractInterpreterExecutor {
 	 * @param obj the object being assigned (if present)
 	 * @param value the new value to be assigned
 	 * @return the new value
+	 * @throws Exception 
 	 */
 	public static EnvisionObject assign(EnvisionInterpreter interpreter,
 										String name,

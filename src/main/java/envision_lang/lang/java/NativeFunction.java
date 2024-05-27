@@ -189,6 +189,9 @@ public final class NativeFunction extends EnvisionFunction implements INativeEnv
                 // wrapper instance or create a new one altogether
                 toReturn = jclass.buildInstance(interpreter, result);
             }
+            else if (typeClass == null) {
+                toReturn = EnvisionNull.NULL;
+            }
             // if the type is a primitive, simply use the ObjectCreator
             else if (typeClass.isPrimitive()) {
                 toReturn = ObjectCreator.wrap(result);

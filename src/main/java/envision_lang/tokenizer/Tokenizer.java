@@ -602,12 +602,13 @@ public class Tokenizer {
         
         // check for end of file
         if (!hasNextLine) {
-            var lastToken = lineTokens.getLastB().getLast();
+            var lastToken = (lineTokens.getLastB() != null) ? lineTokens.getLastB().getLast() : null;
             var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
             var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
             
             var EOF = Token.EOF(lineNum, lastIndex, lastLineT);
-            lineTokens.getLastB().add(EOF);
+            if (lineTokens.getLastB() != null) lineTokens.getLastB().add(EOF);
+            else lineTokens.add(lineNum, EList.of(EOF));
             tokens.add(EOF);
             lines.add("EOF");
             

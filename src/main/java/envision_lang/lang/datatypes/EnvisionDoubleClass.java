@@ -137,6 +137,7 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
 			//check for invalid argument constructor datatypes
 			else if (arg_val instanceof EnvisionNumber<?> n) double_val = n.doubleVal();
 			else if (arg_val instanceof EnvisionBoolean b) double_val = new EnvisionDouble((b.bool_val) ? 1.0 : 0.0);
+			else if (arg_val instanceof EnvisionString s) double_val = new EnvisionDouble(Double.parseDouble(s.string_val));
 			
 			if (double_val == null)
 				throw new InvalidArgumentError("Cannot convert the value '"+arg_val+"' to an "+getDatatype()+"!");

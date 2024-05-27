@@ -104,8 +104,7 @@ public class ParameterData {
             
             // check for valid parameter datatype
             if (obj == null) throw new InvalidParameterError("Java::NULL is not a valid parameter type!");
-            if (obj instanceof EnvisionNull) throw new InvalidParameterError(
-                                                                             "Envision::NULL is not a valid parameter type!");
+            if (obj instanceof EnvisionNull) throw new InvalidParameterError("Envision::NULL is not a valid parameter type!");
             
             IDatatype type = obj.getDatatype();
             String name = "";

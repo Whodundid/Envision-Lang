@@ -46,6 +46,7 @@ public class EnvisionStringFormatter {
      * @param args
      * 
      * @return String formatted for println
+     * @throws Exception 
      */
     public static String formatPrint(EnvisionInterpreter interpreter, EnvisionObject[] args, boolean format) {
         var out = new EStringBuilder();

@@ -110,6 +110,7 @@ public class EnvisionJavaClass extends EnvisionClass {
      * @param args        Any arguments to be passed to the new object instance
      * 
      * @return The newly created object instance
+     * @throws Exception 
      */
     @Override
     protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

@@ -1,6 +1,7 @@
 package envision_lang._launch;
 
 import java.io.File;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,7 +178,7 @@ public class EnvisionProgram {
      * @param programNameIn The name of the program
      * @param linesIn       The Envision program lines to execute
      */
-    public EnvisionProgram(String programNameIn, EList<String> linesIn) {
+    public EnvisionProgram(String programNameIn, List<String> linesIn) {
         logger.trace("Starting program build for: " + programNameIn);
         programName = programNameIn;
         
@@ -345,8 +346,9 @@ public class EnvisionProgram {
      * 
      * @param funcName
      * @param args
+     * @throws Exception 
      */
-    public Object callEnvisionFunction(EnvisionInterpreter interpreter, String funcName, Object... args) {
+    public Object callEnvisionFunction(EnvisionInterpreter interpreter, String funcName, Object... args) throws Exception {
         var function = mainFileScope.getFunction(funcName);
         
         // fail if not found
@@ -382,7 +384,7 @@ public class EnvisionProgram {
         }
     }
     
-    private EnvisionCodeFile wrapLinesIntoCodeFile(EList<String> linesToWrap) {
+    private EnvisionCodeFile wrapLinesIntoCodeFile(List<String> linesToWrap) {
         return new EnvisionCodeFile(linesToWrap);
     }
     

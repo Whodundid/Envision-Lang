@@ -1,5 +1,7 @@
 package envision_lang._launch;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,26 +30,28 @@ public class EnvisionProgramRunner {
     /** The time that this program was started. */
     private long start_time;
     /** True if this runner has started running the bound program. */
-    private boolean hasStarted = false;
+    private volatile boolean hasStarted = false;
     /**
      * Flag to indicate whether or not this runner is actively running a
      * program.
      */
-    private boolean isRunning = false;
+    private volatile boolean isRunning = false;
     /**
      * Flag to indicate whether this runner has hit a block statement during
      * execution.
      */
-    private boolean isBlocked = false;
+    private volatile boolean isBlocked = false;
     /**
      * Flag to indicate whether or not the program bound by this runner has
      * completed execution.
      */
-    private boolean hasFinished = false;
+    private volatile boolean hasFinished = false;
     /**
      * Flag to indicate whether or not an error was thrown during execution.
      */
-    private boolean hasError = false;
+    private volatile boolean hasError = false;
+    
+    private Thread programThread;
     
     //==============
     // Constructors
@@ -107,12 +111,16 @@ public class EnvisionProgramRunner {
     // Methods
     //=========
     
+    public void start(String... args) throws Exception {
+        start(EList.of(args));
+    }
+    
     /**
      * Start the execution of the bound program.
      * 
      * @throws Exception
      */
-    public void start(String... args) throws Exception {
+    public void start(List<String> args) throws Exception {
         // error out if we are currently running as everything will break otherwise
         if (isRunning) throw new IllegalStateException("Program is already running!");
         
@@ -133,9 +141,12 @@ public class EnvisionProgramRunner {
         if (!program.executeCode()) return;
         
         // if there were any user arguments passed, inject them into the interpreter
-        if (args.length > 0) {
+        if (!args.isEmpty()) {
             interpreter.setupWithUserArguments(EList.of(args));
         }
+//        else {
+//            interpreter.setup();
+//        }
         
         // track program start time
         start_time = System.currentTimeMillis();
@@ -152,15 +163,31 @@ public class EnvisionProgramRunner {
      * Runs the next instruction of the bound program until either a blocking
      * statement is reached or the program terminates normally.
      */
-    public void executeNextInstruction() {
+    public synchronized void executeNextInstruction() {
         // error out if we are not running in the first place as everything will break otherwise
         if (!isRunning) throw new IllegalStateException("Program is not running!");
         // if execution is currently blocked, wait until it relinquishes state
-        if (isBlocked) return;
+        //if (isBlocked) return;
         
         try {
-            // actually execute the program
-            interpreter.executeNext();
+            //programThread = new Thread(() -> {
+                // actually execute the program
+                interpreter.executeNext();
+                
+                // if the program has already been terminated, exit silently
+                if (hasFinished) return;
+                
+                // if this statement is reached, check if there are more instructions
+                // to run, and if not, terminate the program.
+                if (hasError || !hasNextInstruction()) {
+                    terminate();
+                }
+                else {
+                    isBlocked = true;
+                }
+            //});
+            
+            //programThread.start();
         }
         catch (EnvisionLangError e) {
             if (program.getErrorCallback() != null) program.getErrorCallback().onEnvisionError(e);
@@ -170,22 +197,17 @@ public class EnvisionProgramRunner {
             if (program.getErrorCallback() != null) program.getErrorCallback().onJavaException(e);
             hasError = true;
         }
-        
-        // if this statement is reached, check if there are more instructions
-        // to run, and if not, terminate the program.
-        if (hasError || !hasNextInstruction()) {
-            terminate();
-        }
-        else {
-            isBlocked = true;
-        }
     }
     
     /**
      * Immediately stops the execution of the bound program.
      */
     public void terminate() {
-        if (!isRunning) throw new IllegalStateException("Program is not running!");
+        //if (!isRunning) throw new IllegalStateException("Program is not running!");
+        
+        if (programThread != null) {
+            programThread.interrupt();
+        }
         
         // stop the interpreter
         interpreter.terminate();

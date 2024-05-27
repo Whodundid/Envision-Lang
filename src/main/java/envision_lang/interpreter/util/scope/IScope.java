@@ -385,6 +385,7 @@ public interface IScope {
 	default EList<EnvisionFunction> functions() {
 		return values().entrySet().stream()
 								  .filter(b -> b.getValue().isFunctionType())
+								  .filter(b -> !(b.getValue().getObject() instanceof FunctionPrototype))
 								  .map(Entry::getValue)
 								  .map(b -> b.getObject())
 								  .map(b -> (EnvisionFunction) b)

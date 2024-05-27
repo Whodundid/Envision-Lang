@@ -27,7 +27,7 @@ public class DebugScopeFull extends EnvisionFunction {
 			out.a("------------------------------------------------------------");
 			out.a("\nFULL SCOPE DEBUG (Local)\n", IScope.printFullStack(s));
 			out.a("\n------------------------------------------------------------");
-			System.out.println(out.toString());
+			interpreter.printToConsoleReceiver(out.toString(), true);
 		}
 		else {
 			EnvisionObject o = args[0];
@@ -38,7 +38,7 @@ public class DebugScopeFull extends EnvisionFunction {
 				out.a("------------------------------------------------------------");
 				out.a("\nFULL CLASS SCOPE: (", type, " : ", o, ")\n", IScope.printFullStack(inst_scope));
 				out.a("\n------------------------------------------------------------");
-				System.out.println(out.toString());
+				interpreter.printToConsoleReceiver(out.toString(), true);
 			}
 			else if (o instanceof ClassInstance inst) {
 				IDatatype type = inst.getDatatype();
@@ -47,26 +47,26 @@ public class DebugScopeFull extends EnvisionFunction {
 				out.a("------------------------------------------------------------");
 				out.a("\nFULL CLASS INSTANCE SCOPE: (", type, " : ", o, ")\n", IScope.printFullStack(inst_scope));
 				out.a("\n------------------------------------------------------------");
-				System.out.println(out.toString());
+				interpreter.printToConsoleReceiver(out.toString(), true);
 			}
 			else if (o instanceof EnvisionCodeFile code) {
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
 				out.a("\nFULL CODE FILE SCOPE: (", code, " : ", o, ")\n", IScope.printFullStack(code.scope()));
 				out.a("\n------------------------------------------------------------");
-				System.out.println(out.toString());
+				interpreter.printToConsoleReceiver(out.toString(), true);
 			}
 			else if (o instanceof EnvisionLangPackage pkg) {
 				var out = new EStringBuilder("\n");
 				out.a("------------------------------------------------------------");
 				out.a("\nFULL PACKAGE SCOPE: (", pkg.getPackageName(), " : ", o, ")\n", IScope.printFullStack(pkg.getScope()));
 				out.a("\n------------------------------------------------------------");
-				System.out.println(out.toString());
+				interpreter.printToConsoleReceiver(out.toString(), true);
 			}
 			else {
 				var out = new EStringBuilder("\n");
 				out.a("\nSCOPE DEBUG ERROR! -- Can't show the scope of a '", o, "'!");
-				System.out.println(out.toString());
+				interpreter.printToConsoleReceiver(out.toString(), true);
 			}
 		}
 	}

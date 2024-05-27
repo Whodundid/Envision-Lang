@@ -19,7 +19,7 @@ public class DebugParsed extends EnvisionFunction {
 	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
 		if (args.length > 0) throw new ArgLengthError(this, 0, args.length);
 		
-		System.out.println("DEBUG: -- Printing Parsed Statements --");
+		interpreter.printToConsoleReceiver("DEBUG: -- Printing Parsed Statements --", true);
 		EnvisionCodeFile codeFile = interpreter.codeFile();
 		for (ParsedStatement s : codeFile.getStatements()) {
 			String out = "     " + s + " : ";
@@ -32,9 +32,9 @@ public class DebugParsed extends EnvisionFunction {
 				out += s.getClass();
 			}
 			
-			System.out.println(out);
+			interpreter.printToConsoleReceiver(out, true);
 		}
-		System.out.println();
+		interpreter.printToConsoleReceiver("", true);
 	}
 	
 }

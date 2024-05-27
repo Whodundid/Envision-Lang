@@ -4,11 +4,10 @@ import envision_lang.EnvisionLang;
 import envision_lang.interpreter.util.scope.IScope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.classes.ClassInstance;
-import envision_lang.lang.datatypes.EnvisionList;
-import envision_lang.lang.datatypes.EnvisionListClass;
 import envision_lang.lang.datatypes.EnvisionNull;
 import envision_lang.lang.datatypes.EnvisionStringClass;
-import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.datatypes.EnvisionTuple;
+import envision_lang.lang.datatypes.EnvisionTupleClass;
 import eutil.datatypes.util.EList;
 
 public class InternalEnvision extends ClassInstance {
@@ -27,7 +26,7 @@ public class InternalEnvision extends ClassInstance {
 		
 		InternalEnvisionClass.ENVISION_CLASS.defineFunctionScopeMembers(this);
 		
-		EnvisionList list = EnvisionListClass.newList(EnvisionStaticTypes.STRING_TYPE);
+		EnvisionTuple list = EnvisionTupleClass.newTuple(/*EnvisionStaticTypes.STRING_TYPE*/);
 		if (programArgs != null) {
 			for (String arg : programArgs) {
 				list.add(EnvisionStringClass.valueOf(arg));
