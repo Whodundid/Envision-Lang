@@ -27,6 +27,10 @@ import envision_lang.lang.natives.Primitives;
  */
 public class EnvisionFunctionClass extends EnvisionClass {
 
+    //========
+    // Fields
+    //========
+    
 	/**
 	 * The single, static class instance for which all Envision Function
 	 * instances are derived from.
@@ -56,17 +60,17 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		FUNC_PROTOS.define("getParamNames", LIST).assignDynamicClass(IFunc_getParamNames.class);
 	}
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	private EnvisionFunctionClass() {
 		super(Primitives.FUNCTION);
 	}
 	
-	//-----------
-	// Overrides
-	//-----------
+	//===========
+    // Overrides
+    //===========
 	
 	@Override
 	public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
@@ -78,9 +82,9 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		throw new EnvisionLangError("Illegal Function Instantiation!");
 	}
 	
-	//---------
-	// Methods
-	//---------
+	//=========
+    // Methods
+    //=========
 	
 	public void defineFunctionScopeMembers(EnvisionFunction func) {
 		//define super object's members
@@ -89,9 +93,9 @@ public class EnvisionFunctionClass extends EnvisionClass {
 		FUNC_PROTOS.defineOn(func);
 	}
 	
-	//---------------------------------
+	//=================================
 	// Static Function Class Functions
-	//---------------------------------
+	//=================================
 	
 	/**
 	 * Wrapped invoke method for Envision function calls. Parameter

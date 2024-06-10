@@ -2,69 +2,100 @@ package envision_lang.lang.natives;
 
 import envision_lang.lang.EnvisionObject;
 
+/**
+ * A parameter for a function.
+ * <p>
+ * Parameters can possess the following properties:
+ * <li> 1. They can either be typed or typeless (VAR)
+ * <li> 2. A name
+ * <li> 3. A potential default value if no argument is mapped
+ * <li> 4. The
+ * 
+ * @author Hunter
+ */
 public class EnvisionParameter {
-	
-	public final IDatatype datatype;
-	public final String name;
-	public final Object defaultValue;
-	public final boolean hasDefault;
-	public final boolean isVarA;
-	
-	//==============
+    
+    //========
+    // Fields
+    //========
+    
+    /**
+     * The underlying datatype for this parameter. This can either be a
+     * strong type or it can be completely typeless (VAR).
+     */
+    public final IDatatype datatype;
+    
+    /** The name of this parameter. */
+    public final String name;
+    
+    /**
+     * In the event that no argument is matched against this parameter's
+     * type, the parameter can potentially fill in with this default value
+     * if it was specified.
+     */
+    public final EnvisionObject defaultValue;
+    
+    /**
+     * Specifies whether or not this parameter can take in an array of
+     * values instead of just one.
+     */
+    public final boolean isVarA;
+    
+    //==============
     // Constructors
     //==============
-	
-	public EnvisionParameter(IDatatype typeIn, String nameIn) {
-		datatype = typeIn;
-		name = nameIn;
-		defaultValue = null;
-		hasDefault = false;
-		isVarA = typeIn.getPrimitive() == Primitives.VAR_A;
-	}
-	
-	public EnvisionParameter(IDatatype typeIn, String nameIn, Object defaultValueIn) {
-		datatype = typeIn;
-		name = nameIn;
-		defaultValue = defaultValueIn;
-		hasDefault = true;
-		isVarA = typeIn.getPrimitive() == Primitives.VAR_A;
-	}
-	
-	public EnvisionParameter(EnvisionObject typeIn) {
-		if (typeIn == null) datatype = null;
-		else datatype = typeIn.getDatatype();
-		
-		name = null;
-		defaultValue = null;
-		hasDefault = false;
-		isVarA = datatype == Primitives.VAR_A;
-	}
-	
-	//-----------
-	// Overrides
-	//-----------
-	
-	@Override
-	public String toString() {
-		String d = (hasDefault) ? " = " + defaultValue : "";
-		return "[" + datatype + ", " + name + d + "]";
-	}
-	
-	//---------
-	// Methods
-	//---------
-	
-	/** Compares the datatypes of each parameter, name is irrelevant when comparing. */
-	public boolean compare(EnvisionParameter paramIn) {
-		return paramIn != null && paramIn.datatype.equals(datatype);
-	}
-	
-	public boolean isNumber() {
-		return datatype.isNumber();
-	}
-	
-	public boolean isVarA() {
-	    return isVarA;
-	}
-	
+    
+    public EnvisionParameter(IDatatype typeIn, String nameIn) {
+        this(typeIn, nameIn, null, false);
+    }
+    
+    public EnvisionParameter(IDatatype typeIn, String nameIn, boolean isVarargs) {
+        this(typeIn, nameIn, null, isVarargs);
+    }
+    
+    public EnvisionParameter(IDatatype typeIn, String nameIn, EnvisionObject defaultValueIn, boolean isVarargs) {
+        datatype = typeIn;
+        name = nameIn;
+        defaultValue = defaultValueIn;
+        isVarA = isVarargs;
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        String v = (isVarA) ? "... " : ((name.equals("")) ? "" : " ");
+        String d = (defaultValue != null) ? " = " + defaultValue : "";
+        return "[" + datatype + v + name + d + "]";
+    }
+    
+    //=========
+    // Methods
+    //=========
+    
+    /**
+     * Compares the datatypes of each parameter, name is irrelevant when
+     * comparing.
+     */
+    public boolean compare(EnvisionParameter paramIn) {
+        return paramIn != null && paramIn.datatype.equals(datatype);
+    }
+    
+    public boolean hasDefault() { return defaultValue != null; }
+    public boolean isNumber() { return datatype.isNumber(); }
+    public boolean isVarA() { return isVarA; }
+    public boolean isVar() { return datatype.isVar(); }
+    
+    //=========
+    // Getters
+    //=========
+    
+    public EnvisionObject getDefaultValue() { return defaultValue; }
+    
+    public EnvisionObject getNewDefaultValueInstance() {
+        return (defaultValue != null) ? ((defaultValue.isPassByValue()) ? defaultValue.copy() : defaultValue) : null;
+    }
+    
 }

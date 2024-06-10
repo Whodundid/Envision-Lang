@@ -30,9 +30,9 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 	 */
 	public static final EnvisionNumberClass NUMBER_CLASS = new EnvisionNumberClass();
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * Hide constructor to prevent any more than the single, static
@@ -52,9 +52,9 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 		staticScope.defineFunction(new IFunc_static_valueOf());
 	}
 	
-	//---------------------
+	//=====================
 	// Static Constructors
-	//---------------------
+	//=====================
 	
 	public static EnvisionNumber<?> newNumber() { return EnvisionInt.ZERO; }
 	public static EnvisionNumber<?> newNumber(long val) { return EnvisionIntClass.valueOf(val); }
@@ -66,9 +66,9 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 		return EnvisionIntClass.valueOf(val.longValue());
 	}
 	
-	//-----------
-	// Overrides
-	//-----------
+	//===========
+    // Overrides
+    //===========
 	
 	@Override
 	public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
@@ -105,9 +105,9 @@ public sealed class EnvisionNumberClass extends EnvisionClass
 		return num;
 	}
 	
-	//-------------------------
+	//=========================
 	// Static Member Functions
-	//-------------------------
+	//=========================
 	
 	private static class IFunc_static_valueOf extends EnvisionFunction {
 		IFunc_static_valueOf() {

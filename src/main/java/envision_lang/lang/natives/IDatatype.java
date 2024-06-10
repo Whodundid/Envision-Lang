@@ -14,9 +14,9 @@ import eutil.datatypes.util.JavaDatatype;
  */
 public interface IDatatype {
 	
-	//-----------------------
+	//=======================
 	// Non-Default Functions
-	//-----------------------
+	//=======================
 	
 	/**
 	 * Returns the underlying primitive type of this datatype.
@@ -42,9 +42,9 @@ public interface IDatatype {
 	 */
 	public String getStringValue();
 	
-	//-------------------
+	//===================
 	// Default Functions
-	//-------------------
+	//===================
 	
 	/**
 	 * Returns true if this dataType is also a primitive datatype.
@@ -68,6 +68,11 @@ public interface IDatatype {
 	 */
 	public default boolean isArrayType() {
 		return Primitives.isArrayType(getPrimitive());
+	}
+	
+	public default IDatatype getNonArrayType() {
+	    if (isPrimitive()) return getPrimitive().getNonArrayType();
+	    return null;
 	}
 	
 	/**
@@ -195,25 +200,25 @@ public interface IDatatype {
 	 * @return true if the types match
 	 */
 	public default boolean compare(IDatatype typeIn) {
-		//null always is false
+		// null is always false
 		if (typeIn == null) return false;
 		
-		//don't allow mixing of primitives and user-defined types
+		// don't allow mixing of primitives and user-defined types
 		if (typeIn.isPrimitive() && !this.isPrimitive()) return false;
 		if (!typeIn.isPrimitive() && this.isPrimitive()) return false;
 		
-		//check primitives
+		// check primitives
 		if (typeIn.isPrimitive() && this.isPrimitive()) {
 			return typeIn.getPrimitive() == this.getPrimitive();
 		}
 		
-		//check string type
+		// check string type
 		return typeIn.getStringValue().equals(this.getStringValue());
 	}
 	
-	//--------
+	//========
 	// Static
-	//--------
+	//========
 	
 	public static boolean isNumber(IDatatype type) { 
 		return type != null && type.isNumber();

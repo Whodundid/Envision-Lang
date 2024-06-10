@@ -477,12 +477,12 @@ public class Tokenizer {
         boolean r = true;
         for (char c : expectedString) {
             // break at end regardless
-            if (atEnd() || !match(c)) {
+            if (!match(c)) {
                 r = false;
+                setCurrent(prev_cur);
                 break;
             }
         }
-        setCurrent(prev_cur);
         return r;
     }
     

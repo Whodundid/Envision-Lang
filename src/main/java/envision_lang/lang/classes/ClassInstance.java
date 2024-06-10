@@ -32,6 +32,10 @@ import envision_lang.tokenizer.Operator;
  */
 public class ClassInstance extends EnvisionObject {
 	
+    //========
+    // Fields
+    //========
+    
 	/**
 	 * The scope of this instance. Directly inherited from the calling
 	 * scope and the over-arching class's scope from which this instance

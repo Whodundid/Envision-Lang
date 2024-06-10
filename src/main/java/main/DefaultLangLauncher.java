@@ -42,7 +42,7 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 //			LIVE_MODE,
 //			,TOKENIZE
 //			,EnvironmentSetting.TOKENIZE_IN_DEPTH
-//			,PARSE_STATEMENTS
+//			,EnvironmentSetting.PARSE_STATEMENTS
 //			,DONT_EXECUTE
 		);
 		
@@ -52,10 +52,10 @@ public class DefaultLangLauncher implements EnvisionLangErrorCallBack {
 		{
 			var runner = new EnvisionProgramRunner(program);
 			runner.start();
-			//EnvisionLang.runProgram(program);
+//			EnvisionLang.runProgram(program);
 		}
 		System.out.println("END: " + (System.currentTimeMillis() - start) + " ms");
-		System.out.println("JAVA: " + t);
+//		System.out.println("JAVA: " + t);
 		
 //		var runner = new EnvisionProgramRunner(program);
 //        runner.execute();

@@ -39,9 +39,9 @@ public class EnvisionLang {
     private static final Logger logger = LoggerFactory.getLogger(EnvisionLang.class);
     
 	/** The current build of the Envision Scripting Language. */
-	public static final String VERSION = "0.0.6";
+	public static final String VERSION = "0.0.7";
 	/** The current build's date of the Envision Scripting Language. */
-	public static final String VERSION_DATE = "11/11/2023";
+	public static final String VERSION_DATE = "6/10/2024";
 	
 	/** Global debug value -- if true, debug outputs will be enabled. */
 	public static boolean debugMode = false;

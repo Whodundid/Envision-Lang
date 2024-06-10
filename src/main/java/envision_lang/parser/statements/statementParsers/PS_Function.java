@@ -235,6 +235,9 @@ public class PS_Function extends ParserHead {
 					
 					ParsedExpression assign = null;
 					if (matchType(ASSIGNMENT)) {
+					    // if it's a varargs, don't allow assignments -- it's weird and I said so.
+					    errorIf(varargs, "A 'Varargs' parameter cannot have a default value assigned to it!");
+					    // otherwise, parse the assignment value expression
 						assign = ExpressionParser.parseExpression();
 					}
 					

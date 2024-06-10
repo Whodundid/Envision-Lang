@@ -146,7 +146,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     
 	public void tokenizeFile(boolean enableBlockStatements) throws Exception {
 		if (tokenizer == null) {
-		    tokenizer = new Tokenizer();
+		    tokenizer = new Tokenizer(this);
 		    tokenizer.setEnableBlockStatementParsing(enableBlockStatements);
 		}
 		

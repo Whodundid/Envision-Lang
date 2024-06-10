@@ -15,6 +15,10 @@ import envision_lang.lang.natives.Primitives;
 
 public final class EnvisionIntClass extends EnvisionNumberClass {
 
+    //========
+    // Fields
+    //========
+    
 	/**
 	 * The singular, static int class for which all EnvisionInt
 	 * objects are derived from.
@@ -64,9 +68,9 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
 		private EnvisionIntegerCache() {}
 	}
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * Hide constructor to prevent any more than the single, static

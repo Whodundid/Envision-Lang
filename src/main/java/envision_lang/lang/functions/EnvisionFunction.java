@@ -568,12 +568,13 @@ public class EnvisionFunction extends ClassInstance {
 		IScope scope = new Scope(instanceScope);
 		
 		EnvisionFunction m = getOverloadFromArgs(args);
+		EList<EnvisionObject> mappedArgs = m.parameters.mapArgumentsIntoParameters(args);
 		
 		// define parameter values within the current scope
 		String[] parameterNames = m.parameters.getNames();
 		for (int i = 0; i < m.parameters.length(); i++) {
 			String n = parameterNames[i];
-			scope.define(n, args[i]);
+			scope.define(n, mappedArgs.get(i));
 		}
 		
 		// if this is a constructor, check if any of the arguments are assignment args
@@ -649,7 +650,8 @@ public class EnvisionFunction extends ClassInstance {
 	}
 	
 	public EnvisionFunction setParams(ParameterData dataIn) {
-		parameters = ParameterData.from(dataIn);
+		//parameters = ParameterData.from(dataIn);
+	    parameters = dataIn;
 		return this;
 	}
 	

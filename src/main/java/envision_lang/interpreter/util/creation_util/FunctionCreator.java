@@ -2,6 +2,7 @@ package envision_lang.interpreter.util.creation_util;
 
 import envision_lang.interpreter.EnvisionInterpreter;
 import envision_lang.interpreter.util.scope.IScope;
+import envision_lang.interpreter.util.scope.Scope;
 import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.functions.EnvisionFunctionClass;
@@ -63,8 +64,7 @@ public class FunctionCreator {
 		
 		//---------------------------------------------------------
 		
-		
-		f.setScope(scopeIn);
+		f.setScope(new Scope(scopeIn));
 		f.setVisibility(s.getDeclaration().getVisibility());
 		
 		var mods = s.getDeclaration().getMods();
@@ -122,15 +122,16 @@ public class FunctionCreator {
 			
 			Token<?> name = p.name;
 			Token<?> type = p.type;
+			boolean varargs = p.varags;
 			
 			String theName = name.getLexeme();
 			IDatatype theType = (type != null) ? typeMan.getOrCreateDatatypeFor(type) : EnvisionStaticTypes.VAR_TYPE;
 			
 			ParsedExpression assign = p.assignment;
+			EnvisionObject defaultValue = (assign != null) ? in.evaluate(assign) : null;
 			
-			EnvisionParameter newParam = null;
-			if (assign != null) newParam = new EnvisionParameter(theType, theName, in.evaluate(assign));
-			else newParam = new EnvisionParameter(theType, theName);
+			// create the parameter from parsed values
+			EnvisionParameter newParam = new EnvisionParameter(theType, theName, defaultValue, varargs);
 			
 			builtParams[i] = newParam;
 		}

@@ -20,9 +20,9 @@ import envision_lang.lang.natives.Primitives;
  */
 public abstract class EnvisionObject {
 
-	//--------
-	// Fields
-	//--------
+	//========
+    // Fields
+    //========
 	
 	/**
 	 * The EnvisionClass for which this is an instance of.
@@ -66,9 +66,9 @@ public abstract class EnvisionObject {
 	 */
 	protected final boolean isPassByValue;
 	
-	//--------------
-	// Constructors
-	//--------------
+	//==============
+    // Constructors
+    //==============
 	
 	/**
 	 * Assigns the internal datatype for this object.
@@ -83,18 +83,18 @@ public abstract class EnvisionObject {
 		isPassByValue = isPrimitive && internalType.getPrimitive().isPassByValue();
 	}
 	
-	//-----------
-	// Overrides
-	//-----------
+	//===========
+    // Overrides
+    //===========
 	
 	@Override
 	public String toString() {
 		return getDatatype() + "_" + getHexHash();
 	}
 	
-	//---------
-	// Methods
-	//---------
+	//=========
+    // Methods
+    //=========
 	
 	/**
 	 * Creates a shallow copy of this specific object.
@@ -113,9 +113,9 @@ public abstract class EnvisionObject {
 		return toString();
 	}
 	
-	//---------
-	// Getters
-	//---------
+	//=========
+    // Getters
+    //=========
 	
 	/**
 	 * @return The underlying datatype of this object.
@@ -164,9 +164,9 @@ public abstract class EnvisionObject {
 	/** Returns true if there are no visibility modifiers set. */
 	public boolean isScopeVisibility() { return modifierHandler.isScopeVisibility(); }
 
-	//---------
-	// Setters
-	//---------
+	//=========
+    // Setters
+    //=========
 	
 	public EnvisionObject setModifier(DataModifier mod, boolean val) {
 		modifierHandler.setModifier(mod, val);
@@ -194,9 +194,9 @@ public abstract class EnvisionObject {
 	public EnvisionObject setPublic() { modifierHandler.setPublic(); return this; }
 	public EnvisionObject setScopeVisibility() { modifierHandler.setScopeVisibility(); return this; }
 	
-	//----------------
-	// Static Methods
-	//----------------
+	//================
+    // Static Methods
+    //================
 	
 	/**
 	 * In the event that the incoming object is an EnvisionVariable, the variable
