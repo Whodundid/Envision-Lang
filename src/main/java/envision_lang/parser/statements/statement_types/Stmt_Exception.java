@@ -13,47 +13,47 @@ import eutil.datatypes.util.EList;
  * an exception can be thrown where as a class cannot.
  */
 public class Stmt_Exception extends ParsedStatement {
-	
-	//========
-	// Fields
-	//========
-	
-	public final Token<?> name;
-	public final EList<ParsedStatement> body = EList.newList();
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Stmt_Exception(Token<?> nameIn, ParserDeclaration declarationIn) {
-		super(nameIn, declarationIn);
-		name = nameIn;
-	}
-	
-	@Override
-	public String toString() {
-		String b = "";
-		for (int i = 0; i < body.size(); i++) {
-			b += body.get(i);
-		}
-		return declaration + " exception " + name.getLexeme() + " {\n" + b + "}";
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public void execute(StatementHandler handler) {
-		handler.handleExceptionStatement(this);
-	}
-	
-	//=========
-	// Methods
-	//=========
-	
-	public void addStatement(ParsedStatement in) { body.add(in); }
-	
-	public void setBody(EList<ParsedStatement> bodyIn) { body.clearThenAddAll(bodyIn); }
-	
+    
+    //========
+    // Fields
+    //========
+    
+    public final Token<?> name;
+    public final EList<ParsedStatement> body = EList.newList();
+    
+    //==============
+    // Constructors
+    //==============
+    
+    public Stmt_Exception(Token<?> nameIn, ParserDeclaration declarationIn) {
+        super(nameIn, declarationIn);
+        name = nameIn;
+    }
+    
+    @Override
+    public String toString() {
+        String b = "";
+        for (int i = 0; i < body.size(); i++) {
+            b += body.get(i);
+        }
+        return declaration + " exception " + name.getLexeme() + " {\n" + b + "}";
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public void execute(StatementHandler handler) {
+        handler.handleExceptionStatement(this);
+    }
+    
+    //=========
+    // Methods
+    //=========
+    
+    public void addStatement(ParsedStatement in) { body.add(in); }
+    
+    public void setBody(EList<ParsedStatement> bodyIn) { body.clearThenAddAll(bodyIn); }
+    
 }

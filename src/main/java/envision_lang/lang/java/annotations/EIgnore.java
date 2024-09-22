@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({TYPE, METHOD, FIELD})
 public @interface EIgnore {
-	
-	/** The Envision code that relates to this field or function. */
-	String value() default "";
-	
+    
+    /** The Envision code that relates to this field or function. */
+    String value() default "";
+    
 }

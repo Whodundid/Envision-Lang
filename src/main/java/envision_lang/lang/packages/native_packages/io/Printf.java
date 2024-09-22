@@ -7,15 +7,15 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Printf extends EnvisionFunction {
-	
-	public Printf() {
-		super(EnvisionStaticTypes.VOID_TYPE, "printf");
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
-		interpreter.printToConsoleReceiver(l, false);
-	}
-	
+    
+    public Printf() {
+        super(EnvisionStaticTypes.VOID_TYPE, "printf");
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
+        interpreter.printToConsoleReceiver(l, false);
+    }
+    
 }

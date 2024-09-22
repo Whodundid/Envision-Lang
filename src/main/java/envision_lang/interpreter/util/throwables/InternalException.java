@@ -10,43 +10,43 @@ import envision_lang.lang.exceptions.EnvisionException;
  * @author Hunter Bragg
  */
 public class InternalException extends RuntimeException {
-	
-	//=========
-	// Statics
-	//=========
-	
-	/** The static singleton 'InternalException'. */
-	private static final InternalException instance = new InternalException();
-	
-	//========
-	// Fields
-	//========
-	
-	public EnvisionException thrownException;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	private InternalException() {
-		thrownException = EnvisionException.DEFAULT_EXCEPTION;
-	}
-	
-	//=================
-	// Static Wrappers
-	//=================
-	
-	public static InternalException DEFAULT() {
-		return wrap(EnvisionException.DEFAULT_EXCEPTION);
-	}
-	
-	public static InternalException wrap(EnvisionException exception) {
-		instance.thrownException = exception;
-		return instance;
-	}
-	
-	public static void throwException(EnvisionException exception) {
-		throw wrap(exception);
-	}
-	
+    
+    //=========
+    // Statics
+    //=========
+    
+    /** The static singleton 'InternalException'. */
+    private static final InternalException instance = new InternalException();
+    
+    //========
+    // Fields
+    //========
+    
+    public EnvisionException thrownException;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    private InternalException() {
+        thrownException = EnvisionException.DEFAULT_EXCEPTION;
+    }
+    
+    //=================
+    // Static Wrappers
+    //=================
+    
+    public static InternalException DEFAULT() {
+        return wrap(EnvisionException.DEFAULT_EXCEPTION);
+    }
+    
+    public static InternalException wrap(EnvisionException exception) {
+        instance.thrownException = exception;
+        return instance;
+    }
+    
+    public static void throwException(EnvisionException exception) {
+        throw wrap(exception);
+    }
+    
 }

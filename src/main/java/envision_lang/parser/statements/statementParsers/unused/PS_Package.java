@@ -11,15 +11,15 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
 public class PS_Package extends ParserHead {
-	
-	public static ParsedStatement packageDeclaration() { return packageDeclaration(new ParserDeclaration()); }
-	public static ParsedStatement packageDeclaration(ParserDeclaration declaration) {
-		Token<?> packageName = consume(IDENTIFIER, "Expected a package name!");
-		consume(CURLY_L, "Expected a '{' after package declaration!");
-		
-		EList<ParsedStatement> body = getBlock();
-		
-		return new Stmt_Package(declaration.getStartToken(), declaration, packageName, body);
-	}
-	
+    
+    public static ParsedStatement packageDeclaration() { return packageDeclaration(new ParserDeclaration()); }
+    public static ParsedStatement packageDeclaration(ParserDeclaration declaration) {
+        Token<?> packageName = consume(IDENTIFIER, "Expected a package name!");
+        consume(CURLY_L, "Expected a '{' after package declaration!");
+        
+        EList<ParsedStatement> body = getBlock();
+        
+        return new Stmt_Package(declaration.getStartToken(), declaration, packageName, body);
+    }
+    
 }

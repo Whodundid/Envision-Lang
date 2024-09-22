@@ -18,92 +18,92 @@ import envision_lang.lang.natives.Primitives;
  * @author Hunter Bragg
  */
 public class EnvisionLangPackage extends EnvisionObject implements Buildable {
-	
-	//--------
-	// Fields
-	//--------
-	
-	protected final String packageName;
-	protected Scope packageScope;
-	
-	//--------------
-	// Constructors
-	//--------------
-	
-	public EnvisionLangPackage(String packageNameIn) {
-		super(Primitives.PACKAGE);
-		packageName = packageNameIn;
-		packageScope = new Scope();
-	}
-	
-	//---------
-	// Methods
-	//---------
-	
-	/**
-	 * Adds another package onto this package's scope.
-	 * 
-	 * @param pkg The package to add
-	 */
-	public final void addPackage(EnvisionLangPackage pkg) {
-		if (pkg == null) throw new NullPointerException();
-		
-		//define the package as a referencable object
-		packageScope.define(pkg.packageName, pkg.internalType, pkg);
-		
-		//add each object within the incoming package's scope
-		Scope incomming_scope = pkg.packageScope;
-		for (var obj : incomming_scope.values.entrySet()) {
-			String import_val_name = obj.getKey();
-			ScopeEntry import_entry = obj.getValue();
-			
-			packageScope.define(import_val_name, import_entry);
-		}
-	}
-	
-	public final void define(EnvisionObject object) {
-		if (object instanceof EnvisionFunction func) packageScope.defineFunction(func);
-		else if (object instanceof EnvisionClass clz) packageScope.defineClass(clz);
-	}
-	
-	public final void define(String name, EnvisionObject object) {
-		packageScope.define(name, object);
-	}
-	
-	public final void defineOn(EnvisionInterpreter interpreter) {
-		defineOn(interpreter.internalScope());
-	}
-	
-	public final void defineOn(IScope scope) {
-		//add each object within the incoming package's scope
-		for (var obj : packageScope.values.entrySet()) {
-			String import_val_name = obj.getKey();
-			ScopeEntry import_entry = obj.getValue();
-			
-			scope.defineImportVal(import_val_name, import_entry);
-		}
-		scope.defineImportVal(packageName, this);
-	}
-	
-	//---------
-	// Getters
-	//---------
-	
-	public String getPackageName() {
-		return packageName;
-	}
-	
-	public Scope getScope() {
-		return packageScope;
-	}
-	
-	//---------
-	// Setters
-	//---------
-	
-	public EnvisionLangPackage setScope(Scope in) {
-		packageScope = in;
-		return this;
-	}
-	
+    
+    //--------
+    // Fields
+    //--------
+    
+    protected final String packageName;
+    protected Scope packageScope;
+    
+    //--------------
+    // Constructors
+    //--------------
+    
+    public EnvisionLangPackage(String packageNameIn) {
+        super(Primitives.PACKAGE);
+        packageName = packageNameIn;
+        packageScope = new Scope();
+    }
+    
+    //---------
+    // Methods
+    //---------
+    
+    /**
+     * Adds another package onto this package's scope.
+     * 
+     * @param pkg The package to add
+     */
+    public final void addPackage(EnvisionLangPackage pkg) {
+        if (pkg == null) throw new NullPointerException();
+        
+        //define the package as a referencable object
+        packageScope.define(pkg.packageName, pkg.internalType, pkg);
+        
+        //add each object within the incoming package's scope
+        Scope incomming_scope = pkg.packageScope;
+        for (var obj : incomming_scope.values.entrySet()) {
+            String import_val_name = obj.getKey();
+            ScopeEntry import_entry = obj.getValue();
+            
+            packageScope.define(import_val_name, import_entry);
+        }
+    }
+    
+    public final void define(EnvisionObject object) {
+        if (object instanceof EnvisionFunction func) packageScope.defineFunction(func);
+        else if (object instanceof EnvisionClass clz) packageScope.defineClass(clz);
+    }
+    
+    public final void define(String name, EnvisionObject object) {
+        packageScope.define(name, object);
+    }
+    
+    public final void defineOn(EnvisionInterpreter interpreter) {
+        defineOn(interpreter.internalScope());
+    }
+    
+    public final void defineOn(IScope scope) {
+        //add each object within the incoming package's scope
+        for (var obj : packageScope.values.entrySet()) {
+            String import_val_name = obj.getKey();
+            ScopeEntry import_entry = obj.getValue();
+            
+            scope.defineImportVal(import_val_name, import_entry);
+        }
+        scope.defineImportVal(packageName, this);
+    }
+    
+    //---------
+    // Getters
+    //---------
+    
+    public String getPackageName() {
+        return packageName;
+    }
+    
+    public Scope getScope() {
+        return packageScope;
+    }
+    
+    //---------
+    // Setters
+    //---------
+    
+    public EnvisionLangPackage setScope(Scope in) {
+        packageScope = in;
+        return this;
+    }
+    
 }

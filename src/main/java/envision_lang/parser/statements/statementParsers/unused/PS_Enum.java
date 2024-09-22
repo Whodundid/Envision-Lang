@@ -16,55 +16,55 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
 public class PS_Enum extends ParserHead {
-	
-	public static ParsedStatement enumDeclaration() { return enumDeclaration(new ParserDeclaration()); }
-	public static ParsedStatement enumDeclaration(ParserDeclaration declaration) {
-		Token<?> name = consume(IDENTIFIER, "Expected an enum name!");
-		
-		if (declaration == null) declaration = new ParserDeclaration();
-		if (declaration.getVisibility() == null) declaration.applyVisibility(EnvisionVisibilityModifier.SCOPE);
-		
-		Stmt_EnumDef s = new Stmt_EnumDef(name, declaration);
-		
-		if (match(COLON)) {
-			do {
-				consume(IDENTIFIER, "Expected super enum name.");
-				s.addSuper(new Expr_Var(previous()));
-			}
-			while (match(COMMA));
-		}
-		
-		//read in class body
-		consume(CURLY_L, "Expected '{' after enum declaration!");
-		
-		//parse enum values
-		while (!atEnd()) {
-			if (match(SEMICOLON, CURLY_R)) break;
-			
-			Token<?> valueName = consume(IDENTIFIER, "Expected an enum value name!");
-			EList<ParsedExpression> valueArgs = EList.newList();
-			
-			if (match(PAREN_L)) {
-				if (!check(PAREN_R)) {
-					do {
-						valueArgs.add(ExpressionParser.parseExpression());
-					}
-					while (match(COMMA));
-					
-					consume(PAREN_R, "Expected ')' after enum parameters!");
-				}
-			}
-			
-			s.addValue(new Expr_Enum(valueName, valueArgs));
-			if (check(COMMA)) advance();
-		}
-		
-		if (previous().getKeyword() != CURLY_R) {
-			//set enum body
-			s.setBody(getBlock());
-		}
-		
-		return s;
-	}
-	
+    
+    public static ParsedStatement enumDeclaration() { return enumDeclaration(new ParserDeclaration()); }
+    public static ParsedStatement enumDeclaration(ParserDeclaration declaration) {
+        Token<?> name = consume(IDENTIFIER, "Expected an enum name!");
+        
+        if (declaration == null) declaration = new ParserDeclaration();
+        if (declaration.getVisibility() == null) declaration.applyVisibility(EnvisionVisibilityModifier.SCOPE);
+        
+        Stmt_EnumDef s = new Stmt_EnumDef(name, declaration);
+        
+        if (match(COLON)) {
+            do {
+                consume(IDENTIFIER, "Expected super enum name.");
+                s.addSuper(new Expr_Var(previous()));
+            }
+            while (match(COMMA));
+        }
+        
+        //read in class body
+        consume(CURLY_L, "Expected '{' after enum declaration!");
+        
+        //parse enum values
+        while (!atEnd()) {
+            if (match(SEMICOLON, CURLY_R)) break;
+            
+            Token<?> valueName = consume(IDENTIFIER, "Expected an enum value name!");
+            EList<ParsedExpression> valueArgs = EList.newList();
+            
+            if (match(PAREN_L)) {
+                if (!check(PAREN_R)) {
+                    do {
+                        valueArgs.add(ExpressionParser.parseExpression());
+                    }
+                    while (match(COMMA));
+                    
+                    consume(PAREN_R, "Expected ')' after enum parameters!");
+                }
+            }
+            
+            s.addValue(new Expr_Enum(valueName, valueArgs));
+            if (check(COMMA)) advance();
+        }
+        
+        if (previous().getKeyword() != CURLY_R) {
+            //set enum body
+            s.setBody(getBlock());
+        }
+        
+        return s;
+    }
+    
 }

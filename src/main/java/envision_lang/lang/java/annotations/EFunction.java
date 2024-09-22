@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({METHOD, ANNOTATION_TYPE})
 public @interface EFunction {
-	
-	/** The Envision code that relates to this field or function. */
-	String params() default "";
-	
-	String returnsType() default "";
-	
+    
+    /** The Envision code that relates to this field or function. */
+    String params() default "";
+    
+    String returnsType() default "";
+    
 }

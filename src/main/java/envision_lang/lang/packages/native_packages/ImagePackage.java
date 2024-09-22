@@ -4,13 +4,13 @@ import envision_lang.lang.file.EnvisionFileClass;
 
 public final class ImagePackage extends NativePackage {
 
-	public ImagePackage() {
-		super("image");
-	}
+    public ImagePackage() {
+        super("image");
+    }
 
-	@Override
-	public void buildClasses() {
-		define(EnvisionFileClass.FILE_CLASS);
-	}
-	
+    @Override
+    public void buildClasses() {
+        define(EnvisionFileClass.FILE_CLASS);
+    }
+    
 }

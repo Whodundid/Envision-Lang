@@ -6,17 +6,17 @@ import envision_lang.lang.packages.native_packages.io.Println;
 import envision_lang.lang.packages.native_packages.io.Read;
 
 public final class IOPackage extends NativePackage {
-	
-	public IOPackage() {
-		super("io");
-	}
+    
+    public IOPackage() {
+        super("io");
+    }
 
-	@Override
-	public void buildFunctions() {
-		define(new Read());
-		define(new Print());
-		define(new Println());
-		define(new Printf());
-	}
-	
+    @Override
+    public void buildFunctions() {
+        define(new Read());
+        define(new Print());
+        define(new Println());
+        define(new Printf());
+    }
+    
 }

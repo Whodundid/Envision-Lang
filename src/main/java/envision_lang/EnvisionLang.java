@@ -34,105 +34,105 @@ import eutil.debug.PlannedForRefactor;
 @PlannedForRefactor(reason="Several fields defined here REALLY have no right to be static as these should be " +
                            "moved to the direction of the executing program itself.")
 public class EnvisionLang {
-	
+    
     /** The logger instance for Envision. */
     private static final Logger logger = LoggerFactory.getLogger(EnvisionLang.class);
     
-	/** The current build of the Envision Scripting Language. */
-	public static final String VERSION = "0.0.7";
-	/** The current build's date of the Envision Scripting Language. */
-	public static final String VERSION_DATE = "6/10/2024";
-	
-	/** Global debug value -- if true, debug outputs will be enabled. */
-	public static boolean debugMode = false;
-	
-	//=================
-	// Static Instance
-	//=================
-	
-	/** The single static language instance of the Envision Scripting Language. */
-	private static EnvisionLang langInstance;
-	
-	public static EnvisionLang getInstance() {
-		if (langInstance != null) return langInstance;
-		langInstance = new EnvisionLang();
-		return langInstance;
-	}
-	
-	//==============
+    /** The current build of the Envision Scripting Language. */
+    public static final String VERSION = "0.0.7";
+    /** The current build's date of the Envision Scripting Language. */
+    public static final String VERSION_DATE = "6/10/2024";
+    
+    /** Global debug value -- if true, debug outputs will be enabled. */
+    public static boolean debugMode = false;
+    
+    //=================
+    // Static Instance
+    //=================
+    
+    /** The single static language instance of the Envision Scripting Language. */
+    private static EnvisionLang langInstance;
+    
+    public static EnvisionLang getInstance() {
+        if (langInstance != null) return langInstance;
+        langInstance = new EnvisionLang();
+        return langInstance;
+    }
+    
+    //==============
     // Constructors
     //==============
-	
+    
     /**
      * Creates a new instance of the Envision Scripting Language by
      * initializing back-end language datatype structures.
      */
     private EnvisionLang() {
         NativeTypeManager.init();
-	}
-	
-	//----------------------------------------------------------------------------------------------------------------
-	
-	//==================
-	// Envision Methods
-	//==================
-	
-	public static EnvisionProgram buildProgram(String pathIn) {
-		return new EnvisionProgram(pathIn);
-	}
-	
-	public static EnvisionProgramRunner runProgram(String pathIn) throws Exception {
-	    return runProgram(new File(pathIn));
-	}
-	
-	public static EnvisionProgramRunner runProgram(File pathIn) throws Exception {
-	    return runProgram(new EnvisionProgram(pathIn));
-	}
-	
-	public static EnvisionProgramRunner runProgram(EnvisionProgram in) throws Exception {
-	    return runProgramI(in);
-	}
-	
-	/** Internal run program call. */
-	private static EnvisionProgramRunner runProgramI(EnvisionProgram program) throws Exception {
-	    EnvisionProgramRunner runner = new EnvisionProgramRunner(program);
-		
-		runner.start();
-	    
-		return runner;
-	}
-	
-//	@Broken(since="Forever")
-//	private static void liveMode(EnvisionCodeFile main) throws Exception {
-//		//get user args
-//		var programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<String>();
-//		
-//		EnvisionInterpreter interpreter = EnvisionInterpreter.build(main, programArgs);
-//		
-//		while (liveMode) {
-//			try {
-//				var stmt = EnvisionLangParser.parseStatementLive();
-//				if (stmt == null) continue;
-//				
-//				interpreter.execute(stmt);
-//			}
-//			catch (EnvisionLangError e) {
-//				//e.printStackTrace();
-//				errorCallback.handleError(e);
-//			}
-//			catch (Exception e) {
-//				//e.printStackTrace();
-//				errorCallback.handleException(e);
-//			}
-//		}
-//	}
-	
-	//=========
+    }
+    
+    //----------------------------------------------------------------------------------------------------------------
+    
+    //==================
+    // Envision Methods
+    //==================
+    
+    public static EnvisionProgram buildProgram(String pathIn) {
+        return new EnvisionProgram(pathIn);
+    }
+    
+    public static EnvisionProgramRunner runProgram(String pathIn) throws Exception {
+        return runProgram(new File(pathIn));
+    }
+    
+    public static EnvisionProgramRunner runProgram(File pathIn) throws Exception {
+        return runProgram(new EnvisionProgram(pathIn));
+    }
+    
+    public static EnvisionProgramRunner runProgram(EnvisionProgram in) throws Exception {
+        return runProgramI(in);
+    }
+    
+    /** Internal run program call. */
+    private static EnvisionProgramRunner runProgramI(EnvisionProgram program) throws Exception {
+        EnvisionProgramRunner runner = new EnvisionProgramRunner(program);
+        
+        runner.start();
+        
+        return runner;
+    }
+    
+//    @Broken(since="Forever")
+//    private static void liveMode(EnvisionCodeFile main) throws Exception {
+//        //get user args
+//        var programArgs = (launchSettings != null) ? launchSettings.getUserArgs() : new EArrayList<String>();
+//        
+//        EnvisionInterpreter interpreter = EnvisionInterpreter.build(main, programArgs);
+//        
+//        while (liveMode) {
+//            try {
+//                var stmt = EnvisionLangParser.parseStatementLive();
+//                if (stmt == null) continue;
+//                
+//                interpreter.execute(stmt);
+//            }
+//            catch (EnvisionLangError e) {
+//                //e.printStackTrace();
+//                errorCallback.handleError(e);
+//            }
+//            catch (Exception e) {
+//                //e.printStackTrace();
+//                errorCallback.handleException(e);
+//            }
+//        }
+//    }
+    
+    //=========
     // Getters
     //=========
-	
-	public static String getVersionString() {
-		return "Envision Scripting Language: v" + VERSION + " - " + VERSION_DATE;
-	}
-	
+    
+    public static String getVersionString() {
+        return "Envision Scripting Language: v" + VERSION + " - " + VERSION_DATE;
+    }
+    
 }

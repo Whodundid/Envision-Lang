@@ -4,9 +4,9 @@ import envision_lang.lang.EnvisionObject;
 
 public class EnvisionInterface extends EnvisionObject {
 
-	protected EnvisionInterface() {
-		super(null);
-//		super(EnvisionStaticTypes.INTERFACE_TYPE);
-	}
-	
+    protected EnvisionInterface() {
+        super(null);
+//        super(EnvisionStaticTypes.INTERFACE_TYPE);
+    }
+    
 }

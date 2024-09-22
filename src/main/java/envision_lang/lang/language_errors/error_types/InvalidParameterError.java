@@ -6,8 +6,8 @@ import eutil.debug.Unused;
 @Unused
 public class InvalidParameterError extends EnvisionLangError {
 
-	public InvalidParameterError(String in) {
-		super(in);
-	}
-	
+    public InvalidParameterError(String in) {
+        super(in);
+    }
+    
 }

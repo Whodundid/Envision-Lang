@@ -6,8 +6,8 @@ package envision_lang.lang.language_errors;
  */
 public class EnvisionWarning extends RuntimeException {
 
-	public EnvisionWarning(String message) {
-		super(message);
-	}
-	
+    public EnvisionWarning(String message) {
+        super(message);
+    }
+    
 }

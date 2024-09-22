@@ -7,38 +7,38 @@ import envision_lang.tokenizer.Token;
 
 public class Stmt_Import extends ParsedStatement {
 
-	//========
-	// Fields
-	//========
-	
-	public final Expr_Import imp;
-	public final Token<?> asName;
-	public final boolean importAll;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Stmt_Import(Token<?> start, Expr_Import nameIn, Token<?> asNameIn, boolean all) {
-		super(start);
-		imp = nameIn;
-		asName = asNameIn;
-		importAll = all;
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public String toString() {
-		String a = (asName != null) ? " as " + asName.getLexeme() : "";
-		return "import " + imp + a;
-	}
+    //========
+    // Fields
+    //========
+    
+    public final Expr_Import imp;
+    public final Token<?> asName;
+    public final boolean importAll;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    public Stmt_Import(Token<?> start, Expr_Import nameIn, Token<?> asNameIn, boolean all) {
+        super(start);
+        imp = nameIn;
+        asName = asNameIn;
+        importAll = all;
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        String a = (asName != null) ? " as " + asName.getLexeme() : "";
+        return "import " + imp + a;
+    }
 
-	@Override
-	public void execute(StatementHandler handler) {
-		handler.handleImportStatement(this);
-	}
-	
+    @Override
+    public void execute(StatementHandler handler) {
+        handler.handleImportStatement(this);
+    }
+    
 }

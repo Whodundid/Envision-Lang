@@ -8,8 +8,8 @@ import eutil.debug.Unused;
 @Unused
 public class IS_Generic extends AbstractInterpreterExecutor {
 
-	public static void run(EnvisionInterpreter in, Stmt_Generic s) {
-		
-	}
-	
+    public static void run(EnvisionInterpreter in, Stmt_Generic s) {
+        
+    }
+    
 }

@@ -4,13 +4,13 @@ import envision_lang.lang.file.EnvisionFileClass;
 
 public final class FilePackage extends NativePackage {
 
-	public FilePackage() {
-		super("file");
-	}
+    public FilePackage() {
+        super("file");
+    }
 
-	@Override
-	public void buildClasses() {
-		define(EnvisionFileClass.FILE_CLASS);
-	}
-	
+    @Override
+    public void buildClasses() {
+        define(EnvisionFileClass.FILE_CLASS);
+    }
+    
 }

@@ -16,29 +16,29 @@ import envision_lang.lang.functions.EnvisionFunction;
  * Takes in an instance of an EnvisionClass and an operator.
  */
 public class HasAttribute extends EnvisionFunction {
-	
-	public HasAttribute() {
-		super(BOOLEAN, "hasAttribute", VAR, STRING);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionObject obj = args[0];
-		EnvisionString attributeName = (EnvisionString) args[1];
-		
-		boolean exists = false;
-		
-		if (obj instanceof EnvisionCodeFile cf) {
-		    exists = cf.scope().exists(attributeName.string_val);
-		}
-		else if (obj instanceof EnvisionClass c) {
-		    exists = c.getClassScope().exists(attributeName.string_val);
-		}
-		else if (obj instanceof ClassInstance ci) {
-		    exists = ci.getScope().exists(attributeName.string_val);
-		}
-		
-		ret(EnvisionBoolean.of(exists));
-	}
-	
+    
+    public HasAttribute() {
+        super(BOOLEAN, "hasAttribute", VAR, STRING);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        EnvisionObject obj = args[0];
+        EnvisionString attributeName = (EnvisionString) args[1];
+        
+        boolean exists = false;
+        
+        if (obj instanceof EnvisionCodeFile cf) {
+            exists = cf.scope().exists(attributeName.string_val);
+        }
+        else if (obj instanceof EnvisionClass c) {
+            exists = c.getClassScope().exists(attributeName.string_val);
+        }
+        else if (obj instanceof ClassInstance ci) {
+            exists = ci.getScope().exists(attributeName.string_val);
+        }
+        
+        ret(EnvisionBoolean.of(exists));
+    }
+    
 }

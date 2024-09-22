@@ -12,19 +12,19 @@ import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.Token;
 
 public class IE_VarDec extends AbstractInterpreterExecutor {
-	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_VarDef e) {
-		Token<?> typeToken = e.type;
-		IKeyword k = typeToken.getKeyword();
-		
-		if (k.isDataType()) {
-			var type = NativeTypeManager.datatypeOf(typeToken.getPrimitiveDataType());
-			var obj = ObjectCreator.createDefault(type, false);
-			if (obj != null) obj.setVisibility(EnvisionVisibilityModifier.PUBLIC);
-			return obj;
-		}
-		
-		return EnvisionNull.NULL;
-	}
-	
+    
+    public static EnvisionObject run(EnvisionInterpreter in, Expr_VarDef e) {
+        Token<?> typeToken = e.type;
+        IKeyword k = typeToken.getKeyword();
+        
+        if (k.isDataType()) {
+            var type = NativeTypeManager.datatypeOf(typeToken.getPrimitiveDataType());
+            var obj = ObjectCreator.createDefault(type, false);
+            if (obj != null) obj.setVisibility(EnvisionVisibilityModifier.PUBLIC);
+            return obj;
+        }
+        
+        return EnvisionNull.NULL;
+    }
+    
 }

@@ -12,41 +12,41 @@ import envision_lang.tokenizer.Token;
  * @author Hunter
  */
 public class Stmt_LoopControl extends ParsedStatement {
-	
-	//========
-	// Fields
-	//========
-	
-	public final boolean isBreak;
-	public final boolean isContinue;
-	public final ParsedExpression condition;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Stmt_LoopControl(Token start, boolean isBreakIn) { this(start, isBreakIn, null); }
-	public Stmt_LoopControl(Token start, boolean isBreakIn, ParsedExpression conditionIn) {
-		super(start);
-		isBreak = isBreakIn;
-		isContinue = !isBreakIn;
-		condition = conditionIn;
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public String toString() {
-		String n = (isBreak) ? "break" : ("cont" + ((condition != null) ? "" : "inue"));
-		String c = (condition != null) ? "if(" + condition + ")" : "";
-		return n + c;
-	}
-	
-	@Override
-	public void execute(StatementHandler handler) {
-		handler.handleLoopControlStatement(this);
-	}
-	
+    
+    //========
+    // Fields
+    //========
+    
+    public final boolean isBreak;
+    public final boolean isContinue;
+    public final ParsedExpression condition;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    public Stmt_LoopControl(Token start, boolean isBreakIn) { this(start, isBreakIn, null); }
+    public Stmt_LoopControl(Token start, boolean isBreakIn, ParsedExpression conditionIn) {
+        super(start);
+        isBreak = isBreakIn;
+        isContinue = !isBreakIn;
+        condition = conditionIn;
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        String n = (isBreak) ? "break" : ("cont" + ((condition != null) ? "" : "inue"));
+        String c = (condition != null) ? "if(" + condition + ")" : "";
+        return n + c;
+    }
+    
+    @Override
+    public void execute(StatementHandler handler) {
+        handler.handleLoopControlStatement(this);
+    }
+    
 }

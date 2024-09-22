@@ -110,10 +110,10 @@ public class EnvisionJavaObject extends ClassInstance {
     // Methods
     //=========
     
-	public String getClassName() {
-	    return classObject.getClassName();
-	}
-	
+    public String getClassName() {
+        return classObject.getClassName();
+    }
+    
     private EList<NativeField> findNativeFields() {
         return instanceScope.values().values().stream()
             .filter(entry -> entry.getObject() instanceof NativeField)
@@ -143,7 +143,7 @@ public class EnvisionJavaObject extends ClassInstance {
             .filter(EnvisionFunction::isOperator)
             .collect(EList.toEList());
     }
-	
+    
     public void bindToJavaInstance() {
         var nativeFields = findNativeFields();
         var nativeConstructors = findNativeConstructors();
@@ -163,7 +163,7 @@ public class EnvisionJavaObject extends ClassInstance {
             nativeOperatorOverloads.get(i).bindToWrappedObject(this);
         }
     }
-	
+    
     //=========
     // Getters
     //=========
@@ -177,45 +177,45 @@ public class EnvisionJavaObject extends ClassInstance {
     // there should probably be some more checks going on to ensure type compatibility but ya know~
     public void setJavaObjectInstance(Object instance) { javaObject = instance; }
     
-	//=================
-	// Static Builders
-	//=================
-	
-	public static EnvisionJavaObject wrapJavaObject(EnvisionInterpreter interpreter, Object obj) {
-	    Class<?> objectClass = obj.getClass();
-	    String className = objectClass.getSimpleName();
-	    var typeManager = interpreter.getTypeManager();
-	    IDatatype envisionType = IDatatype.of(className);
-	    
-	    // the envision class to bind to
-	    EnvisionJavaClass wrappedClass = null;
-	    boolean willRegister = false;
-	    
-	    // check if wrapped Java class type already exists
-	    EnvisionClass existingClass = typeManager.getTypeClass(envisionType);
-	    // if the class doesn't exist -- easy, just make a new one and register it
-	    if (existingClass == null) {
-	        wrappedClass = EnvisionJavaClass.wrapJavaClass(interpreter, objectClass);
-	        willRegister = true;
-	    }
-	    // if the existing class isn't null and is a Java class wrapper, check that the wrapped class matches this one
-	    else if (existingClass instanceof EnvisionJavaClass c && c.getWrappedJavaClass().equals(objectClass)) {
-	        wrappedClass = c;
-	    }
-	    else {
-	        throw new EnvisionLangError("Duplicate native Java class already defined under: '"
-	                                    + envisionType + "' for: " + className);
-	    }
-	    
-	    // if this is a new class to the interpreter, define it
-	    if (willRegister) {
-	        wrappedClass.setFinal();
-	        typeManager.defineUserClass(wrappedClass);
-	        interpreter.scope().define(className, EnvisionStaticTypes.CLASS_TYPE, wrappedClass);
-	    }
-	    
-	    // create the actual wrapped Java object
-	    return wrappedClass.buildInstance(interpreter, obj);
-	}
-	
+    //=================
+    // Static Builders
+    //=================
+    
+    public static EnvisionJavaObject wrapJavaObject(EnvisionInterpreter interpreter, Object obj) {
+        Class<?> objectClass = obj.getClass();
+        String className = objectClass.getSimpleName();
+        var typeManager = interpreter.getTypeManager();
+        IDatatype envisionType = IDatatype.of(className);
+        
+        // the envision class to bind to
+        EnvisionJavaClass wrappedClass = null;
+        boolean willRegister = false;
+        
+        // check if wrapped Java class type already exists
+        EnvisionClass existingClass = typeManager.getTypeClass(envisionType);
+        // if the class doesn't exist -- easy, just make a new one and register it
+        if (existingClass == null) {
+            wrappedClass = EnvisionJavaClass.wrapJavaClass(interpreter, objectClass);
+            willRegister = true;
+        }
+        // if the existing class isn't null and is a Java class wrapper, check that the wrapped class matches this one
+        else if (existingClass instanceof EnvisionJavaClass c && c.getWrappedJavaClass().equals(objectClass)) {
+            wrappedClass = c;
+        }
+        else {
+            throw new EnvisionLangError("Duplicate native Java class already defined under: '"
+                                        + envisionType + "' for: " + className);
+        }
+        
+        // if this is a new class to the interpreter, define it
+        if (willRegister) {
+            wrappedClass.setFinal();
+            typeManager.defineUserClass(wrappedClass);
+            interpreter.scope().define(className, EnvisionStaticTypes.CLASS_TYPE, wrappedClass);
+        }
+        
+        // create the actual wrapped Java object
+        return wrappedClass.buildInstance(interpreter, obj);
+    }
+    
 }

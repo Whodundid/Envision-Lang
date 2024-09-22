@@ -19,27 +19,27 @@ import envision_lang.parser.statements.statement_types.Stmt_If;
  * @author Hunter Bragg
  */
 public class IS_If extends AbstractInterpreterExecutor {
-	
-	private IS_If() {}
-	
-	public static void run(EnvisionInterpreter interpreter, Stmt_If statement) {
-		ParsedExpression cond = statement.condition;
-		ParsedStatement thenBranch = statement.thenBranch;
-		ParsedStatement elseBranch = statement.elseBranch;
-		
-		//if the given condition is null -- throw error
-		if (cond == null) throw new ExpressionError("The given if condition is null!");
-		
-		//check if true
-		if (isTrue(interpreter.evaluate(cond))) {
-			if (thenBranch != null) {
-				interpreter.execute(thenBranch);
-			}
-		}
-		//otherwise if false
-		else if (elseBranch != null) {
-			interpreter.execute(elseBranch);
-		}
-	}
-	
+    
+    private IS_If() {}
+    
+    public static void run(EnvisionInterpreter interpreter, Stmt_If statement) {
+        ParsedExpression cond = statement.condition;
+        ParsedStatement thenBranch = statement.thenBranch;
+        ParsedStatement elseBranch = statement.elseBranch;
+        
+        //if the given condition is null -- throw error
+        if (cond == null) throw new ExpressionError("The given if condition is null!");
+        
+        //check if true
+        if (isTrue(interpreter.evaluate(cond))) {
+            if (thenBranch != null) {
+                interpreter.execute(thenBranch);
+            }
+        }
+        //otherwise if false
+        else if (elseBranch != null) {
+            interpreter.execute(elseBranch);
+        }
+    }
+    
 }

@@ -12,34 +12,34 @@ import envision_lang.tokenizer.Token;
  * @author Hunter Bragg
  */
 public class Expr_Primitive extends ParsedExpression {
-	
-	//========
-	// Fields
-	//========
-	
-	public final IKeyword primitiveType;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Expr_Primitive(Token<?> datatypeToken) {
-		super(datatypeToken);
-		primitiveType = datatypeToken.getKeyword();
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public String toString() {
-		return primitiveType.toString();
-	}
-	
-	@Override
-	public EnvisionObject evaluate(ExpressionHandler handler) {
-		return handler.handlePrimitive_E(this);
-	}
-	
+    
+    //========
+    // Fields
+    //========
+    
+    public final IKeyword primitiveType;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    public Expr_Primitive(Token<?> datatypeToken) {
+        super(datatypeToken);
+        primitiveType = datatypeToken.getKeyword();
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        return primitiveType.toString();
+    }
+    
+    @Override
+    public EnvisionObject evaluate(ExpressionHandler handler) {
+        return handler.handlePrimitive_E(this);
+    }
+    
 }

@@ -9,18 +9,18 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
 
 public class Pow extends EnvisionFunction {
-	
-	public Pow() {
-		super(Primitives.DOUBLE, "pow", Primitives.NUMBER, Primitives.NUMBER);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		double numA = ((EnvisionNumber<?>) args[0]).doubleVal_i();
-		double numB = ((EnvisionNumber<?>) args[1]).doubleVal_i();
-		double pow = Math.pow(numA, numB);
-		EnvisionDouble d = EnvisionDoubleClass.valueOf(pow);
-		ret(d);
-	}
-	
+    
+    public Pow() {
+        super(Primitives.DOUBLE, "pow", Primitives.NUMBER, Primitives.NUMBER);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        double numA = ((EnvisionNumber<?>) args[0]).doubleVal_i();
+        double numB = ((EnvisionNumber<?>) args[1]).doubleVal_i();
+        double pow = Math.pow(numA, numB);
+        EnvisionDouble d = EnvisionDoubleClass.valueOf(pow);
+        ret(d);
+    }
+    
 }

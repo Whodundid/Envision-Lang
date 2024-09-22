@@ -4,8 +4,8 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 
 public class InterpreterCreationError extends EnvisionLangError {
 
-	public InterpreterCreationError() {
-		super("Failed to create the EnvisionInterpreter!");
-	}
-	
+    public InterpreterCreationError() {
+        super("Failed to create the EnvisionInterpreter!");
+    }
+    
 }

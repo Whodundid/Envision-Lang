@@ -9,16 +9,16 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.Primitives;
 
 public class Sqrt extends EnvisionFunction {
-	
-	public Sqrt() {
-		super(Primitives.DOUBLE, "sqrt", Primitives.NUMBER);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionNumber<?> num = (EnvisionNumber<?>) args[0];
-		EnvisionDouble sqrt = EnvisionDoubleClass.valueOf(Math.sqrt(num.doubleVal_i()));
-		ret(sqrt);
-	}
-	
+    
+    public Sqrt() {
+        super(Primitives.DOUBLE, "sqrt", Primitives.NUMBER);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        EnvisionNumber<?> num = (EnvisionNumber<?>) args[0];
+        EnvisionDouble sqrt = EnvisionDoubleClass.valueOf(Math.sqrt(num.doubleVal_i()));
+        ret(sqrt);
+    }
+    
 }

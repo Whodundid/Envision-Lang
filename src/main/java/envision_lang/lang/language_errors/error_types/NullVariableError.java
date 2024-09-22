@@ -14,17 +14,17 @@ import envision_lang.lang.language_errors.EnvisionLangError;
  * some earlier point during program execution.
  */
 public class NullVariableError extends EnvisionLangError {
-	
-	public NullVariableError() {
-		super("This object is entirely Null");
-	}
-	
-	public NullVariableError(String varName) {
-		super("Variable '" + varName + "' has not been declared within this scope!");
-	}
-	
-	public NullVariableError(EnvisionObject obj) {
-		super("The given object '" + obj + "' is null!");
-	}
-	
+    
+    public NullVariableError() {
+        super("This object is entirely Null");
+    }
+    
+    public NullVariableError(String varName) {
+        super("Variable '" + varName + "' has not been declared within this scope!");
+    }
+    
+    public NullVariableError(EnvisionObject obj) {
+        super("The given object '" + obj + "' is null!");
+    }
+    
 }

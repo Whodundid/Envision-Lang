@@ -11,13 +11,13 @@ import envision_lang.lang.natives.IDatatype;
  * @author Hunter Bragg
  */
 public class ClassCastError extends EnvisionLangError {
-	
-	public ClassCastError(EnvisionObject obj, IDatatype castType) {
-		super("Invalid Cast! Cannot cast '" + obj + "' to a '" + castType + "'!");
-	}
-	
-	public ClassCastError(String msg) {
-		super(msg);
-	}
+    
+    public ClassCastError(EnvisionObject obj, IDatatype castType) {
+        super("Invalid Cast! Cannot cast '" + obj + "' to a '" + castType + "'!");
+    }
+    
+    public ClassCastError(String msg) {
+        super(msg);
+    }
 
 }

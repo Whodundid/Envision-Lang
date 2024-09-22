@@ -8,18 +8,18 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class AssertNotNull extends EnvisionFunction {
-	
-	public AssertNotNull() {
-		super(EnvisionStaticTypes.VOID_TYPE, "assertNotNull", EnvisionStaticTypes.VAR_TYPE);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		for (EnvisionObject o : args) {
-		    if (interpreter.isEqual_i(EnvisionNull.NULL, o)) {
-		        throw new EnvisionLangError("Envision assertion error! Expected value to not be 'NULL' but it was!");
-		    }
-		}
-	}
-	
+    
+    public AssertNotNull() {
+        super(EnvisionStaticTypes.VOID_TYPE, "assertNotNull", EnvisionStaticTypes.VAR_TYPE);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        for (EnvisionObject o : args) {
+            if (interpreter.isEqual_i(EnvisionNull.NULL, o)) {
+                throw new EnvisionLangError("Envision assertion error! Expected value to not be 'NULL' but it was!");
+            }
+        }
+    }
+    
 }

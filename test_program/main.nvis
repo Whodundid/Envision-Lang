@@ -1,0 +1,51 @@
+
+//t = from Java t
+
+number qi = 1.0
+func type(q) -> println(q, q.type())
+type(qi)
+
+func dog(TestPoint... dogs) {}
+dog(t)
+
+func lol(x, banana=true) -> println(x, banana)
+lol(5)
+
+y = TestPoint(5, 5)
+x = t.add(y)
+
+func test() -> scopeFull()
+
+func each(a) {
+    if (a typeof list) return a.elements()
+    if (a typeof tuple) return a.elements()
+    return a
+}
+
+func add(a, b) -> a + b
+
+list l = []
+
+total = 0
+for (i to 3) {
+    list lists = []
+    for (j to 3) {
+        list nl = []
+        for (n to 2) {
+           nl += total++
+        }
+        lists += nl
+    }
+    for (lists -> ll)
+        ll -> add -> l.add
+}
+
+l -> println
+
+(1, 2) -> add -> println
+added = ([1, 2], [3, 4], [5, 6]) -> add
+type(added)
+added -> list -> println
+
+(t, y, x) -> "<{$.x}, {$.y}>" -> println
+

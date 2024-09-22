@@ -5,17 +5,17 @@ package envision_lang.lang.language_errors;
  * form of logic/syntax error has been detected.
  */
 public class EnvisionLangError extends RuntimeException {
-	
-	public EnvisionLangError(String message) {
-		super(message);
-	}
-	
-	public EnvisionLangError(Throwable e) {
-		super(e);
-	}
-	
-	public EnvisionLangError(String message, Throwable e) {
-	    super(message, e);
-	}
-	
+    
+    public EnvisionLangError(String message) {
+        super(message);
+    }
+    
+    public EnvisionLangError(Throwable e) {
+        super(e);
+    }
+    
+    public EnvisionLangError(String message, Throwable e) {
+        super(message, e);
+    }
+    
 }

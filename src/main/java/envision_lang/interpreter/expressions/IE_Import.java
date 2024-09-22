@@ -9,9 +9,9 @@ import eutil.debug.PotentiallyUnnecessary;
 
 @PotentiallyUnnecessary(reason="I am not sure that import expressions are ever actually directly called..")
 public class IE_Import extends AbstractInterpreterExecutor {
-	
-	public static EnvisionObject run(EnvisionInterpreter in, Expr_Import e) {
-		return EnvisionStringClass.valueOf(e.path);
-	}
-	
+    
+    public static EnvisionObject run(EnvisionInterpreter in, Expr_Import e) {
+        return EnvisionStringClass.valueOf(e.path);
+    }
+    
 }

@@ -19,9 +19,9 @@ import envision_lang.lang.language_errors.EnvisionLangError;
  * @author Hunter Bragg
  */
 public class CopyNotSupportedError extends EnvisionLangError {
-	
-	public CopyNotSupportedError() {
-		super("Copy Not Supported!");
-	}
+    
+    public CopyNotSupportedError() {
+        super("Copy Not Supported!");
+    }
 
 }

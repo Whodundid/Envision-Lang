@@ -9,15 +9,15 @@ import envision_lang.lang.natives.Primitives;
 import eutil.random.ERandomUtil;
 
 public class RandStr extends EnvisionFunction {
-	
-	public RandStr() {
-		super(Primitives.STRING, "randStr");
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionString s = EnvisionStringClass.valueOf(ERandomUtil.randomString());
-		ret(s);
-	}
-	
+    
+    public RandStr() {
+        super(Primitives.STRING, "randStr");
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        EnvisionString s = EnvisionStringClass.valueOf(ERandomUtil.randomString());
+        ret(s);
+    }
+    
 }

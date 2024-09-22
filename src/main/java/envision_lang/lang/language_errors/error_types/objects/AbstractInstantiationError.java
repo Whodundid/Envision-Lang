@@ -15,9 +15,9 @@ import envision_lang.lang.language_errors.EnvisionLangError;
  * @author Hunter Bragg
  */
 public class AbstractInstantiationError extends EnvisionLangError {
-	
-	public AbstractInstantiationError(EnvisionClass in) {
-		super("The class '" + in.getClassName() + "' is abstract and cannot be directly instantiated!");
-	}
+    
+    public AbstractInstantiationError(EnvisionClass in) {
+        super("The class '" + in.getClassName() + "' is abstract and cannot be directly instantiated!");
+    }
 
 }

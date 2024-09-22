@@ -6,9 +6,9 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.expressions.expression_types.unused.Expr_Grouping;
 
 public class IE_Grouping extends AbstractInterpreterExecutor {
-	
-	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Grouping expression) {
-		return interpreter.evaluate(expression.expression);
-	}
-	
+    
+    public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Grouping expression) {
+        return interpreter.evaluate(expression.expression);
+    }
+    
 }

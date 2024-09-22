@@ -5,9 +5,9 @@ import eutil.debug.Unused;
 
 @Unused
 public class InvalidOperationError extends EnvisionLangError {
-	
-	public InvalidOperationError(String message) {
-		super(message);
-	}
-	
+    
+    public InvalidOperationError(String message) {
+        super(message);
+    }
+    
 }

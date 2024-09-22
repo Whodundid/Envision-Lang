@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface EOperator {
-	
-	/** The Envision code that relates to this field or function. */
-	String value() default "";
-	
-	String returnsType() default "";
-	
+    
+    /** The Envision code that relates to this field or function. */
+    String value() default "";
+    
+    String returnsType() default "";
+    
 }

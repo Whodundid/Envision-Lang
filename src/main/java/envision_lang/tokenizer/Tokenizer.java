@@ -164,109 +164,109 @@ public class Tokenizer {
         case '\0':
             break;
         
-        case '#':																	// '#'
+        case '#':                                                                    // '#'
             if (areBlockStatementsEnabled) addToken(BLOCK_STATEMENT_TOKEN);
             else throw new EnvisionLangError("Block statement parsing not enabled!");
             break;
         
         case '{':
             addToken(CURLY_L);
-            break;											// '{'
+            break;                                            // '{'
         case '}':
             addToken(CURLY_R);
-            break;											// '}'
+            break;                                            // '}'
         case '(':
             addToken(PAREN_L);
-            break;											// '('
+            break;                                            // '('
         case ')':
             addToken(PAREN_R);
-            break;											// ')'
+            break;                                            // ')'
         case '[':
             addToken(BRACKET_L);
-            break;										// '['
+            break;                                        // '['
         case ']':
             addToken(BRACKET_R);
-            break;										// ']'
+            break;                                        // ']'
         case ';':
             addToken(SEMICOLON);
-            break;										// ';'
+            break;                                        // ';'
         case ',':
             addToken(COMMA);
-            break;											// ','
+            break;                                            // ','
         case ':':
             addToken(COLON);
-            break;											// ':'
+            break;                                            // ':'
         case '?':
             addToken(TERNARY);
-            break;											// '?'
+            break;                                            // '?'
             
         case '.':
             addToken((matchInOrder('.', '.') ? VARARGS : PERIOD));
-            break;		// '...', '.'
+            break;        // '...', '.'
         case '=':
             addToken((match('=') ? EQUALS : ASSIGN));
-            break;					// '==', '='
+            break;                    // '==', '='
         case '!':
-            addToken((match('=') ? NOT_EQUALS : NEGATE));
-            break;				// '!=', '!'
+            addToken((match('=') ? NOT_EQUALS : LOGICAL_NEGATE));
+            break;                // '!=', '!'
         case '&':
-            if (match('&')) addToken(AND);											// '&&'
-            else if (match('=')) addToken(BW_AND_ASSIGN);							// '&='
-            else addToken(BW_AND);													// '&'
+            if (match('&')) addToken(AND);                                            // '&&'
+            else if (match('=')) addToken(BW_AND_ASSIGN);                            // '&='
+            else addToken(BW_AND);                                                    // '&'
             break;
         case '|':
-            if (match('|')) addToken(OR);											// '||'
-            else if (match('=')) addToken(BW_OR_ASSIGN);							// '|='
-            else addToken(BW_OR);													// '|'
+            if (match('|')) addToken(OR);                                            // '||'
+            else if (match('=')) addToken(BW_OR_ASSIGN);                            // '|='
+            else addToken(BW_OR);                                                    // '|'
             break;
         case '^':
             addToken((match('=')) ? BW_XOR_ASSIGN : BW_XOR);
-            break;			// '^=', '^'
+            break;            // '^=', '^'
         case '<':
-            if (match('<')) addToken((match('=')) ? SHL_ASSIGN : SHL);				// '<<=', '<<'
-            else addToken((match('=')) ? LTE : LT);									// '<=', '<'
+            if (match('<')) addToken((match('=')) ? SHL_ASSIGN : SHL);                // '<<=', '<<'
+            else addToken((match('=')) ? LTE : LT);                                    // '<=', '<'
             break;
         case '>':
             if (match('>')) {
-                if (match('>')) addToken(match('=') ? SHR_AR_ASSIGN : SHR_AR);		// '>>>=', '>>>'
-                else addToken((match('=') ? SHR_ASSIGN : SHR));						// '>>=', '>>'
+                if (match('>')) addToken(match('=') ? SHR_AR_ASSIGN : SHR_AR);        // '>>>=', '>>>'
+                else addToken((match('=') ? SHR_ASSIGN : SHR));                        // '>>=', '>>'
             }
-            else addToken((match('=')) ? GTE : GT);									// '>=', '>'
+            else addToken((match('=')) ? GTE : GT);                                    // '>=', '>'
             break;
         case '+':
-            if (match('+')) addToken(INC);											// '++'
-            else if (match('=')) addToken(ADD_ASSIGN);								// '+='
-            else addToken(ADD);														// '+'
+            if (match('+')) addToken(INC);                                            // '++'
+            else if (match('=')) addToken(ADD_ASSIGN);                                // '+='
+            else addToken(ADD);                                                        // '+'
             break;
         case '-':
-            if (match('-')) addToken(DEC); 											// '--'
-            else if (match('>')) addToken(LAMBDA); 									// '->'
-            else if (match('=')) addToken(SUB_ASSIGN); 								// '-='
-            else addToken(SUB); 													// '-'
+            if (match('-')) addToken(DEC);                                             // '--'
+            else if (match('>')) addToken(LAMBDA);                                     // '->'
+            else if (match('=')) addToken(SUB_ASSIGN);                                 // '-='
+            else addToken(SUB);                                                     // '-'
             break;
         case '*':
             addToken((match('=')) ? MUL_ASSIGN : MUL);
-            break;					// '*=', '*'
+            break;                    // '*=', '*'
         case '/':
-            if (match('/')) break;													// '//'
-            else if (match('*')) inComment = true;									// '/*'
-            else if (match('=')) addToken(DIV_ASSIGN);								// '/='
-            else addToken(DIV);														// '/'
+            if (match('/')) break;                                                    // '//'
+            else if (match('*')) inComment = true;                                    // '/*'
+            else if (match('=')) addToken(DIV_ASSIGN);                                // '/='
+            else addToken(DIV);                                                        // '/'
             break;
         case '%':
             addToken((match('=')) ? MOD_ASSIGN : MOD);
-            break;					// '%=', '%'
+            break;                    // '%=', '%'
             
         case '"':
             string();
-            break;													// string literals
+            break;                                                    // string literals
         case '\'':
             parse_char();
-            break;												// char literals
+            break;                                                // char literals
             
         default:
-            if (isDigit(c)) number();												// number literals
-            else if (isLetter(c)) identifier();										// variable/object names
+            if (isDigit(c)) number();                                                // number literals
+            else if (isLetter(c)) identifier();                                        // variable/object names
             else throw new EnvisionLangError("Envision: Tokenization failed -> unexpected character! -> Line: " +
                                              lineNum + " pos: " + cur + " => char: " + c);
         }
@@ -277,7 +277,6 @@ public class Tokenizer {
         char next = peek();
         boolean endCheck = atEnd();
         boolean whiteSpaceCheck = isWhiteSpace(next);
-        
         while (!endCheck && whiteSpaceCheck) {
             advance();
             endCheck = atEnd();
@@ -321,7 +320,8 @@ public class Tokenizer {
      * This can either parse a decimal value if a '.' is detected, or it will
      * simply parse a standard integer value.
      */
-    private void number() {
+    private Token<?> number() { return number(true); }
+    private Token<?> number(boolean addToken) {
         while (isDigit(peek()))
             advance();
         
@@ -347,8 +347,13 @@ public class Tokenizer {
             }
         }
         
-        if (decimal) addToken(ReservedWord.DOUBLE_LITERAL, Double.parseDouble(currentLineSource.substring(start, cur)));
-        else addToken(ReservedWord.INT_LITERAL, Long.parseLong(currentLineSource.substring(start, cur)));
+        String literal = currentLineSource.substring(start, cur);
+        Token<?> token;
+        
+        if (decimal) token = addToken(ReservedWord.DOUBLE_LITERAL, Double.parseDouble(literal));
+        else         token = addToken(ReservedWord.INT_LITERAL, Long.parseLong(literal));
+        
+        return token;
     }
     
     /**
@@ -512,10 +517,16 @@ public class Tokenizer {
     
     //--------------------------------------------------------------------------------------------------------------------
     
-    private void addToken(IKeyword keyword) { addToken(keyword, null); }
-    private <TYPE> void addToken(IKeyword keyword, TYPE literal) {
+    private Token<?> createToken(IKeyword keyword) { return createToken(keyword, null); }
+    private <TYPE> Token<?> createToken(IKeyword keyword, TYPE literal) {
         String text = currentLineSource.substring(start, cur);
-        parsedLineTokens.add(new Token<>(keyword, text, literal, lineNum, start, lineTokenIndex++));
+        return new Token<>(keyword, text, literal, lineNum, start, lineTokenIndex++);
+    }
+    
+    private Token<?> addToken(IKeyword keyword) { return addToken(keyword, null); }
+    private <TYPE> Token<?> addToken(IKeyword keyword, TYPE literal) {
+        Token<?> token = createToken(keyword, literal);
+        return parsedLineTokens.addR(token);
     }
     
     //==================
@@ -641,45 +652,45 @@ public class Tokenizer {
     //--------------------------------------------------------------------------------------------------------------------
     
     /** Removes both single line and multi-line comments from strings. */
-    //	public static String stripComments(String in) {
-    //		if (in.startsWith("//")) return "";
-    //		EStringBuilder cur = new EStringBuilder();
-    //		
-    //		boolean start = false;
-    //		boolean multistart = false;
-    //		boolean inMultiComment = false;
-    //		
-    //		for (int i = 0; i < in.length(); i++) {
-    //			char c = in.charAt(i);
-    //			
-    //			if (inMultiComment) {
-    //				if (multistart) {
-    //					if (c == '/') {
-    //						inMultiComment = false;
-    //						if (i + 1 < in.length() && in.charAt(i + 1) == ' ') {
-    //							i++;
-    //							continue;
-    //						}
-    //					}
-    //					else start = false;
-    //				}
-    //				else if (c == '*') multistart = true;
-    //			}
-    //			else {
-    //				if (start) {
-    //					if (c == '/') break;
-    //					if (c == '*') {
-    //						inMultiComment = true;
-    //						cur.setSubstring(0, cur.length() - 1);
-    //					}
-    //				}
-    //				else if (c == '/') start = true;
-    //			}
-    //			
-    //			if (!inMultiComment) cur.append(c);
-    //		}
-    //		
-    //		return cur.toString();
-    //	}
+    //    public static String stripComments(String in) {
+    //        if (in.startsWith("//")) return "";
+    //        EStringBuilder cur = new EStringBuilder();
+    //        
+    //        boolean start = false;
+    //        boolean multistart = false;
+    //        boolean inMultiComment = false;
+    //        
+    //        for (int i = 0; i < in.length(); i++) {
+    //            char c = in.charAt(i);
+    //            
+    //            if (inMultiComment) {
+    //                if (multistart) {
+    //                    if (c == '/') {
+    //                        inMultiComment = false;
+    //                        if (i + 1 < in.length() && in.charAt(i + 1) == ' ') {
+    //                            i++;
+    //                            continue;
+    //                        }
+    //                    }
+    //                    else start = false;
+    //                }
+    //                else if (c == '*') multistart = true;
+    //            }
+    //            else {
+    //                if (start) {
+    //                    if (c == '/') break;
+    //                    if (c == '*') {
+    //                        inMultiComment = true;
+    //                        cur.setSubstring(0, cur.length() - 1);
+    //                    }
+    //                }
+    //                else if (c == '/') start = true;
+    //            }
+    //            
+    //            if (!inMultiComment) cur.append(c);
+    //        }
+    //        
+    //        return cur.toString();
+    //    }
     
 }

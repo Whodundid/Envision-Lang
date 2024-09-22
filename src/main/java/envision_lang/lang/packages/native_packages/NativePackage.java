@@ -8,22 +8,22 @@ import envision_lang.lang.packages.EnvisionLangPackage;
  * start.
  */
 abstract sealed class NativePackage extends EnvisionLangPackage implements Buildable
-	permits DebugPackage, EnvPackage, FilePackage, ImagePackage, IOPackage, MathPackage
+    permits DebugPackage, EnvPackage, FilePackage, ImagePackage, IOPackage, MathPackage
 {
-	
-	protected NativePackage(String nameIn) {
-		super(nameIn);
-		
-		build();
-	}
-	
-	protected void build() {
-		packageScope.clear();
-		
-		buildFunctions();
-		buildFields();
-		buildClasses();
-		buildPackages();
-	}
-	
+    
+    protected NativePackage(String nameIn) {
+        super(nameIn);
+        
+        build();
+    }
+    
+    protected void build() {
+        packageScope.clear();
+        
+        buildFunctions();
+        buildFields();
+        buildClasses();
+        buildPackages();
+    }
+    
 }

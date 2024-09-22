@@ -179,7 +179,9 @@ public abstract class EnvisionLangTest {
     
     protected static void execute(String statement) {
         stmt(statement);
-        interpreter.executeStatements(codeFile.getStatements(), interpreter.scope());
+        var statements = codeFile.getStatements();
+        var scope = interpreter.scope();
+        interpreter.executeStatements(statements, scope);
     }
     
     protected static void execute(ParsedStatement statement) {

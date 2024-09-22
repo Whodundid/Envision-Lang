@@ -8,20 +8,20 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Sleep extends EnvisionFunction {
-	
-	public Sleep() {
-		super(EnvisionStaticTypes.VOID_TYPE, "sleep");
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-	    try {
-	        long amount = ((EnvisionInt) args[0]).get_i();
-	        Thread.sleep(amount);	        
-	    }
-	    catch (InterruptedException e) {
-	        throw new LangShutdownCall();
-	    }
-	}
-	
+    
+    public Sleep() {
+        super(EnvisionStaticTypes.VOID_TYPE, "sleep");
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        try {
+            long amount = ((EnvisionInt) args[0]).get_i();
+            Thread.sleep(amount);            
+        }
+        catch (InterruptedException e) {
+            throw new LangShutdownCall();
+        }
+    }
+    
 }

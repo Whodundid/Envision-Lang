@@ -9,17 +9,17 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class Ceil extends EnvisionFunction {
-	
-	public Ceil() {
-		super(EnvisionStaticTypes.INT_TYPE, "ceil", EnvisionStaticTypes.NUMBER_TYPE);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		EnvisionNumber<?> num = (EnvisionNumber<?>) args[0];
-		double ceil = Math.ceil(num.doubleVal_i());
-		EnvisionInt r = EnvisionIntClass.valueOf((long) ceil);
-		ret(r);
-	}
-	
+    
+    public Ceil() {
+        super(EnvisionStaticTypes.INT_TYPE, "ceil", EnvisionStaticTypes.NUMBER_TYPE);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        EnvisionNumber<?> num = (EnvisionNumber<?>) args[0];
+        double ceil = Math.ceil(num.doubleVal_i());
+        EnvisionInt r = EnvisionIntClass.valueOf((long) ceil);
+        ret(r);
+    }
+    
 }

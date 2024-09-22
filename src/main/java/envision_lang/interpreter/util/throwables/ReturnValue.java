@@ -30,83 +30,83 @@ import envision_lang.lang.datatypes.EnvisionNull;
  *           primary down-side of this approach is that simple
  *           multi-threading is no longer an option. However, the
  *           tradeoff is a language execution speedup of roughly 200%.
- * 			
+ *             
  * @author Hunter Bragg
  */
 public class ReturnValue extends RuntimeException {
-	
-	/**
-	 * The static singleton 'ReturnValue'.
-	 */
-	private static final ReturnValue instance = new ReturnValue();
-	
-	//--------
-	// Fields
-	//--------
-	
-	/**
-	 * The object being returned.
-	 */
-	public EnvisionObject result;
-	
-	//--------------
-	// Constructors
-	//--------------
-	
-	private ReturnValue() {
-		this(EnvisionNull.NULL);
-	}
-	
-	private ReturnValue(EnvisionObject objIn) {
-		result = objIn;
-	}
-	
-	//-----------------
-	// Static Wrappers
-	//-----------------
-	
-	/**
-	 * Wraps this ReturnValue instance with Envision::NULL
-	 * 
-	 * @return The wrapped NULL ReturnValue
-	 */
-	public static ReturnValue NULL() {
-		return wrap(EnvisionNull.NULL);
-	}
-	
-	/**
-	 * Wraps the given EnvisionObject into this ReturnValue's instance.
-	 * 
-	 * @param object The EnvisonObject to return
-	 * @return The wrapped object ReturnValue
-	 */
-	public static ReturnValue wrap(EnvisionObject object) {
-		instance.result = object;
-		return instance;
-	}
-	
-	/**
-	 * Wraps the given EnvisionObject into this ReturnValue's instance
-	 * and immediately throws it to initiate the return.
-	 * 
-	 * @param object The EnvisonObject to return
-	 */
-	public static void ret(EnvisionObject object) {
-		throw wrap(object);
-	}
-	
-	//---------
-	// Methods
-	//---------
-	
-	/**
-	 * Returns true if the return value is null.
-	 */
-	public boolean isNull() { return result == EnvisionNull.NULL; }
-	
-	/**
-	 * Returns true if the return value is Java::null.
-	 */
-	public boolean isJavaNull() { return result == null; }
-	
+    
+    /**
+     * The static singleton 'ReturnValue'.
+     */
+    private static final ReturnValue instance = new ReturnValue();
+    
+    //--------
+    // Fields
+    //--------
+    
+    /**
+     * The object being returned.
+     */
+    public EnvisionObject result;
+    
+    //--------------
+    // Constructors
+    //--------------
+    
+    private ReturnValue() {
+        this(EnvisionNull.NULL);
+    }
+    
+    private ReturnValue(EnvisionObject objIn) {
+        result = objIn;
+    }
+    
+    //-----------------
+    // Static Wrappers
+    //-----------------
+    
+    /**
+     * Wraps this ReturnValue instance with Envision::NULL
+     * 
+     * @return The wrapped NULL ReturnValue
+     */
+    public static ReturnValue NULL() {
+        return wrap(EnvisionNull.NULL);
+    }
+    
+    /**
+     * Wraps the given EnvisionObject into this ReturnValue's instance.
+     * 
+     * @param object The EnvisonObject to return
+     * @return The wrapped object ReturnValue
+     */
+    public static ReturnValue wrap(EnvisionObject object) {
+        instance.result = object;
+        return instance;
+    }
+    
+    /**
+     * Wraps the given EnvisionObject into this ReturnValue's instance
+     * and immediately throws it to initiate the return.
+     * 
+     * @param object The EnvisonObject to return
+     */
+    public static void ret(EnvisionObject object) {
+        throw wrap(object);
+    }
+    
+    //---------
+    // Methods
+    //---------
+    
+    /**
+     * Returns true if the return value is null.
+     */
+    public boolean isNull() { return result == EnvisionNull.NULL; }
+    
+    /**
+     * Returns true if the return value is Java::null.
+     */
+    public boolean isJavaNull() { return result == null; }
+    
 }

@@ -60,44 +60,44 @@ import envision_lang.lang.natives.IDatatype;
  * @author Hunter Bragg
  */
 public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
-	permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
+    permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
 {
-	
-	public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
-	
-	//==============
+    
+    public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
+    
+    //==============
     // Constructors
     //==============
-	
-	/**
-	 * Native variable types do not have any discernible instance scope
-	 * and will simply utilize the deriving class's static class scope for
-	 * access to all internal member fields and functions.
-	 * 
-	 * @param parentClass The class for which this variable is an instance
-	 */
-	protected EnvisionVariable(EnvisionClass parentClass) {
-		super(parentClass);
-	}
-	
-	//=========
+    
+    /**
+     * Native variable types do not have any discernible instance scope
+     * and will simply utilize the deriving class's static class scope for
+     * access to all internal member fields and functions.
+     * 
+     * @param parentClass The class for which this variable is an instance
+     */
+    protected EnvisionVariable(EnvisionClass parentClass) {
+        super(parentClass);
+    }
+    
+    //=========
     // Getters
     //=========
-	
-	/**
-	 * Returns the Envision Object wrapping some underlying Java object.
-	 * Used for in-language passes.
-	 * 
-	 * @return The wrapping Envision object
-	 */
-	public abstract EnvisionObject get();
-	
-	/**
-	 * Returns the underlying Java Object which actually backs
-	 * this EnvisionVariable.
-	 * 
-	 * @return The backing Java Object
-	 */
-	public abstract TYPE get_i();
-	
+    
+    /**
+     * Returns the Envision Object wrapping some underlying Java object.
+     * Used for in-language passes.
+     * 
+     * @return The wrapping Envision object
+     */
+    public abstract EnvisionObject get();
+    
+    /**
+     * Returns the underlying Java Object which actually backs
+     * this EnvisionVariable.
+     * 
+     * @return The backing Java Object
+     */
+    public abstract TYPE get_i();
+    
 }

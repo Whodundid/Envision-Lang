@@ -8,16 +8,16 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.lang.functions.EnvisionFunction;
 
 public class Println extends EnvisionFunction {
-	
-	public Println() {
-		super(VOID, "println");
-		addOverload(VOID, VAR_A);
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
-		interpreter.printToConsoleReceiver(l, true);
-	}
-	
+    
+    public Println() {
+        super(VOID, "println");
+        addOverload(VOID, VAR_A);
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        var l = EnvisionStringFormatter.formatPrint(interpreter, args, true);
+        interpreter.printToConsoleReceiver(l, true);
+    }
+    
 }

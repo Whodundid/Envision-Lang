@@ -12,9 +12,9 @@ import eutil.debug.InDevelopment;
  */
 @InDevelopment
 public class IS_Exception extends AbstractInterpreterExecutor {
-	
-	public static void run(EnvisionInterpreter in, Stmt_Exception s) {
-		
-	}
-	
+    
+    public static void run(EnvisionInterpreter in, Stmt_Exception s) {
+        
+    }
+    
 }

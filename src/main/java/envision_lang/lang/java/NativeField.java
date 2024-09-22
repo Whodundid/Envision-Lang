@@ -124,14 +124,14 @@ public final class NativeField extends EnvisionObject implements INativeEnvision
         
         synchronized (wrappedField) {
             try {
-                if (isJavaPrivate) stripPrivate(wrappedField);
+                /*if (isJavaPrivate)*/ stripPrivate(wrappedField);
                 toReturn = wrappedField.get(wrappedObject.getJavaObjectInstance());
             }
             catch (Exception e) {
                 throw new EnvisionLangError(e);
             }
             finally {
-                if (isJavaPrivate) setPrivate(wrappedField);
+                /*if (isJavaPrivate)*/ setPrivate(wrappedField);
             }
         }
         

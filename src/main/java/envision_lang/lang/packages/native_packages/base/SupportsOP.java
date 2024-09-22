@@ -10,14 +10,14 @@ import envision_lang.lang.natives.EnvisionStaticTypes;
  * Takes in an instance of an EnvisionClass and an operator.
  */
 public class SupportsOP extends EnvisionFunction {
-	
-	public SupportsOP() {
-		super(EnvisionStaticTypes.BOOL_TYPE, "supportsOP");
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		System.out.println(args);
-	}
-	
+    
+    public SupportsOP() {
+        super(EnvisionStaticTypes.BOOL_TYPE, "supportsOP");
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        System.out.println(args);
+    }
+    
 }

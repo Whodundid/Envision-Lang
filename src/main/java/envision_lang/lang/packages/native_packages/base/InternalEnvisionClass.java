@@ -16,73 +16,73 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class InternalEnvisionClass extends EnvisionClass {
-	
-	/** The lang-wrapped program user arguments. */
-	private static EnvisionList userArgs;
-	
-	public static final InternalEnvisionClass ENVISION_CLASS = new InternalEnvisionClass();
-	
-	/**
-	 * Character member function prototypes.
-	 */
-	private static final IPrototypeHandler ENVISION_PROTOS = new IPrototypeHandler();
-	
-	//statically define function prototypes
-	static {
-		ENVISION_PROTOS.define("shutdown").assignDynamicClass(IFunc_shutdown.class);
-		ENVISION_PROTOS.define("dir").assignDynamicClass(IFunc_dir.class);
-	}
-	
-	//--------------
-	// Constructors
-	//--------------
-	
-	private InternalEnvisionClass() {
-		super(EnvisionStaticTypes.ENVISION_TYPE);
-	}
-	
-	//-----------
-	// Overrides
-	//-----------
-	
-	@Override
-	public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new EnvisionLangError("Illegal Object Instantiation!");
-	}
-	
-	@Override
-	protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		throw new EnvisionLangError("Illegal Object Instantiation!");
-	}
-	
-	//---------
-	// Methods
-	//---------
-	
-	public void defineFunctionScopeMembers(InternalEnvision env) {
-		//define super object's members
-		super.defineScopeMembers(env);
-		//define scope members
-		ENVISION_PROTOS.defineOn(env);
-	}
-	
-	//---------------------------------
-	// Static Envision Class Functions
-	//---------------------------------
-	
-	private static class IFunc_shutdown extends InstanceFunction<InternalEnvision> {
-		public IFunc_shutdown() { super(VOID, "shutdown"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-			throw new LangShutdownCall();
-		}
-	}
-	
-	private static class IFunc_dir extends InstanceFunction<InternalEnvision> {
-		public IFunc_dir() { super(FILE, "dir"); }
-		@Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		    var dir = interpreter.program().getWorkingDir().getDirFile();
-			EnvisionFile dirFile = EnvisionFileClass.newFile(dir);
-			ret(dirFile);
-		}
-	}
+    
+    /** The lang-wrapped program user arguments. */
+    private static EnvisionList userArgs;
+    
+    public static final InternalEnvisionClass ENVISION_CLASS = new InternalEnvisionClass();
+    
+    /**
+     * Character member function prototypes.
+     */
+    private static final IPrototypeHandler ENVISION_PROTOS = new IPrototypeHandler();
+    
+    //statically define function prototypes
+    static {
+        ENVISION_PROTOS.define("shutdown").assignDynamicClass(IFunc_shutdown.class);
+        ENVISION_PROTOS.define("dir").assignDynamicClass(IFunc_dir.class);
+    }
+    
+    //--------------
+    // Constructors
+    //--------------
+    
+    private InternalEnvisionClass() {
+        super(EnvisionStaticTypes.ENVISION_TYPE);
+    }
+    
+    //-----------
+    // Overrides
+    //-----------
+    
+    @Override
+    public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        throw new EnvisionLangError("Illegal Object Instantiation!");
+    }
+    
+    @Override
+    protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        throw new EnvisionLangError("Illegal Object Instantiation!");
+    }
+    
+    //---------
+    // Methods
+    //---------
+    
+    public void defineFunctionScopeMembers(InternalEnvision env) {
+        //define super object's members
+        super.defineScopeMembers(env);
+        //define scope members
+        ENVISION_PROTOS.defineOn(env);
+    }
+    
+    //---------------------------------
+    // Static Envision Class Functions
+    //---------------------------------
+    
+    private static class IFunc_shutdown extends InstanceFunction<InternalEnvision> {
+        public IFunc_shutdown() { super(VOID, "shutdown"); }
+        @Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+            throw new LangShutdownCall();
+        }
+    }
+    
+    private static class IFunc_dir extends InstanceFunction<InternalEnvision> {
+        public IFunc_dir() { super(FILE, "dir"); }
+        @Override public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+            var dir = interpreter.program().getWorkingDir().getDirFile();
+            EnvisionFile dirFile = EnvisionFileClass.newFile(dir);
+            ret(dirFile);
+        }
+    }
 }

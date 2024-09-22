@@ -9,14 +9,14 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.expressions.expression_types.Expr_Primitive;
 
 public class IE_Primitive extends AbstractInterpreterExecutor {
-	
-	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Primitive expression) {
-		Primitives type = Primitives.getPrimitiveType(expression.primitiveType);
-		
-		EnvisionClass classType = NativeTypeManager.getClassTypeFor(type);
-		if (classType != null) return classType;
-		
-		return NativeTypeManager.getClassTypeFor(type);
-	}
-	
+    
+    public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Primitive expression) {
+        Primitives type = Primitives.getPrimitiveType(expression.primitiveType);
+        
+        EnvisionClass classType = NativeTypeManager.getClassTypeFor(type);
+        if (classType != null) return classType;
+        
+        return NativeTypeManager.getClassTypeFor(type);
+    }
+    
 }

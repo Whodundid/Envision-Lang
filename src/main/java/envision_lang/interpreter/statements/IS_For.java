@@ -11,59 +11,59 @@ import eutil.datatypes.util.EList;
 
 public class IS_For extends AbstractInterpreterExecutor {
 
-	public static void run(EnvisionInterpreter interpreter, Stmt_For statement) {
-		ParsedStatement init = statement.init;
-		ParsedStatement body = statement.body;
-		ParsedExpression cond = statement.cond;
-		EList<ParsedExpression> post = statement.post;
-		
-		interpreter.pushScope();
-		
-		//handle inits
-		if (init != null) {
-			interpreter.execute(init);
-		}
-		
-		//true by default
-		boolean conditionValue = true;
-		if (cond != null) {
-			conditionValue = isTrue(interpreter.evaluate(cond));
-		}
-		
-		int postSize = (post != null) ? post.size() : 0;
-		int i = 0;
-		
-		//body
-		TOP:
-		while (conditionValue) {
-			interpreter.pushScope();
-			if (body != null) {
-				try {
-					interpreter.execute(body);
-				}
-				catch (Continue c) {}
-				catch (Break b) { break TOP; }
-				catch (Exception e) { throw e; }
-			}
-			//post
-			if (post != null) {
-				
-				for (i = 0; i < postSize; i++) {
-					ParsedExpression postExp = post.get(i);
-					if (postExp != null) {
-						interpreter.evaluate(postExp);
-					}
-				}
-			}
-			interpreter.popScope();
-			
-			//re-evaluate condition
-			if (cond != null) {
-				conditionValue = isTrue(interpreter.evaluate(cond));
-			}
-		}
-		
-		interpreter.popScope();
-	}
-	
+    public static void run(EnvisionInterpreter interpreter, Stmt_For statement) {
+        ParsedStatement init = statement.init;
+        ParsedStatement body = statement.body;
+        ParsedExpression cond = statement.cond;
+        EList<ParsedExpression> post = statement.post;
+        
+        interpreter.pushScope();
+        
+        //handle inits
+        if (init != null) {
+            interpreter.execute(init);
+        }
+        
+        //true by default
+        boolean conditionValue = true;
+        if (cond != null) {
+            conditionValue = isTrue(interpreter.evaluate(cond));
+        }
+        
+        int postSize = (post != null) ? post.size() : 0;
+        int i = 0;
+        
+        //body
+        TOP:
+        while (conditionValue) {
+            interpreter.pushScope();
+            if (body != null) {
+                try {
+                    interpreter.execute(body);
+                }
+                catch (Continue c) {}
+                catch (Break b) { break TOP; }
+                catch (Exception e) { throw e; }
+            }
+            //post
+            if (post != null) {
+                
+                for (i = 0; i < postSize; i++) {
+                    ParsedExpression postExp = post.get(i);
+                    if (postExp != null) {
+                        interpreter.evaluate(postExp);
+                    }
+                }
+            }
+            interpreter.popScope();
+            
+            //re-evaluate condition
+            if (cond != null) {
+                conditionValue = isTrue(interpreter.evaluate(cond));
+            }
+        }
+        
+        interpreter.popScope();
+    }
+    
 }

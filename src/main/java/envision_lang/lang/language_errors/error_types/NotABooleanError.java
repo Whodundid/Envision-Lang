@@ -7,9 +7,9 @@ import envision_lang.lang.language_errors.EnvisionLangError;
  * @deprecated replace all usages with 'InvalidTargetError' instead.
  */
 public class NotABooleanError extends EnvisionLangError {
-	
-	public NotABooleanError(Object o) {
-		super (o + " is not a boolean value!");
-	}
-	
+    
+    public NotABooleanError(Object o) {
+        super (o + " is not a boolean value!");
+    }
+    
 }

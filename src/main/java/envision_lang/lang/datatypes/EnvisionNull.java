@@ -20,43 +20,43 @@ import envision_lang.lang.natives.IDatatype;
  * @author Hunter Bragg
  */
 public class EnvisionNull extends EnvisionObject {
-	
-	public static final IDatatype NULL_TYPE = EnvisionStaticTypes.NULL_TYPE;
-	
-	/**
-	 * The single, static null value to be used for all 'null' values
-	 * within Envision.
-	 */
-	public static final EnvisionNull NULL = new EnvisionNull();
-	
-	//--------------
-	// Constructors
-	//--------------
-	
-	/**
-	 * Creates a new 'null' object.
-	 */
-	private EnvisionNull() {
-		super(NULL_TYPE);
-	}
-	
-	//------------------------------------
-	// Overriding standard object methods
-	//------------------------------------
-	
-	@Override
-	public String toString() {
-		return "ENVISION:null";
-	}
-	
-	@Override
-	public EnvisionObject copy() {
-		return this;
-	}
-	
-	@Override
-	public Object convertToJavaObject() {
-		return null;
-	}
-	
+    
+    public static final IDatatype NULL_TYPE = EnvisionStaticTypes.NULL_TYPE;
+    
+    /**
+     * The single, static null value to be used for all 'null' values
+     * within Envision.
+     */
+    public static final EnvisionNull NULL = new EnvisionNull();
+    
+    //--------------
+    // Constructors
+    //--------------
+    
+    /**
+     * Creates a new 'null' object.
+     */
+    private EnvisionNull() {
+        super(NULL_TYPE);
+    }
+    
+    //------------------------------------
+    // Overriding standard object methods
+    //------------------------------------
+    
+    @Override
+    public String toString() {
+        return "ENVISION:null";
+    }
+    
+    @Override
+    public EnvisionObject copy() {
+        return this;
+    }
+    
+    @Override
+    public Object convertToJavaObject() {
+        return null;
+    }
+    
 }

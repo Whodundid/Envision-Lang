@@ -4,5 +4,5 @@ import eutil.debug.Unused;
 
 @Unused
 public class VacuousConditionWarning {
-	
+    
 }

@@ -8,58 +8,58 @@ import eutil.datatypes.util.EList;
 
 /** Standard for loop. */
 public class Stmt_For extends ParsedStatement {
-	
-	//========
-	// Fields
-	//========
-	
-	public final ParsedStatement init;
-	public final ParsedExpression cond;
-	public final EList<ParsedExpression> post;
-	public final ParsedStatement body;
-	
-	//==============
-	// Constructors
-	//==============
-	
-	public Stmt_For(Token<?> start,
-					ParsedStatement initIn,
-					ParsedExpression condIn,
-					ParsedExpression postIn,
-					ParsedStatement bodyIn)
-	{
-		this(start, initIn, condIn, (postIn != null) ? EList.newList(postIn) : null, bodyIn);
-	}
-	
-	public Stmt_For(Token<?> start,
-					ParsedStatement initIn,
-					ParsedExpression condIn,
-					EList<ParsedExpression> postIn,
-					ParsedStatement bodyIn)
-	{
-		super(start);
-		init = initIn;
-		cond = condIn;
-		post = postIn;
-		body = bodyIn;
-	}
-	
-	//===========
-	// Overrides
-	//===========
-	
-	@Override
-	public String toString() {
-		String i = (init != null) ? init.toString() : "";
-		String c = (cond != null) ? " " + cond.toString() : "";
-		String p = (post != null) ? " " + post.toString() : "";
-		String b = (body != null) ? " " + body + " " : "";
-		return "for (" + i + ";" + c + ";" + p + ") {" + b + "}";
-	}
-	
-	@Override
-	public void execute(StatementHandler handler) {
-		handler.handleForStatement(this);
-	}
-	
+    
+    //========
+    // Fields
+    //========
+    
+    public final ParsedStatement init;
+    public final ParsedExpression cond;
+    public final EList<ParsedExpression> post;
+    public final ParsedStatement body;
+    
+    //==============
+    // Constructors
+    //==============
+    
+    public Stmt_For(Token<?> start,
+                    ParsedStatement initIn,
+                    ParsedExpression condIn,
+                    ParsedExpression postIn,
+                    ParsedStatement bodyIn)
+    {
+        this(start, initIn, condIn, (postIn != null) ? EList.newList(postIn) : null, bodyIn);
+    }
+    
+    public Stmt_For(Token<?> start,
+                    ParsedStatement initIn,
+                    ParsedExpression condIn,
+                    EList<ParsedExpression> postIn,
+                    ParsedStatement bodyIn)
+    {
+        super(start);
+        init = initIn;
+        cond = condIn;
+        post = postIn;
+        body = bodyIn;
+    }
+    
+    //===========
+    // Overrides
+    //===========
+    
+    @Override
+    public String toString() {
+        String i = (init != null) ? init.toString() : "";
+        String c = (cond != null) ? " " + cond.toString() : "";
+        String p = (post != null) ? " " + post.toString() : "";
+        String b = (body != null) ? " " + body + " " : "";
+        return "for (" + i + ";" + c + ";" + p + ") {" + b + "}";
+    }
+    
+    @Override
+    public void execute(StatementHandler handler) {
+        handler.handleForStatement(this);
+    }
+    
 }

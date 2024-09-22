@@ -5,8 +5,8 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 
 public class EmptyListError extends EnvisionLangError {
 
-	public EmptyListError(EnvisionList list) {
-		super("The list: '" + list + "' is empty!");
-	}
+    public EmptyListError(EnvisionList list) {
+        super("The list: '" + list + "' is empty!");
+    }
 
 }

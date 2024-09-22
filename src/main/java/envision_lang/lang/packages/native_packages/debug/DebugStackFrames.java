@@ -6,14 +6,14 @@ import envision_lang.lang.functions.EnvisionFunction;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public class DebugStackFrames extends EnvisionFunction {
-	
-	public DebugStackFrames() {
-		super(EnvisionStaticTypes.VOID_TYPE, "stackFrames");
-	}
-	
-	@Override
-	public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
-		interpreter.printStackFrames();
-	}
-	
+    
+    public DebugStackFrames() {
+        super(EnvisionStaticTypes.VOID_TYPE, "stackFrames");
+    }
+    
+    @Override
+    public void invoke(EnvisionInterpreter interpreter, EnvisionObject[] args) {
+        interpreter.printStackFrames();
+    }
+    
 }

@@ -20,6 +20,7 @@ import envision_lang.parser.expressions.expression_types.Expr_Compound;
 import envision_lang.parser.expressions.expression_types.Expr_Lambda;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.util.EList;
+import eutil.strings.EStringBuilder;
 
 public class IE_Lambda extends AbstractInterpreterExecutor {
     
@@ -32,10 +33,23 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
         
         EnvisionObject rVal = EnvisionNull.NULL;
         
-        EList<String> inputNames = inputs.expressions.map(p -> p.toString());
         EList<EnvisionObject> processedTargets = processAllTargets(interpreter, targets);
         // determine the inputs based on the target
         EList<EnvisionObject[]> processedInputs = processAllInputs(interpreter, inputs, processedTargets);
+        
+        EList<String> inputNames = null;
+        if (inputs.size() == processedInputs.size()) {
+            inputNames = inputs.expressions.map(p -> p.toString());
+        }
+        else {
+            inputNames = processedInputs.map(p -> {
+                if (p.length == 0) return p.toString();
+                if (p.length == 1) return p[0].toString();
+                var sb = new EStringBuilder();
+                for (var o : p) sb.a(o.toString());
+                return sb.toString();
+            });
+        }
         
         rVal = executeTargets(interpreter, inputNames, processedInputs, processedTargets);
         
@@ -182,8 +196,43 @@ public class IE_Lambda extends AbstractInterpreterExecutor {
             }
             
             if (expand) {
-                for (var i : processedInputs) {
-                    r.add(expandArgs(i));
+                if (processedInputs.size() == 1) {
+                    var element = processedInputs.getFirst();
+                    if (element instanceof EnvisionList l) {
+                        for (var o : l.internalList) r.add(expandArgs(o));
+                    }
+                    else if (element instanceof EnvisionTuple t) {
+                        for (var o : t.internalList) r.add(expandArgs(o));
+                    }
+                    else {
+                        r.add(expandArgs(element));
+                    }
+                    
+                }
+                else {
+                    for (var i : processedInputs) {
+                        r.add(expandArgs(i));
+                    }
+//                    boolean allListsOrTuples = true;
+//                    for (var i : processedInputs) {
+//                        if (!(i instanceof EnvisionList) && !(i instanceof EnvisionTuple)) {
+//                            allListsOrTuples = false;
+//                            break;
+//                        }
+//                    }
+//                    
+//                    if (allListsOrTuples) {
+//                        for (var i : processedInputs) {
+//                            r.add(expandArgs(i));
+//                        }
+//                    }
+//                    else {
+//                        EnvisionObject[] arr = new EnvisionObject[processedInputs.size()];
+//                        for (int i = 0; i < processedInputs.size(); i++) {
+//                            arr[i] = processedInputs.get(i);
+//                        }
+//                        r.add(arr);
+//                    }
                 }
             }
             else {

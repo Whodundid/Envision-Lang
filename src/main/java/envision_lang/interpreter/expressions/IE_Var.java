@@ -17,13 +17,13 @@ import envision_lang.tokenizer.Token;
  */
 public class IE_Var extends AbstractInterpreterExecutor {
 
-	public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Var e) {
-		Token<?> name = e.name;
-		if (name == null)
-			throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
-		
-		// get name from interpreter
-		return interpreter.lookUpVariable(e.name.getLexeme());
-	}
-	
+    public static EnvisionObject run(EnvisionInterpreter interpreter, Expr_Var e) {
+        Token<?> name = e.name;
+        if (name == null)
+            throw new ExpressionError("The given name token for the expression '" + e + "' is null!");
+        
+        // get name from interpreter
+        return interpreter.lookUpVariable(e.name.getLexeme());
+    }
+    
 }

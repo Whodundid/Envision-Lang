@@ -11,16 +11,16 @@ import eutil.datatypes.boxes.BoxList;
  * @author Hunter Bragg
  */
 public interface IPrototype {
-	
-	/** The name of the prototype function. */
-	public String name();
-	/** The return type of the prototype function. */
-	public IDatatype returnType();
-	/** The accepted parameter datatypes (in order) of the prototype function. */
-	public ParameterData parameters();
-	/** The list of override parameter types in the order of ('returnType' : [parameter]*) */
-	public BoxList<IDatatype, ParameterData> overloads();
-	/** The dynamic backing class for which this prototype builds to. */
-	public Class<? extends InstanceFunction> dynamicClass();
-	
+    
+    /** The name of the prototype function. */
+    public String name();
+    /** The return type of the prototype function. */
+    public IDatatype returnType();
+    /** The accepted parameter datatypes (in order) of the prototype function. */
+    public ParameterData parameters();
+    /** The list of override parameter types in the order of ('returnType' : [parameter]*) */
+    public BoxList<IDatatype, ParameterData> overloads();
+    /** The dynamic backing class for which this prototype builds to. */
+    public Class<? extends InstanceFunction> dynamicClass();
+    
 }
