@@ -6,9 +6,10 @@ import envision_lang.lang.datatypes.EnvisionBoolean;
 import envision_lang.lang.datatypes.EnvisionBooleanClass;
 import envision_lang.lang.datatypes.EnvisionInt;
 import envision_lang.lang.datatypes.EnvisionNull;
+import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.NullVariableError;
-import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.EnvisionStaticTypes;
+import envision_lang.lang.natives.IDatatype;
 import envision_lang.parser.expressions.ParsedExpression;
 import envision_lang.parser.statements.ParsedStatement;
 
@@ -98,17 +99,45 @@ public class AbstractInterpreterExecutor {
     }
     
     /**
-     * This method will throw a NullVariableError if the given object 
-     * is found to actually be null by either Java or Envision:Java's
-     * terms.
+     * This method will throw a NullVariableError if the given object is found
+     * to actually be null by either Java or Envision:Java's terms.
      * <p>
-     * If the given value is found to NOT be null, then this method
-     * will execute quietly and return to normal code execution.
+     * If the given value is found to NOT be null, then this method will execute
+     * quietly and return to normal code execution.
      * 
      * @param in The object being compared to null.
      */
     protected static void assertNotNull(EnvisionObject in) {
         if (isNull(in)) throw new NullVariableError(in);
+    }
+    
+    /**
+     * Throws an EnvisionLangError with the provided error 'reason' if the given
+     * 'condition' is true.
+     * 
+     * @param condition The condition to evaluate
+     * @param reason    The string to populate in an error if thrown
+     */
+    protected static void errorIf(boolean condition, String reason) {
+        if (condition) error(reason);
+    }
+    
+    /**
+     * Throws an EnvisionLangError with the provided error 'reason' if the given
+     * 'condition' is true.
+     * 
+     * @param condition The condition to evaluate
+     * @param reason    The string to populate in an error if thrown
+     * @param args      String formating arguments to insert into error reason
+     */
+    protected static void errorIf(boolean condition, String reason, Object... args) {
+        if (condition) error(String.format(reason, args));
+    }
+    
+    protected static void error(String reason) { error(reason, null); }
+    protected static void error(String reason, Exception e) {
+        if (e != null) throw new EnvisionLangError(reason);
+        throw new EnvisionLangError(reason, e);
     }
     
 }

@@ -116,54 +116,61 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
     @Override
     public boolean supportsOperator(Operator op) {
         return switch (op) {
-        //unary
+        // unary
         case LOGICAL_NEGATE -> true;
-        //relational
+        // relational
         case EQUALS, NOT_EQUALS -> true;
-        //logical
+        // logical
         case AND, OR -> true;
-        //bit-wise
+        // bit-wise
         case BW_AND, BW_OR, BW_XOR -> true;
-        //bit-wise assignment
+        // bit-wise assignment
         case BW_AND_ASSIGN, BW_OR_ASSIGN, BW_XOR_ASSIGN -> true;
-        //don't accept any other operator types
+        // don't accept any other operator types
         default -> false;
         };
     }
     
     @Override
-    public EnvisionObject handleOperatorOverloads
-        (EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
-            throws UnsupportedOverloadError
+    public EnvisionObject handleOperatorOverloads(
+        EnvisionInterpreter interpreter,
+        String scopeName,
+        Operator op,
+        EnvisionObject obj)
+    
+    throws UnsupportedOverloadError
     {
-        //don't allow null expression objects
-        if (obj == null) throw new NullVariableError();
-        
-        //only accept if an EnvisionBoolean type
-        if (!(obj instanceof EnvisionBoolean))
-            throw new InvalidDatatypeError(internalType, obj.getDatatype());
+        // if the operator isn't a unary operation, don't allow object to be null
+        if (!op.isUnary()) {
+            if (obj == null) throw new NullVariableError();
+            
+            // only accept if an EnvisionBoolean type
+            if (!(obj instanceof EnvisionBoolean)) {
+                throw new InvalidDatatypeError(internalType, obj.getDatatype());
+            }
+        }
         
         EnvisionBoolean in = (EnvisionBoolean) obj;
         
-        //only support '!', '&&' and '||', '&', '|', '^', '&=', '|=', '^='
+        // only support '!', '&&' and '||', '&', '|', '^', '&=', '|=', '^='
         
         switch (op) {
-        //unary operators
-        case LOGICAL_NEGATE:    return EnvisionBooleanClass.valueOf(!bool_val);
-        //logical operators
-        case AND:                return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
-        case OR:                return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
-        //bit-wise operators
-        case BW_AND:            return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
-        case BW_OR:                return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
-        case BW_XOR:            return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
-        //bit-wise assignment operators
-        case BW_AND_ASSIGN:        return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
-        case BW_OR_ASSIGN:        return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
-        case BW_XOR_ASSIGN:        return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
+        // unary operators
+        case LOGICAL_NEGATE:        return EnvisionBooleanClass.valueOf(!bool_val);
+        // logical operators
+        case AND:                   return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+        case OR:                    return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
+        // bit-wise operators
+        case BW_AND:                return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+        case BW_OR:                 return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
+        case BW_XOR:                return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
+        // bit-wise assignment operators
+        case BW_AND_ASSIGN:         return EnvisionBooleanClass.valueOf(bool_val && in.bool_val);
+        case BW_OR_ASSIGN:          return EnvisionBooleanClass.valueOf(bool_val || in.bool_val);
+        case BW_XOR_ASSIGN:         return EnvisionBooleanClass.valueOf(bool_val ^ in.bool_val);
             
-        //throw error if this point is reached
-        //default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
+        // throw error if this point is reached
+        // default: throw new UnsupportedOverloadError(this, op, "[" + obj.getDatatype() + ":" + obj + "]");
         default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
         }
     }

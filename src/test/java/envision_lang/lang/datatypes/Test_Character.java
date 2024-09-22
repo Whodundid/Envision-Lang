@@ -21,12 +21,16 @@ public class Test_Character extends EnvisionLangTest {
     
     /**
      * Tests that a new char defaults to the null char.
+     * <p>
+     * NOTE: this should create an entirely new char in memory that should
+     * not be equivalent to the static 'NULL_CHAR'.
      */
     @Test
     void test_zero_new() {
         EnvisionChar c = EnvisionCharClass.newChar();
         
         assertNotNull(c);
+        assertNotEquals(EnvisionChar.NULL_CHAR.hashCode(), c.hashCode());
         assertEquals('\0', c.char_val);
     }
     
@@ -34,12 +38,16 @@ public class Test_Character extends EnvisionLangTest {
     
     /**
      * Tests that the value of '\0' defaults to the null char.
+     * <p>
+     * NOTE: this should NOT create a new char but instead reference the
+     * existing static 'NULL_CHAR'.
      */
     @Test
     void test_zero_valueOf() {
         EnvisionChar c = EnvisionCharClass.valueOf('\0');
         
         assertNotNull(c);
+        assertEquals(EnvisionChar.NULL_CHAR, c);
         assertEquals('\0', c.char_val);
     }
     

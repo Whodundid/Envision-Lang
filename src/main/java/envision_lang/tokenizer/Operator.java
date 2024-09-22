@@ -112,8 +112,8 @@ public enum Operator implements IKeyword {
     SHL("<<", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
     SHR(">>", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
     SHR_AR(">>>", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
-    UNARY_ADD("+\\_", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
-    UNARY_NEGATE("-\\_", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
+    UNARY_ADD("+_", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
+    UNARY_SUB("-_", KeywordType.ARITHMETIC, KeywordType.OPERATOR),
     
     //------------
     // assignment
@@ -133,13 +133,13 @@ public enum Operator implements IKeyword {
     SHR_AR_ASSIGN(">>>=", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
     
     /** PRE_FIX increment operator: '++i' */
-    INC("++", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+    PRE_INC("++_", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
     /** PRE_FIX decrement operator: '--i' */
-    DEC("--", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+    PRE_DEC("--_", KeywordType.ARITHMETIC, KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
     /** POST_FIX increment operator: 'i++' */
-    POST_INC("\\_++", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+    POST_INC("_++", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
     /** POST_FIX decrement operator: 'i--' */
-    POST_DEC("\\_--", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
+    POST_DEC("_--", KeywordType.ASSIGNMENT, KeywordType.OPERATOR),
     
     ;
     
@@ -170,19 +170,52 @@ public enum Operator implements IKeyword {
     //-----------------------------------------------------------------------------------------------------------------------------
     
     /**
+     * Converts this operator to its post equivalent if it is either the
+     * operator: 'INC' or 'DEC'.
+     * 
+     * @return The post version of this operator
+     */
+    public Operator makePost() {
+        return makePost(this);
+    }
+    
+    /**
      * Used to switch the operator position in increment and decrement statements.
      * 
      * <p>For example:<pre>
      * ++x -> x++
      * </pre>
      * 
-     * @param the increment or decrement operator
-     * @return the post version of the given operator
+     * @param k The increment or decrement operator
+     * @return The post version of the given operator
      */
     public static Operator makePost(Operator k) {
-        if (k == INC) return POST_INC;
-        if (k == DEC) return POST_DEC;
+        if (k == PRE_INC) return POST_INC;
+        if (k == PRE_DEC) return POST_DEC;
         throw new RuntimeException("Not a valid operator for 'post' conversion!");
+    }
+    
+    /**
+     * Converts this operator to its unary equivalent if it is either the
+     * operator: 'ADD' or 'SUB'.
+     * 
+     * @return The unary version of this numeric operator
+     */
+    public Operator convertToUnary() {
+        return convertToUnary(this);
+    }
+    
+    /**
+     * Converts the following operators '+' and '-' (ADD, SUB) to the unary
+     * equivalents of 'UNARY_ADD' and 'UNARY_NEGATE' respectively.
+     * 
+     * @param k The 'ADD' or 'SUB' operator to convert from
+     * @return The unary version of the given operator
+     */
+    public static Operator convertToUnary(Operator k) {
+        if (k == ADD) return UNARY_ADD;
+        if (k == SUB) return UNARY_SUB;
+        throw new RuntimeException("Not a valid operator for 'numeric unary' conversion!");
     }
 
     @Override
@@ -197,7 +230,7 @@ public enum Operator implements IKeyword {
      */
     public boolean isUnary() {
         return switch (this) {
-        case LOGICAL_NEGATE, UNARY_NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+        case LOGICAL_NEGATE, UNARY_ADD, UNARY_SUB, PRE_INC, PRE_DEC, POST_INC, POST_DEC -> true;
         default -> false;
         };
     }

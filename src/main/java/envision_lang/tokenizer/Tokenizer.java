@@ -234,12 +234,12 @@ public class Tokenizer {
             else addToken((match('=')) ? GTE : GT);                                    // '>=', '>'
             break;
         case '+':
-            if (match('+')) addToken(INC);                                            // '++'
+            if (match('+')) addToken(PRE_INC);                                            // '++'
             else if (match('=')) addToken(ADD_ASSIGN);                                // '+='
             else addToken(ADD);                                                        // '+'
             break;
         case '-':
-            if (match('-')) addToken(DEC);                                             // '--'
+            if (match('-')) addToken(PRE_DEC);                                             // '--'
             else if (match('>')) addToken(LAMBDA);                                     // '->'
             else if (match('=')) addToken(SUB_ASSIGN);                                 // '-='
             else addToken(SUB);                                                     // '-'

@@ -130,9 +130,13 @@ public class ClassInstance extends EnvisionObject {
      *            to
      * @return The result of the expression
      */
-    public EnvisionObject handleOperatorOverloads
-        (EnvisionInterpreter interpreter, String scopeName, Operator op, EnvisionObject obj)
-            throws UnsupportedOverloadError
+    public EnvisionObject handleOperatorOverloads(
+        EnvisionInterpreter interpreter,
+        String scopeName,
+        Operator op,
+        EnvisionObject obj)
+    
+    throws UnsupportedOverloadError
     {
         // natively support assignment '='
         if (op == Operator.ASSIGN) {

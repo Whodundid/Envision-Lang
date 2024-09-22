@@ -252,10 +252,27 @@ public abstract class EnvisionLangTest {
         return interpreter.scope();
     }
     
+    /**
+     * Returns an EnvisionObject under the given name within scope.
+     * 
+     * @param  <E>  The type to return (specified by caller)
+     * @param  name The name of the variable in scope to find
+     * 
+     * @return      An EnvisionObject under the given name in scope
+     */
     public <E extends EnvisionObject> E get(String name) {
         return (E) scope().get(name);
     }
     
+    /**
+     * Gets the internally wrapped Java value out of a found
+     * 'EnvisionVariable'.
+     * 
+     * @param  <E>  The type to return (specified by caller)
+     * @param  name The name of the variable in scope to find
+     * 
+     * @return      The Java value of the found Envision variable
+     */
     public <E> E get_i(String name) {
         var value = scope().get(name);
         if (value instanceof EnvisionVariable v) return (E) v.get_i();

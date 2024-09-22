@@ -107,7 +107,7 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
         case GT, LT, GTE, LTE -> true;
         case ADD, SUB, MUL, DIV, MOD -> true;
         case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> true;
-        case LOGICAL_NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+        case LOGICAL_NEGATE, PRE_INC, PRE_DEC, POST_INC, POST_DEC -> true;
         //don't accept any other operator types
         default -> false;
         };
@@ -138,31 +138,32 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
         EnvisionNumber<?> numIn = (EnvisionNumber<?>) obj;
         
         switch (op) {
-        case LOGICAL_NEGATE:            return negate();
+        case UNARY_ADD:             return EnvisionDoubleClass.valueOf(this);
+        case UNARY_SUB:             return negate();
         //relational operators
-        case GT:                return EnvisionBooleanClass.valueOf(double_val > numIn.doubleVal_i());
-        case LT:                return EnvisionBooleanClass.valueOf(double_val < numIn.doubleVal_i());
-        case GTE:                return EnvisionBooleanClass.valueOf(double_val >= numIn.doubleVal_i());
-        case LTE:                return EnvisionBooleanClass.valueOf(double_val <= numIn.doubleVal_i());
+        case GT:                    return EnvisionBooleanClass.valueOf(double_val > numIn.doubleVal_i());
+        case LT:                    return EnvisionBooleanClass.valueOf(double_val < numIn.doubleVal_i());
+        case GTE:                   return EnvisionBooleanClass.valueOf(double_val >= numIn.doubleVal_i());
+        case LTE:                   return EnvisionBooleanClass.valueOf(double_val <= numIn.doubleVal_i());
         //binary operators
-        case ADD:                return EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i());
-        case SUB:                return EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i());
-        case MUL:                return EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i());
-        case DIV:                div0_d(double_val, numIn.doubleVal_i()); //check for div by zero errors
-                                return EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i());
-        case MOD:                return EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i());
+        case ADD:                   return EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i());
+        case SUB:                   return EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i());
+        case MUL:                   return EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i());
+        case DIV:                   div0_d(double_val, numIn.doubleVal_i()); //check for div by zero errors
+                                    return EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i());
+        case MOD:                   return EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i());
         //assignment operators
-        case ADD_ASSIGN:        return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i()));
-        case SUB_ASSIGN:        return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i()));
-        case MUL_ASSIGN:        return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i()));
-        case DIV_ASSIGN:        return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i()));
-        case MOD_ASSIGN:        return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i()));
+        case ADD_ASSIGN:            return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + numIn.doubleVal_i()));
+        case SUB_ASSIGN:            return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - numIn.doubleVal_i()));
+        case MUL_ASSIGN:            return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val * numIn.doubleVal_i()));
+        case DIV_ASSIGN:            return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val / numIn.doubleVal_i()));
+        case MOD_ASSIGN:            return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val % numIn.doubleVal_i()));
         //inc/dec
-        case INC:                return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + 1.0D));
-        case DEC:                return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - 1.0D));
+        case PRE_INC:                   return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val + 1.0D));
+        case PRE_DEC:                   return scopeEntry.setR(EnvisionDoubleClass.valueOf(double_val - 1.0D));
         //post inc/dec
-        case POST_INC:            scopeEntry.set(EnvisionDoubleClass.valueOf(double_val + 1.0D)); return this;
-        case POST_DEC:            scopeEntry.set(EnvisionDoubleClass.valueOf(double_val - 1.0D)); return this;
+        case POST_INC:              scopeEntry.set(EnvisionDoubleClass.valueOf(double_val + 1.0D)); return this;
+        case POST_DEC:              scopeEntry.set(EnvisionDoubleClass.valueOf(double_val - 1.0D)); return this;
         
         default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
         }

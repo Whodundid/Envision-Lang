@@ -29,9 +29,9 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
     
     public final char char_val;
     
-    //--------------
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     EnvisionChar() { this('\0'); }
     EnvisionChar(char val) {
@@ -49,9 +49,9 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
         char_val = in.char_val;
     }
     
-    //-----------
+    //===========
     // Overrides
-    //-----------
+    //===========
     
     @Override
     public boolean equals(Object obj) {

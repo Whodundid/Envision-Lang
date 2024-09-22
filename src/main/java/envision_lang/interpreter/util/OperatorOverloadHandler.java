@@ -15,62 +15,58 @@ import envision_lang.tokenizer.Operator;
 public class OperatorOverloadHandler {
     
     /**
-     * Performs top-level class instance operator overload handles. If the
-     * base class instance natively supports the given operator overload,
-     * then attempt to directly run the given operator overload function.
+     * Performs top-level class instance operator overload handles. If the base class instance
+     * natively supports the given operator overload, then attempt to directly run the given
+     * operator overload function.
      * 
-     * @param  executor       The interpreter performing the execution
-     * @param  left_scopeName The name of the object who the given
-     *                        'operator' operation is being performed on
-     *                        (if left-hand side a variable)
-     * @param  operator       The operation (operator) that is happening
-     * @param  left_object    The class instance that is going to handle
-     *                        the given 'operator' on the target
-     *                        'right_object'
-     * @param  right_object   The incoming target that the 'left_object' is
-     *                        going to try to process using the given
-     *                        'operator'
-     * 
-     * @return                The resultant object from the 'left_object'
-     *                        handling the operation
-     *                        
-     * @throws Exception      Thrown if anything goes wrong
+     * @param  interpreter      The interpreter performing the execution
+     * @param  handlerScopeName The name of the object who the given 'operator' operation is being
+     *                          performed on (if handlerObject is a variable)
+     * @param  operator         The operation (operator) that is happening
+     * @param  handlerObject    The class instance that is going to handle the given 'operator' on
+     *                          the 'targetObject'
+     * @param  targetObject     The incoming target that the 'handlerObject' is going to try to
+     *                          process using the given 'operator'
+     *                          
+     * @return                  The resultant object from the 'handlerObject' handling the operation
+     *                          
+     * @throws Exception        Thrown if anything goes wrong
      */
     public static EnvisionObject handleOverload(EnvisionInterpreter interpreter,
-                                                String left_scopeName,
+                                                String handlerScopeName,
                                                 Operator operator,
-                                                ClassInstance left_object,
-                                                EnvisionObject right_object)
+                                                ClassInstance handlerObject,
+                                                EnvisionObject targetObject)
     {
         // error on null base objects
-        if (left_object == null) throw new NullVariableError();
+        if (handlerObject == null) throw new NullVariableError();
         
         // if object is a primitive, handle native primitive overloads
-        if (left_object.isPrimitive() || left_object instanceof EnvisionList) {
+        if (handlerObject.isPrimitive() || handlerObject instanceof EnvisionList) {
             // natively support right-handed string concatenations
-            if (operator == Operator.ADD && right_object instanceof EnvisionString) {
-                return EnvisionStringClass.concatenate(interpreter, left_object, right_object);
+            if (operator == Operator.ADD && targetObject instanceof EnvisionString) {
+                return EnvisionStringClass.concatenate(interpreter, handlerObject, targetObject);
             }
             // otherwise, allow the primitive class to try and find a valid Operator:Object handle
             else {
-                return left_object.handleOperatorOverloads(interpreter, left_scopeName, operator, right_object);
+                return handlerObject.handleOperatorOverloads(interpreter, handlerScopeName, operator, targetObject);
             }
         }
         // otherwise, attempt to find a user-defined operator overload function on a user-defined class
         // if the defined object directly supports the given operator, grab the operator function and execute it
-        else if (left_object.supportsOperator(operator)) {
-            EnvisionFunction op_func = getOperatorFunc(left_object, operator, right_object);
+        else if (handlerObject.supportsOperator(operator)) {
+            EnvisionFunction op_func = getOperatorFunc(handlerObject, operator, targetObject);
             //if the operator function is null -- skip this and jump to throwing error
-            if (op_func != null) return op_func.invoke_r(interpreter, right_object);
+            if (op_func != null) return op_func.invoke_r(interpreter, targetObject);
         }
         // natively support '=='
-        else if (operator == Operator.EQUALS) return interpreter.isEqual(left_object, right_object);
+        else if (operator == Operator.EQUALS) return interpreter.isEqual(handlerObject, targetObject);
         // natively support '!='
-        else if (operator == Operator.NOT_EQUALS) return interpreter.isEqual(left_object, right_object).negate();
+        else if (operator == Operator.NOT_EQUALS) return interpreter.isEqual(handlerObject, targetObject).negate();
         
         // otherwise, throw error
-        String errorMsg = (right_object != null) ? right_object.getDatatype() + ":" + right_object : "";
-        throw new UnsupportedOverloadError(left_object, operator, errorMsg);
+        String errorMsg = (targetObject != null) ? targetObject.getDatatype() + ":" + targetObject : "";
+        throw new UnsupportedOverloadError(handlerObject, operator, errorMsg);
     }
     
     //==================

@@ -13,17 +13,17 @@ public class Expr_Unary extends ParsedExpression {
     //========
     
     public final Operator operator;
-    public final ParsedExpression right, left;
+    public final ParsedExpression left, right;
     
     //==============
     // Constructors
     //==============
     
-    public Expr_Unary(Token<?> start, Operator operatorIn, ParsedExpression rightIn, ParsedExpression leftIn) {
+    public Expr_Unary(Token<?> start, Operator operatorIn, ParsedExpression leftIn, ParsedExpression rightIn) {
         super(start);
         operator = operatorIn;
-        right = rightIn;
         left = leftIn;
+        right = rightIn;
     }
     
     //===========
@@ -32,15 +32,15 @@ public class Expr_Unary extends ParsedExpression {
     
     @Override
     public String toString() {
-        String r = (right != null) ? operator.operatorString + right : left + operator.operatorString;
+        String r = (left != null) ? operator.operatorString + "(" + left + ")" : "(" + right + ")" + operator.operatorString;
         return r;
     }
     
     @Override
     public Expr_Unary copy() {
-        ParsedExpression r = (right != null) ? right.copy() : null;
         ParsedExpression l = (left != null) ? left.copy() : null;
-        return new Expr_Unary(getStartingToken(), operator, r, l);
+        ParsedExpression r = (right != null) ? right.copy() : null;
+        return new Expr_Unary(getStartingToken(), operator, l, r);
     }
     
     @Override

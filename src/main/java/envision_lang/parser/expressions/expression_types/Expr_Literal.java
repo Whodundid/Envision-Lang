@@ -14,6 +14,12 @@ public class Expr_Literal extends ParsedExpression {
     public final Token<?> literalToken;
     public final Object value;
     
+    public final boolean isInteger;
+    public final boolean isDouble;
+    public final boolean isBoolean;
+    public final boolean isString;
+    public final boolean isCharacter;
+    
     //==============
     // Constructors
     //==============
@@ -22,6 +28,49 @@ public class Expr_Literal extends ParsedExpression {
         super(start);
         literalToken = start;
         value = valueIn;
+        
+        if (value instanceof String) {
+            isInteger = false;
+            isDouble = false;
+            isBoolean = false;
+            isString = true;
+            isCharacter = false;
+        }
+        else if (value instanceof Character) {
+            isInteger = false;
+            isDouble = false;
+            isBoolean = false;
+            isString = false;
+            isCharacter = true;
+        }
+        else if (value instanceof Long) {
+            isInteger = true;
+            isDouble = false;
+            isBoolean = false;
+            isString = false;
+            isCharacter = false;
+        }
+        else if (value instanceof Double) {
+            isInteger = false;
+            isDouble = true;
+            isBoolean = false;
+            isString = false;
+            isCharacter = false;
+        }
+        else if (value instanceof Boolean) {
+            isInteger = false;
+            isDouble = false;
+            isBoolean = true;
+            isString = false;
+            isCharacter = false;
+        }
+        else {
+            isInteger = false;
+            isDouble = false;
+            isBoolean = false;
+            isString = false;
+            isCharacter = false;
+        }
     }
     
     //===========
@@ -31,8 +80,8 @@ public class Expr_Literal extends ParsedExpression {
     @Override
     public String toString() {
         String str;
-        if (value instanceof String) str = "\"" + value + "\"";
-        else if (value instanceof Character) str = "'" + value + "'";
+        if (isString) str = "\"" + value + "\"";
+        else if (isCharacter) str = "'" + value + "'";
         else str = String.valueOf(value);
         return str;
     }

@@ -285,7 +285,11 @@ class Test_Double extends EnvisionLangTest {
     
     @Test
     void test_getMaxValue() {
-        execute("double max = double.MAX_VALUE");
+        execute("""
+                
+                double max = double.MAX_VALUE
+                
+                """);
         
         var max = get_i("max");
         assertNotNull(max);
@@ -296,7 +300,11 @@ class Test_Double extends EnvisionLangTest {
     
     @Test
     void test_getMinValue() {
-        execute("double min = double.MIN_VALUE");
+        execute("""
+                
+                double min = double.MIN_VALUE
+                
+                """);
         
         var min = get_i("min");
         assertNotNull(min);
@@ -542,7 +550,7 @@ class Test_Double extends EnvisionLangTest {
         
         var val = get_i("val");
         assertNotNull(val);
-        assertEquals(-5.0, val);
+        assertEquals(5.0, val);
     }
     
     //=========================================================================================
@@ -557,7 +565,7 @@ class Test_Double extends EnvisionLangTest {
         
         var val = get_i("val");
         assertNotNull(val);
-        assertEquals(-5.0, val);
+        assertEquals(5.0, val);
     }
     
     //=========================================================================================
@@ -572,7 +580,7 @@ class Test_Double extends EnvisionLangTest {
         
         var val = get_i("val");
         assertNotNull(val);
-        assertEquals(-5.0, val);
+        assertEquals(5.0, val);
     }
     
     //=========================================================================================
@@ -587,7 +595,287 @@ class Test_Double extends EnvisionLangTest {
         
         var val = get_i("val");
         assertNotNull(val);
+        assertEquals(5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_pmpmp_d() {
+        execute("""
+                
+                double val = +-+-+5.0
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
+        assertEquals(5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_pmpmp_i() {
+        execute("""
+                
+                double val = +-+-+5
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
+        assertEquals(5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_mpmpm_d() {
+        execute("""
+                
+                double val = -+-+-5.0
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
         assertEquals(-5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_mpmpm_i() {
+        execute("""
+                
+                double val = -+-+-5
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
+        assertEquals(-5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_pmpmpm_d() {
+        execute("""
+                
+                double val = +-+-+-5.0
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
+        assertEquals(-5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_multiple_unary_pmpmpm_i() {
+        execute("""
+                
+                double val = +-+-+-5
+                
+                """);
+        
+        var val = get_i("val");
+        assertNotNull(val);
+        assertEquals(-5.0, val);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_pre_i() {
+        execute("""
+                
+                double val = 10
+                double x = ++val
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.0, val);
+        assertEquals(11.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_pre_d() {
+        execute("""
+                
+                double val = 10.0
+                double x = ++val
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.0, val);
+        assertEquals(11.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_post_i() {
+        execute("""
+                
+                double val = 10
+                double x = val++
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.0, val);
+        assertEquals(10.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_post_d() {
+        execute("""
+                
+                double val = 10.0
+                double x = val++
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.0, val);
+        assertEquals(10.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_decrement_pre_i() {
+        execute("""
+                
+                double val = 10
+                double x = --val
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(9.0, val);
+        assertEquals(9.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_decrement_pre_d() {
+        execute("""
+                
+                double val = 10.0
+                double x = --val
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(9.0, val);
+        assertEquals(9.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_decrement_post_i() {
+        execute("""
+                
+                double val = 10
+                double x = val--
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(9.0, val);
+        assertEquals(10.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_decrement_post_d() {
+        execute("""
+                
+                double val = 10.0
+                double x = val--
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(9.0, val);
+        assertEquals(10.0, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_pre_decimal() {
+        execute("""
+                
+                double val = 10.5
+                double x = ++val
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.5, val);
+        assertEquals(11.5, x);
+    }
+    
+    //=========================================================================================
+    
+    @Test
+    void test_increment_post_decimal() {
+        execute("""
+                
+                double val = 10.5
+                double x = val++
+                
+                """);
+        
+        var val = get_i("val");
+        var x = get_i("x");
+        assertNotNull(val);
+        assertNotNull(x);
+        assertEquals(11.5, val);
+        assertEquals(10.5, x);
     }
     
 }

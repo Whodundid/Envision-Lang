@@ -103,7 +103,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
     public boolean supportsOperator(Operator op) {
         return switch (op) {
         // unary
-        case UNARY_NEGATE, INC, DEC, POST_INC, POST_DEC -> true;
+        case UNARY_ADD, UNARY_SUB, PRE_INC, PRE_DEC, POST_INC, POST_DEC -> true;
         // relational
         case EQUALS, NOT_EQUALS, GT, LT, GTE, LTE -> true;
         // arithmetic
@@ -141,46 +141,47 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
         
         // check through all potentially supported operators
         switch (op) {
-        // negate
-        case UNARY_NEGATE:    return negate();
+        // unary
+        case UNARY_ADD:             return EnvisionIntClass.valueOf(this);
+        case UNARY_SUB:             return negate();
         // relational operators
-        case NOT_EQUALS:        return EnvisionBooleanClass.valueOf(int_val != numIn.intVal_i());
-        case GT:                return EnvisionBooleanClass.valueOf(int_val > numIn.intVal_i());
-        case LT:                return EnvisionBooleanClass.valueOf(int_val < numIn.intVal_i());
-        case GTE:                return EnvisionBooleanClass.valueOf(int_val >= numIn.intVal_i());
-        case LTE:                return EnvisionBooleanClass.valueOf(int_val <= numIn.intVal_i());
+        case NOT_EQUALS:            return EnvisionBooleanClass.valueOf(int_val != numIn.intVal_i());
+        case GT:                    return EnvisionBooleanClass.valueOf(int_val > numIn.intVal_i());
+        case LT:                    return EnvisionBooleanClass.valueOf(int_val < numIn.intVal_i());
+        case GTE:                   return EnvisionBooleanClass.valueOf(int_val >= numIn.intVal_i());
+        case LTE:                   return EnvisionBooleanClass.valueOf(int_val <= numIn.intVal_i());
         // arithmetic operators
-        case ADD:                return EnvisionIntClass.valueOf(int_val + numIn.intVal_i());
-        case SUB:                return EnvisionIntClass.valueOf(int_val - numIn.intVal_i());
-        case MUL:                return EnvisionIntClass.valueOf(int_val * numIn.intVal_i());
-        case DIV:                div0_l(int_val, numIn.intVal_i()); //check for div by zero errors
-                                return EnvisionIntClass.valueOf(int_val / numIn.intVal_i());
-        case MOD:                return EnvisionIntClass.valueOf(int_val % numIn.intVal_i());
+        case ADD:                   return EnvisionIntClass.valueOf(int_val + numIn.intVal_i());
+        case SUB:                   return EnvisionIntClass.valueOf(int_val - numIn.intVal_i());
+        case MUL:                   return EnvisionIntClass.valueOf(int_val * numIn.intVal_i());
+        case DIV:                   div0_l(int_val, numIn.intVal_i()); //check for div by zero errors
+                                    return EnvisionIntClass.valueOf(int_val / numIn.intVal_i());
+        case MOD:                   return EnvisionIntClass.valueOf(int_val % numIn.intVal_i());
         // binary operators
-        case SHL:                return EnvisionIntClass.valueOf(int_val << numIn.intVal_i());
-        case SHR:                return EnvisionIntClass.valueOf(int_val >> numIn.intVal_i());
-        case SHR_AR:            return EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i());
-        case BW_AND:            return EnvisionIntClass.valueOf(int_val & numIn.intVal_i());
-        case BW_OR:                return EnvisionIntClass.valueOf(int_val | numIn.intVal_i());
-        case BW_XOR:            return EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i());
+        case SHL:                   return EnvisionIntClass.valueOf(int_val << numIn.intVal_i());
+        case SHR:                   return EnvisionIntClass.valueOf(int_val >> numIn.intVal_i());
+        case SHR_AR:                return EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i());
+        case BW_AND:                return EnvisionIntClass.valueOf(int_val & numIn.intVal_i());
+        case BW_OR:                 return EnvisionIntClass.valueOf(int_val | numIn.intVal_i());
+        case BW_XOR:                return EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i());
         // assignment operators
-        case ADD_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + numIn.intVal_i()));
-        case SUB_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - numIn.intVal_i()));
-        case MUL_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val * numIn.intVal_i()));
-        case DIV_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val / numIn.intVal_i()));
-        case MOD_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val % numIn.intVal_i()));
-        case SHL_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val << numIn.intVal_i()));
-        case SHR_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >> numIn.intVal_i()));
-        case SHR_AR_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i()));
-        case BW_AND_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val & numIn.intVal_i()));
-        case BW_OR_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val | numIn.intVal_i()));
-        case BW_XOR_ASSIGN:        return scopeEntry.setR(EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i()));
+        case ADD_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + numIn.intVal_i()));
+        case SUB_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - numIn.intVal_i()));
+        case MUL_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val * numIn.intVal_i()));
+        case DIV_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val / numIn.intVal_i()));
+        case MOD_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val % numIn.intVal_i()));
+        case SHL_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val << numIn.intVal_i()));
+        case SHR_ASSIGN:            return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >> numIn.intVal_i()));
+        case SHR_AR_ASSIGN:         return scopeEntry.setR(EnvisionIntClass.valueOf(int_val >>> numIn.intVal_i()));
+        case BW_AND_ASSIGN:         return scopeEntry.setR(EnvisionIntClass.valueOf(int_val & numIn.intVal_i()));
+        case BW_OR_ASSIGN:          return scopeEntry.setR(EnvisionIntClass.valueOf(int_val | numIn.intVal_i()));
+        case BW_XOR_ASSIGN:         return scopeEntry.setR(EnvisionIntClass.valueOf(int_val ^ numIn.intVal_i()));
         // inc/dec
-        case INC:                return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + 1L));
-        case DEC:                return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - 1L));
+        case PRE_INC:               return scopeEntry.setR(EnvisionIntClass.valueOf(int_val + 1L));
+        case PRE_DEC:               return scopeEntry.setR(EnvisionIntClass.valueOf(int_val - 1L));
         // post inc/dec
-        case POST_INC:             scopeEntry.set(EnvisionIntClass.valueOf(int_val + 1L)); return this;
-        case POST_DEC:             scopeEntry.set(EnvisionIntClass.valueOf(int_val - 1L)); return this;
+        case POST_INC:              scopeEntry.set(EnvisionIntClass.valueOf(int_val + 1L)); return this;
+        case POST_DEC:              scopeEntry.set(EnvisionIntClass.valueOf(int_val - 1L)); return this;
         
         default: return super.handleOperatorOverloads(interpreter, scopeName, op, obj);
         }

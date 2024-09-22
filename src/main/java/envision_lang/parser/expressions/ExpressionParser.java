@@ -112,7 +112,7 @@ public class ExpressionParser extends ParserHead {
             e = new Expr_Binary(e, operator, right);
         }
         
-        //typeof expressions
+        // typeof expressions
         if (check(LOGICAL_NEGATE) && checkNext(TYPEOF)) {
             consume(LOGICAL_NEGATE, "Expected a '!' here!"); //consume the '!'
             consume(TYPEOF, "Expected a 'typeof' here!"); //consume the 'typeof'
@@ -168,34 +168,87 @@ public class ExpressionParser extends ParserHead {
     //-----------------------------------------------------------------------------------------------------
     
     public static ParsedExpression unary() {
-        if (check(LOGICAL_NEGATE, SUB, DEC, INC) && checkNextNonTerminator(IDENTIFIER, TYPEOF, INT_LITERAL, DOUBLE_LITERAL/*TRUE, FALSE*/)) {
-            Operator operator = current().asOperator();
-            match(LOGICAL_NEGATE, SUB, DEC, INC);
+        ParsedExpression createdUnaryExpression = null;
+        Operator operator;
+        
+        // checking for (!_) boolean unary expressions
+        if (match(LOGICAL_NEGATE)) {
+            // grab the start of the unary expression
+            Token<?> start = previous();
+            operator = start.asOperator();
+            ParsedExpression right = unary();
             
-            if (operator == SUB || operator == DEC || operator == INC) {
-                String opName;
-                if (operator == SUB) opName = "negation";
-                else if (operator == DEC) opName = "decrement";
-                else opName = "increment";
-                
-                errorPreviousIf(!check(IDENTIFIER, INT_LITERAL, DOUBLE_LITERAL), "Cannot perform " + opName + " on anything other than a variable!");
+            // check for operator and type compatibility
+            ParsedExpression nested = right;
+            while (nested instanceof Expr_Unary unary) {
+                if (unary.left != null) {
+                    nested = unary.left;
+                }
             }
             
-            ParsedExpression right = unary();
-            ParsedExpression e = new Expr_Unary(previousNonTerminator(), operator, right, null);
-            return e;
-        }
-        
-        ParsedExpression e = range();
-        
-        if (match(DEC, INC)) {
-            errorIf(!(e instanceof Expr_Var), "Cannot perform a unary operation on anything other than a variable!");
+            boolean isNotVariable = !(nested instanceof Expr_Var);
+            boolean isNotFunction = !(nested instanceof Expr_FunctionCall);
+            boolean isNotBooleanLiteral = !(nested instanceof Expr_Literal literal && literal.isBoolean);
+            String errorReason = "The operator ! is incompatible for the following value: " + right;
+            errorIf((isNotVariable && isNotFunction && isNotBooleanLiteral), errorReason);
             
-            Operator operator = previousNonTerminator().asOperator();
-            e = new Expr_Unary(previousNonTerminator(), operator, null, e);
+            createdUnaryExpression = new Expr_Unary(start, operator, right, null);
+        }
+        // checking for (+_, -_) unary arithmetic sign expressions
+        else if (match(ADD, SUB)) {
+            // grab the start of the unary expression
+            Token<?> start = previous();
+            operator = start.asOperator().convertToUnary();
+            ParsedExpression right = unary();
+            
+            // check for operator and type compatibility
+            ParsedExpression nested = right;
+            while (nested instanceof Expr_Unary unary) {
+                if (unary.left != null) {
+                    nested = unary.left;
+                }
+            }
+            
+            boolean isNotVariable = !(nested instanceof Expr_Var);
+            boolean isNotFunction = !(nested instanceof Expr_FunctionCall);
+            boolean isNotLiteral = !(nested instanceof Expr_Literal);
+            boolean isNotNumberLiteral = !(nested instanceof Expr_Literal literal && (literal.isInteger || literal.isDouble));
+            String errorReason = "The operator " + operator.operatorString + " is incompatible for the following expression: " + nested;
+            errorIf(isNotVariable && isNotFunction && isNotLiteral && isNotNumberLiteral, errorReason);
+            
+            createdUnaryExpression = new Expr_Unary(start, operator, right, null);
+        }
+        // checking for (++_, --_) PRE-FIX operations
+        else if (match(PRE_INC, PRE_DEC) && check(IDENTIFIER)) {
+            // grab the start of the unary expression
+            Token<?> start = previous();
+            operator = start.asOperator();
+            ParsedExpression right = unary();
+            
+            String opName = (operator == PRE_DEC) ? "decrement" : "increment";
+            String errorReason = "Cannot perform " + opName + " on anything other than a variable!";
+            errorPreviousIf(!(right instanceof Expr_Var), errorReason);
+            
+            createdUnaryExpression = new Expr_Unary(start, operator, right, null);
         }
         
-        return e;
+        // if we've matched a unary expression already
+        if (createdUnaryExpression != null) return createdUnaryExpression;
+        
+        // otherwise, parse for a primary expression to latch onto (this could be wrong)
+        ParsedExpression primaryExpression = range();
+        
+        // checking for (_++, _--) POST-FIX operations
+        if (match(PRE_DEC, PRE_INC)) {
+            errorIf(!(primaryExpression instanceof Expr_Var), "Cannot perform a unary operation on anything other than a variable!");
+            
+            operator = previous().asOperator().makePost();
+            createdUnaryExpression = new Expr_Unary(previousNonTerminator(), operator, null, primaryExpression);
+            
+            return createdUnaryExpression;
+        }
+        
+        return primaryExpression;
     }
     
     //-----------------------------------------------------------------------------------------------------
@@ -221,24 +274,24 @@ public class ExpressionParser extends ParserHead {
         ParsedExpression e = primary();
         
         while (true) {
-            //check if standard function call
+            // check if standard function call
             if (check(PAREN_L)) {
                 e = new Expr_FunctionCall(e, collectFuncArgs());
             }
-            //check if accessing array element
+            // check if accessing array element
             else if (match(BRACKET_L)) {
                 ParsedExpression index = parseExpression();
                 consume(BRACKET_R, "Expected ']' after list index!");
                 e = new Expr_ListIndex(e, index);
             }
-            //check if accessing member object
+            // check if accessing member object
             else if (match(PERIOD)) {
                 //grab the name of the member being accessed
                 Token<?> name = consume("Expected property name after '.'!", IDENTIFIER, GET, SET);
                 
-                //check if member function call
+                // check if member function call
                 if (check(PAREN_L)) e = new Expr_FunctionCall(e, name, collectFuncArgs());
-                //otherwise, create a member 'get' call
+                // otherwise, create a member 'get' call
                 else e = new Expr_Get(e, name);
             }
             else break;
@@ -250,7 +303,7 @@ public class ExpressionParser extends ParserHead {
     public static EList<ParsedExpression> collectFuncArgs() {
         EList<ParsedExpression> args = new EArrayList<>();
         
-        //arguments
+        // arguments
         consume(PAREN_L, "Expected '(' to begin arguments!");
         if (!check(PAREN_R)) {
             do {
@@ -260,7 +313,7 @@ public class ExpressionParser extends ParserHead {
             }
             while (match(COMMA));
         }
-        //conclude args/params
+        // conclude args/params
         consume(PAREN_R, "Expected ')' after arguments!");
         
         return args;
@@ -384,7 +437,7 @@ public class ExpressionParser extends ParserHead {
             // This is duct tape at best
             if (e instanceof Expr_Compound) return e;
             
-            //if there was no lambda production, return empty
+            // if there was no lambda production, return empty
             if (e == null) return new Expr_Compound(current());
             
             return e;
@@ -472,14 +525,14 @@ public class ExpressionParser extends ParserHead {
             Token<?> type = previousNonTerminator();
             EList<Token<?>> params = null;
             
-            //check if primitive type
+            // check if primitive type
             if (type.isDatatype()) return new Expr_Primitive(type);
             
-            //check for parameters
+            // check for parameters
             if (match(LT)) {
                 params = new EArrayList<>();
                 while (!atEnd() && !match(GT)) {
-                    //check if valid parameter
+                    // check if valid parameter
                     if (check(IDENTIFIER, TERNARY) || checkType(DATATYPE)) {
                         params.add(getAdvance());
                     }

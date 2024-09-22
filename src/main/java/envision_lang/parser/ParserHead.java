@@ -91,22 +91,22 @@ public abstract class ParserHead {
             System.out.println("HEAD: " + current() + " : " + current().getLineNum() + " : " + getCurrentParsingIndex());            
         }
         
-        //break out if the end of the tokens has been reached
+        // break out if the end of the tokens has been reached
         if (atEnd()) return null;
         
-        //prevent invalid statement beginnings
+        // prevent invalid statement beginnings
         errorIf(check(TRUE, FALSE), "Invalid declaration start!");
         //errorIf(check(OPERATOR_), "Invalid declaration start!");
         errorIf(check(AS, TO, BY, CATCH, FINALLY), "Invalid declaration start!");
         errorIf(checkType(ARITHMETIC) && !checkType(VISIBILITY_MODIFIER), "Invalid declaration start!");
         //errorIf(checkType(SEPARATOR), "Invalid declaration start!");
-        errorIf(checkType(ASSIGNMENT) && !check(INC, DEC), "Invalid declaration start!");
+        errorIf(checkType(ASSIGNMENT) && !check(PRE_INC, PRE_DEC), "Invalid declaration start!");
         
         
         
-        //prevent invalid statement declarations inside of methods
-        //these restrictions are in place due to the fact that the resulting statement declaration
-        //would simply not make sense being declared inside of a method
+        // prevent invalid statement declarations inside of methods
+        // these restrictions are in place due to the fact that the resulting statement declaration
+        // would simply not make sense being declared inside of a method
         if (inMethod()) {
             errorIf(checkType(VISIBILITY_MODIFIER), "Statements with visibility modifiers cannot be defined inside of a method!");
             //errorIf(check(CLASS), "Classes cannot be declared inside of methods!");
@@ -127,20 +127,20 @@ public abstract class ParserHead {
         //determine next path
         switch (dec.getDeclarationType()) {
         
-        case EXPR:                parsedStatement = expressionStatement(dec);                             break;
-        case CLASS_DEF:         parsedStatement = PS_Class.classDeclaration(dec);                         break;
-//        case ENUM_DEF:             parsedStatement = PS_Enum.enumDeclaration(dec);                         break;
-        case FUNC_DEF:             parsedStatement = PS_Function.functionDeclaration(false, false, dec);     break;
-        case INIT_DEF:            parsedStatement = PS_Function.functionDeclaration(true, false, dec);     break;
-        case OPERATOR_DEF:      parsedStatement = PS_Function.functionDeclaration(false, true, dec);     break;
-//        case GETSET:             parsedStatement = PS_GetSet.getSet(dec);                                 break;
-//        case INTERFACE_DEF:     parsedStatement = PS_Interface.interfaceDeclaration(dec);                 break;
-        case VAR_DEF:             parsedStatement = PS_VarDef.variableDeclaration(dec);                     break;
+        case EXPR:                  parsedStatement = expressionStatement(dec);                             break;
+        case CLASS_DEF:             parsedStatement = PS_Class.classDeclaration(dec);                       break;
+//        case ENUM_DEF:              parsedStatement = PS_Enum.enumDeclaration(dec);                         break;
+        case FUNC_DEF:              parsedStatement = PS_Function.functionDeclaration(false, false, dec);   break;
+        case INIT_DEF:              parsedStatement = PS_Function.functionDeclaration(true, false, dec);    break;
+        case OPERATOR_DEF:          parsedStatement = PS_Function.functionDeclaration(false, true, dec);    break;
+//        case GETSET:                parsedStatement = PS_GetSet.getSet(dec);                                break;
+//        case INTERFACE_DEF:         parsedStatement = PS_Interface.interfaceDeclaration(dec);               break;
+        case VAR_DEF:               parsedStatement = PS_VarDef.variableDeclaration(dec);                   break;
         
         //if the code has reached this point, it means a statement declaration has not been found
         //and so the parser will now attempt to find a standard statement beginning.
         case OTHER:
-        default:                 parsedStatement = parseStatement(dec);
+        default:                    parsedStatement = parseStatement(dec);
         }
         
         //consume("Expected either a ';' or a new line to complete statement!", EOF, NEWLINE, SEMICOLON);
@@ -179,7 +179,7 @@ public abstract class ParserHead {
         if (check(BREAK, BREAKIF))        return PS_LoopControl.handleBreak(dec);
         if (check(DO, WHILE))            return PS_While.whileStatement(dec);
         
-        //if none of the statement beginnings then try to parse the token into an expression
+        // if none of the statement beginnings then try to parse the token into an expression
         return expressionStatement(dec);
     }
     
@@ -228,12 +228,12 @@ public abstract class ParserHead {
     public static Token<?>[] getParameters(Token typeIn) {
         EList<Token<?>> params = EList.newList();
         
-        //check type
+        // check type
         if (typeIn != null) {
             Primitives datatype = Primitives.getPrimitiveType(typeIn);
             
             if (datatype != null) {
-                //check if base type can even have parameters
+                // check if base type can even have parameters
                 if (!Primitives.canBeParameterized(datatype)) {
                     error("This datatype cannot be natively parameterized!");
                 }
@@ -243,7 +243,7 @@ public abstract class ParserHead {
         consume(LT, "Expected '<' to start parameter types!");
         
         if (!check(GT)) {
-            //grab all parameters
+            // grab all parameters
             do {
                 Token<?> parameter = current();
                 errorIf(params.contains(parameter), "Duplicate parameter in type!");
