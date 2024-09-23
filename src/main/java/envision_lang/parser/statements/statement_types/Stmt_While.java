@@ -33,8 +33,7 @@ public class Stmt_While extends ParsedStatement {
     @Override
     public String toString() {
         String n = (isDo) ? "Do While" : "While";
-        String b = (body != null) ? " " + body + " " : "";
-        return n + " (" + condition + ") {" + b + "}";
+        return n + " (" + condition + ")" + body;
     }
     
     @Override

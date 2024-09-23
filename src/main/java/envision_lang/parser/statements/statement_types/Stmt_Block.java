@@ -32,13 +32,15 @@ public class Stmt_Block extends ParsedStatement {
     
     @Override
     public String toString() {
-        String b = "BLOCK{";
-        if (statements.isNotEmpty()) { b += " "; }
+        String b = "{";
+        if (statements.isNotEmpty()) { b += "\n"; }
         for (int i = 0; i < statements.size(); i++) {
             ParsedStatement s = statements.get(i);
-            b += s + ((i < statements.size() - 1) ? "; " : ";");
+            b += "\t" + s + ";\n";
+            //b += "\t" + s + ((i < statements.size() - 1) ? "; " : ";");
         }
-        return b + ((statements.isEmpty()) ? "" : " ") + "}";
+        return b + "}";
+        //return b + ((statements.isEmpty()) ? "" : " ") + "}";
     }
     
     @Override

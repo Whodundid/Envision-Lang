@@ -306,7 +306,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
             errorObject = error;
             //such professional error handler
             System.out.println("(" + startingFile.getSystemFile() + ") error at: " + frames.getFirst());
-            System.out.println(error);
+            printToConsoleReceiver(error.toString(), true);
             printStackFrames();
             error.printStackTrace();
             //throw error;
@@ -577,7 +577,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
         }
         else {
             if (newLine) r.onEnvisionPrintln(toPrint);
-            else System.out.print(toPrint);
+            else r.onEnvisionPrint(toPrint);
         }
     }
     

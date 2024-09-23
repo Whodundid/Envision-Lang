@@ -19,6 +19,7 @@ import envision_lang.lang.language_errors.EnvisionLangError;
 import envision_lang.lang.language_errors.error_types.ArithmeticError;
 import envision_lang.lang.language_errors.error_types.FinalVarReassignmentError;
 import envision_lang.lang.language_errors.error_types.InvalidTargetError;
+import envision_lang.lang.language_errors.error_types.UndefinedValueError;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.packages.EnvisionLangPackage;
@@ -82,6 +83,11 @@ public class IE_Assign extends AbstractInterpreterExecutor {
         // otherwise, handle default assignment
         if (op == Operator.ASSIGN) {
             return assign(interpreter, name, obj, value);
+        }
+        // if obj is null and we aren't performing a standard
+        // assignment, then this is going to fail regardless
+        else if (obj == null) {
+            throw new UndefinedValueError(name);
         }
         
         // error if this point is reached
