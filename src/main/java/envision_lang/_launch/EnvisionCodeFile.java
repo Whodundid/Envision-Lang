@@ -16,7 +16,7 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.parser.EnvisionLangParser;
 import envision_lang.parser.statements.ParsedStatement;
 import envision_lang.tokenizer.Token;
-import envision_lang.tokenizer.Tokenizer;
+import envision_lang.tokenizer.EnvisionTokenizer;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
 import eutil.file.EFileUtil;
@@ -61,7 +61,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     /** The Interpreter associated with this specific code file. */
     private IScope codeFileScope = new Scope();
     /** The Tokenizer associated with this specific code file. */
-    private Tokenizer tokenizer;
+    private EnvisionTokenizer tokenizer;
     /** The paired WorkingDirectory for this CodeFile. */
     private WorkingDirectory workingDir;
     
@@ -146,7 +146,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     
     public void tokenizeFile(boolean enableBlockStatements) throws Exception {
         if (tokenizer == null) {
-            tokenizer = new Tokenizer(this);
+            tokenizer = new EnvisionTokenizer(this);
             tokenizer.setEnableBlockStatementParsing(enableBlockStatements);
         }
         

@@ -22,22 +22,32 @@ public class Token<TYPE> {
     private int lineIndex;
     /** The index of this token on the line it was originally parsed from. */
     private int lineTokenIndex;
+    /** The character index of this token's starting character within the document. */
+    private int characterIndex;
+    /** The index of this token in the document. */
+    private int tokenIndex;
     /** True if the keyword representing this token is a reservedWord instead of an Operator. */
     private boolean isReservedWord;
     
     //---------------------------------------------------------------------------
     
     public Token(IKeyword k, String lexemeIn, TYPE literalIn, int lineIn) {
-        this(k, lexemeIn, literalIn, lineIn, -1, -1);
+        this(k, lexemeIn, literalIn, lineIn, -1, -1, -1, -1);
     }
     
     public Token(IKeyword k, String lexemeIn, TYPE literalIn, int lineIn, int lineIndexIn, int lineTokenIndexIn) {
+        this(k, lexemeIn, literalIn, lineIn, lineIndexIn, lineTokenIndexIn, -1, -1);
+    }
+    
+    public Token(IKeyword k, String lexemeIn, TYPE literalIn, int lineIn, int lineIndexIn, int lineTokenIndexIn, int characterIndexIn, int tokenIndexIn) {
         keyword = k;
         lexeme = lexemeIn;
         literal = literalIn;
         line = lineIn;
         lineIndex = lineIndexIn;
         lineTokenIndex = lineTokenIndexIn;
+        characterIndex = characterIndexIn;
+        tokenIndex = tokenIndexIn;
         isReservedWord = k.isReservedWord();
     }
     
@@ -50,11 +60,15 @@ public class Token<TYPE> {
             line = in.line;
             lineIndex = in.lineIndex;
             lineTokenIndex = in.lineTokenIndex;
+            characterIndex = in.characterIndex;
+            tokenIndex = in.tokenIndex;
         }
         else {
             line = -1;
             lineIndex = -1;
             lineTokenIndex = -1;
+            characterIndex = -1;
+            tokenIndex = -1;
         }
         
         isReservedWord = keyword != null && keyword.isReservedWord();
@@ -70,8 +84,8 @@ public class Token<TYPE> {
     
     @Override
     public String toString() {
-        if (isEOF())                 return "EOF";
-        else if (isNewLine())         return "\\n";
+        if (isEOF())                return "EOF";
+        else if (isNewLine())       return "\\n";
         else if (isReference())     return "'" + lexeme + "'";
         
         return lexeme;
@@ -99,9 +113,16 @@ public class Token<TYPE> {
     public String getLexeme() { return lexeme; }
     public TYPE getLiteral() { return literal; }
     public IKeyword getKeyword() { return keyword; }
+    /** @return The line number that this token was found on. */
     public int getLineNum() { return line; }
+    /** @return The index (position) of where this token is on the line (0 is the first token on the line). */
     public int getLineIndex() { return lineIndex; }
+    /** @return The index of this token on the line it was originally parsed from. */
     public int getLineTokenIndex() { return lineTokenIndex; }
+    /** @return The character index of this token's starting character within the document. */
+    public int getCharacterIndex() { return characterIndex; }
+    /** @return The index of this token in the document. */
+    public int getTokenIndex() { return tokenIndex; }
     
     public Primitives getPrimitiveDataType() { return Primitives.getPrimitiveType(this); }
     public Operator asOperator() { return keyword.asOperator(); }
@@ -121,12 +142,20 @@ public class Token<TYPE> {
         return new Token<>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn, lineIndex, lineTokenIndex);
     }
     
+    public static Token<Void> EOF(int lineIn, int lineIndex, int lineTokenIndex, int characterIndex, int tokenIndex) {
+        return new Token<>(ReservedWord.EOF, ReservedWord.EOF.typeString, null, lineIn, lineIndex, lineTokenIndex, characterIndex, tokenIndex);
+    }
+    
     public static Token<Void> newLine(int lineIn) {
         return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn);
     }
     
     public static Token<Void> newLine(int lineIn, int lineIndex, int lineTokenIndex) {
         return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn, lineIndex, lineTokenIndex);
+    }
+    
+    public static Token<Void> newLine(int lineIn, int lineIndex, int lineTokenIndex, int characterIndex, int tokenIndex) {
+        return new Token<>(ReservedWord.NEWLINE, ReservedWord.NEWLINE.typeString, null, lineIn, lineIndex, lineTokenIndex, characterIndex, tokenIndex);
     }
     
     public static Token<String> create(String lexemeIn, int lineIn) {

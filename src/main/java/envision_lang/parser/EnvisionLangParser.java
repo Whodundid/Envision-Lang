@@ -10,7 +10,7 @@ import envision_lang.parser.statements.statement_types.Stmt_Expression;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.KeywordType;
 import envision_lang.tokenizer.Token;
-import envision_lang.tokenizer.Tokenizer;
+import envision_lang.tokenizer.EnvisionTokenizer;
 import eutil.datatypes.EArrayList;
 import eutil.datatypes.boxes.BoxList;
 import eutil.datatypes.util.EList;
@@ -180,7 +180,7 @@ public final class EnvisionLangParser {
      * @throws Exception In the event a statement is invalid or incomplete
      */
     public static ParsedStatement parseStatement(String lineIn) {
-        Tokenizer t = new Tokenizer(lineIn);
+        EnvisionTokenizer t = new EnvisionTokenizer(lineIn);
         EnvisionLangParser p = new EnvisionLangParser();
         p.tokenLines = t.getLineTokens();
         p.tokens = t.getTokens();
@@ -189,7 +189,7 @@ public final class EnvisionLangParser {
     }
     
     public static ParsedExpression parseExpression(String lineIn) {
-        Tokenizer t = new Tokenizer(lineIn);
+        EnvisionTokenizer t = new EnvisionTokenizer(lineIn);
         EnvisionLangParser p = new EnvisionLangParser();
         p.tokenLines = t.getLineTokens();
         p.tokens = t.getTokens();

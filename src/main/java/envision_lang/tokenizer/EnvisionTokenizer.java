@@ -14,7 +14,7 @@ import eutil.datatypes.util.EList;
 import eutil.debug.Broken;
 import eutil.file.LineReader;
 
-public class Tokenizer {
+public class EnvisionTokenizer {
     
     //========
     // Fields
@@ -36,24 +36,19 @@ public class Tokenizer {
     private boolean inString = false;
     /** Used to keep track of the current line internally. */
     private int lineNum = 1;
-    /**
-     * Used to keep track of the exact line index for where this token came
-     * from.
-     */
+    /** Used to keep track of the exact line index for where this token came from. */
     private int lineIndex = 0;
-    /**
-     * Used to keep track of the index of this token on the line it was parsed
-     * from.
-     */
+    /** Used to keep track of the index of this token on the line it was parsed from. */
     private int lineTokenIndex = 0;
+    /** Keeps track of the current index of this token in the over-arching document it was parsed from. */
+    private int tokenIndex = 0;
     /** The actual line actively being parsed. */
     private String currentLineSource;
-    /** The 'start' position for where a token begins. */
+    /** The current index in this document. */
+    private int documentIndex = 0;
+    /** The 'start' character index for where a token begins. */
     private int start = 0;
-    /**
-     * The 'current' position on the line that is being tracked to parse a
-     * token.
-     */
+    /** The 'current' chracter index on the line that is being tracked to parse a token.*/
     private int cur = 0;
     
     /** The (active) set of tokens currently being parsed for a given line. */
@@ -66,23 +61,23 @@ public class Tokenizer {
     // Constructors
     //==============
     
-    public Tokenizer() {
+    public EnvisionTokenizer() {
         // do nothing
     }
     
-    public Tokenizer(EnvisionCodeFile codeFileIn) {
+    public EnvisionTokenizer(EnvisionCodeFile codeFileIn) {
         theFile = codeFileIn.getSystemFile();
     }
     
-    public Tokenizer(File file) {
+    public EnvisionTokenizer(File file) {
         theFile = file;
     }
     
-    public Tokenizer(String line) {
+    public EnvisionTokenizer(String line) {
         tokenizeLine(line);
     }
     
-    public Tokenizer(Iterable<String> lines) {
+    public EnvisionTokenizer(Iterable<String> lines) {
         tokenizeLines(lines);
     }
 
@@ -91,24 +86,24 @@ public class Tokenizer {
     // Static Methods
     //================
     
-    public static Tokenizer tokenize(EnvisionCodeFile file) throws IOException {
-        var t = new Tokenizer(file);
+    public static EnvisionTokenizer tokenize(EnvisionCodeFile file) throws IOException {
+        var t = new EnvisionTokenizer(file);
         t.tokenizeFile();
         return t;
     }
     
-    public static Tokenizer tokenize(File file) throws IOException {
-        var t = new Tokenizer(file);
+    public static EnvisionTokenizer tokenize(File file) throws IOException {
+        var t = new EnvisionTokenizer(file);
         t.tokenizeFile();
         return t;
     }
     
-    public static Tokenizer tokenize(String line) {
-        return new Tokenizer(line);
+    public static EnvisionTokenizer tokenize(String line) {
+        return new EnvisionTokenizer(line);
     }
     
-    public static Tokenizer tokenize(Iterable<String> lines) {
-        return new Tokenizer(lines);
+    public static EnvisionTokenizer tokenize(Iterable<String> lines) {
+        return new EnvisionTokenizer(lines);
     }
     
     //==================
@@ -120,12 +115,15 @@ public class Tokenizer {
      */
     private EList<Token<?>> tokenizeLine(String line, int lineNum) {
         parsedLineTokens = EList.newList();
-        currentLineSource = line.trim();
+        currentLineSource = line;
         cur = 0;
         lineIndex = lineNum;
         
         // check for basic comment
-        if (currentLineSource.startsWith(COMMENT_SINGLE.operatorString)) return parsedLineTokens;
+        if (currentLineSource.startsWith(COMMENT_SINGLE.operatorString)) {
+            documentIndex += currentLineSource.length() + 1;
+            return parsedLineTokens;
+        }
         
         while (!atEnd()) {
             start = cur;
@@ -145,6 +143,7 @@ public class Tokenizer {
             while (!atEnd()) {
                 if (match('*')) inComment = !match('/');
                 if (!atEnd()) advance();
+                documentIndex++;
             }
         }
         
@@ -248,7 +247,7 @@ public class Tokenizer {
             addToken((match('=')) ? MUL_ASSIGN : MUL);
             break;                    // '*=', '*'
         case '/':
-            if (match('/')) break;                                                    // '//'
+            if (match('/')) { documentIndex += 2; break; }                             // '//'
             else if (match('*')) inComment = true;                                    // '/*'
             else if (match('=')) addToken(DIV_ASSIGN);                                // '/='
             else addToken(DIV);                                                        // '/'
@@ -282,10 +281,12 @@ public class Tokenizer {
             endCheck = atEnd();
             next = peek();
             whiteSpaceCheck = isWhiteSpace(next);
+            documentIndex++;
         }
         
         // advance start past the (now) consumed whitespace
         start = cur++;
+        documentIndex++;
         
         return next;
     }
@@ -520,7 +521,9 @@ public class Tokenizer {
     private Token<?> createToken(IKeyword keyword) { return createToken(keyword, null); }
     private <TYPE> Token<?> createToken(IKeyword keyword, TYPE literal) {
         String text = currentLineSource.substring(start, cur);
-        return new Token<>(keyword, text, literal, lineNum, start, lineTokenIndex++);
+        var t = new Token<>(keyword, text, literal, lineNum, start, lineTokenIndex++, documentIndex, tokenIndex++);
+        documentIndex += (cur - start);
+        return t;
     }
     
     private Token<?> addToken(IKeyword keyword) { return addToken(keyword, null); }
@@ -587,7 +590,8 @@ public class Tokenizer {
     }
     
     private void processLine(final String line, final boolean hasNextLine) {
-        String l = line.replace("\t", "");
+        //String l = line.replace("\t", "");
+        String l = line;
         boolean empty = l.isBlank();
         lines.add(l);
         
@@ -601,7 +605,7 @@ public class Tokenizer {
                     var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
                     var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
                     
-                    var nl = Token.newLine(lineNum, lastIndex, lastLineT);
+                    var nl = Token.newLine(lineNum, lastIndex, lastLineT, documentIndex++, tokenIndex++);
                     list.add(nl);
                 }
                 
@@ -610,6 +614,9 @@ public class Tokenizer {
                 tokens.addAll(list);
             }
         }
+        else {
+            documentIndex += l.length() + 1;
+        }
         
         // check for end of file
         if (!hasNextLine) {
@@ -617,7 +624,7 @@ public class Tokenizer {
             var lastIndex = (lastToken != null) ? lastToken.getLineIndex() + 1 : 0;
             var lastLineT = (lastToken != null) ? lastToken.getLineTokenIndex() + 1 : 0;
             
-            var EOF = Token.EOF(lineNum, lastIndex, lastLineT);
+            var EOF = Token.EOF(lineNum, lastIndex, lastLineT, documentIndex, tokenIndex);
             if (lineTokens.getLastB() != null) lineTokens.getLastB().add(EOF);
             else lineTokens.add(lineNum, EList.of(EOF));
             tokens.add(EOF);

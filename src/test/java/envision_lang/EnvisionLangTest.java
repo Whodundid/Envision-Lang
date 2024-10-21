@@ -33,7 +33,7 @@ import envision_lang.parser.statements.statement_types.Stmt_If;
 import envision_lang.tokenizer.IKeyword;
 import envision_lang.tokenizer.ReservedWord;
 import envision_lang.tokenizer.Token;
-import envision_lang.tokenizer.Tokenizer;
+import envision_lang.tokenizer.EnvisionTokenizer;
 import eutil.strings.EStringBuilder;
 
 public abstract class EnvisionLangTest {
@@ -189,7 +189,7 @@ public abstract class EnvisionLangTest {
     }
     
     protected static void buildCodeFile(String lineToAdd) {
-        Tokenizer t = new Tokenizer(lineToAdd);
+        EnvisionTokenizer t = new EnvisionTokenizer(lineToAdd);
         codeFile.getLineTokens().clearThenAddAll(t.getLineTokens());
         codeFile.getTokens().clearThenAddAll(t.getTokens());
         codeFile.getLines().clearThenAddAll(t.getLines());
