@@ -9,8 +9,7 @@ public abstract class ParsedObject {
     //========
     
     private Token startingToken;
-    private int startingLine;
-    
+    private int startingLine;    
     //==============
     // Constructors
     //==============
@@ -18,8 +17,7 @@ public abstract class ParsedObject {
     protected ParsedObject(Token startingTokenIn) {
         startingToken = startingTokenIn;
         startingLine = startingToken.getLineNum();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -28,8 +26,7 @@ public abstract class ParsedObject {
     
     public static ParsedObject copy(ParsedObject o) {
         return (o != null) ? o.copy() : null;
-    }
-    
+    }    
     //=========
     // Getters
     //=========

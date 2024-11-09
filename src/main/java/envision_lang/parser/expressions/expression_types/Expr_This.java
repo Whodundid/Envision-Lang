@@ -11,8 +11,7 @@ public class Expr_This extends ParsedExpression {
     // Fields
     //========
     
-    public final Token<?> keyword;
-    
+    public final Token<?> keyword;    
     //==============
     // Constructors
     //==============
@@ -21,8 +20,7 @@ public class Expr_This extends ParsedExpression {
     public Expr_This(Token<?> start, Token<?> keywordIn) {
         super(start);
         keyword = keywordIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

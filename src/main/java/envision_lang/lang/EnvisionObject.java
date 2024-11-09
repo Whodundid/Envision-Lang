@@ -19,7 +19,7 @@ import envision_lang.lang.natives.Primitives;
  * @author Hunter Bragg
  */
 public abstract class EnvisionObject {
-
+    
     //========
     // Fields
     //========
@@ -64,8 +64,7 @@ public abstract class EnvisionObject {
      * Most primitives follow pass-by-value rules with the exception of Lists
      * and Tuples which follow pass-by-reference rules instead.
      */
-    protected final boolean isPassByValue;
-    
+    protected final boolean isPassByValue;    
     //==============
     // Constructors
     //==============
@@ -81,8 +80,7 @@ public abstract class EnvisionObject {
         // assign primitive flag
         isPrimitive = internalTypeIn.isNativePrimitiveType();
         isPassByValue = isPrimitive && internalType.getPrimitive().isPassByValue();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -90,8 +88,7 @@ public abstract class EnvisionObject {
     @Override
     public String toString() {
         return getDatatype() + "_" + getHexHash();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -111,8 +108,7 @@ public abstract class EnvisionObject {
     public Object convertToJavaObject() {
         if (this instanceof InternalJavaObjectWrapper jw) return jw.javaObject;
         return toString();
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -162,8 +158,7 @@ public abstract class EnvisionObject {
     public boolean isProtected() { return modifierHandler.isProtected(); }
     public boolean isPublic() { return modifierHandler.isPublic(); }
     /** Returns true if there are no visibility modifiers set. */
-    public boolean isScopeVisibility() { return modifierHandler.isScopeVisibility(); }
-
+    public boolean isScopeVisibility() { return modifierHandler.isScopeVisibility(); }    
     //=========
     // Setters
     //=========
@@ -192,8 +187,7 @@ public abstract class EnvisionObject {
     public EnvisionObject setPrivate() { modifierHandler.setPrivate(); return this; }
     public EnvisionObject setProtected() { modifierHandler.setProtected(); return this; }
     public EnvisionObject setPublic() { modifierHandler.setPublic(); return this; }
-    public EnvisionObject setScopeVisibility() { modifierHandler.setScopeVisibility(); return this; }
-    
+    public EnvisionObject setScopeVisibility() { modifierHandler.setScopeVisibility(); return this; }    
     //================
     // Static Methods
     //================

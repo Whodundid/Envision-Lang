@@ -13,8 +13,7 @@ public class Stmt_Try extends ParsedStatement {
     
     public final ParsedStatement tryBlock;
     public final EList<Stmt_Catch> catches;
-    public final ParsedStatement finallyBlock;
-    
+    public final ParsedStatement finallyBlock;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_Try extends ParsedStatement {
         tryBlock = tryIn;
         catches = catchesIn;
         finallyBlock = finallyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

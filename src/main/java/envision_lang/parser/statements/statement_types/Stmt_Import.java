@@ -6,15 +6,14 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
 
 public class Stmt_Import extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
     
     public final Expr_Import imp;
     public final Token<?> asName;
-    public final boolean importAll;
-    
+    public final boolean importAll;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_Import extends ParsedStatement {
         imp = nameIn;
         asName = asNameIn;
         importAll = all;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

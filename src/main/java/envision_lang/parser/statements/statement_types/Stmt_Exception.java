@@ -19,8 +19,7 @@ public class Stmt_Exception extends ParsedStatement {
     //========
     
     public final Token<?> name;
-    public final EList<ParsedStatement> body = EList.newList();
-    
+    public final EList<ParsedStatement> body = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -29,6 +28,10 @@ public class Stmt_Exception extends ParsedStatement {
         super(nameIn, declarationIn);
         name = nameIn;
     }
+    
+    //===========
+    // Overrides
+    //===========
     
     @Override
     public String toString() {
@@ -39,15 +42,10 @@ public class Stmt_Exception extends ParsedStatement {
         return declaration + " exception " + name.getLexeme() + " {\n" + b + "}";
     }
     
-    //===========
-    // Overrides
-    //===========
-    
     @Override
     public void execute(StatementHandler handler) {
         handler.handleExceptionStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

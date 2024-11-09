@@ -14,8 +14,7 @@ public class Expr_Compound extends ParsedExpression {
     // Fields
     //========
     
-    public final EList<ParsedExpression> expressions;
-    
+    public final EList<ParsedExpression> expressions;    
     //==============
     // Constructors
     //==============
@@ -32,9 +31,9 @@ public class Expr_Compound extends ParsedExpression {
         expressions = EList.of(in);
     }
     
-    //-----------
+    //===========
     // Overrides
-    //-----------
+    //===========
     
     @Override
     public String toString() {
@@ -53,8 +52,7 @@ public class Expr_Compound extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleCompound_E(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -66,8 +64,7 @@ public class Expr_Compound extends ParsedExpression {
     public boolean isEmpty() { return expressions.isEmpty(); }
     public boolean hasOne() { return expressions.hasOne(); }
     public int size() { return expressions.size(); }
-    public ParsedExpression getFirst() { return expressions.get(0); }
-    
+    public ParsedExpression getFirst() { return expressions.get(0); }    
     //================
     // Static Methods
     //================

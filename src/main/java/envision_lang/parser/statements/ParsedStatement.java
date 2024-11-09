@@ -5,7 +5,7 @@ import envision_lang.parser.util.ParserDeclaration;
 import envision_lang.tokenizer.Token;
 
 public abstract class ParsedStatement extends ParsedObject {
-
+    
     //========
     // Fields
     //========
@@ -16,8 +16,7 @@ public abstract class ParsedStatement extends ParsedObject {
      * A blocking statement halts interpreter execution until the interpreter
      * is explicitly told to continue.
      */
-    protected boolean isBlockingStatement = false;
-    
+    protected boolean isBlockingStatement = false;    
     //==============
     // Constructors
     //==============
@@ -31,8 +30,7 @@ public abstract class ParsedStatement extends ParsedObject {
         declaration = declarationIn;
         
         if (declaration != null) isBlockingStatement = declaration.isBlockingStatement();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -47,8 +45,7 @@ public abstract class ParsedStatement extends ParsedObject {
     // Abstracts
     //===========
     
-    public abstract void execute(StatementHandler handler);
-    
+    public abstract void execute(StatementHandler handler);    
     //=========
     // Getters
     //=========
@@ -59,8 +56,7 @@ public abstract class ParsedStatement extends ParsedObject {
     
     public boolean isBlockingStatement() {
         return isBlockingStatement;
-    }
-    
+    }    
     //=========
     // Setters
     //=========

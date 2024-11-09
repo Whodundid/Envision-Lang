@@ -107,8 +107,7 @@ public class EnvisionFunction extends ClassInstance {
      * Unless this function is overriding an existing function, this field will
      * generally be null.
      */
-    protected EnvisionFunction superFunction = null;
-    
+    protected EnvisionFunction superFunction = null;    
     //==============
     // Constructors
     //==============
@@ -227,8 +226,7 @@ public class EnvisionFunction extends ClassInstance {
         for (EnvisionFunction overload : toCopy.overloads) {
             overloads.add(overload.copy());
         }
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -409,8 +407,7 @@ public class EnvisionFunction extends ClassInstance {
             return overload;
         }
         return null;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -614,8 +611,7 @@ public class EnvisionFunction extends ClassInstance {
         
         // if this point is reached and the function is a constructor, return 'this' by default
         if (isConstructor) ret(scope.get("this"));
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -637,8 +633,7 @@ public class EnvisionFunction extends ClassInstance {
     public boolean isOperator() { return isOperatorOverload; }
     
     public IDatatype getReturnType() { return returnType; }
-    public Operator getOperator() { return operatorOverload; }
-    
+    public Operator getOperator() { return operatorOverload; }    
     //=========
     // Setters
     //=========
@@ -666,8 +661,7 @@ public class EnvisionFunction extends ClassInstance {
     
     public EnvisionFunction addStatement(ParsedStatement statementIn) {
         return statements.addR(statementIn, this);
-    }
-    
+    }    
     //================
     // Static Methods
     //================

@@ -19,8 +19,7 @@ public class Stmt_LoopControl extends ParsedStatement {
     
     public final boolean isBreak;
     public final boolean isContinue;
-    public final ParsedExpression condition;
-    
+    public final ParsedExpression condition;    
     //==============
     // Constructors
     //==============
@@ -31,8 +30,7 @@ public class Stmt_LoopControl extends ParsedStatement {
         isBreak = isBreakIn;
         isContinue = !isBreakIn;
         condition = conditionIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

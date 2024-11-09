@@ -18,8 +18,7 @@ public class Stmt_EnumDef extends ParsedStatement {
     public final Token<?> name;
     public final EList<Expr_Var> superEnums = EList.newList();
     public final EList<Expr_Enum> values = EList.newList();
-    public final EList<ParsedStatement> body = EList.newList();
-    
+    public final EList<ParsedStatement> body = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -27,8 +26,7 @@ public class Stmt_EnumDef extends ParsedStatement {
     public Stmt_EnumDef(Token<?> nameIn, ParserDeclaration declarationIn) {
         super(nameIn, declarationIn);
         name = nameIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -43,8 +41,7 @@ public class Stmt_EnumDef extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
 //        handler.handleEnumStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

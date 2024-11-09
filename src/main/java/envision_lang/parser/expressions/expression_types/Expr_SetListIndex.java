@@ -13,8 +13,7 @@ public class Expr_SetListIndex extends ParsedExpression {
     
     public final Expr_ListIndex list;
     public final ParsedExpression value;
-    public final Operator operator;
-    
+    public final Operator operator;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Expr_SetListIndex extends ParsedExpression {
         list = listIn;
         operator = operatorIn;
         value = valueIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

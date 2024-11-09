@@ -13,8 +13,7 @@ public class Stmt_Catch extends ParsedStatement {
     
     public final Token<?> type;
     public final Token<?> name;
-    public final EList<ParsedStatement> body;
-    
+    public final EList<ParsedStatement> body;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_Catch extends ParsedStatement {
         type = typeIn;
         name = varIn;
         body = bodyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

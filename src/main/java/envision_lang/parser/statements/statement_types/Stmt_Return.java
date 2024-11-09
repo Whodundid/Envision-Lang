@@ -7,7 +7,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
 public class Stmt_Return extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
@@ -15,8 +15,7 @@ public class Stmt_Return extends ParsedStatement {
     /** A condition for which to return on. */
     public final ParsedExpression condition;
     /** The value(s) being returned. */
-    public final EList<ParsedExpression> retVals = EList.newList();
-    
+    public final EList<ParsedExpression> retVals = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -33,8 +32,7 @@ public class Stmt_Return extends ParsedStatement {
         super(start);
         condition = conditionIn;
         if (retValsIn != null) retVals.addAll(retValsIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

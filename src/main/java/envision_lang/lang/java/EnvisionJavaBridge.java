@@ -41,8 +41,7 @@ class EnvisionJavaBridge {
     //private EList<EnvisionFunction> constructors = EList.newList();
     private IScope nativeInstanceScope;
     
-    //private IPrototypeHandler prototypes = new IPrototypeHandler();
-    
+    //private IPrototypeHandler prototypes = new IPrototypeHandler();    
     //==============
     // Constructors
     //==============
@@ -262,8 +261,7 @@ class EnvisionJavaBridge {
         if (o instanceof EnvisionFunction func) return func;
         
         return null;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -282,8 +280,7 @@ class EnvisionJavaBridge {
         System.out.println("GET: " + name);
         
         return (E) wrapperClass.getClassScope().get(name);
-    }
-    
+    }    
     //=========
     // Getters
     //=========

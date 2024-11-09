@@ -51,8 +51,7 @@ public class EnvisionProgramRunner {
      */
     private volatile boolean hasError = false;
     
-    private Thread programThread;
-    
+    private Thread programThread;    
     //==============
     // Constructors
     //==============
@@ -105,8 +104,7 @@ public class EnvisionProgramRunner {
             Object obj = box.getB();
             interpreter.injectJavaObject(name, obj);
         }
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -219,8 +217,7 @@ public class EnvisionProgramRunner {
         hasStarted = false;
         isBlocked = false;
         hasFinished = true;
-    }
-    
+    }    
     //=========
     // Getters
     //=========

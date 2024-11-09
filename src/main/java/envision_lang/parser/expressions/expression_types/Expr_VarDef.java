@@ -15,8 +15,7 @@ public class Expr_VarDef extends ParsedExpression {
     //========
     
     public final Token<?> type;
-    public final EList<Token<?>> params;
-    
+    public final EList<Token<?>> params;    
     //==============
     // Constructors
     //==============
@@ -25,8 +24,7 @@ public class Expr_VarDef extends ParsedExpression {
         super(typeIn);
         type = typeIn;
         params = paramsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

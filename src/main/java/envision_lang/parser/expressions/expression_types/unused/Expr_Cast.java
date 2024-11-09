@@ -16,8 +16,7 @@ public class Expr_Cast extends ParsedExpression {
     //========
     
     public final Token<?> toType;
-    public final ParsedExpression target;
-    
+    public final ParsedExpression target;    
     //==============
     // Constructors
     //==============
@@ -26,8 +25,7 @@ public class Expr_Cast extends ParsedExpression {
         super(typeIn);
         toType = typeIn;
         target = targetIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

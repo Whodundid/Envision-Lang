@@ -28,8 +28,7 @@ public final class EnvisionString extends EnvisionVariable<String> {
     
     public static final EnvisionString EMPTY_STRING = EnvisionStringClass.newString();
     
-    public final String string_val;
-    
+    public final String string_val;    
     //==============
     // Constructors
     //==============
@@ -64,10 +63,10 @@ public final class EnvisionString extends EnvisionVariable<String> {
         super(EnvisionStringClass.STRING_CLASS);
         string_val = String.valueOf(in);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public boolean equals(Object obj) {
@@ -186,11 +185,10 @@ public final class EnvisionString extends EnvisionVariable<String> {
         case "compareTo" -> compareTo((EnvisionString) args[0]);
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
 
     public EnvisionChar charAt(EnvisionInt pos) { return charAt((int) pos.int_val); }
     public EnvisionChar charAt(long pos) { return charAt((int) pos); }

@@ -11,8 +11,7 @@ public class Expr_TypeOf extends ParsedExpression {
     //========
     
     public final ParsedExpression left, right;
-    public final boolean is;
-    
+    public final boolean is;    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Expr_TypeOf extends ParsedExpression {
         left = leftIn;
         is = isIn;
         right = rightIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

@@ -15,8 +15,7 @@ public class Stmt_VarDef extends ParsedStatement {
     //========
     
     public final EList<VariableDeclaration> vars = EList.newList();
-//    public final Stmt_GetSet getset;
-    
+//    public final Stmt_GetSet getset;    
     //==============
     // Constructors
     //==============
@@ -25,8 +24,7 @@ public class Stmt_VarDef extends ParsedStatement {
     public Stmt_VarDef(Token<?> start, ParserDeclaration declarationIn/*, Stmt_GetSet getsetIn*/) {
         super(start, declarationIn);
 //        getset = getsetIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -39,8 +37,7 @@ public class Stmt_VarDef extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
         handler.handleVariableStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

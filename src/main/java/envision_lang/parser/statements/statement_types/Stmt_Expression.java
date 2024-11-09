@@ -10,8 +10,7 @@ public class Stmt_Expression extends ParsedStatement {
     // Fields
     //========
     
-    public final ParsedExpression expression;
-    
+    public final ParsedExpression expression;    
     //==============
     // Constructors
     //==============
@@ -19,8 +18,7 @@ public class Stmt_Expression extends ParsedStatement {
     public Stmt_Expression(ParsedExpression expressionIn) {
         super(expressionIn.getStartingToken());
         expression = expressionIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

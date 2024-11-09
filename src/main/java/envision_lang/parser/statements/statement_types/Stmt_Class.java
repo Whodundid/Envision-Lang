@@ -8,7 +8,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.util.EList;
 
 public class Stmt_Class extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
@@ -18,8 +18,7 @@ public class Stmt_Class extends ParsedStatement {
     public final EList<ParsedStatement> body = EList.newList();
     public final EList<ParsedStatement> staticMembers = EList.newList();
     public final EList<Stmt_FuncDef> methods = EList.newList();
-    public final EList<Stmt_FuncDef> initializers = EList.newList();
-    
+    public final EList<Stmt_FuncDef> initializers = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -27,8 +26,7 @@ public class Stmt_Class extends ParsedStatement {
     public Stmt_Class(Token<?> start, Token<?> nameIn, ParserDeclaration declarationIn) {
         super(start, declarationIn);
         name = nameIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -48,8 +46,7 @@ public class Stmt_Class extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
         handler.handleClassStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

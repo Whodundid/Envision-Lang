@@ -33,8 +33,7 @@ public class ParameterData {
     
     private EnvisionParameter[] params;
     private String[] parameterNames;
-    private IDatatype[] parameterTypes;
-    
+    private IDatatype[] parameterTypes;    
     //==============
     // Constructors
     //==============
@@ -130,8 +129,7 @@ public class ParameterData {
             parameterNames[i] = name;
             parameterTypes[i] = type;
         }
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -139,8 +137,7 @@ public class ParameterData {
     @Override
     public String toString() {
         return EStringUtil.toString(parameterTypes);
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -446,16 +443,14 @@ public class ParameterData {
     
     private static boolean compareNumber(IDatatype datatype) { return EnvisionStaticTypes.NUMBER_TYPE.compare(datatype); }
     private static boolean compareDouble(IDatatype datatype) { return EnvisionStaticTypes.DOUBLE_TYPE.compare(datatype); }
-    private static boolean compareInt(IDatatype datatype) { return EnvisionStaticTypes.INT_TYPE.compare(datatype); }
-    
+    private static boolean compareInt(IDatatype datatype) { return EnvisionStaticTypes.INT_TYPE.compare(datatype); }    
     //=========
     // Getters
     //=========
     
     public EnvisionParameter get(int i) { return params[i]; }
     public String[] getNames() { return parameterNames; }
-    public IDatatype[] getDataTypes() { return parameterTypes; }
-    
+    public IDatatype[] getDataTypes() { return parameterTypes; }    
     //================
     // Static Methods
     //================

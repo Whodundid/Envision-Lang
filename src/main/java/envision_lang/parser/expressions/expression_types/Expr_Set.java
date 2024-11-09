@@ -12,8 +12,7 @@ public class Expr_Set extends ParsedExpression {
     //========
     
     public final ParsedExpression object, value;
-    public final Token<?> name;
-    
+    public final Token<?> name;    
     //==============
     // Constructors
     //==============
@@ -23,8 +22,7 @@ public class Expr_Set extends ParsedExpression {
         object = objectIn;
         name = nameIn;
         value = valueIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

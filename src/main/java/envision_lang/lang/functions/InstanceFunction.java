@@ -6,11 +6,14 @@ import envision_lang.lang.natives.ParameterData;
 
 public abstract class InstanceFunction<E extends EnvisionObject> extends EnvisionFunction {
     
-    protected E inst;
+    //========
+    // Fields
+    //========
     
-    //--------------
+    protected E inst;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     protected InstanceFunction(IDatatype rt, String nameIn) {
         super(rt, nameIn, ParameterData.EMPTY_PARAMS);
@@ -22,12 +25,11 @@ public abstract class InstanceFunction<E extends EnvisionObject> extends Envisio
     
     protected InstanceFunction(IDatatype rt, String nameIn, ParameterData paramsIn) {
         super(rt, nameIn, paramsIn);
-    }
-    
-    //---------
+    }    
+    //=========
     // Setters
-    //---------
-
+    //=========
+    
     public InstanceFunction<E> setInst(E instIn) {
         inst = instIn;
         return this;

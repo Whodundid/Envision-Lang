@@ -31,8 +31,7 @@ public class EnvisionMap extends ClassInstance {
     /**
      * The parameterized value type.
      */
-    private final IDatatype mapValueType;
-    
+    private final IDatatype mapValueType;    
     //==============
     // Constructors
     //==============
@@ -43,8 +42,7 @@ public class EnvisionMap extends ClassInstance {
         mapKeyType = keyType;
         mapValueType = valueType;
         internalMap = new HashMap<>();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

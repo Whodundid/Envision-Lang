@@ -13,19 +13,18 @@ import eutil.datatypes.util.JavaDatatype;
  * @author Hunter Bragg
  */
 public class BridgeVariable {
-
-    //--------
+    
+    //========
     // Fields
-    //--------
+    //========
     
     public EnvisionObject envisionObject;
     public Object javaObject;
     public IDatatype envisionType;
-    public JavaDatatype javaType;
-    
-    //--------------
+    public JavaDatatype javaType;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public BridgeVariable(JavaDatatype javaTypeIn, Object javaObjectIn) {
         javaType = javaTypeIn;
@@ -40,28 +39,26 @@ public class BridgeVariable {
         envisionObject = ObjectCreator.createObject(envisionType, javaObjectIn);
     }
     
-    //-----------
+    //===========
     // Overrides
-    //-----------
+    //===========
     
     @Override
     public String toString() {
         return "bridgeVar[" + javaType + ":" + javaObject + " <==> " + envisionType + ":" + envisionObject + "]";
-    }
-    
-    //---------
+    }    
+    //=========
     // Getters
-    //---------
+    //=========
     
     public JavaDatatype getJavaType() { return javaType; }
     public IDatatype getEnvisionType() { return envisionType; }
 
     public EnvisionObject getEnvisionObject() { return envisionObject; }
-    public Object getJavaObject() { return javaObject; }
-    
-    //---------
+    public Object getJavaObject() { return javaObject; }    
+    //=========
     // Setters
-    //---------
+    //=========
     
     public void setBoth(Object javaObjectIn, EnvisionObject envisionObjectIn) {
         javaObject = javaObjectIn;

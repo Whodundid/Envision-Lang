@@ -40,18 +40,17 @@ public class ReturnValue extends RuntimeException {
      */
     private static final ReturnValue instance = new ReturnValue();
     
-    //--------
+    //========
     // Fields
-    //--------
+    //========
     
     /**
      * The object being returned.
      */
-    public EnvisionObject result;
-    
-    //--------------
+    public EnvisionObject result;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     private ReturnValue() {
         this(EnvisionNull.NULL);
@@ -61,9 +60,9 @@ public class ReturnValue extends RuntimeException {
         result = objIn;
     }
     
-    //-----------------
+    //=================
     // Static Wrappers
-    //-----------------
+    //=================
     
     /**
      * Wraps this ReturnValue instance with Envision::NULL
@@ -93,11 +92,10 @@ public class ReturnValue extends RuntimeException {
      */
     public static void ret(EnvisionObject object) {
         throw wrap(object);
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Returns true if the return value is null.

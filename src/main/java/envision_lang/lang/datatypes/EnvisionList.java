@@ -51,11 +51,10 @@ public final class EnvisionList extends ClassInstance {
     /**
      * Prevents size modifications to this list.
      */
-    private boolean sizeLocked = false;
-    
-    //--------------
+    private boolean sizeLocked = false;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     EnvisionList() { this(EnvisionStaticTypes.VAR_TYPE); }
     EnvisionList(IDatatype typeIn) {
@@ -93,10 +92,10 @@ public final class EnvisionList extends ClassInstance {
         listComponentType = EnvisionStaticTypes.VAR_TYPE;
         internalList = new EArrayList<>(initialSizeIn);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public boolean equals(Object obj) {
@@ -235,8 +234,7 @@ public final class EnvisionList extends ClassInstance {
         case "swap" -> swap((EnvisionInt) args[0], (EnvisionInt) args[1]);
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -423,7 +421,7 @@ public final class EnvisionList extends ClassInstance {
     }
     
     public EnvisionList reverse() {
-        return new EnvisionList(listComponentType, internalList.reverse());
+        return new EnvisionList(listComponentType, internalList.reversed());
     }
     
     public EnvisionList shuffle() {
@@ -493,9 +491,9 @@ public final class EnvisionList extends ClassInstance {
         return this;
     }
     
-    //------------------
+    //==================
     // Internal Methods
-    //------------------
+    //==================
     
     private void checkEmpty() { checkEmpty(0); }
     private int checkEmpty(int index) {

@@ -21,11 +21,10 @@ public class EnvisionVoid extends EnvisionObject {
      * void indicates there is 'something' but it just so happens to be
      * nothing.
      */
-    public static final EnvisionVoid VOID = new EnvisionVoid();
-    
-    //--------------
+    public static final EnvisionVoid VOID = new EnvisionVoid();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Private to prevent outside instantiation.
@@ -33,10 +32,10 @@ public class EnvisionVoid extends EnvisionObject {
     private EnvisionVoid() {
         super(VOID_TYPE);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public String toString() {

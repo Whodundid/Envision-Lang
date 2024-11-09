@@ -26,7 +26,7 @@ import envision_lang.lang.natives.Primitives;
  * @author Hunter Bragg
  */
 public class EnvisionFunctionClass extends EnvisionClass {
-
+    
     //========
     // Fields
     //========
@@ -58,16 +58,14 @@ public class EnvisionFunctionClass extends EnvisionClass {
         FUNC_PROTOS.define("getReturnType", STRING).assignDynamicClass(IFunc_getReturnType.class);
         FUNC_PROTOS.define("getParamTypes", LIST).assignDynamicClass(IFunc_getParamTypes.class);
         FUNC_PROTOS.define("getParamNames", LIST).assignDynamicClass(IFunc_getParamNames.class);
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
     
     private EnvisionFunctionClass() {
         super(Primitives.FUNCTION);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -80,8 +78,7 @@ public class EnvisionFunctionClass extends EnvisionClass {
     @Override
     protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
         throw new EnvisionLangError("Illegal Function Instantiation!");
-    }
-    
+    }    
     //=========
     // Methods
     //=========

@@ -55,8 +55,7 @@ public class EnvisionTokenizer {
     private EList<Token<?>> parsedLineTokens;
     
     /** Flag to indicate if block statements can be tokenized. */
-    private boolean areBlockStatementsEnabled = false;
-    
+    private boolean areBlockStatementsEnabled = false;    
     //==============
     // Constructors
     //==============
@@ -79,9 +78,7 @@ public class EnvisionTokenizer {
     
     public EnvisionTokenizer(Iterable<String> lines) {
         tokenizeLines(lines);
-    }
-
-    
+    }    
     //================
     // Static Methods
     //================
@@ -634,8 +631,7 @@ public class EnvisionTokenizer {
                 throw new EnvisionLangError("Envision: Tokenization failed -> incomplete string!");
             }
         }
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -645,8 +641,7 @@ public class EnvisionTokenizer {
     public EList<String> getLines() { return lines; }
     public EList<Token<?>> getCommentTokens() { return commentTokens; }
     public boolean hasFile() { return theFile != null; }
-    public boolean areBlockStatementsEnabled() { return areBlockStatementsEnabled; }
-    
+    public boolean areBlockStatementsEnabled() { return areBlockStatementsEnabled; }    
     //=========
     // Setters
     //=========

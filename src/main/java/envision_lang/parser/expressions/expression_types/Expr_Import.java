@@ -12,8 +12,7 @@ public class Expr_Import extends ParsedExpression {
     //========
     
     public final Token<?> path;
-    public final Token<?> object;
-    
+    public final Token<?> object;    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Expr_Import extends ParsedExpression {
         super(pathIn);
         path = pathIn;
         object = objectIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

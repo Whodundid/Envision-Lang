@@ -28,8 +28,7 @@ public sealed class EnvisionNumberClass extends EnvisionClass
      * objects are derived from. This is an abstract class for which
      * EnvisionInt and EnvisionDouble specifically inherit from.
      */
-    public static final EnvisionNumberClass NUMBER_CLASS = new EnvisionNumberClass();
-    
+    public static final EnvisionNumberClass NUMBER_CLASS = new EnvisionNumberClass();    
     //==============
     // Constructors
     //==============
@@ -64,8 +63,7 @@ public sealed class EnvisionNumberClass extends EnvisionClass
             return EnvisionDoubleClass.valueOf(val.doubleValue());
         }
         return EnvisionIntClass.valueOf(val.longValue());
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

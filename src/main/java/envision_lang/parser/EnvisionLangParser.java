@@ -48,8 +48,7 @@ public final class EnvisionLangParser {
      * preserve the current memory and instruction stacks and will wait until
      * the script is manually restarted.
      */
-    private boolean enableBlockStatementParsing = false;
-    
+    private boolean enableBlockStatementParsing = false;    
     //==============
     // Constructors
     //==============
@@ -831,8 +830,7 @@ public final class EnvisionLangParser {
     void incrementParsingIndex() {
         if (atEnd()) return;
         currentTokenIndex++;
-    }
-    
+    }    
     //=========
     // Getters
     //=========

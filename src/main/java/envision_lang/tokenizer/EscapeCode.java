@@ -14,17 +14,15 @@ public enum EscapeCode {
     BACKSLASH,        // \\
     SCOPE_LEFT,        // \{
     SCOPE_RIGHT,    // \}
-    ;
-    
-    //--------------
+    ;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
-    private EscapeCode() {}
-    
-    //----------------
+    private EscapeCode() {}    
+    //================
     // Static Methods
-    //----------------
+    //================
     
     /**
      * Returns an EscapeCode associated with the given char,

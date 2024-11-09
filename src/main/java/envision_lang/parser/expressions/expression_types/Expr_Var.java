@@ -11,8 +11,7 @@ public class Expr_Var extends ParsedExpression {
     // Fields
     //========
     
-    public final Token<?> name;
-    
+    public final Token<?> name;    
     //==============
     // Constructors
     //==============
@@ -20,8 +19,7 @@ public class Expr_Var extends ParsedExpression {
     public Expr_Var(Token<?> nameIn) {
         super(nameIn);
         name = nameIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -39,16 +37,14 @@ public class Expr_Var extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleVar_E(this);
-    }
-    
+    }    
     //=========
     // Getters
     //=========
     
     public String getName() {
         return (name != null) ? name.getLexeme() : null;
-    }
-    
+    }    
     //================
     // Static Methods
     //================

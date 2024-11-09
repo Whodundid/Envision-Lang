@@ -16,8 +16,7 @@ public class Stmt_For extends ParsedStatement {
     public final ParsedStatement init;
     public final ParsedExpression cond;
     public final EList<ParsedExpression> post;
-    public final ParsedStatement body;
-    
+    public final ParsedStatement body;    
     //==============
     // Constructors
     //==============
@@ -42,8 +41,7 @@ public class Stmt_For extends ParsedStatement {
         cond = condIn;
         post = postIn;
         body = bodyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

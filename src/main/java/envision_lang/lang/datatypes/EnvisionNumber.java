@@ -15,19 +15,17 @@ public abstract sealed class EnvisionNumber<TYPE extends Number> extends Envisio
     permits EnvisionInt, EnvisionDouble
 {
     
-    public static final IDatatype NUMBER_TYPE = EnvisionStaticTypes.NUMBER_TYPE;
-    
-    //--------------
+    public static final IDatatype NUMBER_TYPE = EnvisionStaticTypes.NUMBER_TYPE;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     protected EnvisionNumber(EnvisionClass classType) {
         super(classType);
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Negates the current number value on this EnvisionNumber object.

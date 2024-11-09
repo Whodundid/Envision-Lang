@@ -12,8 +12,7 @@ public class Expr_ListInitializer extends ParsedExpression {
     // Fields
     //========
     
-    public final EList<ParsedExpression> values;
-    
+    public final EList<ParsedExpression> values;    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Expr_ListInitializer extends ParsedExpression {
     public Expr_ListInitializer(Token<?> start, EList<ParsedExpression> valuesIn) {
         super(start);
         values = EList.of(valuesIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -36,8 +34,7 @@ public class Expr_ListInitializer extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleListInitializer_E(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

@@ -35,6 +35,11 @@ import eutil.datatypes.util.EList;
  */
 public class FunctionPrototype extends EnvisionObject {
 
+    
+    //========
+    // Fields
+    //========
+    
     /**
      * The function name that this placeholder will take in scopes.
      */
@@ -122,11 +127,10 @@ public class FunctionPrototype extends EnvisionObject {
      * object's member function, this prototype will first need to build the actual
      * EnvisionFunction instance and then subsequently return it. 
      */
-    private boolean built = false;
-    
-    //--------------
+    private boolean built = false;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public FunctionPrototype(String nameIn) {
         this(nameIn, EnvisionStaticTypes.VAR_TYPE, ParameterData.EMPTY_PARAMS);
@@ -146,19 +150,18 @@ public class FunctionPrototype extends EnvisionObject {
         returnType = rType;
         params = paramsIn;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public String toString() {
         return "proto_"+func_name;
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Returns true if this primitive function has been dynamically built into a
@@ -289,11 +292,10 @@ public class FunctionPrototype extends EnvisionObject {
     public boolean hasOverload(EnvisionObject[] argsIn) {
         //convert args to parameterData
         return hasOverload(ParameterData.from(argsIn));
-    }
-    
-    //---------
+    }    
+    //=========
     // Getters
-    //---------
+    //=========
     
     /**
      * Returns the placeholder function name of this prototype.
@@ -320,11 +322,10 @@ public class FunctionPrototype extends EnvisionObject {
      */
     public ParameterData getParams() {
         return params;
-    }
-    
-    //---------
+    }    
+    //=========
     // Setters
-    //---------
+    //=========
     
     /**
      * Assigns the classInstance for which the a dynamically built internal function

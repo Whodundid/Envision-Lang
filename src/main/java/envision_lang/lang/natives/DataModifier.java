@@ -35,16 +35,14 @@ public enum DataModifier {
     // Fields
     //========
     
-    public final int byteVal;
-    
+    public final int byteVal;    
     //==============
     // Constructors
     //==============
     
     private DataModifier(int byteValIn) {
         byteVal = byteValIn;
-    }
-    
+    }    
     //================
     // Static Methods
     //================

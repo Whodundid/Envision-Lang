@@ -18,8 +18,7 @@ public class Stmt_FuncDef extends ParsedStatement {
     public final EList<StatementParameter> methodParams;
     public final EList<ParsedStatement> body;
     public final boolean isConstructor;
-    public final boolean isOperator;
-    
+    public final boolean isOperator;    
     //==============
     // Constructors
     //==============
@@ -41,8 +40,7 @@ public class Stmt_FuncDef extends ParsedStatement {
         declaration = declarationIn;
         isConstructor = isConstructorIn;
         isOperator = isOperatorIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -59,8 +57,7 @@ public class Stmt_FuncDef extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
         handler.handleMethodStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

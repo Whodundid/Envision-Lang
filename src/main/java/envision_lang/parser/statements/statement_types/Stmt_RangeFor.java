@@ -15,8 +15,7 @@ public class Stmt_RangeFor extends ParsedStatement {
     
     public final ParsedStatement init;
     public final EList<Expr_Range> ranges = EList.newList();
-    public final ParsedStatement body;
-    
+    public final ParsedStatement body;    
     //==============
     // Constructors
     //==============
@@ -32,8 +31,7 @@ public class Stmt_RangeFor extends ParsedStatement {
         init = initIn;
         body = bodyIn;
         ranges.addAll(rangesIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -51,8 +49,7 @@ public class Stmt_RangeFor extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
         handler.handleRangeForStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

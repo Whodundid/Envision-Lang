@@ -11,8 +11,7 @@ public class Expr_ListIndex extends ParsedExpression {
     //========
     
     public final ParsedExpression list;
-    public final ParsedExpression index;
-    
+    public final ParsedExpression index;    
     //==============
     // Constructors
     //==============
@@ -21,8 +20,7 @@ public class Expr_ListIndex extends ParsedExpression {
         super(listIn);
         list = listIn;
         index = indexIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

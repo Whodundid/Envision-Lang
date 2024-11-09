@@ -17,11 +17,10 @@ public class Expr_FunctionCall extends ParsedExpression {
     public ParsedExpression callee;
     public Token<?> name;
     public EList<Token<?>> generics;
-    public final EList<ParsedExpression> args;
-    
-    //==============
-    // Constructors
-    //==============
+    public final EList<ParsedExpression> args;    
+    //================
+    // Static Methods
+    //================
     
     public Expr_FunctionCall(ParsedExpression calleeIn, EList<ParsedExpression> argsIn) {
         this(null, calleeIn, null, argsIn);
@@ -45,8 +44,7 @@ public class Expr_FunctionCall extends ParsedExpression {
         callee = calleeIn;
         name = nameIn;
         args = argsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -69,8 +67,7 @@ public class Expr_FunctionCall extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleMethodCall_E(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

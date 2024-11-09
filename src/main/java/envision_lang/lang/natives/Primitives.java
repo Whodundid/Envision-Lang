@@ -38,7 +38,9 @@ import eutil.datatypes.util.JavaDatatype;
  */
 public enum Primitives implements IDatatype {
     
+    //-----------------------
     // native language types
+    //-----------------------
     
     /** Native internal envision type. */
     ENVISION("//envision"),
@@ -55,7 +57,9 @@ public enum Primitives implements IDatatype {
     //OPERATOR("//operator"),
     EXCEPTION("//exception"),
     
+    //-------------
     // basic types
+    //-------------
     
     BOOLEAN("boolean"),
     CHAR("char"),
@@ -73,7 +77,9 @@ public enum Primitives implements IDatatype {
     ENUM("//enum"),
     ENUM_TYPE("//enum_type"),
     
+    //-------------
     // array types
+    //-------------
     
     BOOLEAN_A("//[boolean", BOOLEAN),
     CHAR_A("//[char", CHAR),
@@ -90,8 +96,7 @@ public enum Primitives implements IDatatype {
     /** True if this primitive type is a special type used for varargs type passing. */
     public final boolean is_array_type;
     /** The non-array type of this varargs type. NOTE: this will be null unless this is an array type. */
-    private final Primitives non_array_type;
-    
+    private final Primitives non_array_type;    
     //==============
     // Constructors
     //==============
@@ -252,19 +257,17 @@ public enum Primitives implements IDatatype {
         nativePrimitiveTypes.add(LIST);
         nativePrimitiveTypes.add(TUPLE);
         nativePrimitiveTypes.add(MAP);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
     
     @Override public Primitives getPrimitive() { return this; }
     @Override public EnvisionDatatype toDatatype() { return NativeTypeManager.datatypeOf(this); }
-    @Override public String getStringValue() { return string_value; }
-    
-    //---------
+    @Override public String getStringValue() { return string_value; }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * @return true if the given primitive type can take on object
@@ -343,11 +346,10 @@ public enum Primitives implements IDatatype {
      */
     public Primitives getNonArrayType() {
         return non_array_type;
-    }
-    
-    //----------------
+    }    
+    //================
     // Static Methods
-    //----------------
+    //================
     
     /**
      * Returns true if this primitive is an array type (varargs).

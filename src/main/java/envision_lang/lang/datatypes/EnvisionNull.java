@@ -27,11 +27,10 @@ public class EnvisionNull extends EnvisionObject {
      * The single, static null value to be used for all 'null' values
      * within Envision.
      */
-    public static final EnvisionNull NULL = new EnvisionNull();
-    
-    //--------------
+    public static final EnvisionNull NULL = new EnvisionNull();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Creates a new 'null' object.
@@ -40,9 +39,9 @@ public class EnvisionNull extends EnvisionObject {
         super(NULL_TYPE);
     }
     
-    //------------------------------------
+    //====================================
     // Overriding standard object methods
-    //------------------------------------
+    //====================================
     
     @Override
     public String toString() {

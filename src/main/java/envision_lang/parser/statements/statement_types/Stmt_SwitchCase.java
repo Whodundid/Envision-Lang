@@ -13,8 +13,7 @@ public class Stmt_SwitchCase extends ParsedStatement {
     
     public final Token<?> caseName;
     public final EList<ParsedStatement> body;
-    public final boolean isDefault;
-    
+    public final boolean isDefault;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_SwitchCase extends ParsedStatement {
         caseName = caseNameIn;
         body = bodyIn;
         isDefault = isDefaultIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

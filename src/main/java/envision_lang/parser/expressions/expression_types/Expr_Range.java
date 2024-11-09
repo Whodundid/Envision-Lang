@@ -10,8 +10,7 @@ public class Expr_Range extends ParsedExpression {
     // Fields
     //========
     
-    public final ParsedExpression left, right, by;
-    
+    public final ParsedExpression left, right, by;    
     //==============
     // Constructors
     //==============
@@ -21,8 +20,7 @@ public class Expr_Range extends ParsedExpression {
         left = leftIn;
         right = rightIn;
         by = byIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

@@ -31,19 +31,18 @@ public class InternalEnvisionClass extends EnvisionClass {
     static {
         ENVISION_PROTOS.define("shutdown").assignDynamicClass(IFunc_shutdown.class);
         ENVISION_PROTOS.define("dir").assignDynamicClass(IFunc_dir.class);
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     private InternalEnvisionClass() {
         super(EnvisionStaticTypes.ENVISION_TYPE);
     }
     
-    //-----------
+    //===========
     // Overrides
-    //-----------
+    //===========
     
     @Override
     public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
@@ -53,11 +52,10 @@ public class InternalEnvisionClass extends EnvisionClass {
     @Override
     protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {
         throw new EnvisionLangError("Illegal Object Instantiation!");
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     public void defineFunctionScopeMembers(InternalEnvision env) {
         //define super object's members
@@ -66,9 +64,9 @@ public class InternalEnvisionClass extends EnvisionClass {
         ENVISION_PROTOS.defineOn(env);
     }
     
-    //---------------------------------
+    //=================================
     // Static Envision Class Functions
-    //---------------------------------
+    //=================================
     
     private static class IFunc_shutdown extends InstanceFunction<InternalEnvision> {
         public IFunc_shutdown() { super(VOID, "shutdown"); }

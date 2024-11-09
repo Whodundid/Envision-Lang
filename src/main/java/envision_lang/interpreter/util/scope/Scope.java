@@ -7,15 +7,18 @@ import envision_lang.lang.EnvisionObject;
 
 public class Scope implements IScope {
     
+    //========
+    // Fields
+    //========
+    
     protected IScope parentScope = null;
     public final Map<String, ScopeEntry> values = new HashMap<>();
     public final Map<String, ScopeEntry> importedValues = new HashMap<>();
     //private final EList<String> valueNames = EList.newList();
-    //private final EList<String> importedValueNames = EList.newList();
-    
-    //--------------
+    //private final EList<String> importedValueNames = EList.newList();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /** Creates a scope with no immediate parent scope. */
     public Scope() {}
@@ -23,10 +26,10 @@ public class Scope implements IScope {
     public Scope(IScope parentScopeIn) {
         parentScope = parentScopeIn;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override public String toString() { return IScope.asString(this); }
     

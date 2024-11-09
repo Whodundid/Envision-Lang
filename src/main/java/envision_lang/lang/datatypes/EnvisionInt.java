@@ -31,8 +31,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
     // Fields
     //========
     
-    public final long int_val;
-    
+    public final long int_val;    
     //==============
     // Constructors
     //==============
@@ -57,8 +56,7 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
     EnvisionInt(EnvisionNumber<?> in) {
         super(EnvisionIntClass.INT_CLASS);
         int_val = in.intVal().int_val;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -217,11 +215,10 @@ public final class EnvisionInt extends EnvisionNumber<Long> {
         // NO INT FUNCTIONS
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     public EnvisionInt min(EnvisionInt a, EnvisionInt b) {
         return (a.int_val <= b.int_val) ? a : b;

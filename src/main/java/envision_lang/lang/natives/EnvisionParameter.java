@@ -39,8 +39,7 @@ public class EnvisionParameter {
      * Specifies whether or not this parameter can take in an array of
      * values instead of just one.
      */
-    public final boolean isVarA;
-    
+    public final boolean isVarA;    
     //==============
     // Constructors
     //==============
@@ -58,8 +57,7 @@ public class EnvisionParameter {
         name = nameIn;
         defaultValue = defaultValueIn;
         isVarA = isVarargs;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -69,8 +67,7 @@ public class EnvisionParameter {
         String v = (isVarA) ? "... " : ((name.equals("")) ? "" : " ");
         String d = (defaultValue != null) ? " = " + defaultValue : "";
         return "[" + datatype + v + name + d + "]";
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -86,8 +83,7 @@ public class EnvisionParameter {
     public boolean hasDefault() { return defaultValue != null; }
     public boolean isNumber() { return datatype.isNumber(); }
     public boolean isVarA() { return isVarA; }
-    public boolean isVar() { return datatype.isVar(); }
-    
+    public boolean isVar() { return datatype.isVar(); }    
     //=========
     // Getters
     //=========

@@ -8,15 +8,14 @@ import eutil.datatypes.util.EList;
 import eutil.strings.EStringBuilder;
 
 public class Stmt_GetSet extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
     
     public final EnvisionVisibilityModifier getVis, setVis;
     public final boolean get, set;
-    public EList<Token<?>> vars;
-    
+    public EList<Token<?>> vars;    
     //==============
     // Constructors
     //==============
@@ -32,8 +31,7 @@ public class Stmt_GetSet extends ParsedStatement {
         get = (getVisIn != null);
         set = (setVisIn != null);
         vars = varsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -50,8 +48,7 @@ public class Stmt_GetSet extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
 //        handler.handleGetSetStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

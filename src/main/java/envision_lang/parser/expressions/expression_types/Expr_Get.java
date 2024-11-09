@@ -12,8 +12,7 @@ public class Expr_Get extends ParsedExpression {
     //========
     
     public final ParsedExpression object;
-    public final Token<?> name;
-    
+    public final Token<?> name;    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Expr_Get extends ParsedExpression {
         super(objectIn);
         object = objectIn;
         name = nameIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

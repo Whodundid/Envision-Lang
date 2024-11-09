@@ -15,7 +15,7 @@ public class EnvisionException extends ClassInstance {
     
     /** The language default exception which can be thrown anywhere, for any reason. */
     public static final EnvisionException DEFAULT_EXCEPTION = EnvisionExceptionClass.newInstance();
-
+    
     //========
     // Fields
     //========
@@ -23,8 +23,7 @@ public class EnvisionException extends ClassInstance {
     /** The exception type. */
     public String type;
     /** The stated reason that this exception was thrown. */
-    public String reason = "";
-    
+    public String reason = "";    
     //==============
     // Constructors
     //==============
@@ -50,8 +49,7 @@ public class EnvisionException extends ClassInstance {
         super(toCopyIn.internalClass);
         type = toCopyIn.type;
         reason = toCopyIn.reason;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

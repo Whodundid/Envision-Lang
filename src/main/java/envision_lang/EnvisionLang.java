@@ -57,8 +57,7 @@ public class EnvisionLang {
         if (langInstance != null) return langInstance;
         langInstance = new EnvisionLang();
         return langInstance;
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -125,8 +124,7 @@ public class EnvisionLang {
 //                errorCallback.handleException(e);
 //            }
 //        }
-//    }
-    
+//    }    
     //=========
     // Getters
     //=========

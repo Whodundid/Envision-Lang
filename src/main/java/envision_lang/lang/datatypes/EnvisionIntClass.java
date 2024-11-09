@@ -14,7 +14,7 @@ import envision_lang.lang.natives.EnvisionStaticTypes;
 import envision_lang.lang.natives.Primitives;
 
 public final class EnvisionIntClass extends EnvisionNumberClass {
-
+    
     //========
     // Fields
     //========
@@ -66,8 +66,7 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
         }
         
         private EnvisionIntegerCache() {}
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -143,10 +142,10 @@ public final class EnvisionIntClass extends EnvisionNumberClass {
         
         return newInt(value);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

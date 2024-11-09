@@ -8,7 +8,7 @@ import envision_lang.tokenizer.Token;
 import eutil.datatypes.boxes.BoxList;
 
 public class Expr_Assign extends ParsedExpression {
-
+    
     //========
     // Fields
     //========
@@ -17,8 +17,7 @@ public class Expr_Assign extends ParsedExpression {
     public Token<?> name;
     public Operator operator;
     public ParsedExpression value;
-    public final BoxList<Token<?>, Token<?>> modulars;
-    
+    public final BoxList<Token<?>, Token<?>> modulars;    
     //==============
     // Constructors
     //==============
@@ -42,8 +41,7 @@ public class Expr_Assign extends ParsedExpression {
         operator = operatorIn;
         value = valueIn;
         modulars = null;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -65,8 +63,7 @@ public class Expr_Assign extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleAssign_E(this);
-    }
-    
+    }    
     //=========
     // Getters
     //=========

@@ -50,11 +50,10 @@ public class ClassConstruct {
     private EList<EnvisionFunction> functions;
     
     /** Pulling scope map out for fast reference. */
-    private final Map<String, ScopeEntry> internal_scope_values;
-    
-    //--------------
+    private final Map<String, ScopeEntry> internal_scope_values;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public ClassConstruct(EnvisionInterpreter interpreter, EnvisionClass c) {
         theClass = c;

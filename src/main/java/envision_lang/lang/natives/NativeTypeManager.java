@@ -24,8 +24,7 @@ import envision_lang.lang.functions.EnvisionFunctionClass;
  * All Envision datatypes are strictly case-sensitive. Therefore, Int !=
  * int.
  * <p>
- * <u><b>!!!! ---- NOT THE SAME AS [ {@code TypeManager} ] ----
- * !!!!</u></b>
+ * <u><b>!!!! ---- NOT THE SAME AS [ {@link UserDefinedTypeManager} ] ---- !!!!</u></b>
  * <li>The TypeManager manages user-defined class types.
  * <li>The NativeTypeManager manages Envision's native class/object types.
  */
@@ -86,8 +85,7 @@ public final class NativeTypeManager {
     
     static {
         init();
-    }
-    
+    }    
     //==============
     // Constructors
     //==============

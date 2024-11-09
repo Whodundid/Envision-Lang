@@ -44,8 +44,7 @@ public class EnvisionJavaClass extends EnvisionClass {
         EnvisionJavaClass wrappedClass = new EnvisionJavaClass(classToWrap, datatype);
         //typeMan.defineUserClass(wrappedClass);
         return wrappedClass;
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -151,8 +150,7 @@ public class EnvisionJavaClass extends EnvisionClass {
         instanceCache.store(instance);
         
         return instance;
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -166,8 +164,7 @@ public class EnvisionJavaClass extends EnvisionClass {
     
     public NativeInstanceCache getInstanceCache() {
         return instanceCache;
-    }
-    
+    }    
     //=========
     // Setters
     //=========

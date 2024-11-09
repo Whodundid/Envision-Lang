@@ -13,8 +13,7 @@ public class Stmt_InterfaceDef extends ParsedStatement {
     // Fields
     //========
     
-    public final EList<Expr_Generic> generics = EList.newList();
-    
+    public final EList<Expr_Generic> generics = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -23,8 +22,7 @@ public class Stmt_InterfaceDef extends ParsedStatement {
     public Stmt_InterfaceDef(Token start, ParserDeclaration declarationIn, EList<Expr_Generic> genericsIn) {
         super(start, declarationIn);
         if (genericsIn != null) generics.addAll(genericsIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -32,8 +30,7 @@ public class Stmt_InterfaceDef extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
 //        handler.handleInterfaceStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

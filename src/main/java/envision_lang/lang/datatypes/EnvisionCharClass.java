@@ -16,7 +16,7 @@ import envision_lang.lang.natives.Primitives;
 import envision_lang.lang.natives.EnvisionStaticTypes;
 
 public final class EnvisionCharClass extends EnvisionClass {
-
+    
     /**
      * The singular, static Char class for which all Envision:Char
      * objects are derived from.
@@ -56,11 +56,10 @@ public final class EnvisionCharClass extends EnvisionClass {
         }
         
         private EnvisionCharCache() {}
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -78,9 +77,9 @@ public final class EnvisionCharClass extends EnvisionClass {
         staticScope.define("NULL_CHAR", EnvisionStaticTypes.CHAR_TYPE, EnvisionChar.NULL_CHAR);
     }
     
-    //---------------------
+    //=====================
     // Static Constructors
-    //---------------------
+    //=====================
     
     public static EnvisionChar newChar() { return newChar('\0'); }
     public static EnvisionChar newChar(boolean value) { return newChar(value ? 'T' : 'F'); }
@@ -114,10 +113,10 @@ public final class EnvisionCharClass extends EnvisionClass {
         
         return newChar(value);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

@@ -187,8 +187,7 @@ public class EnvisionInterpreter implements StatementHandler, ExpressionHandler 
     
     private EList<ParsedStatement> statements;
     private EList<StackFrame> frames = EList.newList();
-    //private EList<ParsedStatement> statementStack = EList.newList();
-    
+    //private EList<ParsedStatement> statementStack = EList.newList();    
     //==============
     // Constructors
     //==============

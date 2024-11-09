@@ -18,8 +18,7 @@ public class Expr_Literal extends ParsedExpression {
     public final boolean isDouble;
     public final boolean isBoolean;
     public final boolean isString;
-    public final boolean isCharacter;
-    
+    public final boolean isCharacter;    
     //==============
     // Constructors
     //==============
@@ -71,8 +70,7 @@ public class Expr_Literal extends ParsedExpression {
             isString = false;
             isCharacter = false;
         }
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

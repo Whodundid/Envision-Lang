@@ -4,13 +4,20 @@ import eutil.strings.EStringBuilder;
 
 public class DataModifierHandler {
     
+    //========
+    // Fields
+    //========
+    
     private int modifiers;
+    
+    //==============
+    // Constructors
+    //==============
     
     public DataModifierHandler() {}
     public DataModifierHandler(int modifiersIn) {
         modifiers = modifiersIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -23,8 +30,7 @@ public class DataModifierHandler {
         sb.println("\tstrong: ", isStrong());
         sb.println("\tstatic: ", isStatic());
         return sb.toString();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -48,8 +54,7 @@ public class DataModifierHandler {
      */
     public void removeModifier(DataModifier mod) {
         modifiers &= ~mod.byteVal;
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -82,8 +87,7 @@ public class DataModifierHandler {
     public boolean isProtected() { return hasModifier(DataModifier.PROTECTED); }
     public boolean isPublic() { return hasModifier(DataModifier.PUBLIC); }
     /** Returns true if there are no visibility modifiers set. */
-    public boolean isScopeVisibility() { return ((modifiers >> 4) & 0xf) == 0; }
-    
+    public boolean isScopeVisibility() { return ((modifiers >> 4) & 0xf) == 0; }    
     //=========
     // Setters
     //=========

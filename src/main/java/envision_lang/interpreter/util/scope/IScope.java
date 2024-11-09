@@ -29,6 +29,10 @@ import eutil.strings.EStringUtil;
 
 public interface IScope {
     
+    //===============
+    // Field Helpers
+    //===============
+    
     /** Returns the immediate local values of this scope. */
     Map<String, ScopeEntry> values();
     /** Returns the values that have been imported into this scope from another. */
@@ -42,9 +46,9 @@ public interface IScope {
     EnvisionObject define_i(String name, ScopeEntry entry);
     EnvisionObject defineImportVal_i(String name, ScopeEntry entry);
     
-    //---------
+    //=========
     // Parents
-    //---------
+    //=========
     
     /**
      * Returns the immediate parent scope. If the parent scope is null,
@@ -75,8 +79,7 @@ public interface IScope {
             s = s.getParent();
         }
         return s;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -120,8 +123,7 @@ public interface IScope {
         }
         
         return c;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -448,8 +450,7 @@ public interface IScope {
             p.clear();
             p = p.getParent();
         }
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -550,8 +551,7 @@ public interface IScope {
      */
     default ScopeEntry getTypedLocal(String name) {
         return values().get(name);
-    }
-    
+    }    
     //=========
     // Setters
     //=========

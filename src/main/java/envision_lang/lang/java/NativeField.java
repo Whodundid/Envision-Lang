@@ -14,7 +14,7 @@ import eutil.reflection.EModifier;
  * @author Hunter Bragg
  */
 public final class NativeField extends EnvisionObject implements INativeEnvision {
-
+    
     //========
     // Fields
     //========
@@ -41,8 +41,7 @@ public final class NativeField extends EnvisionObject implements INativeEnvision
         catch (Exception e) {
             throw new EnvisionLangError("Failed to bind to Java::Field 'modifiers' field!", e);
         }
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -74,8 +73,7 @@ public final class NativeField extends EnvisionObject implements INativeEnvision
         if (mods.isPrivate()) modifierHandler.setPrivate();
         
         isJavaPrivate = mods.isPrivate();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -93,8 +91,7 @@ public final class NativeField extends EnvisionObject implements INativeEnvision
     @Override
     public void bindToWrappedObject(EnvisionJavaObject instance) {
         wrappedObject = instance;
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -138,8 +135,7 @@ public final class NativeField extends EnvisionObject implements INativeEnvision
         return toReturn;
     }
     
-    public Class<?> getJavaFieldType() { return wrappedField.getType(); }
-    
+    public Class<?> getJavaFieldType() { return wrappedField.getType(); }    
     //=========
     // Setters
     //=========

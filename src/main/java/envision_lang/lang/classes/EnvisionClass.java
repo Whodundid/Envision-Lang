@@ -133,8 +133,7 @@ public class EnvisionClass extends EnvisionObject {
         OBJ_PROTOS.define("type", CLASS).assignDynamicClass(IFunc_type.class);
         OBJ_PROTOS.define("typeString", STRING).assignDynamicClass(IFunc_typeString.class);
         OBJ_PROTOS.define("members", LIST).assignDynamicClass(IFunc_members.class);
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -180,8 +179,7 @@ public class EnvisionClass extends EnvisionObject {
         staticScope = new Scope();
         //assign native class object
         internalClass = this;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -196,8 +194,7 @@ public class EnvisionClass extends EnvisionObject {
     /** Special override for classes to include the fact they are a class in their toString. */
     public String toString() {
         return getDatatype() + "_class_" + getHexHash();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -332,8 +329,7 @@ public class EnvisionClass extends EnvisionObject {
     protected void defineScopeMembers(ClassInstance inst) {
         //define instance members
         OBJ_PROTOS.defineOn(inst);
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -402,8 +398,7 @@ public class EnvisionClass extends EnvisionObject {
      * 
      * @return The construct for this class
      */
-    public ClassConstruct getClassConstruct() { return classConstruct; }
-    
+    public ClassConstruct getClassConstruct() { return classConstruct; }    
     //=========
     // Setters
     //=========

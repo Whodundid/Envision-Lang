@@ -30,11 +30,10 @@ public class EnvisionImageClass extends EnvisionClass {
         IMAGE_PROTOS.define("height", INT).assignDynamicClass(null);
         IMAGE_PROTOS.define("getPixel", INT, INT, INT).assignDynamicClass(null);
         //IMAGE_PROTOS.define("setPixel", IMAGE_DATATYPE, INT, INT, INT).assignDynamicClass(null);
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     private EnvisionImageClass() {
         super(NULL);
@@ -68,9 +67,9 @@ public class EnvisionImageClass extends EnvisionClass {
         return img;
     }
     
-    //-----------
+    //===========
     // Overrides
-    //-----------
+    //===========
     
     @Override
     protected ClassInstance buildInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

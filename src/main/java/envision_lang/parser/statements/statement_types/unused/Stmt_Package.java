@@ -13,8 +13,7 @@ public class Stmt_Package extends ParsedStatement {
     //========
     
     public final Token<?> name;
-    public final EList<ParsedStatement> body;
-    
+    public final EList<ParsedStatement> body;    
     //==============
     // Constructors
     //==============
@@ -23,8 +22,7 @@ public class Stmt_Package extends ParsedStatement {
         super(start, declarationIn);
         name = nameIn;
         body = bodyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

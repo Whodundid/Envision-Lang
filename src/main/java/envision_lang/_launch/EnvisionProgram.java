@@ -128,8 +128,7 @@ public class EnvisionProgram {
      * preserve the current memory and instruction stacks and will wait until
      * the script is manually restarted.
      */
-    private boolean enableBlockStatementParsing = false;
-    
+    private boolean enableBlockStatementParsing = false;    
     //==============
     // Constructors
     //==============
@@ -303,8 +302,7 @@ public class EnvisionProgram {
         mainCodeFile = dir.getMain();
         mainFileScope = mainCodeFile.scope();
         logger.trace("Completed program build from directory: " + programDirIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -312,8 +310,7 @@ public class EnvisionProgram {
     @Override
     public String toString() {
         return programName;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -406,8 +403,7 @@ public class EnvisionProgram {
             default: break;
             }
         }
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -462,8 +458,7 @@ public class EnvisionProgram {
     public boolean parseStatements() { return parseStatements; }
     public boolean executeCode() { return executeCode; }
     public boolean areBlockingStatementsEnabled() { return enableBlockingStatements; }
-    public boolean isBlockStatementParsingEnabled() { return enableBlockStatementParsing; }
-    
+    public boolean isBlockStatementParsingEnabled() { return enableBlockStatementParsing; }    
     //=========
     // Setters
     //=========

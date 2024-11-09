@@ -15,15 +15,18 @@ import envision_lang.lang.classes.ClassInstance;
  * @author Hunter Bragg
  */
 public class EnvisionImage extends ClassInstance {
-
+    
+    //========
+    // Fields
+    //========
+    
     /**
      * The internally backing buffered image.
      */
-    public BufferedImage img;
-    
-    //--------------
+    public BufferedImage img;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public EnvisionImage(Number width, Number height) { this(width.intValue(), height.intValue()); }
     public EnvisionImage(int width, int height) {
@@ -40,11 +43,10 @@ public class EnvisionImage extends ClassInstance {
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     public BufferedImage getI() {
         return img;

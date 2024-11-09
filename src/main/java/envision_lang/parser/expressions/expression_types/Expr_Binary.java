@@ -13,8 +13,7 @@ public class Expr_Binary extends ParsedExpression {
     
     public final ParsedExpression left, right;
     public Operator operator;
-    public boolean modular;
-    
+    public boolean modular;    
     //==============
     // Constructors
     //==============
@@ -29,8 +28,7 @@ public class Expr_Binary extends ParsedExpression {
         operator = operatorIn;
         right = rightIn;
         modular = modularIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

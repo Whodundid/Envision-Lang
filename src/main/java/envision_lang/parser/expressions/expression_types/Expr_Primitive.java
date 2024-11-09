@@ -17,8 +17,7 @@ public class Expr_Primitive extends ParsedExpression {
     // Fields
     //========
     
-    public final IKeyword primitiveType;
-    
+    public final IKeyword primitiveType;    
     //==============
     // Constructors
     //==============
@@ -26,8 +25,7 @@ public class Expr_Primitive extends ParsedExpression {
     public Expr_Primitive(Token<?> datatypeToken) {
         super(datatypeToken);
         primitiveType = datatypeToken.getKeyword();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

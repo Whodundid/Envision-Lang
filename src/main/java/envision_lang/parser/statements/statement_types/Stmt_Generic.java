@@ -12,8 +12,7 @@ public class Stmt_Generic extends ParsedStatement {
     // Fields
     //========
     
-    public final EList<Expr_Generic> generics = EList.newList();
-    
+    public final EList<Expr_Generic> generics = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Stmt_Generic extends ParsedStatement {
     public Stmt_Generic(Token start, EList<Expr_Generic> genericsIn) {
         super(start);
         if (genericsIn != null) generics.addAll(genericsIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -31,8 +29,7 @@ public class Stmt_Generic extends ParsedStatement {
     @Override
     public void execute(StatementHandler handler) {
 //        handler.handleGenericStatement(this);
-    }
-    
+    }    
     //=========
     // Methods
     //=========

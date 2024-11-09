@@ -15,16 +15,21 @@ import eutil.debug.Broken;
  */
 public class EnvisionEnvironmnetSettings {
     
+    //========
+    // Fields
+    //========
+    
     /** Arguments passed to the Envision Language. */
     private EList<EnvironmentSetting> envArgs = new EArrayList<>();
     /** Arguments passed to programs running on the Envision Language. */
-    private EList<String> userArgs = new EArrayList<>();
-    
-    //--------------
+    private EList<String> userArgs = new EArrayList<>();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
-    public EnvisionEnvironmnetSettings() {}
+    public EnvisionEnvironmnetSettings() {
+        // nothing by default
+    }
     
     public EnvisionEnvironmnetSettings(String[] in) {
         parseArgs(in);
@@ -36,11 +41,10 @@ public class EnvisionEnvironmnetSettings {
     
     public EnvisionEnvironmnetSettings(Collection<String> in) {
         parseArgs(in.toArray(new String[0]));
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /** Separates valid launch arguments from standard user program arguments. */
     private void parseArgs(String[] in) {

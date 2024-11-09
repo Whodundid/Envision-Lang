@@ -48,8 +48,7 @@ public class ClassInstance extends EnvisionObject {
      * specific methods detailing operator functionality, the operators which
      * have been overloaded will be statically referenced here.
      */
-    protected Map<Operator, EnvisionFunction> operators = new EnumMap<>(Operator.class);
-    
+    protected Map<Operator, EnvisionFunction> operators = new EnumMap<>(Operator.class);    
     //==============
     // Constructors
     //==============
@@ -71,8 +70,7 @@ public class ClassInstance extends EnvisionObject {
         super(derivingClassIn.getDatatype());
         internalClass = derivingClassIn;
         instanceScope = new Scope(derivingClassIn.staticScope);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -85,8 +83,7 @@ public class ClassInstance extends EnvisionObject {
     @Override
     public String toString() {
         return getDatatype() + "_#" + Integer.toHexString(hashCode());
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -373,8 +370,7 @@ public class ClassInstance extends EnvisionObject {
     
     public boolean executeEquals_i(EnvisionInterpreter interpreter, EnvisionObject[] args) {
         return executeEquals(interpreter, args).get_i();
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -402,8 +398,7 @@ public class ClassInstance extends EnvisionObject {
      */
     public EnvisionClass getEClass() {
         return internalClass;
-    }
-    
+    }    
     //=========
     // Setters
     //=========

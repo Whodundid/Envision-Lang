@@ -12,6 +12,10 @@ import eutil.debug.Broken;
 /** Handles code file discovery and wrapping. */
 public class WorkingDirectory {
     
+    //========
+    // Fields
+    //========
+    
     /** The program's top level directory. */
     private final File dir;
     /** True if the given directory is not null and actually exists. */
@@ -21,8 +25,7 @@ public class WorkingDirectory {
     /** The main code file. */
     private EnvisionCodeFile main = null;
     /** Packages to be added to the interpreters at run time. */
-    private EList<EnvisionLangPackage> packages = EList.newList();
-    
+    private EList<EnvisionLangPackage> packages = EList.newList();    
     //==============
     // Constructors
     //==============
@@ -40,8 +43,7 @@ public class WorkingDirectory {
         isValid = EUtil.fileExists(in);
         if (!in.isDirectory()) in = in.getParentFile();
         dir = in;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -133,8 +135,7 @@ public class WorkingDirectory {
      */
     public void debugParsedStatements() throws Exception {
         for (EnvisionCodeFile f : codeFiles) f.displayParsedStatements();
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -148,8 +149,7 @@ public class WorkingDirectory {
     /** Returns all parsed Envision code files from the given directory. */
     public EList<EnvisionCodeFile> getCodeFiles() { return codeFiles; }
     /** Returns all packages to be added at program start. */
-    public EList<EnvisionLangPackage> getBuildPackages() { return packages; }
-    
+    public EList<EnvisionLangPackage> getBuildPackages() { return packages; }    
     //=========
     // Setters
     //=========

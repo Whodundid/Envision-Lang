@@ -12,8 +12,7 @@ public class Expr_Domain extends ParsedExpression {
     //========
     
     public final ParsedExpression left, middle, right;
-    public final Token<?> lower, upper;
-    
+    public final Token<?> lower, upper;    
     //==============
     // Constructors
     //==============
@@ -30,8 +29,7 @@ public class Expr_Domain extends ParsedExpression {
         middle = middleIn;
         upper = upperIn;
         right = rightIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

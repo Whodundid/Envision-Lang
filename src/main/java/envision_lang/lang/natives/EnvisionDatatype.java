@@ -26,8 +26,7 @@ public class EnvisionDatatype implements IDatatype {
     /**
      * The underlying primitive type. Null if not created from a primitive.
      */
-    private final Primitives primitive_type;
-    
+    private final Primitives primitive_type;    
     //==============
     // Constructors
     //==============
@@ -40,8 +39,7 @@ public class EnvisionDatatype implements IDatatype {
     protected EnvisionDatatype(Primitives in) {
         type = in.string_value;
         primitive_type = in;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

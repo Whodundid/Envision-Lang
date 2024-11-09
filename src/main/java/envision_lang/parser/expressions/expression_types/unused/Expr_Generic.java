@@ -12,8 +12,7 @@ public class Expr_Generic extends ParsedExpression    {
     //========
     
     public final Token<?> generic;
-    public final Token<?> extension;
-    
+    public final Token<?> extension;    
     //==============
     // Constructors
     //==============
@@ -22,8 +21,7 @@ public class Expr_Generic extends ParsedExpression    {
         super(genericIn);
         generic = genericIn;
         extension = extensionIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

@@ -18,7 +18,7 @@ import envision_lang.lang.natives.IDatatype;
 import envision_lang.lang.natives.Primitives;
 
 public final class EnvisionListClass extends EnvisionClass {
-
+    
     /**
      * The singular, static List class for which all Envision:List
      * objects are derived from.
@@ -65,11 +65,10 @@ public final class EnvisionListClass extends EnvisionClass {
         LIST_PROTOTYPES.define("size", INT).assignDynamicClass(IFunc_size.class);
         LIST_PROTOTYPES.define("swap", LIST, INT, INT).assignDynamicClass(IFunc_swap.class);
         LIST_PROTOTYPES.define("toString", STRING).assignDynamicClass(IFunc_toString.class);
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -208,10 +207,10 @@ public final class EnvisionListClass extends EnvisionClass {
         LIST_CLASS.defineScopeMembers(list);
         return list;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public EnvisionList newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

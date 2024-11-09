@@ -65,8 +65,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     /** The paired WorkingDirectory for this CodeFile. */
     private WorkingDirectory workingDir;
     
-    private List<String> directScriptLines;
-    
+    private List<String> directScriptLines;    
     //==============
     // Constructors
     //==============
@@ -112,8 +111,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     private boolean checkFile() {
         if (theFile == null || !theFile.exists() || theFile.isDirectory()) return false;
         return theFile.getName().endsWith(".nvis");
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -121,8 +119,7 @@ public class EnvisionCodeFile extends EnvisionObject {
     @Override
     public String toString() {
         return fileName;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -227,8 +224,7 @@ public class EnvisionCodeFile extends EnvisionObject {
         }
         
         return isLoaded;
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -265,8 +261,7 @@ public class EnvisionCodeFile extends EnvisionObject {
      * @return true if there is actually a system file that this code file
      *         refers back to
      */
-    public boolean isActuallyAFile() { return EFileUtil.fileExists(theFile); }
-    
+    public boolean isActuallyAFile() { return EFileUtil.fileExists(theFile); }    
     //=========
     // Setters
     //=========

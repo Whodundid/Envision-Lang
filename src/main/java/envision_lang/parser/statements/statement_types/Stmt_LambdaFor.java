@@ -16,8 +16,7 @@ public class Stmt_LambdaFor extends ParsedStatement {
     public final ParsedStatement init;
     public final Expr_Lambda lambda;
     public final EList<ParsedExpression> post;
-    public final ParsedStatement body;
-    
+    public final ParsedStatement body;    
     //==============
     // Constructors
     //==============
@@ -42,8 +41,7 @@ public class Stmt_LambdaFor extends ParsedStatement {
         lambda = lambdaIn;
         post = postIn;
         body = bodyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

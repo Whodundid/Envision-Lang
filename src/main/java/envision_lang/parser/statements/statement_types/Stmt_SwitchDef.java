@@ -14,8 +14,7 @@ public class Stmt_SwitchDef extends ParsedStatement {
     
     public final ParsedExpression expression;
     public final EList<Stmt_SwitchCase> cases;
-    public final Stmt_SwitchCase defaultCase;
-    
+    public final Stmt_SwitchCase defaultCase;    
     //==============
     // Constructors
     //==============
@@ -29,8 +28,7 @@ public class Stmt_SwitchDef extends ParsedStatement {
         expression = expressionIn;
         cases = casesIn;
         defaultCase = defaultCaseIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

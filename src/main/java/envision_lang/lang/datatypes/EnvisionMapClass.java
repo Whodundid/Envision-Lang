@@ -43,8 +43,7 @@ public class EnvisionMapClass extends EnvisionClass {
         MAP_PROTOTYPES.define("values", LIST).assignDynamicClass(IFunc_values.class);
         MAP_PROTOTYPES.define("entries", LIST).assignDynamicClass(IFunc_entries.class);
         MAP_PROTOTYPES.define("putIfAbsent", VAR, VAR, VAR).assignDynamicClass(IFunc_putIfAbsent.class);
-    }
-    
+    }    
     //==============
     // Constructors
     //==============
@@ -100,8 +99,7 @@ public class EnvisionMapClass extends EnvisionClass {
         MAP_CLASS.defineScopeMembers(map);
         
         return map;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

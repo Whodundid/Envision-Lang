@@ -12,8 +12,7 @@ public class Expr_Logic extends ParsedExpression {
     //========
     
     public final ParsedExpression left, right;
-    public final Operator operator;
-    
+    public final Operator operator;    
     //==============
     // Constructors
     //==============
@@ -23,8 +22,7 @@ public class Expr_Logic extends ParsedExpression {
         left = leftIn;
         operator = operatorIn;
         right = rightIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

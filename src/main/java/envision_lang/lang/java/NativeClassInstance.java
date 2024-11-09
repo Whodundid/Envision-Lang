@@ -15,13 +15,16 @@ import envision_lang.lang.natives.ParameterData;
 import envision_lang.tokenizer.Operator;
 
 public class NativeClassInstance extends ClassInstance {
-
+    
+    //========
+    // Fields
+    //========
+    
     private Object javaClassInstance;
     
     public NativeClassInstance(EnvisionClass derivingClassIn) {
         super(derivingClassIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

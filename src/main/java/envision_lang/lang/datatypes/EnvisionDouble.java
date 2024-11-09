@@ -22,7 +22,7 @@ import envision_lang.tokenizer.Operator;
 public final class EnvisionDouble extends EnvisionNumber<Double> {
     
     public static final IDatatype DOUBLE_TYPE = EnvisionStaticTypes.DOUBLE_TYPE;
-
+    
     public static final EnvisionDouble MIN_VALUE = EnvisionDoubleClass.newDouble(Double.MIN_VALUE);
     public static final EnvisionDouble MIN_NORMAL = EnvisionDoubleClass.newDouble(Double.MIN_NORMAL);
     public static final EnvisionDouble MIN_EXPONENT = EnvisionDoubleClass.newDouble(Double.MIN_EXPONENT);
@@ -39,11 +39,10 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
     // Fields
     //========
     
-    public final double double_val;
-    
-    //--------------
+    public final double double_val;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     EnvisionDouble() { this(0.0); }
     EnvisionDouble(Number in) { this(in.doubleValue()); }
@@ -66,10 +65,10 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
         super(EnvisionDoubleClass.DOUBLE_CLASS);
         double_val = in.doubleVal().double_val;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public boolean equals(Object obj) {
@@ -201,11 +200,10 @@ public final class EnvisionDouble extends EnvisionNumber<Double> {
         case "max" -> max((EnvisionDouble) args[0], (EnvisionDouble) args[1]);
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     public EnvisionDouble min(EnvisionDouble a, EnvisionDouble b) {
         return (a.double_val <= b.double_val) ? a : b;

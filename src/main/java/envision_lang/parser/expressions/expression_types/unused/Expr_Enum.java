@@ -14,8 +14,7 @@ public class Expr_Enum extends ParsedExpression {
     //========
     
     public final Token<?> name;
-    public final EList<ParsedExpression> args;
-    
+    public final EList<ParsedExpression> args;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Expr_Enum extends ParsedExpression {
         super(nameIn);
         name = nameIn;
         args = argsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

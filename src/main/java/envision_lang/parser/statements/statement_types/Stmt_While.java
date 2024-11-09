@@ -6,15 +6,14 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
 
 public class Stmt_While extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
     
     public final boolean isDo;
     public final ParsedExpression condition;
-    public final ParsedStatement body;
-    
+    public final ParsedStatement body;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_While extends ParsedStatement {
         isDo = isDoIn;
         condition = conditionIn;
         body = bodyIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

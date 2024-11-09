@@ -105,16 +105,14 @@ public class NativeInstanceCache {
      * The internal instance map which maps each EnvisionJavaObject to the
      * wrapped Java Object's integer hash code.
      */
-    private Map<Integer, EnvisionJavaObject> instanceMap = new HashMap<>();
-    
-    //==============
-    // Constructors
-    //==============
+    private Map<Integer, EnvisionJavaObject> instanceMap = new HashMap<>();    
+    //================
+    // Static Methods
+    //================
     
     NativeInstanceCache(EnvisionJavaClass theClassIn) {
         wrapperClass = theClassIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -122,8 +120,7 @@ public class NativeInstanceCache {
     @Override
     public String toString() {
         return instanceMap.toString();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -172,8 +169,7 @@ public class NativeInstanceCache {
      */
     public boolean containsInstance(Object javaObject) {
         return instanceMap.containsKey(javaObject.hashCode());
-    }
-    
+    }    
     //=========
     // Getters
     //=========

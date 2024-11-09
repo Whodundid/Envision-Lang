@@ -63,11 +63,10 @@ public class EnvisionFileClass extends EnvisionClass {
         prototypes.define("writeLines", BOOLEAN, TUPLE).assignDynamicClass(IFunc_writeLines.class);
         prototypes.define("flush", BOOLEAN).assignDynamicClass(IFunc_flush.class);
         prototypes.define("randomLine", STRING).assignDynamicClass(IFunc_randomLine.class);
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     private EnvisionFileClass() {
         super(EnvisionStaticTypes.FILE_TYPE);
@@ -87,10 +86,10 @@ public class EnvisionFileClass extends EnvisionClass {
         FILE_CLASS.defineScopeMembers(file);
         return file;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     /**

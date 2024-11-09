@@ -17,11 +17,14 @@ import eutil.datatypes.util.EList;
 
 public class EnvisionJavaObject extends ClassInstance {
     
+    //========
+    // Fields
+    //========
+    
     /** The wrapped Java class. */
     private EnvisionJavaClass classObject;
     /** The object in Java. */
-    private Object javaObject;
-    
+    private Object javaObject;    
     //==============
     // Constructors
     //==============
@@ -37,8 +40,7 @@ public class EnvisionJavaObject extends ClassInstance {
         
         classObject = wrappedClass;
         javaObject = javaInstance;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -104,8 +106,7 @@ public class EnvisionJavaObject extends ClassInstance {
     public EnvisionObject set(String name, IDatatype type, EnvisionObject in) {
         instanceScope.setFast(name, type, in);
         return in;
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -162,14 +163,12 @@ public class EnvisionJavaObject extends ClassInstance {
         for (int i = 0; i < nativeOperatorOverloads.size(); i++) {
             nativeOperatorOverloads.get(i).bindToWrappedObject(this);
         }
-    }
-    
+    }    
     //=========
     // Getters
     //=========
     
-    public Object getJavaObjectInstance() { return javaObject; }
-    
+    public Object getJavaObjectInstance() { return javaObject; }    
     //=========
     // Setters
     //=========

@@ -6,15 +6,14 @@ import envision_lang.parser.statements.StatementHandler;
 import envision_lang.tokenizer.Token;
 
 public class Stmt_If extends ParsedStatement {
-
+    
     //========
     // Fields
     //========
     
     public final ParsedExpression condition;
     public final ParsedStatement thenBranch;
-    public final ParsedStatement elseBranch;
-    
+    public final ParsedStatement elseBranch;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Stmt_If extends ParsedStatement {
         condition = conditionIn;
         thenBranch = thenIn;
         elseBranch = elseIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

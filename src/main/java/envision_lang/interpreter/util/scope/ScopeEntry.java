@@ -28,8 +28,7 @@ public class ScopeEntry {
     /** The object being stored at this scope entry. */
     private EnvisionObject object = EnvisionNull.NULL;
     /** The visibility of this object on this scope. */
-    private EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.SCOPE;
-    
+    private EnvisionVisibilityModifier visibility = EnvisionVisibilityModifier.SCOPE;    
     //==============
     // Constructors
     //==============
@@ -60,8 +59,7 @@ public class ScopeEntry {
     ScopeEntry(IDatatype datatypeIn, EnvisionObject objectIn) {
         datatype = datatypeIn;
         object = objectIn;
-    }
-
+    }    
     //===========
     // Overrides
     //===========
@@ -74,8 +72,7 @@ public class ScopeEntry {
         sb.a(" : ", object);
         sb.a("]");
         return sb.toString();
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -111,8 +108,7 @@ public class ScopeEntry {
         }
         
         return r;
-    }
-    
+    }    
     //=========
     // Getters
     //=========
@@ -127,8 +123,7 @@ public class ScopeEntry {
     public boolean isVoidType() { return datatype.isVoid(); }
     public boolean isStrong() { return strong; }
     public EnvisionVisibilityModifier getVisibility() { return visibility; }
-    public EnvisionObject getObject() { return object; }
-    
+    public EnvisionObject getObject() { return object; }    
     //=========
     // Setters
     //=========

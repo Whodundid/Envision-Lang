@@ -12,14 +12,17 @@ import eutil.strings.EStringUtil;
 
 public class EnvisionFile extends ClassInstance {
     
+    //========
+    // Fields
+    //========
+    
     /** The internal Java::File object for which this EnvisionFile wraps. */
     public File iFile;
     /** Any lines that will be written to a file. */
-    public EList<String> toBeWritten = EList.newList();
-    
-    //--------------
+    public EList<String> toBeWritten = EList.newList();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public EnvisionFile(String pathIn) {
         super(EnvisionFileClass.FILE_CLASS);
@@ -43,9 +46,9 @@ public class EnvisionFile extends ClassInstance {
         iFile = new File(parent, child);
     }
     
-    //------------------
+    //==================
     // Internal Methods
-    //------------------
+    //==================
     
     private File createWrapFile(String pathIn) {
         String dirPath = EnvisionInterpreter.topDir().getDirFile().getAbsolutePath();
@@ -60,11 +63,10 @@ public class EnvisionFile extends ClassInstance {
         }
         
         return new File(argPath);
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Returns the internal file for which this EnvisionFile wraps.

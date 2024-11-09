@@ -17,8 +17,7 @@ public final class EnvisionExceptionClass extends EnvisionClass {
     
     static {
         
-    }
-    
+    }    
     //==============
     // Constructors
     //==============

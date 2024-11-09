@@ -12,8 +12,7 @@ public class Expr_Lambda extends ParsedExpression {
     
     public ParsedExpression callee;
     public Expr_Compound inputs;
-    public Expr_Compound production;
-    
+    public Expr_Compound production;    
     //==============
     // Constructors
     //==============
@@ -34,8 +33,7 @@ public class Expr_Lambda extends ParsedExpression {
         super(inputsIn.getStartingToken());
         inputs = Expr_Compound.wrap(inputsIn.getStartingToken(), inputsIn);
         production = Expr_Compound.wrap(productionIn.getStartingToken(), productionIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -62,8 +60,7 @@ public class Expr_Lambda extends ParsedExpression {
     @Override
     public EnvisionObject evaluate(ExpressionHandler handler) {
         return handler.handleLambda_E(this);
-    }
-    
+    }    
     //=========
     // Setters
     //=========

@@ -41,11 +41,10 @@ public final class EnvisionTupleClass extends EnvisionClass {
         TUPLE_PROTOTYPES.define("random", VAR).assignDynamicClass(IFunc_random.class);
         TUPLE_PROTOTYPES.define("shuffle", LIST).assignDynamicClass(IFunc_shuffle.class);
         TUPLE_PROTOTYPES.define("size", INT).assignDynamicClass(IFunc_size.class);
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -144,10 +143,10 @@ public final class EnvisionTupleClass extends EnvisionClass {
         TUPLE_CLASS.defineScopeMembers(tuple);
         return tuple;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public EnvisionTuple newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

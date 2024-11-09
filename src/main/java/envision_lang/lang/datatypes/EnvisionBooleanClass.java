@@ -29,11 +29,10 @@ public final class EnvisionBooleanClass extends EnvisionClass {
     //statically define function prototypes
     static {
         // None
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -78,10 +77,10 @@ public final class EnvisionBooleanClass extends EnvisionClass {
     public static EnvisionBoolean valueOf(EnvisionBoolean val) {
         return (val.bool_val) ? EnvisionBoolean.TRUE : EnvisionBoolean.FALSE;
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public EnvisionBoolean newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

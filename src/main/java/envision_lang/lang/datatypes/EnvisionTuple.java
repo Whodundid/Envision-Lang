@@ -37,8 +37,7 @@ public final class EnvisionTuple extends ClassInstance {
     /**
      * Internal Array list.
      */
-    public final EList<EnvisionObject> internalList;
-    
+    public final EList<EnvisionObject> internalList;    
     //==============
     // Constructors
     //==============
@@ -61,8 +60,7 @@ public final class EnvisionTuple extends ClassInstance {
     EnvisionTuple(EnvisionList listIn) {
         super(EnvisionTupleClass.TUPLE_CLASS);
         internalList = new EArrayList<>(listIn.getInternalList());
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -165,8 +163,7 @@ public final class EnvisionTuple extends ClassInstance {
         case "size" -> size();
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -223,7 +220,7 @@ public final class EnvisionTuple extends ClassInstance {
     
     public EnvisionTuple flip() {
         if (this == EMPTY_TUPLE) return EMPTY_TUPLE;
-        return new EnvisionTuple(internalList.reverse());
+        return new EnvisionTuple(internalList.reversed());
     }
     
     public EnvisionTuple shuffle() {
@@ -238,9 +235,9 @@ public final class EnvisionTuple extends ClassInstance {
         return internalList.getRandom();
     }
     
-    //------------------
+    //==================
     // Internal Methods
-    //------------------
+    //==================
     
     private void checkEmpty() { checkEmpty(0); }
     private int checkEmpty(int index) {

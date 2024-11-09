@@ -21,8 +21,7 @@ public class ParserDeclaration {
     private EList<Expr_Generic> generics;
     private Token<?> returnType;
     private Token<?> startToken;
-    private boolean isBlockingStatement;
-    
+    private boolean isBlockingStatement;    
     //==============
     // Constructors
     //==============

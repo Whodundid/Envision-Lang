@@ -4,8 +4,7 @@ import envision_lang.lang.EnvisionObject;
 import envision_lang.parser.util.ParsedObject;
 import envision_lang.tokenizer.Token;
 
-public abstract class ParsedExpression extends ParsedObject {
-
+public abstract class ParsedExpression extends ParsedObject {    
     //==============
     // Constructors
     //==============
@@ -16,8 +15,7 @@ public abstract class ParsedExpression extends ParsedObject {
     
     protected ParsedExpression(Token startingTokenIn) {
         super(startingTokenIn);
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

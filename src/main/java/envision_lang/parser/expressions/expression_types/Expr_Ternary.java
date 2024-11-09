@@ -10,8 +10,7 @@ public class Expr_Ternary extends ParsedExpression {
     // Fields
     //========
     
-    public final ParsedExpression condition, ifTrue, ifFalse;
-    
+    public final ParsedExpression condition, ifTrue, ifFalse;    
     //==============
     // Constructors
     //==============
@@ -21,8 +20,7 @@ public class Expr_Ternary extends ParsedExpression {
         condition = conditionIn;
         ifTrue = ifTrueIn;
         ifFalse = ifFalseIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

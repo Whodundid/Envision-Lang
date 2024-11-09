@@ -27,8 +27,7 @@ public final class NativeFunction extends EnvisionFunction implements INativeEnv
     private final Method javaMethodTarget;
     private EnvisionJavaClass wrapperClass;
     private EnvisionJavaObject wrappedObject;
-    private EModifier methodMods;
-    
+    private EModifier methodMods;    
     //==============
     // Constructors
     //==============
@@ -92,8 +91,7 @@ public final class NativeFunction extends EnvisionFunction implements INativeEnv
         if (methodMods.isPublic()) modifierHandler.setPublic();
         if (methodMods.isProtected()) modifierHandler.setProtected();
         if (methodMods.isPrivate()) modifierHandler.setPrivate();
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -220,8 +218,7 @@ public final class NativeFunction extends EnvisionFunction implements INativeEnv
         }
         
         ret(toReturn);
-    }
-    
+    }    
     //=========
     // Getters
     //=========

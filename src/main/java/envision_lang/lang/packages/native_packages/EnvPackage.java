@@ -15,8 +15,7 @@ import envision_lang.lang.packages.native_packages.base.SupportsOP;
 public final class EnvPackage extends NativePackage {
     
     public static final String PACKAGE_NAME = "env";
-    public static final EnvPackage ENV_PACKAGE = new EnvPackage();
-    
+    public static final EnvPackage ENV_PACKAGE = new EnvPackage();    
     //==============
     // Constructors
     //==============

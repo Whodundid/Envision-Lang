@@ -24,9 +24,9 @@ import envision_lang.lang.EnvisionObject;
  */
 public class InternalJavaObjectWrapper extends EnvisionObject {
     
-    //--------
+    //========
     // Fields
-    //--------
+    //========
     
     /**
      * The wrapped underlying Java object for special cross-language purposes.
@@ -35,20 +35,18 @@ public class InternalJavaObjectWrapper extends EnvisionObject {
      * The Java 'File' object is then wrapped directly into an EnvisionObject so that
      * it can be used normally within the Envision:Java Scripting Language.
      */
-    public final Object javaObject;
-    
-    //--------------
+    public final Object javaObject;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public InternalJavaObjectWrapper(Object javaObjectIn) {
         super(EnvisionStaticTypes.VAR_TYPE);
         javaObject = javaObjectIn;
-    }
-    
-    //---------
+    }    
+    //=========
     // Getters
-    //---------
+    //=========
     
     /**
      * Special getter used to grab a wrapped Object in Java into Envision.

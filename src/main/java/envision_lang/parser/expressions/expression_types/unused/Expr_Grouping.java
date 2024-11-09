@@ -10,8 +10,7 @@ public class Expr_Grouping extends ParsedExpression {
     // Fields
     //========
     
-    public final ParsedExpression expression;
-    
+    public final ParsedExpression expression;    
     //==============
     // Constructors
     //==============
@@ -19,8 +18,7 @@ public class Expr_Grouping extends ParsedExpression {
     public Expr_Grouping(ParsedExpression expressionIn) {
         super(expressionIn);
         expression = expressionIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

@@ -13,8 +13,7 @@ public class Expr_Unary extends ParsedExpression {
     //========
     
     public final Operator operator;
-    public final ParsedExpression left, right;
-    
+    public final ParsedExpression left, right;    
     //==============
     // Constructors
     //==============
@@ -24,8 +23,7 @@ public class Expr_Unary extends ParsedExpression {
         operator = operatorIn;
         left = leftIn;
         right = rightIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

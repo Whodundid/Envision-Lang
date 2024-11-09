@@ -28,11 +28,10 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
     
     static {
         // no double prototypes
-    }
-    
-    //--------------
+    }    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -108,10 +107,10 @@ public final class EnvisionDoubleClass extends EnvisionNumberClass {
         
         return newDouble(num);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public EnvisionNumber newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

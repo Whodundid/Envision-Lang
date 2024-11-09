@@ -62,8 +62,7 @@ public class NativeDatatypeMapper {
     /** True if this mapper is wrapping a Java Field. */
     final boolean isField;
     /** True if this mapper is wrapping a Java Method/Constructor. */
-    final boolean isMethod;
-    
+    final boolean isMethod;    
     //==============
     // Constructors
     //==============
@@ -161,8 +160,7 @@ public class NativeDatatypeMapper {
         
         toJava[0] = c;
         toEnvision[0] = IDatatype.fromJavaClass(c);
-    }
-    
+    }    
     //=========
     // Methods
     //=========
@@ -593,8 +591,7 @@ public class NativeDatatypeMapper {
         if (toType == Double.class || toType == double.class) return n.doubleValue();
         
         throw new IllegalStateException("Error! Not possible! Converting: " + toConvert + " -> " + toType);
-    }
-    
+    }    
     //=========
     // Getters
     //=========

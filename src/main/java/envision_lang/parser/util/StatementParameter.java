@@ -13,8 +13,7 @@ public class StatementParameter {
     public final Token<?> type;
     public final Token<?> name;
     public final ParsedExpression assignment;
-    public final boolean varags;
-    
+    public final boolean varags;    
     //==============
     // Constructors
     //==============
@@ -26,8 +25,7 @@ public class StatementParameter {
         name = nameIn;
         assignment = assignmentIn;
         varags = varagsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

@@ -45,8 +45,7 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
     //========
     
     /** The internal Java boolean value which backs this EnvisionBoolean. */
-    public final boolean bool_val;
-    
+    public final boolean bool_val;    
     //==============
     // Constructors
     //==============
@@ -60,8 +59,7 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
     EnvisionBoolean(EnvisionBoolean objIn) {
         super(EnvisionBooleanClass.BOOLEAN_CLASS);
         bool_val = objIn.bool_val;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -195,8 +193,7 @@ public final class EnvisionBoolean extends EnvisionVariable<Boolean> {
         case "get" -> get();
         default -> super.handlePrimitive(proto, args);
         };
-    }
-    
+    }    
     //=========
     // Methods
     //=========

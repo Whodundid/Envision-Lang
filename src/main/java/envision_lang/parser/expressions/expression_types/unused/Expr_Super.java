@@ -14,8 +14,7 @@ public class Expr_Super extends ParsedExpression {
     //========
     
     public final Token<?> target;
-    public final EList<ParsedExpression> args;
-    
+    public final EList<ParsedExpression> args;    
     //==============
     // Constructors
     //==============
@@ -25,8 +24,7 @@ public class Expr_Super extends ParsedExpression {
         super(start);
         target = methodIn;
         args = argsIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

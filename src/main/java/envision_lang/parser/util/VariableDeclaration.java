@@ -10,8 +10,7 @@ public class VariableDeclaration {
     //========
     
     public final Token<String> name;
-    public final ParsedExpression assignment_value;
-    
+    public final ParsedExpression assignment_value;    
     //==============
     // Constructors
     //==============
@@ -19,8 +18,7 @@ public class VariableDeclaration {
     public VariableDeclaration(Token<String> nameIn, ParsedExpression valueIn) {
         name = nameIn;
         assignment_value = valueIn;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -29,8 +27,7 @@ public class VariableDeclaration {
     public String toString() {
         String v = (assignment_value != null) ? " = " + assignment_value.toString() : "";
         return name.getLexeme() + v;
-    }
-    
+    }    
     //=========
     // Getters
     //=========

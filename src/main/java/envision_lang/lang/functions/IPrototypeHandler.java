@@ -18,18 +18,20 @@ import eutil.datatypes.util.EList;
  * @author Hunter Bragg
  */
 public class IPrototypeHandler {
-
-    private final EList<FunctionPrototype> prototypes = new EArrayList<>();
     
-    //--------------
+    //========
+    // Fields
+    //========
+    
+    private final EList<FunctionPrototype> prototypes = new EArrayList<>();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
-    public IPrototypeHandler() {}
-    
-    //---------
+    public IPrototypeHandler() {}    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Creates a new internal function prototype definition

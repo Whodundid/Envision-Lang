@@ -19,26 +19,24 @@ import envision_lang.lang.natives.Primitives;
  */
 public class EnvisionLangPackage extends EnvisionObject implements Buildable {
     
-    //--------
+    //========
     // Fields
-    //--------
+    //========
     
     protected final String packageName;
-    protected Scope packageScope;
-    
-    //--------------
+    protected Scope packageScope;    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     public EnvisionLangPackage(String packageNameIn) {
         super(Primitives.PACKAGE);
         packageName = packageNameIn;
         packageScope = new Scope();
-    }
-    
-    //---------
+    }    
+    //=========
     // Methods
-    //---------
+    //=========
     
     /**
      * Adds another package onto this package's scope.
@@ -83,11 +81,10 @@ public class EnvisionLangPackage extends EnvisionObject implements Buildable {
             scope.defineImportVal(import_val_name, import_entry);
         }
         scope.defineImportVal(packageName, this);
-    }
-    
-    //---------
+    }    
+    //=========
     // Getters
-    //---------
+    //=========
     
     public String getPackageName() {
         return packageName;
@@ -95,11 +92,10 @@ public class EnvisionLangPackage extends EnvisionObject implements Buildable {
     
     public Scope getScope() {
         return packageScope;
-    }
-    
-    //---------
+    }    
+    //=========
     // Setters
-    //---------
+    //=========
     
     public EnvisionLangPackage setScope(Scope in) {
         packageScope = in;

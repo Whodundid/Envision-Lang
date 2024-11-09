@@ -20,7 +20,7 @@ import envision_lang.lang.natives.Primitives;
 import eutil.EUtil;
 
 public class EnvisionStringClass extends EnvisionClass {
-
+    
     /**
      * The singular, static String class for which all Envision:String
      * objects are derived from.
@@ -51,11 +51,10 @@ public class EnvisionStringClass extends EnvisionClass {
         STRING_PROTOS.define("compareTo", INT, STRING).assignDynamicClass(IFunc_compareTo.class);
     }
     
-    private static final Map<String, EnvisionString> cache = new HashMap<>();
-    
-    //--------------
+    private static final Map<String, EnvisionString> cache = new HashMap<>();    
+    //==============
     // Constructors
-    //--------------
+    //==============
     
     /**
      * Hide constructor to prevent any more than the single, static
@@ -215,10 +214,10 @@ public class EnvisionStringClass extends EnvisionClass {
     public static EnvisionString concatenate(String a, String b) {
         return valueOf(a + b);
     }
-    
-    //-----------
+
+    //==========
     // Overrides
-    //-----------
+    //==========
     
     @Override
     public ClassInstance newInstance(EnvisionInterpreter interpreter, EnvisionObject[] args) {

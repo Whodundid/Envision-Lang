@@ -22,8 +22,7 @@ public class InternalException extends RuntimeException {
     // Fields
     //========
     
-    public EnvisionException thrownException;
-    
+    public EnvisionException thrownException;    
     //==============
     // Constructors
     //==============

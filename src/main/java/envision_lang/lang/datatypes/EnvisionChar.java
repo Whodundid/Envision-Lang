@@ -27,8 +27,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
     // Fields
     //========
     
-    public final char char_val;
-    
+    public final char char_val;    
     //==============
     // Constructors
     //==============
@@ -47,8 +46,7 @@ public final class EnvisionChar extends EnvisionVariable<Character> {
     EnvisionChar(EnvisionChar in) {
         super(EnvisionCharClass.CHAR_CLASS);
         char_val = in.char_val;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========

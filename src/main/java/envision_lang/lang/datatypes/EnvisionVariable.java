@@ -63,8 +63,7 @@ public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
     permits EnvisionBoolean, EnvisionChar, EnvisionNumber, EnvisionString
 {
     
-    public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;
-    
+    public static final IDatatype VAR_TYPE = EnvisionStaticTypes.VAR_TYPE;    
     //==============
     // Constructors
     //==============
@@ -78,8 +77,7 @@ public abstract sealed class EnvisionVariable<TYPE> extends ClassInstance
      */
     protected EnvisionVariable(EnvisionClass parentClass) {
         super(parentClass);
-    }
-    
+    }    
     //=========
     // Getters
     //=========

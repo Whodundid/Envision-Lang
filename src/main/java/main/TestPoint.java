@@ -10,8 +10,7 @@ public class TestPoint {
     // Fields
     //========
 
-    private int x, y;
-    
+    private int x, y;    
     //==============
     // Constructors
     //==============
@@ -20,8 +19,7 @@ public class TestPoint {
     public TestPoint(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-    
+    }    
     //===========
     // Overrides
     //===========
@@ -52,15 +50,13 @@ public class TestPoint {
     
     public void cat(byte b, float f, String s) {
         System.out.println("FROM TestPoint 'cat' HOI! [" + b + ", " + f + ", " + s + "]");
-    }
-    
+    }    
     //=========
     // Getters
     //=========
     
     public int getX() { return x; }
-    public int getY() { return y; }
-    
+    public int getY() { return y; }    
     //=========
     // Setters
     //=========
